@@ -48,6 +48,9 @@ Pushes to `main` never publish. The CI workflow only builds, tests and uploads a
 1. **Verify** the attestation of the package attached to the release (the file on nuget.org carries an extra
    repository signature, so its digest differs):
    `gh attestation verify Maple.Result.X.Y.Z.nupkg --repo TomMaple/Maple.Result`.
+1. **Bump the API baseline:** in a pull request, set `PackageValidationBaselineVersion` in
+   `src/Maple.Result/Maple.Result.csproj` to the released version, and delete
+   `src/Maple.Result/CompatibilitySuppressions.xml` (its suppressions are relative to the previous baseline).
 
 Version:
 * Calculated from the commits since the last `v*` tag: `!` or a `BREAKING CHANGE:` footer bumps major, `feat` bumps
@@ -55,6 +58,14 @@ Version:
 * To override it, enter a version (e.g. `3.0.0`) in the *version* input when running *Draft release*.
 * Pre-release: enter e.g. `3.0.0-rc.1`. The draft is marked as a pre-release automatically. The notes of the final
   `3.0.0` then list only the commits after `v3.0.0-rc.1`; merge the notes of the release candidates when editing it.
+
+API compatibility:
+* `dotnet pack` (in CI and in both release workflows) compares the public API with the baseline release downloaded
+  from nuget.org ([package validation](https://learn.microsoft.com/dotnet/fundamentals/package-validation/overview)).
+  A removed or changed member fails the build.
+* An intentional break (in a major version only) is recorded in `CompatibilitySuppressions.xml`; regenerate it with
+  `dotnet pack src/Maple.Result -c Release -p:Version=X.0.0 -p:ApiCompatGenerateSuppressionFile=true` and review
+  the diff. Pass `-p:Version`: without it the local assembly version is 1.0.0.0, which adds a bogus CP0003 entry.
 
 Release notes list only `feat`, `fix`, `perf` and breaking commits. `docs:`, `chore:` (including dependency bumps),
 `test:`, `ci:`, `build:`, `style:` and `refactor:` commits never appear, and neither do PR merge commits unless they
