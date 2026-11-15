@@ -214,7 +214,7 @@ public class ErrorUriUnitTests
     }
 
     [Fact]
-    public void Locator_MalformedUri_ThrowsWithPreservedInnerException()
+    public void Locator_MalformedUri_ThrowsWithoutInnerException()
     {
         // Act
         var exception = Record.Exception(() => ErrorUri.Locator("error"));
@@ -222,7 +222,7 @@ public class ErrorUriUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<UriFormatException>();
-        exception.InnerException.ShouldNotBeNull();
+        exception.InnerException.ShouldBeNull();
     }
 
     #endregion
