@@ -83,7 +83,9 @@ public static class IfErrorValueTaskAsyncExtensions
             if (result.IsSuccess())
                 return result;
 
-            return await Guard.EnsureNotNullResult(ifErrorFunction(result.Error), nameof(ifErrorFunction), continueOnCapturedContext);
+            var errorTask = ifErrorFunction(result.Error);
+
+            return await Guard.EnsureNotNullResult(errorTask, nameof(ifErrorFunction), continueOnCapturedContext);
         }
     }
 
@@ -202,7 +204,9 @@ public static class IfErrorValueTaskAsyncExtensions
             if (result.IsSuccess())
                 return result;
 
-            return await Guard.EnsureNotNullResult(ifErrorFunction(result.Error), nameof(ifErrorFunction), continueOnCapturedContext);
+            var errorTask = ifErrorFunction(result.Error);
+
+            return await Guard.EnsureNotNullResult(errorTask, nameof(ifErrorFunction), continueOnCapturedContext);
         }
     }
 }

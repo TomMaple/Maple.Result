@@ -82,7 +82,11 @@ public static class IfSuccessExtensions
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
 
         if (result.IsSuccess())
-            return Guard.EnsureNotNullReturned(ifSuccessFunction(), nameof(ifSuccessFunction));
+        {
+            var successResult = ifSuccessFunction();
+
+            return Guard.EnsureNotNullReturned(successResult, nameof(ifSuccessFunction));
+        }
 
         return result;
     }
@@ -120,7 +124,12 @@ public static class IfSuccessExtensions
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
 
         if (result.IsSuccess())
-            return Result.FromError(Guard.EnsureNotNullReturned(ifSuccessFunction(), nameof(ifSuccessFunction)));
+        {
+            var returnedError = ifSuccessFunction();
+            var error = Guard.EnsureNotNullReturned(returnedError, nameof(ifSuccessFunction));
+
+            return Result.FromError(error);
+        }
 
         return result;
     }
@@ -185,7 +194,11 @@ public static class IfSuccessExtensions
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
 
         if (result.IsSuccess())
-            return Guard.EnsureNotNullReturned(ifSuccessFunction(), nameof(ifSuccessFunction));
+        {
+            var successResult = ifSuccessFunction();
+
+            return Guard.EnsureNotNullReturned(successResult, nameof(ifSuccessFunction));
+        }
 
         return result.Error;
     }
@@ -250,7 +263,11 @@ public static class IfSuccessExtensions
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
 
         if (result.IsSuccess())
-            return Guard.EnsureNotNullReturned(ifSuccessFunction(result.Value), nameof(ifSuccessFunction));
+        {
+            var successResult = ifSuccessFunction(result.Value);
+
+            return Guard.EnsureNotNullReturned(successResult, nameof(ifSuccessFunction));
+        }
 
         return result.Error;
     }
@@ -289,7 +306,12 @@ public static class IfSuccessExtensions
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
 
         if (result.IsSuccess())
-            return Result.FromError(Guard.EnsureNotNullReturned(ifSuccessFunction(result.Value), nameof(ifSuccessFunction)));
+        {
+            var returnedError = ifSuccessFunction(result.Value);
+            var error = Guard.EnsureNotNullReturned(returnedError, nameof(ifSuccessFunction));
+
+            return Result.FromError(error);
+        }
 
         return result.Error;
     }
@@ -366,7 +388,11 @@ public static class IfSuccessExtensions
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
 
         if (result.IsSuccess())
-            return Guard.EnsureNotNullReturned(ifSuccessFunction(result.Value), nameof(ifSuccessFunction));
+        {
+            var successResult = ifSuccessFunction(result.Value);
+
+            return Guard.EnsureNotNullReturned(successResult, nameof(ifSuccessFunction));
+        }
 
         return result.Error;
     }

@@ -437,7 +437,8 @@ public sealed record Error
         foreach (var errorDetail in ErrorDetailsCollection)
             hashCode.Add(errorDetail);
 
-        hashCode.Add(DictionaryHelper.GetHashCode(MetadataDictionary));
+        var metadataHashCode = DictionaryHelper.GetHashCode(MetadataDictionary);
+        hashCode.Add(metadataHashCode);
 
         return hashCode.ToHashCode();
     }

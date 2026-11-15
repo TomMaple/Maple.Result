@@ -106,7 +106,9 @@ public sealed record TemplatedMessage
     internal static TemplatedMessage Create(string templateId, ReadOnlySpan<(string Key, object? Value)> parameters,
         string templateIdParameterName, string parametersParameterName)
     {
-        return new TemplatedMessage(Validate(templateId, parameters, templateIdParameterName, parametersParameterName));
+        var validated = Validate(templateId, parameters, templateIdParameterName, parametersParameterName);
+
+        return new TemplatedMessage(validated);
     }
 
     /// <summary>
@@ -132,7 +134,11 @@ public sealed record TemplatedMessage
         string parametersParameterName)
     {
         if (templateId is not null)
-            return new TemplatedMessage(Validate(templateId, parameters, templateIdParameterName, parametersParameterName));
+        {
+            var validated = Validate(templateId, parameters, templateIdParameterName, parametersParameterName);
+
+            return new TemplatedMessage(validated);
+        }
 
         if (parameters is not null && parameters.Any())
             throw ParametersWithoutTemplateId(templateIdParameterName, parametersParameterName);
@@ -173,7 +179,10 @@ public sealed record TemplatedMessage
         hashCode.Add(TemplateId);
 
         if (ParamsDictionary is not null)
-            hashCode.Add(DictionaryHelper.GetHashCode(ParamsDictionary));
+        {
+            var paramsHashCode = DictionaryHelper.GetHashCode(ParamsDictionary);
+            hashCode.Add(paramsHashCode);
+        }
 
         return hashCode.ToHashCode();
     }

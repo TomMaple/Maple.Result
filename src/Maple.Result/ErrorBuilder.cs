@@ -367,7 +367,9 @@ public sealed class ErrorBuilder
     {
         var detailTemplated = TemplatedMessage.CreateOptional(detailTemplateId, detailNamedValues, nameof(detailTemplateId), nameof(detailNamedValues));
 
-        return AddErrorDetail(new ErrorDetail(propertyPointer, detail, detailTemplated));
+        var errorDetail = new ErrorDetail(propertyPointer, detail, detailTemplated);
+
+        return AddErrorDetail(errorDetail);
     }
 
     #endregion
