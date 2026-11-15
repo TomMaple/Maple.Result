@@ -312,7 +312,7 @@ public sealed class ErrorBuilder
     /// <exception cref="ArgumentException">If the <paramref name="instanceUri" /> is <c>about:blank</c>.</exception>
     public ErrorBuilder WithInstanceUri(ErrorUri? instanceUri)
     {
-        if (instanceUri == ErrorUri.None())
+        if (instanceUri == ErrorUri.None)
         {
             throw new ArgumentException(
                 "The instance URI must not be ‘about:blank’, which has a meaning only as a type; pass null when there is no instance.",
