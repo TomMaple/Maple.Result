@@ -258,7 +258,7 @@ public class ErrorUriUnitTests
     }
 
     [Fact]
-    public void Tag_NullLocator_ThrowsException()
+    public void Tag_NullTag_ThrowsException()
     {
         // Arrange
         const string? Tag = null;
