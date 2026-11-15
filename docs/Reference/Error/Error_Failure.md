@@ -18,7 +18,7 @@ It relates to `422` HTTP status code (Unprocessable Content), but can also be us
 
 
 ## Failure(ErrorUri, String, String, ErrorUri, String, (String, Object)[])
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L653" target="_blank">Error.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L658" target="_blank">Error.cs</a>
 
 Creates a new instance of the [Error](Error.md) object of the *Failure* category with specified parameters.
 
@@ -82,7 +82,7 @@ var error = Error.Failure(
 
 
 ## Failure(ErrorUri, String, String, ErrorUri, String, IEnumerable&lt;KeyValuePair&lt;String, Object&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L669" target="_blank">Error.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L674" target="_blank">Error.cs</a>
 
 Creates a new instance of the [Error](Error.md) object of the *Failure* category with specified parameters.
 

@@ -97,7 +97,7 @@ A `TemplatedMessage` (of the error or of an error detail) is an object:
 ## Metadata (extension members)
 Each `Metadata` entry is a top-level extension member: the key is the member name and the value is written as JSON.
 
-The top-level members of the format are **reserved**: `type`, `title`, `status`, `detail`, `instance`, `errors` and `detailTemplated` cannot be used as metadata keys, in any case (e.g., `Title` or `ERRORS`), because the entry would collide with the member once the metadata is flattened into the object, and clients often read JSON case-insensitively. `Error.WithMetadata()`, `ErrorBuilder.WithMetadata()` and the `Error` factory methods throw an `ArgumentException` for them. The names inside an `errors` item or a `detailTemplated` object (`pointer`, `templateId`, `params`) are not reserved.
+The top-level members of the format are **reserved**: `type`, `title`, `status`, `detail`, `instance`, `errors` and `detailTemplated` cannot be used as metadata keys, in any case (e.g., `Title` or `ERRORS`), because the entry would collide with the member once the metadata is flattened into the object, and clients often read JSON case-insensitively. `Error.WithMetadata()` and `ErrorBuilder.WithMetadata()` throw an `ArgumentException` for them. For the same reason, an error cannot hold two keys that differ only in case (e.g., `RetryAfter` and `retryAfter`). The names inside an `errors` item or a `detailTemplated` object (`pointer`, `templateId`, `params`) are not reserved.
 
 Members added by the host are not reserved either: e.g., ASP.NET Core adds `traceId`. When a metadata entry has the same key, the package that writes the response decides which value wins and documents it.
 

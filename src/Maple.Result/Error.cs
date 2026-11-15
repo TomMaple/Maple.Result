@@ -186,7 +186,9 @@ public sealed record Error
     ///         and be at least 3 characters long (<i>RFC 9457</i>, section 4); this is a recommendation and is not enforced.
     ///         Keys must not match the top-level members of the problem details format (<see cref="ProblemDetailsMembers" />, case-insensitively):
     ///         <c>type</c>, <c>title</c>, <c>status</c>, <c>detail</c>, <c>instance</c>, <c>errors</c> and <c>detailTemplated</c>;
-    ///         <see cref="WithMetadata(string, object?)" /> and <see cref="ErrorBuilder.WithMetadata(string, object?)" /> reject them.
+    ///         <see cref="WithMetadata(string, object?)" /> and <see cref="ErrorBuilder.WithMetadata(string, object?)" /> reject them,
+    ///         and they reject a key that differs only in case from an existing key (e.g., <c>retryAfter</c> next to <c>RetryAfter</c>):
+    ///         both would be the same member of a problem details object.
     ///     </para>
     ///     <para>
     ///         Values may be <see langword="null" />. Use <see cref="TryGetMetadata{T}" /> to read a value as a specific type.
