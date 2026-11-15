@@ -10,6 +10,7 @@
 
 using Maple.Result.Validators;
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Maple.Result;
 
@@ -229,6 +230,40 @@ public readonly record struct ErrorUri
             Kind.Locator => Locator(value),
             _ => throw new UriFormatException(UnknownKindMessage)
         };
+    }
+
+    /// <summary>
+    ///     Tries to create an <see cref="ErrorUri" /> of the kind that the <paramref name="value" /> has, with the rules of <see cref="Parse" />.
+    /// </summary>
+    /// <param name="value">The <i>URI</i>; see <see cref="Parse" />.</param>
+    /// <param name="result">
+    ///     The <see cref="ErrorUri" /> with the specified value, if it is valid; otherwise, the default <see cref="ErrorUri" />.
+    /// </param>
+    /// <returns><see langword="true" /> if the <paramref name="value" /> is a valid error <i>URI</i>; otherwise, <see langword="false" />.</returns>
+    /// <remarks>This method never throws, and a rejected value is checked without throwing an exception internally.</remarks>
+    public static bool TryParse([NotNullWhen(true)] string? value, out ErrorUri result)
+    {
+        result = default;
+
+        if (value is null)
+            return false;
+
+        var kind = DetectKind(value);
+        var isValid = kind switch
+        {
+            Kind.None => true,
+            Kind.Relative => UriRelativeValidator.IsValid(value),
+            Kind.Tag => UriTagValidator.IsValid(value),
+            Kind.Urn => UriUrnValidator.IsValid(value),
+            Kind.Locator => UriLocatorValidator.IsValid(value),
+            _ => false
+        };
+
+        if (!isValid)
+            return false;
+
+        result = kind == Kind.None ? None() : new ErrorUri(value);
+        return true;
     }
 
     #endregion
