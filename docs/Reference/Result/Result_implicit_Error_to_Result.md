@@ -19,6 +19,11 @@ An [Error](../Error/Error.md) to implicitly convert.
 
 A new instance of the [Result](Result.md) record (without a value) that represents a failed operation with the provided [Error](../Error/Error.md).
 
+### Exceptions
+[ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+
+`error` is `null`.
+
 ## Remarks
 > [!NOTE]
 > This is a recommended way to create a new failure [Result](Result.md) instance (without a value). Another way is to use the [FromError(Error)](Result_FromError.md) static method.

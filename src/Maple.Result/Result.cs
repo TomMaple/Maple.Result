@@ -234,8 +234,7 @@ public sealed record Result<T> : IOperationResult
     private Result(Error error)
     {
         _value = default!;
-        Error = error
-                ?? throw new ArgumentNullException(nameof(error), "Error cannot be null!");
+        Error = error;
     }
 
     #endregion
@@ -379,6 +378,7 @@ public sealed record Result<T> : IOperationResult
     /// <exception cref="ArgumentNullException">If the <paramref name="error" /> is <see langword="null" />.</exception>
     public static implicit operator Result<T>(Error error)
     {
+        ArgumentNullException.ThrowIfNull(error);
         return new Result<T>(error);
     }
 
@@ -405,6 +405,7 @@ public sealed record Result<T> : IOperationResult
     /// <exception cref="ArgumentNullException">If the <paramref name="error" /> is <see langword="null" />.</exception>
     public static Result<T> FromError(Error error)
     {
+        ArgumentNullException.ThrowIfNull(error);
         return new Result<T>(error);
     }
 
