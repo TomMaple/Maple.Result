@@ -281,6 +281,9 @@ The error categories are based on the HTTP status codes—that’s why those hav
 
 Although, mapping to HTTP responses is not part of this library and can be done differently.
 
+> [!NOTE]
+> The status codes in the table are the **default** mapping of the `Maple.Result.Extensions.*` packages, which can be customized in both directions (category → status code and status code → category); see the [problem details format](https://github.com/TomMaple/Maple.Result/blob/main/docs/problem-details.md#category-and-status).
+
 | Category | Description | Solution | Example error | Corresponding HTTP status code |
 | -------- | ----------- | -------- | ------------- | ------------------------------ |
 | **Conflict** | The operation failed due to the data or state conflict (such as a unique constraint violation). Refresh data and try again. | Refresh the data, then try again if applicable. May require repeating the whole process. | Details have been modified. Please refresh the page. | `409` (Conflict) |
@@ -381,7 +384,7 @@ if (error.TryGetMetadata<int>("limit", out var limit))
 ```
 
 * `WithMetadata()` and `WithoutMetadata()` return a **copy**; the original error is not modified. Several entries can be added in one call: `WithMetadata(("limit", 100), ("remaining", 0))`.
-* Keys must not match the standard members `type`, `title`, `status`, `detail`, `instance`, `errors` and `detailTemplated` (case-insensitive); `WithMetadata()` throws an `ArgumentException` for them.
+* Keys must not match the standard members `type`, `title`, `status`, `detail`, `instance`, `errors` and `detailTemplated` (case-insensitive); `WithMetadata()` throws an `ArgumentException` for them. Each entry becomes a top-level member of the problem details object; see the [problem details format](https://github.com/TomMaple/Maple.Result/blob/main/docs/problem-details.md).
 * Keys should start with a letter, use letters, digits and `_`, and be at least 3 characters long (RFC 9457 recommendation, not enforced).
 * Values can be `null`. `TryGetMetadata<T>()` is strict: it returns `true` only when the stored value is a `T` (a stored `int` is not read as `long`), and never for a `null` value.
 
@@ -592,6 +595,7 @@ This library minimizes the amount of extension methods:
 * [Maple.Result](https://github.com/TomMaple/Maple.Result/blob/main/docs/Reference/namespace.md) — `Result`, `Error`, and other types
 * [Maple.Result.Extensions](https://github.com/TomMaple/Maple.Result/blob/main/docs/Reference/Extensions/namespace.md) — extension methods
 * [Maple.Result.Extensions.ValueTasks](https://github.com/TomMaple/Maple.Result/blob/main/docs/Reference/Extensions/ValueTasks/namespace.md) — `ValueTask`-based extension methods
+* [Problem details format](https://github.com/TomMaple/Maple.Result/blob/main/docs/problem-details.md) — how an `Error` is written as an RFC 9457 problem details object and read back
 
 ## See also
 * [Problem Details for HTTP APIs - RFC 7807 is dead, long live RFC 9457](https://blog.frankel.ch/problem-details-http-apis/)
