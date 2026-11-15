@@ -12,7 +12,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-namespace Maple.Result.Helpers;
+namespace Maple.Results.Helpers;
 
 /// <summary>
 ///     Awaits a <see cref="Task{TResult}" /> as <see cref="ConfiguredTaskAwaitable{TResult}" /> does and throws if its result is

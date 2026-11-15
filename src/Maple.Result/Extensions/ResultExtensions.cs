@@ -10,7 +10,7 @@
 
 using System;
 
-namespace Maple.Result.Extensions;
+namespace Maple.Results.Extensions;
 
 /// <summary>
 ///     The collection of extension methods for the <see cref="Result{T}" /> type.

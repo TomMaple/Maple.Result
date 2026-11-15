@@ -8,15 +8,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using Maple.Result.Helpers;
-using Maple.Result.Validators;
+using Maple.Results.Helpers;
+using Maple.Results.Validators;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
-namespace Maple.Result;
+namespace Maple.Results;
 
 /// <summary>
 ///     A mutable builder of an immutable <see cref="Error" />.

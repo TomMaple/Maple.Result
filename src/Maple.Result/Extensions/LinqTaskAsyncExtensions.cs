@@ -8,13 +8,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using Maple.Result.Helpers;
+using Maple.Results.Helpers;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-namespace Maple.Result.Extensions;
+namespace Maple.Results.Extensions;
 
 /// <summary>
 ///     The collection of LINQ extension methods for a <see cref="Result" /> instance that support asynchronous operations.

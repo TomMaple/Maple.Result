@@ -12,7 +12,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
-namespace Maple.Result.Helpers;
+namespace Maple.Results.Helpers;
 
 /// <summary>
 ///     Checks what the functions passed to the extension methods, and the asynchronous operations they extend, return. A <see langword="null" />

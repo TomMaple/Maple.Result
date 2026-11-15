@@ -13,7 +13,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
-namespace Maple.Result;
+namespace Maple.Results;
 
 /// <summary>
 ///     Defines the contract for an operation result, providing information about success or failure and any associated error details.

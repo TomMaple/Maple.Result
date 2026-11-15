@@ -11,7 +11,7 @@
 using System;
 using System.Text;
 
-namespace Maple.Result.Helpers;
+namespace Maple.Results.Helpers;
 
 /// <summary>
 ///     Content-based (order-independent) equality and hashing for string-keyed dictionaries, and their text representation.

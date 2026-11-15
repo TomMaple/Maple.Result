@@ -8,13 +8,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using Maple.Result.Helpers;
+using Maple.Results.Helpers;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-namespace Maple.Result.Extensions.ValueTasks;
+namespace Maple.Results.Extensions.ValueTasks;
 
 /// <summary>
 ///     The collection of LINQ extension methods for a <see cref="Result" /> instance that support asynchronous operations represented by
@@ -24,8 +24,8 @@ namespace Maple.Result.Extensions.ValueTasks;
 ///     These methods enable fluent chaining of asynchronous operations and using LINQ query syntax with asynchronous workflows.
 ///     They help simplify error handling and reduce boilerplate code when working with <see cref="Result{T}" />-based asynchronous workflows.
 ///     <para>
-///         These methods are declared in the <c>Maple.Result.Extensions.ValueTasks</c> namespace, separately from their
-///         <see cref="System.Threading.Tasks.Task" />-based counterparts in <c>Maple.Result.Extensions</c>, because both sets declare the same method names and
+///         These methods are declared in the <c>Maple.Results.Extensions.ValueTasks</c> namespace, separately from their
+///         <see cref="System.Threading.Tasks.Task" />-based counterparts in <c>Maple.Results.Extensions</c>, because both sets declare the same method names and
 ///         an asynchronous lambda is convertible to a <c>Func&lt;Task&gt;</c> as well as to a <c>Func&lt;ValueTask&gt;</c> delegate.
 ///         Importing only one of these namespaces keeps such calls unambiguous.
 ///     </para>

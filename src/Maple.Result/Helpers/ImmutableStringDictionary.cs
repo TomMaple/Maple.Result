@@ -11,7 +11,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace Maple.Result.Helpers;
+namespace Maple.Results.Helpers;
 
 /// <summary>
 ///     An immutable dictionary of string-keyed values, with keys compared ordinally: a read-only wrapper of a private copy that no other code

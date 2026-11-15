@@ -10,7 +10,7 @@
 
 using System;
 
-namespace Maple.Result;
+namespace Maple.Results;
 
 /// <summary>
 ///     The structure for an individual error occurrence that contains a problem detail.
