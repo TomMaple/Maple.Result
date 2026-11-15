@@ -240,4 +240,56 @@ public class ResultTryGetUnitTests
     }
 
     #endregion
+
+    #region IOperationResult, TryGetError
+
+    [Fact]
+    public void TryGetError_ResultFailureAsInterface_ReturnsTrueAndTheError()
+    {
+        // Arrange
+        IOperationResult sut = Result.FromError(TestError);
+
+        // Act
+        var result = sut.TryGetError(out var error);
+
+        // Assert
+        result.ShouldBeTrue();
+        error.ShouldBe(TestError);
+    }
+
+    [Fact]
+    public void TryGetError_ResultTSuccessAsInterface_ReturnsFalseAndNull()
+    {
+        // Arrange
+        IOperationResult sut = Result.FromValue(42);
+
+        // Act
+        var result = sut.TryGetError(out var error);
+
+        // Assert
+        result.ShouldBeFalse();
+        error.ShouldBeNull();
+    }
+
+    [Fact]
+    public void TryGetError_InterfaceEarlyReturn_ErrorIsNotNull()
+    {
+        // Act
+        var success = Describe(Result.FromValue(42));
+        var failure = Describe(Result<int>.FromError(TestError));
+
+        // Assert
+        success.ShouldBe("ok");
+        failure.ShouldBe("Test title");
+
+        static string Describe(IOperationResult source)
+        {
+            if (source.TryGetError(out var error))
+                return error.Title;
+
+            return "ok";
+        }
+    }
+
+    #endregion
 }
