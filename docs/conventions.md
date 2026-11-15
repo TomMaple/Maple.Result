@@ -22,6 +22,17 @@
 	* `dotnet test`,
 	* `dotnet build src/Maple.Result -c Release -p:IsAotCompatible=true`: no warnings,
 	* `dotnet format --verify-no-changes`.
+1. Pull requests:
+	* The title follows the commit message rules: a squash merge turns the title into the subject of the commit on
+	  `main` and the description into its body, so the release notes and the version bump come from them.
+	* A breaking change is marked with `!` in the title (e.g., `feat!: …`) or a `BREAKING CHANGE:` footer at the end of
+	  the description; a `!` on a branch commit alone is lost in a squash merge.
+	* The description links the issue with `Closes #…`.
+1. Merging:
+	* Squash and merge by default, including contributor and Dependabot pull requests.
+	* Create a merge commit only for your own branch whose every commit is a signed conventional commit; the commits
+	  then reach `main` unchanged.
+	* Rebase merging is disabled.
 
 ## Releasing
 Pushes to `main` never publish. The CI workflow only builds, tests and uploads a `X.Y.Z-ci.N` package as a workflow artifact.
