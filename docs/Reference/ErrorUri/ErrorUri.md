@@ -50,6 +50,7 @@ var error = Error.Failure(ErrorUri.None(), "The operation could not be completed
 | [GetHashCode()](ErrorUri_GetHashCode.md) | Returns a hash code that is consistent with [Equals(ErrorUri)](ErrorUri_Equals.md). |
 | [Locator(String)](ErrorUri_Locator.md) | Creates a new instance of the [ErrorUri](ErrorUri.md) record with a *URI Locator* value. |
 | [None()](ErrorUri_None.md) |  Creates a new instance of the [ErrorUri](ErrorUri.md) record with the `about:blank` value. |
+| [Other(String)](ErrorUri_Other.md) | Creates a new instance of the [ErrorUri](ErrorUri.md) record with an absolute *URI* whose scheme has no factory method of its own (e.g., `mailto:`). |
 | [Parse(String)](ErrorUri_Parse.md) | Creates a new instance of the [ErrorUri](ErrorUri.md) record of the kind that the value has (e.g., a *URI Tag* for `tag:…`). |
 | [Relative(String)](ErrorUri_Relative.md) | Creates a new instance of the [ErrorUri](ErrorUri.md) record with a relative *URI* reference with the full path. |
 | [Tag(String)](ErrorUri_Tag.md) | Creates a new instance of the [ErrorUri](ErrorUri.md) record with a *URI Tag* value. |
@@ -67,6 +68,7 @@ var error = Error.Failure(ErrorUri.None(), "The operation could not be completed
 | [Tag(String)](ErrorUri_Tag.md) | A `tag:` *URI* (*RFC 4151*) | A unique, non-dereferenceable type. |
 | [Urn(String)](ErrorUri_Urn.md) | A `urn:` *URI* (*RFC 8141*) | A persistent, non-dereferenceable type or instance. |
 | [Relative(String)](ErrorUri_Relative.md) | A relative reference with the full path (`/…`) | An instance resolved against the base *URI* of the response; *RFC 9457* recommends absolute *URI*s when possible. |
+| [Other(String)](ErrorUri_Other.md) | An absolute *URI* with any other scheme (e.g., `mailto:`) | A type or instance read from another service; prefer the factories above to create an error. |
 
 > [!NOTE]
 > A default [ErrorUri](ErrorUri.md) instance is equivalent to the one returned by [None()](ErrorUri_None.md): its [Value](ErrorUri_Value.md) is `about:blank` and it compares equal to `ErrorUri.None()`.

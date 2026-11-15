@@ -59,8 +59,7 @@ public readonly record struct ErrorUri : IParsable<ErrorUri>
     private const string NoneValue = "about:blank";
 
     private const string UnknownKindMessage =
-        "The error URI is not valid. Expected ‘about:blank’, a relative reference starting with ‘/’, " +
-        "or a ‘tag:’, ‘urn:’, ‘http:’ or ‘https:’ URI.";
+        "The error URI is not valid. Expected ‘about:blank’, a relative reference starting with ‘/’, or an absolute URI.";
 
     private readonly string? _value;
 
@@ -190,6 +189,39 @@ public readonly record struct ErrorUri : IParsable<ErrorUri>
         return new ErrorUri(relativeReference);
     }
 
+    /// <summary>
+    ///     Returns a new instance of the <see cref="ErrorUri" /> with an absolute <i>URI</i> whose scheme has no factory method of its own
+    ///     (e.g., <c>mailto:</c>, <c>ftp:</c> or a custom scheme).
+    /// </summary>
+    /// <param name="uri">
+    ///     The absolute <i>URI</i> (<i>RFC 3986</i>, section 3), e.g., <c>mailto:support@example.com</c>; non-ASCII characters must be
+    ///     percent-encoded.
+    /// </param>
+    /// <returns>A new instance of the <see cref="ErrorUri" /> with the specified <i>URI</i>.</returns>
+    /// <remarks>
+    ///     <para>
+    ///         <i>RFC 9457</i> allows any <i>URI</i> reference as the type and the instance of a problem, and requires consumers to use the type
+    ///         as its identifier. This method keeps the values that other services write with other schemes; to create an error, prefer
+    ///         <see cref="Locator" />, <see cref="Tag" />, <see cref="Urn" /> or <see cref="Relative" />.
+    ///     </para>
+    ///     <para>
+    ///         The schemes <c>about</c>, <c>tag</c>, <c>urn</c>, <c>http</c> and <c>https</c> (in any case) are rejected: use their factory
+    ///         methods, or <see cref="Parse" /> when the kind is not known. The value is stored as passed: white space, characters that
+    ///         would need escaping, invalid percent-encoding and a second <c>#</c> are rejected.
+    ///     </para>
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">If the <paramref name="uri" /> is <see langword="null" />.</exception>
+    /// <exception cref="UriFormatException">
+    ///     If the <paramref name="uri" /> is not a valid absolute <i>URI</i>, or its scheme has a factory method of its own.
+    /// </exception>
+    public static ErrorUri Other(string uri)
+    {
+        ArgumentNullException.ThrowIfNull(uri);
+        UriOtherValidator.Validate(uri);
+
+        return new ErrorUri(uri);
+    }
+
     #region parsing
 
     /// <summary>
@@ -197,15 +229,16 @@ public readonly record struct ErrorUri : IParsable<ErrorUri>
     ///     kind.
     /// </summary>
     /// <param name="value">
-    ///     The <i>URI</i>: <c>about:blank</c>, a relative reference starting with <c>/</c>, or a <c>tag:</c>, <c>urn:</c>, <c>http:</c> or
-    ///     <c>https:</c> <i>URI</i>.
+    ///     The <i>URI</i>: <c>about:blank</c>, a relative reference starting with <c>/</c>, or an absolute <i>URI</i> (e.g., <c>tag:</c>,
+    ///     <c>urn:</c>, <c>https:</c> or <c>mailto:</c>).
     /// </param>
     /// <returns>A new instance of the <see cref="ErrorUri" /> with the specified value.</returns>
     /// <remarks>
     ///     <para>
     ///         The kind is detected from the value: <c>about:blank</c> returns <see cref="None" />; a value starting with <c>/</c> is passed to
     ///         <see cref="Relative" />; the scheme <c>tag</c> to <see cref="Tag" />, <c>urn</c> to <see cref="Urn" />, and <c>http</c> or
-    ///         <c>https</c> to <see cref="Locator" />. Any other value is rejected.
+    ///         <c>https</c> to <see cref="Locator" />, and any other scheme to <see cref="Other" />. A value without a scheme (e.g.,
+    ///         <c>out-of-credit</c>) and an <c>about</c> <i>URI</i> other than <c>about:blank</c> are rejected.
     ///     </para>
     ///     <para>
     ///         Schemes are case-insensitive (<i>RFC 3986</i>, section 3.1), so <c>TAG:…</c> is a <i>URI Tag</i>; the value is stored as passed.
@@ -228,6 +261,7 @@ public readonly record struct ErrorUri : IParsable<ErrorUri>
             Kind.Tag => Tag(value),
             Kind.Urn => Urn(value),
             Kind.Locator => Locator(value),
+            Kind.Other => Other(value),
             _ => throw new UriFormatException(UnknownKindMessage)
         };
     }
@@ -256,6 +290,7 @@ public readonly record struct ErrorUri : IParsable<ErrorUri>
             Kind.Tag => UriTagValidator.IsValid(value),
             Kind.Urn => UriUrnValidator.IsValid(value),
             Kind.Locator => UriLocatorValidator.IsValid(value),
+            Kind.Other => UriOtherValidator.IsValid(value),
             _ => false
         };
 
@@ -360,7 +395,28 @@ public readonly record struct ErrorUri : IParsable<ErrorUri>
         if (scheme.Equals("http", StringComparison.OrdinalIgnoreCase) || scheme.Equals("https", StringComparison.OrdinalIgnoreCase))
             return Kind.Locator;
 
-        return Kind.Unknown;
+        // An "about" URI other than "about:blank" has no kind; any other syntactically valid scheme is passed to Other.
+        if (scheme.Equals("about", StringComparison.OrdinalIgnoreCase) || !IsScheme(scheme))
+            return Kind.Unknown;
+
+        return Kind.Other;
+    }
+
+    /// <summary>
+    ///     Whether the text is a scheme: <c>ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )</c> (<i>RFC 3986</i>, section 3.1).
+    /// </summary>
+    private static bool IsScheme(ReadOnlySpan<char> text)
+    {
+        if (!char.IsAsciiLetter(text[0]))
+            return false;
+
+        foreach (var character in text[1..])
+        {
+            if (!char.IsAsciiLetterOrDigit(character) && character is not ('+' or '-' or '.'))
+                return false;
+        }
+
+        return true;
     }
 
     private enum Kind
@@ -370,7 +426,8 @@ public readonly record struct ErrorUri : IParsable<ErrorUri>
         Relative,
         Tag,
         Urn,
-        Locator
+        Locator,
+        Other
     }
 
     #endregion
