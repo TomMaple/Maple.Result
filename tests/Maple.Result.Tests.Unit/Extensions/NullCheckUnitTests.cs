@@ -144,9 +144,13 @@ public class NullCheckUnitTests
             yield break;
 
         if (IsRequired(returnType))
+        {
             yield return NullValue;
+        }
         else if (returnType == typeof(Task))
+        {
             yield return NullTask;
+        }
         else if (returnType.IsGenericType && returnType.GetGenericTypeDefinition() == typeof(Task<>))
         {
             yield return NullTask;
@@ -155,7 +159,9 @@ public class NullCheckUnitTests
                 yield return NullTaskResult;
         }
         else if (returnType.IsGenericType && returnType.GetGenericTypeDefinition() == typeof(ValueTask<>) && IsRequired(returnType.GetGenericArguments()[0]))
+        {
             yield return NullTaskResult;
+        }
     }
 
     /// <summary>The types that a function may not return as <see langword="null" />.</summary>

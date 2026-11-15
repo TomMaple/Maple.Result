@@ -532,9 +532,7 @@ public sealed class ErrorBuilder
     private static void ValidateCategory(ErrorCategory category)
     {
         if (!Enum.IsDefined(category))
-        {
             throw new ArgumentOutOfRangeException(nameof(category), category, $"The error category ‘{category}’ is not defined.");
-        }
     }
 
     #endregion

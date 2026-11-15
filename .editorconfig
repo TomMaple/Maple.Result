@@ -40,6 +40,19 @@ resharper_keep_blank_lines_in_code = 1
 resharper_keep_blank_lines_in_declarations = 1
 
 #
+# Braces in if, else and loops: required when a condition or a body spans several lines (in an if-else chain, when
+# any part does); otherwise left out, e.g. an if without else whose condition and body each fit on one line.
+# Roslyn (IDE0011) only adds missing braces; Rider / ReSharper also removes the redundant ones.
+#
+csharp_prefer_braces = when_multiline
+dotnet_diagnostic.IDE0011.severity = warning
+resharper_braces_for_for = required_for_multiline
+resharper_braces_for_foreach = required_for_multiline
+resharper_braces_for_ifelse = required_for_multiline
+resharper_braces_for_while = required_for_multiline
+resharper_braces_redundant = true
+
+#
 # Code style
 #
 csharp_style_namespace_declarations = file_scoped
