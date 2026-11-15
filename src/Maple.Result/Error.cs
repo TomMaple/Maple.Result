@@ -40,7 +40,7 @@ public sealed record Error
 
     internal static readonly ReadOnlyCollection<ErrorDetail> EmptyErrorDetails = new([]);
 
-    internal static readonly ReadOnlyCopy EmptyMetadata = new(new Dictionary<string, object?>(StringComparer.Ordinal));
+    internal static readonly ImmutableStringDictionary EmptyMetadata = new(new Dictionary<string, object?>(StringComparer.Ordinal));
 
     #endregion
 
@@ -55,7 +55,7 @@ public sealed record Error
     /// </remarks>
     internal Error(ErrorCategory category, string typeUri, string title, string? detail,
         TemplatedMessage? detailTemplated, string? instanceUri, ReadOnlyCollection<ErrorDetail> errorDetails,
-        ReadOnlyCopy metadata)
+        ImmutableStringDictionary metadata)
     {
         Category = category;
         TypeUri = typeUri;
@@ -197,7 +197,7 @@ public sealed record Error
     /// </remarks>
     public IReadOnlyDictionary<string, object?> Metadata => MetadataDictionary;
 
-    internal ReadOnlyCopy MetadataDictionary { get; }
+    internal ImmutableStringDictionary MetadataDictionary { get; }
 
     /// <summary>
     ///     Returns a new <see cref="ErrorBuilder" /> initialized with the members of the current error.

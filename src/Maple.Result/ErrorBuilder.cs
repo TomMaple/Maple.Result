@@ -50,7 +50,7 @@ public sealed class ErrorBuilder
     // until the first change, which copies it into the pending, mutable collection.
     private ReadOnlyCollection<ErrorDetail> _builtErrorDetails;
     private List<ErrorDetail>? _pendingErrorDetails;
-    private ReadOnlyCopy _builtMetadata;
+    private ImmutableStringDictionary _builtMetadata;
     private Dictionary<string, object?>? _pendingMetadata;
 
     #region constructors
@@ -510,7 +510,7 @@ public sealed class ErrorBuilder
         {
             _builtMetadata = _pendingMetadata.Count == 0
                 ? Error.EmptyMetadata
-                : new ReadOnlyCopy(new Dictionary<string, object?>(_pendingMetadata, StringComparer.Ordinal));
+                : new ImmutableStringDictionary(new Dictionary<string, object?>(_pendingMetadata, StringComparer.Ordinal));
 
             _pendingMetadata = null;
         }

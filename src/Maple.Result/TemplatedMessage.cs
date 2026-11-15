@@ -77,7 +77,7 @@ public sealed record TemplatedMessage
     private TemplatedMessage(Validated validated)
     {
         TemplateId = validated.TemplateId;
-        ParamsCopy = validated.Params;
+        ParamsDictionary = validated.Params;
     }
 
     #endregion
@@ -94,9 +94,9 @@ public sealed record TemplatedMessage
     ///     A read-only dictionary built from the parameters passed to the constructor, with keys compared ordinally (case-sensitive);
     ///     <see langword="null" /> when there are no parameters, so it is never empty. Values may be <see langword="null" />.
     /// </remarks>
-    public IReadOnlyDictionary<string, object?>? Params => ParamsCopy;
+    public IReadOnlyDictionary<string, object?>? Params => ParamsDictionary;
 
-    internal ReadOnlyCopy? ParamsCopy { get; }
+    internal ImmutableStringDictionary? ParamsDictionary { get; }
 
     #region internal factory methods
 
@@ -157,7 +157,7 @@ public sealed record TemplatedMessage
         return other is not null
                && EqualityContract == other.EqualityContract
                && TemplateId == other.TemplateId
-               && DictionaryHelper.Equal(ParamsCopy, other.ParamsCopy);
+               && DictionaryHelper.Equal(ParamsDictionary, other.ParamsDictionary);
     }
 
     /// <summary>
@@ -172,8 +172,8 @@ public sealed record TemplatedMessage
         hashCode.Add(EqualityContract);
         hashCode.Add(TemplateId);
 
-        if (ParamsCopy is not null)
-            hashCode.Add(DictionaryHelper.GetHashCode(ParamsCopy));
+        if (ParamsDictionary is not null)
+            hashCode.Add(DictionaryHelper.GetHashCode(ParamsDictionary));
 
         return hashCode.ToHashCode();
     }
@@ -189,8 +189,8 @@ public sealed record TemplatedMessage
         builder.Append("TemplateId = ").Append(TemplateId);
         builder.Append(", Params = ");
 
-        if (ParamsCopy is not null)
-            DictionaryHelper.Append(builder, ParamsCopy);
+        if (ParamsDictionary is not null)
+            DictionaryHelper.Append(builder, ParamsDictionary);
 
         return true;
     }
@@ -206,7 +206,7 @@ public sealed record TemplatedMessage
             return new Validated(templateId, null);
 
         // The Params of another message (or the Metadata of an error) never change, so they are shared instead of copied.
-        if (parameters is ReadOnlyCopy shared)
+        if (parameters is ImmutableStringDictionary shared)
             return new Validated(templateId, shared.Count == 0 ? null : shared);
 
         // No dictionary for an empty collection; the size is known up front for most collections.
@@ -221,7 +221,7 @@ public sealed record TemplatedMessage
             Add(dictionary, key, value, parametersParameterName);
         }
 
-        var copy = dictionary is null ? null : new ReadOnlyCopy(dictionary);
+        var copy = dictionary is null ? null : new ImmutableStringDictionary(dictionary);
 
         return new Validated(templateId, copy);
     }
@@ -238,7 +238,7 @@ public sealed record TemplatedMessage
         foreach (var (key, value) in parameters)
             Add(dictionary, key, value, parametersParameterName);
 
-        var copy = new ReadOnlyCopy(dictionary);
+        var copy = new ImmutableStringDictionary(dictionary);
 
         return new Validated(templateId, copy);
     }
@@ -259,7 +259,7 @@ public sealed record TemplatedMessage
             parametersParameterName);
     }
 
-    private readonly record struct Validated(string TemplateId, ReadOnlyCopy? Params);
+    private readonly record struct Validated(string TemplateId, ImmutableStringDictionary? Params);
 
     #endregion
 }
