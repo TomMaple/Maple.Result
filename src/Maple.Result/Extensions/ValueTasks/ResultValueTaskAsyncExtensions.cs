@@ -29,8 +29,8 @@ public static class ResultValueTaskAsyncExtensions
     ///     Asynchronously converts a value task that produces a generic result into a non-generic result, preserving success or <see cref="Error" />.
     /// </summary>
     /// <remarks>
-    ///     Use this method to convert a <see cref="ValueTask{TResult}" /> that represents <see cref="Result{T}" /> to a <see cref="Result{ValueTask}" /> when
-    ///     the value is not needed but the success or error state with the original <see cref="Error" /> must be preserved.
+    ///     Use this method to convert a <see cref="ValueTask{TResult}" /> of a <see cref="Result{T}" /> to a <see cref="ValueTask{TResult}" /> of a
+    ///     <see cref="Result" /> when the value is not needed but the success or error state with the original <see cref="Error" /> must be preserved.
     /// </remarks>
     /// <typeparam name="T">The type of the value contained in the original result.</typeparam>
     /// <param name="resultTask">The asynchronous operation to be executed and which result is to be inspected.</param>
