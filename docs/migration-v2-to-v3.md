@@ -391,6 +391,7 @@ The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an
 * **`ErrorUri.Urn()`** and **`ErrorUri.Relative()`** — `urn:` types and instances (*RFC 8141*), and relative references with the full path (e.g., the *RFC 9457* example `/account/12345/msgs/abc`). See [ErrorUri](Reference/ErrorUri/ErrorUri.md).
 * **Mixed LINQ queries** — synchronous and asynchronous `from` clauses can be mixed in one query (e.g., `from user in GetUserAsync(id) from address in GetAddress(user) select …`); the query is then asynchronous and has to be awaited. See [SelectMany](Reference/Extensions/LinqTaskAsyncExtensions_SelectMany.md).
 * **`ResultConfiguration.ContinueOnCapturedContext`** — a global default for the `continueOnCapturedContext` argument of the asynchronous extension methods and for the LINQ query operators; see above.
+* **Short debugger display** — the debugger shows an `Error` as its category and title (e.g., `Validation "Invalid request" (3 details)`) and a failed result as `Error: NotFound "Missing"`; `ToString()` stays complete for the logs.
 * **Native AOT and trimming** — the core package no longer contains JSON code and produces no trimming or AOT warnings.
 
 ## Search-and-replace reference

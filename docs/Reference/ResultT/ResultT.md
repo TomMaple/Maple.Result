@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Result](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.cs#L177" target="_blank">Result.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.cs#L195" target="_blank">Result.cs</a>
 
 Represents the outcome of an operation that can either succeed or fail with an [Error](../Error/Error.md).
 
@@ -87,7 +87,7 @@ The default serializers ([System.Text.Json](https://learn.microsoft.com/dotnet/a
 
 Reading a [Result&lt;T&gt;](ResultT.md) back requires a dedicated converter, because the type has no public constructor or setters. Without one, deserialization fails.
 
-`ToString()` writes only the [Value](ResultT_Value.md) of a successful result (e.g., `Result { Value = 42 }`) or the [Error](ResultT_Error.md) of a failed one (`Result { Error = Error { … } }`); it never throws.
+`ToString()` writes only the [Value](ResultT_Value.md) of a successful result (e.g., `Result { Value = 42 }`) or the [Error](ResultT_Error.md) of a failed one (`Result { Error = Error { … } }`); it never throws. The debugger shows a failed result in a short form, e.g., `Error: NotFound "Missing"`.
 
 ## Properties
 | Name | Description |
