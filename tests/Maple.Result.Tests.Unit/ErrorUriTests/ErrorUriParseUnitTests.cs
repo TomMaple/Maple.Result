@@ -216,4 +216,71 @@ public class ErrorUriParseUnitTests
     }
 
     #endregion
+
+    #region IParsable<ErrorUri>
+
+    [Theory]
+    [MemberData(nameof(ValidValues))]
+    public void IParsableParse_ValidValue_ReturnsTheErrorUriOfItsKind(string value, ErrorUri expected)
+    {
+        // Act
+        var result = ParseAs<ErrorUri>(value);
+
+        // Assert
+        result.ShouldBe(expected);
+    }
+
+    [Theory]
+    [MemberData(nameof(UnknownKinds))]
+    public void IParsableParse_UnknownKind_ThrowsUriFormatException(string value)
+    {
+        // Act
+        var exception = Record.Exception(() => ParseAs<ErrorUri>(value));
+
+        // Assert
+        exception.ShouldBeOfType<UriFormatException>();
+    }
+
+    [Theory]
+    [MemberData(nameof(ValidValues))]
+    public void IParsableTryParse_ValidValue_ReturnsTrueAndTheErrorUriOfItsKind(string value, ErrorUri expected)
+    {
+        // Act
+        var parsed = TryParseAs<ErrorUri>(value, out var result);
+
+        // Assert
+        parsed.ShouldBeTrue();
+        result.ShouldBe(expected);
+    }
+
+    [Theory]
+    [MemberData(nameof(UnknownKinds))]
+    public void IParsableTryParse_UnknownKind_ReturnsFalse(string value)
+    {
+        // Act
+        var parsed = TryParseAs<ErrorUri>(value, out _);
+
+        // Assert
+        parsed.ShouldBeFalse();
+    }
+
+    #endregion
+
+    #region helper methods
+
+    /// <summary>Parses through the static members of <see cref="IParsable{TSelf}" />, as generic code (e.g., ASP.NET Core binding) does.</summary>
+    private static T ParseAs<T>(string value)
+        where T : IParsable<T>
+    {
+        return T.Parse(value, null);
+    }
+
+    /// <inheritdoc cref="ParseAs{T}" />
+    private static bool TryParseAs<T>(string? value, out T result)
+        where T : IParsable<T>
+    {
+        return T.TryParse(value, null, out result!);
+    }
+
+    #endregion
 }
