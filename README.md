@@ -208,7 +208,7 @@ var result = userResult.ToResult();
 to convert `Result<T>` to `Result` if you need to return a non-generic result without a value.
 
 > [!NOTE]
-> A successful `Result<T>` normally carries a non-null value. When `T` is nullable—a nullable reference type or `Nullable<T>` (e.g., `Result<string?>` or `Result<int?>`)—a `null` is a valid successful value. Because a successful `null` value and a default value carried by a failed result (e.g., `0` for a `Result<int>`) can both look “empty”, always use `IsSuccess()` to distinguish success from failure rather than checking the value against `null`.
+> A successful `Result<T>` normally carries a non-null value. When `T` is nullable—a nullable reference type or `Nullable<T>` (e.g., `Result<string?>` or `Result<int?>`)—a `null` is a valid successful value. Because a successful `null` value and a default value carried by a failed result (e.g., `0` for a `Result<int>`) can both look “empty”, always use `IsSuccess` (or `IsError`) to distinguish success from failure rather than checking the value against `null`.
 
 ### Example
 ```csharp
@@ -442,7 +442,7 @@ See more: [Error](https://github.com/TomMaple/Maple.Result/blob/main/docs/Refere
 
 ## Controlling the execution flow
 You can use:
-* `IsSuccess()` method of the `Result`,
+* the `IsSuccess` and `IsError` properties of the `Result` (e.g., the early return `if (result.IsError) return result.Error;`),
 * extension methods:
   * `IfSuccess()`, `IfSuccessAsync()`,
   * `IfError()`, `IfErrorAsync()`,
@@ -554,6 +554,7 @@ Check:
 * **More checks.** The title of an error must not be `null`, empty or white-space only; the category must be a defined `ErrorCategory` value; `TemplatedMessage.TemplateId` must not be blank; `ErrorDetail.Detail` must not be `null`.
 * **JSON of a failed `Result<T>`.** It now always contains `Value` with the default value of `T`, e.g., `{"Value":0,"Error":{…}}` for a `Result<int>`, or `"Value":null` for a reference type. Previously a failed result omitted `Value`.
 * `Result.Success()` returns the same, shared instance on every call.
+* **`IsSuccess` is a property, and `IsError` is new.** Replace `result.IsSuccess()` with `result.IsSuccess`, and `!result.IsSuccess()` with `result.IsError`. The JSON written without a converter now contains both properties.
 * **`continueOnCapturedContext` is `bool?`.** The parameter of the asynchronous extension methods is now `bool? continueOnCapturedContext = null`; `null` uses the new global `ResultConfiguration.ContinueOnCapturedContext` (`false` by default, so the behaviour is unchanged). Source-compatible; recompile code that calls the methods.
 * **`IResult` renamed to `IOperationResult`.** The common interface of `Result` and `Result<T>` no longer clashes with `Microsoft.AspNetCore.Http.IResult` (CS0104 in ASP.NET Core projects); its members did not change.
 * **`TemplatedMessage` constructors and named values.** `TemplatedMessage` is no longer a positional record: it takes the parameters as key-value pairs (e.g., a dictionary) or as tuples, and has no `Deconstruct`. Repeated or `null` parameter names throw a clear exception, and named values passed without a template id throw instead of being silently dropped. `WithErrorDetail` takes `detailTemplateId` / `detailNamedValues`, like the factory methods.

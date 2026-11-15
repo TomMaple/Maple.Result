@@ -151,6 +151,7 @@
   <Folder Name="/docs/Reference/IOperationResult/">
     <File Path="docs/Reference/IOperationResult/IOperationResult.md" />
     <File Path="docs/Reference/IOperationResult/IOperationResult_Error.md" />
+    <File Path="docs/Reference/IOperationResult/IOperationResult_IsError.md" />
     <File Path="docs/Reference/IOperationResult/IOperationResult_IsSuccess.md" />
   </Folder>
   <Folder Name="/docs/Reference/Result/">
@@ -159,6 +160,7 @@
     <File Path="docs/Reference/Result/Result_FromError.md" />
     <File Path="docs/Reference/Result/Result_FromValue.md" />
     <File Path="docs/Reference/Result/Result_implicit_Error_to_Result.md" />
+    <File Path="docs/Reference/Result/Result_IsError.md" />
     <File Path="docs/Reference/Result/Result_IsSuccess.md" />
     <File Path="docs/Reference/Result/Result_Success.md" />
   </Folder>
@@ -173,6 +175,7 @@
     <File Path="docs/Reference/ResultT/ResultT_FromValue.md" />
     <File Path="docs/Reference/ResultT/ResultT_implicit_Error_to_ResultT.md" />
     <File Path="docs/Reference/ResultT/ResultT_implicit_T_to_ResultT.md" />
+    <File Path="docs/Reference/ResultT/ResultT_IsError.md" />
     <File Path="docs/Reference/ResultT/ResultT_IsSuccess.md" />
     <File Path="docs/Reference/ResultT/ResultT_Value.md" />
   </Folder>

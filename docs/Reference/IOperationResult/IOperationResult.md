@@ -16,11 +16,8 @@ Derived [Maple.Result.Result](../Result/Result.md), [Maple.Result.Result&lt;T&gt
 | Name | Description |
 | ---- | ----------- |
 | [Error](IOperationResult_Error.md) | Gets the error details if the result represents a failure. |
-
-## Methods
-| Name | Description |
-| ---- | ----------- |
-| [IsSuccess()](IOperationResult_IsSuccess.md) | Returns an indicator whether the result represents a successful operation. |
+| [IsError](IOperationResult_IsError.md) | Gets a value indicating whether the result represents a failed operation. |
+| [IsSuccess](IOperationResult_IsSuccess.md) | Gets a value indicating whether the result represents a successful operation. |
 
 ## Extension Methods
 | Name | Description |

@@ -19,6 +19,7 @@ Version 3.0 makes `Result`, `Result<T>` and `Error` **immutable** and **always v
   * [Other behaviour changes](#other-behaviour-changes)
   * [`continueOnCapturedContext` is `bool?`](#continueoncapturedcontext-is-bool)
   * [`IResult` renamed to `IOperationResult`](#iresult-renamed-to-ioperationresult)
+  * [`IsSuccess` is a property; new `IsError`](#issuccess-is-a-property-new-iserror)
   * [`IfSuccess` and `Match` with an `Error` or a task](#ifsuccess-and-match-with-an-error-or-a-task)
   * [`IfError` and `Match` with an error action that returns a task](#iferror-and-match-with-an-error-action-that-returns-a-task)
   * [LINQ queries that select a task](#linq-queries-that-select-a-task)
@@ -40,6 +41,7 @@ Version 3.0 makes `Result`, `Result<T>` and `Error` **immutable** and **always v
 10. Replace the LINQ queries whose `select` returns a task with an asynchronous `from` clause or `IfSuccessAsync` (see [LINQ queries that select a task](#linq-queries-that-select-a-task)).
 11. Make sure the functions passed to the extension methods never return `null` where a result, an `Error` or a task is expected (see [Null results and null arguments of the extension methods](#null-results-and-null-arguments-of-the-extension-methods)).
 12. Upgrade the `Maple.Result.Extensions.*` packages together with `Maple.Result` (see [Extension packages](#extension-packages)).
+13. Replace `result.IsSuccess()` with `result.IsSuccess`, and `!result.IsSuccess()` with `result.IsError` (see [`IsSuccess` is a property; new `IsError`](#issuccess-is-a-property-new-iserror)).
 
 ## Breaking changes
 
@@ -162,13 +164,14 @@ private static ErrorUri ToErrorUri(string value) =>
 > `Maple.Json.ObjectAsPrimitiveConverter`, which the 2.x documentation suggested for reading metadata values, is no longer relevant to `Maple.Result`.
 
 ### Changed JSON output
-The JSON written by the default serializers changed in two ways:
+The JSON written by the default serializers changed in three ways:
 
 | | 2.x | 3.0 |
 | --- | --- | --- |
 | Failed `Result<int>` | `{"Error":{…}}` | `{"Value":0,"Error":{…}}` |
 | Failed `Result<string>` | `{"Error":{…}}` | `{"Value":null,"Error":{…}}` |
 | `Error` | no `Metadata` member | always has `"Metadata":{…}` (`{}` when empty) |
+| `Result` and `Result<T>` | no `IsSuccess` member | always has `"IsSuccess":…,"IsError":…`, e.g., `{"Value":128,"Error":null,"IsSuccess":true,"IsError":false}` |
 
 A failed `Result<T>` now always writes `Value` with the default value of `T`. Clients must use `Error` (not `Value`) to tell a failure from a success. Update any snapshot tests or contract tests that compare the JSON.
 
@@ -250,7 +253,7 @@ ResultConfiguration.ContinueOnCapturedContext = true;
 ```
 
 ### `IResult` renamed to `IOperationResult`
-The common interface of `Result` and `Result<T>` was renamed from `IResult` to [`IOperationResult`](Reference/IOperationResult/IOperationResult.md). Its members (`Error`, `IsSuccess()`) did not change.
+The common interface of `Result` and `Result<T>` was renamed from `IResult` to [`IOperationResult`](Reference/IOperationResult/IOperationResult.md). Its `Error` property did not change; `IsSuccess()` became a property and `IsError` was added (see [`IsSuccess` is a property; new `IsError`](#issuccess-is-a-property-new-iserror)).
 
 The old name clashed with `Microsoft.AspNetCore.Http.IResult`. ASP.NET Core web projects import `Microsoft.AspNetCore.Http` implicitly, and Minimal API endpoints commonly return `IResult`, so adding `using Maple.Result;` caused CS0104 (ambiguous reference) in endpoint signatures. If you added an alias to work around it (e.g., `using IResult = Microsoft.AspNetCore.Http.IResult;`), you can remove it.
 
@@ -261,6 +264,23 @@ void Log(Maple.Result.IResult result) { … }
 // 3.0
 void Log(IOperationResult result) { … }
 ```
+
+### `IsSuccess` is a property; new `IsError`
+`IsSuccess()` is now a property, `IsSuccess`, on `Result`, `Result<T>` and `IOperationResult`, and the new `IsError` property is its opposite. Calls with parentheses no longer compile (CS1955: *Non-invocable member cannot be used like a method*); drop the parentheses.
+
+```csharp
+// before
+if (!result.IsSuccess())
+    return result.Error;
+
+// after
+if (result.IsError)
+    return result.Error;
+```
+
+Both properties keep the nullable annotations: `Error` is not `null` after `IsError` is `true` or `IsSuccess` is `false`, and the `Value` of a `Result<T>` is treated as not `null` in the other case. As properties, they can be used in property patterns, e.g., `result is { IsSuccess: true, Value: var value }`.
+
+The default serializers write public properties, so the JSON written without a converter now contains both of them (see [Changed JSON output](#changed-json-output)).
 
 ### `IfSuccess` and `Match` with an `Error` or a task
 Two kinds of calls compiled in 2.x but did not do what they looked like:
@@ -368,6 +388,8 @@ The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an
 | `result.Match(x => Error…, e => …)` relied on as a `Result<Error>` | `result.Match<T, Error>(x => Error…, e => …)` |
 | `Dictionary<string, object>` passed as named values | `Dictionary<string, object?>` |
 | `IResult` (`Maple.Result`) | `IOperationResult` |
+| `result.IsSuccess()` | `result.IsSuccess` |
+| `!result.IsSuccess()` | `result.IsError` |
 | `WithErrorDetail(…, messageId: …, namedValues: …)` (named arguments) | `WithErrorDetail(…, detailTemplateId: …, detailNamedValues: …)` |
 | `var (id, parameters) = templatedMessage;` | `templatedMessage is { TemplateId: var id, Params: var parameters }` |
 | `JsonSerializer.Deserialize<Result<T>>(…)` / `Deserialize<Error>(…)` | your own DTO, or the planned converter packages |

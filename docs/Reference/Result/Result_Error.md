@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Result](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.cs#L65" target="_blank">Result.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.cs#L74" target="_blank">Result.cs</a>
 
 Gets the error that caused the operation to fail.
 
@@ -17,7 +17,7 @@ The error, if the result represents a failure; otherwise, `null`.
 
 ## Remarks
 > [!CAUTION]
-> Use the [IsSuccess()](Result_IsSuccess.md) method to check whether the result represents a success or a failure before accessing this property.
+> Use the [IsSuccess](Result_IsSuccess.md) or [IsError](Result_IsError.md) property to check whether the result represents a success or a failure before accessing this property.
 
 ## See Also
 * [Error](../Error/Error.md)

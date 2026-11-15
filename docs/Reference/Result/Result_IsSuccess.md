@@ -1,31 +1,35 @@
-# Result.IsSuccess() Method
+# Result.IsSuccess Property
 ## Definition
 Namespace: [Maple.Result](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.cs#L74" target="_blank">Result.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.cs#L83" target="_blank">Result.cs</a>
 
-Indicates whether the instance of the [Result](Result.md) record represents a successful operation.
+Gets a value indicating whether the [Result](Result.md) represents a successful operation.
 
 ```csharp
-public bool IsSuccess();
+public bool IsSuccess { get; }
 ```
 
-### Returns
-[Boolean](https://learn.microsoft.com/en-ca/dotnet/api/system.boolean)
+### Property Value
+[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-`true` if the instance of the [Result](Result.md) record represents a successful operation; otherwise, `false`.
+`true` if the operation was successful; otherwise, `false`.
+
+## Remarks
+A result is successful exactly when its [Error](Result_Error.md) is `null`. The property is annotated with `[MemberNotNullWhen(false, nameof(Error))]`, so the compiler treats [Error](Result_Error.md) as non-null when it is `false`. It is the opposite of [IsError](Result_IsError.md), and it can be used in property patterns (e.g., `result is { IsSuccess: true }`).
 
 ## Examples
 ```csharp
-if (result.IsSuccess())
+if (result.IsSuccess)
 {
     Console.WriteLine("Operation succeeded.");
 }
 else
 {
-    Console.WriteLine("Operation failed.");
+    Console.WriteLine($"Operation failed: {result.Error.Title}");
 }
 ```
 
 ## See Also
+* [IsError](Result_IsError.md)
 * [Result&lt;T&gt;](../ResultT/ResultT.md)
