@@ -182,7 +182,7 @@ var createUserResult = await _userService.CreateUserAsync(userData)
 
 
 ## IfErrorAsync&lt;TResult&gt;(Task&lt;TResult&gt;, Func&lt;Error, Task&lt;TResult&gt;&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/IfErrorTaskAsyncExtensions.cs#L236" target="_blank">IfErrorTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/IfErrorTaskAsyncExtensions.cs#L233" target="_blank">IfErrorTaskAsyncExtensions.cs</a>
 
 Executes the provided asynchronous function, if the provided asynchronous operation returns a failed`TResult` instance (i.e., contains an [Error](../Error/Error.md)), and returns its result as an asynchronous operation.
 
