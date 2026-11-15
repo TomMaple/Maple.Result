@@ -89,8 +89,6 @@ Reading a [Result&lt;T&gt;](ResultT.md) back requires a dedicated converter, bec
 
 `ToString()` writes only the [Value](ResultT_Value.md) of a successful result (e.g., `Result { Value = 42 }`) or the [Error](ResultT_Error.md) of a failed one (`Result { Error = Error { … } }`); it never throws.
 
-`ToString()` writes only the [Value](ResultT_Value.md) of a successful result (e.g., `Result { Value = 42 }`) or the [Error](ResultT_Error.md) of a failed one (`Result { Error = Error { … } }`); it never throws.
-
 ## Properties
 | Name | Description |
 | ---- | ----------- |
@@ -104,7 +102,6 @@ Reading a [Result&lt;T&gt;](ResultT.md) back requires a dedicated converter, bec
 | ---- | ----------- |
 | [FromError(Error)](ResultT_FromError.md) | Creates a new failure [Result&lt;T&gt;](ResultT.md) from the specified [Error](../Error/Error.md). |
 | [FromValue(T)](ResultT_FromValue.md) | Creates a new successful [Result&lt;T&gt;](ResultT.md) containing the specified value. |
-| [GetValueOrDefault(T)](ResultT_GetValueOrDefault.md) | Returns the value of a successful result, or the specified fallback value for a failed one. |
 | [GetValueOrDefault(T)](ResultT_GetValueOrDefault.md) | Returns the value of a successful result, or the specified fallback value for a failed one. |
 
 ## Operators

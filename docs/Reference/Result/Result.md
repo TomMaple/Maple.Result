@@ -28,8 +28,6 @@ The default serializers can write a [Result](Result.md) as JSON; reading it back
 
 `ToString()` writes the [Error](Result_Error.md) of a failed result (e.g., `Result { Error = Error { … } }`) and no members for a successful one (`Result { }`).
 
-`ToString()` writes the [Error](Result_Error.md) of a failed result (e.g., `Result { Error = Error { … } }`) and no members for a successful one (`Result { }`).
-
 ## Examples
 ```csharp
 public Result DeleteUser(int userId)
