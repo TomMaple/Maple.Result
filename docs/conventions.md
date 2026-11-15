@@ -18,9 +18,9 @@
 	* Changes in the `docs` folder go in a separate `docs:` commit, made after all the other changes (code and tests) are
 	  committed.
 1. Before opening a pull request, all of these pass:
-	* `dotnet build -c Release`: no warnings,
+	* `dotnet build -c Release`: no warnings (CI treats them as errors; this includes the code style, naming, trim and AOT
+	  rules),
 	* `dotnet test`,
-	* `dotnet build src/Maple.Result -c Release -p:IsAotCompatible=true`: no warnings,
 	* `dotnet format --verify-no-changes`.
 1. Pull requests:
 	* The title follows the commit message rules: a squash merge turns the title into the subject of the commit on
