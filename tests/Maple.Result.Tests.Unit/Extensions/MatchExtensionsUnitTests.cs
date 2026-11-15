@@ -560,7 +560,7 @@ public class MatchExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBe(SuccessFunctionValue);
     }
 
@@ -605,7 +605,7 @@ public class MatchExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(sut.Error);
     }
 
@@ -848,7 +848,7 @@ public class MatchExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.ShouldBeSameAs(expectedResult);
     }
 
@@ -893,7 +893,7 @@ public class MatchExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBe(sut.Error);
     }
 
@@ -993,7 +993,7 @@ public class MatchExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.ShouldBeSameAs(expectedResult);
     }
 
@@ -1140,7 +1140,7 @@ public class MatchExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.ShouldBeSameAs(sut);
     }
 
@@ -1185,7 +1185,7 @@ public class MatchExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.ShouldBeSameAs(sut);
     }
 
@@ -1287,7 +1287,7 @@ public class MatchExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBe(ExpectedValue);
     }
 
@@ -1332,7 +1332,7 @@ public class MatchExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBe(sut.Error);
     }
 
@@ -1586,7 +1586,7 @@ public class MatchExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.ShouldBe(expectedResult);
         result.Value.ShouldBe(ExpectedValue);
     }
@@ -1632,7 +1632,7 @@ public class MatchExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBe(sut.Error);
     }
 
@@ -1735,7 +1735,7 @@ public class MatchExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBe(ExpectedValue);
     }
 
@@ -1782,7 +1782,7 @@ public class MatchExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBe(ExpectedValue);
     }
 
@@ -1830,7 +1830,7 @@ public class MatchExtensionsUnitTests
         Result<Task> result = sut.Match<Task>(() => taskSource.Task, _ => { });
 
         // Assert
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBeSameAs(taskSource.Task);
         result.Value.IsCompleted.ShouldBeFalse();
     }
@@ -1846,7 +1846,7 @@ public class MatchExtensionsUnitTests
         Result<Task> result = sut.Match<int, Task>(_ => taskSource.Task, _ => { });
 
         // Assert
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBeSameAs(taskSource.Task);
         result.Value.IsCompleted.ShouldBeFalse();
     }
@@ -1882,7 +1882,7 @@ public class MatchExtensionsUnitTests
         Result result = sut.Match(() => TrapError, _ => { actionCalled = true; });
 
         // Assert
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(TrapError);
         actionCalled.ShouldBeFalse();
     }
@@ -1931,7 +1931,7 @@ public class MatchExtensionsUnitTests
         Result<Error> result = sut.Match<Error>(() => TrapError, _ => { });
 
         // Assert
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBeSameAs(TrapError);
     }
 
@@ -1951,7 +1951,7 @@ public class MatchExtensionsUnitTests
         }, _ => { actionCalled = true; });
 
         // Assert
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(TrapError);
         passedValue.ShouldBe(5);
         actionCalled.ShouldBeFalse();
@@ -1973,7 +1973,7 @@ public class MatchExtensionsUnitTests
         }, e => { passedError = e; });
 
         // Assert
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(sut.Error);
         passedError.ShouldBeSameAs(sut.Error);
         functionCalled.ShouldBeFalse();
@@ -2002,7 +2002,7 @@ public class MatchExtensionsUnitTests
         Result<Error> result = sut.Match<int, Error>(_ => TrapError, _ => { });
 
         // Assert
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBeSameAs(TrapError);
     }
 
@@ -2100,7 +2100,7 @@ public class MatchExtensionsUnitTests
         });
 
         // Assert
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         passedError.ShouldBeSameAs(sut.Error);
     }
 

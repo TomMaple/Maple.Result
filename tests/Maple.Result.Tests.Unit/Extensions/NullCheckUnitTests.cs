@@ -113,7 +113,7 @@ public class NullCheckUnitTests
         var result = await sut.IfSuccessAsync(_ => Task.FromResult<string?>(null));
 
         // Assert
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBeNull();
     }
 
@@ -127,7 +127,7 @@ public class NullCheckUnitTests
         var result = sut.Match(() => (string?)null, _ => { });
 
         // Assert
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBeNull();
     }
 

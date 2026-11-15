@@ -99,7 +99,7 @@ public class IfSuccessExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeOfType<Result>();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.ShouldBeSameAs(sut);
     }
 
@@ -130,7 +130,7 @@ public class IfSuccessExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeOfType<Result>();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(sut.Error);
     }
 
@@ -216,7 +216,7 @@ public class IfSuccessExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeOfType<Result>();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.ShouldBeSameAs(funcResult);
     }
 
@@ -233,7 +233,7 @@ public class IfSuccessExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(funcError.Error);
     }
 
@@ -264,7 +264,7 @@ public class IfSuccessExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeOfType<Result>();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(sut.Error);
     }
 
@@ -350,7 +350,7 @@ public class IfSuccessExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeOfType<Result<int>>();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBe(FuncValue);
     }
 
@@ -381,7 +381,7 @@ public class IfSuccessExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeOfType<Result<int>>();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(sut.Error);
     }
 
@@ -467,7 +467,7 @@ public class IfSuccessExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeOfType<Result<int>>();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBe(FuncValue);
     }
 
@@ -485,7 +485,7 @@ public class IfSuccessExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeOfType<Result<int>>();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(funcError);
     }
 
@@ -516,7 +516,7 @@ public class IfSuccessExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeOfType<Result<int>>();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(sut.Error);
     }
 
@@ -604,7 +604,7 @@ public class IfSuccessExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeOfType<Result<int>>();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBe(InitialValue);
     }
 
@@ -635,7 +635,7 @@ public class IfSuccessExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeOfType<Result<int>>();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(sut.Error);
     }
 
@@ -724,7 +724,7 @@ public class IfSuccessExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeOfType<Result>();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.ShouldBeSameAs(expectedResult);
     }
 
@@ -743,7 +743,7 @@ public class IfSuccessExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeOfType<Result>();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(funcError.Error);
     }
 
@@ -774,7 +774,7 @@ public class IfSuccessExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeOfType<Result>();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(sut.Error);
     }
 
@@ -863,7 +863,7 @@ public class IfSuccessExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeOfType<Result<int>>();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBe(ExpectedValue);
     }
 
@@ -894,7 +894,7 @@ public class IfSuccessExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeOfType<Result<int>>();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(sut.Error);
     }
 
@@ -983,7 +983,7 @@ public class IfSuccessExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeOfType<Result<string>>();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBe(FuncValue);
     }
 
@@ -1002,7 +1002,7 @@ public class IfSuccessExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeOfType<Result<string>>();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(funcErrorResult.Error);
     }
 
@@ -1033,7 +1033,7 @@ public class IfSuccessExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeOfType<Result<string>>();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(sut.Error);
     }
 
@@ -1072,7 +1072,7 @@ public class IfSuccessExtensionsUnitTests
         Result result = sut.IfSuccess(() => TrapError);
 
         // Assert
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(TrapError);
     }
 
@@ -1118,7 +1118,7 @@ public class IfSuccessExtensionsUnitTests
         Result<Error> result = sut.IfSuccess<Error>(() => TrapError);
 
         // Assert
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBeSameAs(TrapError);
     }
 
@@ -1137,7 +1137,7 @@ public class IfSuccessExtensionsUnitTests
         });
 
         // Assert
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(TrapError);
         passedValue.ShouldBe(5);
     }
@@ -1185,7 +1185,7 @@ public class IfSuccessExtensionsUnitTests
         Result<Error> result = sut.IfSuccess<int, Error>(_ => TrapError);
 
         // Assert
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBeSameAs(TrapError);
     }
 
@@ -1219,7 +1219,7 @@ public class IfSuccessExtensionsUnitTests
         Result<Task> result = sut.IfSuccess<Task>(() => taskSource.Task);
 
         // Assert
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBeSameAs(taskSource.Task);
         result.Value.IsCompleted.ShouldBeFalse();
     }
@@ -1235,7 +1235,7 @@ public class IfSuccessExtensionsUnitTests
         Result<Task> result = sut.IfSuccess<int, Task>(_ => taskSource.Task);
 
         // Assert
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBeSameAs(taskSource.Task);
         result.Value.IsCompleted.ShouldBeFalse();
     }

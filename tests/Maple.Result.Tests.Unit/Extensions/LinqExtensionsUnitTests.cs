@@ -149,7 +149,7 @@ public class LinqExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeOfType<Result<double>>();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBe(ExpectedFinalValue);
     }
 
@@ -182,7 +182,7 @@ public class LinqExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeOfType<Result<double>>();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(sut.Error);
     }
 
@@ -275,7 +275,7 @@ public class LinqExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeOfType<Result<string>>();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBe(ExpectedValue);
     }
 
@@ -306,7 +306,7 @@ public class LinqExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeOfType<Result<string>>();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(sut.Error);
     }
 
@@ -330,7 +330,7 @@ public class LinqExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeOfType<Result<string>>();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBe(ExpectedValue);
     }
 
@@ -348,7 +348,7 @@ public class LinqExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeOfType<Result<string>>();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(sut.Error);
     }
 
@@ -398,7 +398,7 @@ public class LinqExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBe(ExpectedValue);
     }
 
@@ -479,7 +479,7 @@ public class LinqExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeOfType<Result<string>>();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(sut.Error);
     }
 
@@ -560,7 +560,7 @@ public class LinqExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeOfType<Result<string>>();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(sut.Error);
     }
 
@@ -592,7 +592,7 @@ public class LinqExtensionsUnitTests
                         select Track(a);
 
         // Assert
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(TrapError);
         passedValue.ShouldBe(5);
 
@@ -614,7 +614,7 @@ public class LinqExtensionsUnitTests
                         select TrapError;
 
         // Assert
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(sut.Error);
     }
 
@@ -630,7 +630,7 @@ public class LinqExtensionsUnitTests
                         select Track(a * b);
 
         // Assert
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(TrapError);
         passedValue.ShouldBe(10);
 
@@ -653,7 +653,7 @@ public class LinqExtensionsUnitTests
                         select TrapError;
 
         // Assert
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(intermediate.Error);
     }
 
@@ -674,7 +674,7 @@ public class LinqExtensionsUnitTests
         Result<Error> result = Get(5).Select<int, Error>(_ => TrapError);
 
         // Assert
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBeSameAs(TrapError);
     }
 
@@ -749,7 +749,7 @@ public class LinqExtensionsUnitTests
         Result<Task> result = sut.Select<int, Task>(_ => taskSource.Task);
 
         // Assert
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBeSameAs(taskSource.Task);
         result.Value.IsCompleted.ShouldBeFalse();
     }

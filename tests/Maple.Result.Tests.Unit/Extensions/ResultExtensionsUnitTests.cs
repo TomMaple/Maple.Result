@@ -43,7 +43,7 @@ public class ResultExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.ShouldBeOfType<Result>();
     }
 
@@ -60,7 +60,7 @@ public class ResultExtensionsUnitTests
 
         // Assert
         sut.ShouldNotBeNull();
-        sut.IsSuccess().ShouldBeTrue();
+        sut.IsSuccess.ShouldBeTrue();
         sut.Value.ShouldBe(InitialValue);
     }
 
@@ -77,7 +77,7 @@ public class ResultExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBe(error);
     }
 
@@ -94,7 +94,7 @@ public class ResultExtensionsUnitTests
 
         // Assert
         sut.ShouldNotBeNull();
-        sut.IsSuccess().ShouldBeFalse();
+        sut.IsSuccess.ShouldBeFalse();
         sut.Error.ShouldBe(error);
     }
 
