@@ -11,7 +11,6 @@
 using Maple.Result.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -78,7 +77,7 @@ public sealed record TemplatedMessage
     private TemplatedMessage(Validated validated)
     {
         TemplateId = validated.TemplateId;
-        Params = validated.Params;
+        ParamsCopy = validated.Params;
     }
 
     #endregion
@@ -95,7 +94,9 @@ public sealed record TemplatedMessage
     ///     A read-only dictionary built from the parameters passed to the constructor, with keys compared ordinally (case-sensitive);
     ///     <see langword="null" /> when there are no parameters, so it is never empty. Values may be <see langword="null" />.
     /// </remarks>
-    public IReadOnlyDictionary<string, object?>? Params { get; }
+    public IReadOnlyDictionary<string, object?>? Params => ParamsCopy;
+
+    internal ReadOnlyCopy? ParamsCopy { get; }
 
     #region internal factory methods
 
@@ -232,9 +233,9 @@ public sealed record TemplatedMessage
             throw new ArgumentException($"The parameter ‘{key}’ is repeated.", parameterName);
     }
 
-    private static ReadOnlyDictionary<string, object?>? ToReadOnly(Dictionary<string, object?> dictionary)
+    private static ReadOnlyCopy? ToReadOnly(Dictionary<string, object?> dictionary)
     {
-        return dictionary.Count == 0 ? null : new ReadOnlyDictionary<string, object?>(dictionary);
+        return dictionary.Count == 0 ? null : new ReadOnlyCopy(dictionary);
     }
 
     private static ArgumentException ParametersWithoutTemplateId(string templateIdParameterName, string parametersParameterName)
@@ -244,7 +245,7 @@ public sealed record TemplatedMessage
             parametersParameterName);
     }
 
-    private readonly record struct Validated(string TemplateId, ReadOnlyDictionary<string, object?>? Params);
+    private readonly record struct Validated(string TemplateId, ReadOnlyCopy? Params);
 
     #endregion
 }
