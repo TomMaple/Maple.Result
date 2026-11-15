@@ -154,6 +154,7 @@
     <File Path="docs/Reference/IOperationResult/IOperationResult_Error.md" />
     <File Path="docs/Reference/IOperationResult/IOperationResult_IsError.md" />
     <File Path="docs/Reference/IOperationResult/IOperationResult_IsSuccess.md" />
+    <File Path="docs/Reference/IOperationResult/IOperationResult_TryGetError.md" />
   </Folder>
   <Folder Name="/docs/Reference/Result/">
     <File Path="docs/Reference/Result/Result.md" />
