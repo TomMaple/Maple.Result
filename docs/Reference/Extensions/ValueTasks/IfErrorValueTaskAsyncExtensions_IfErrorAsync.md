@@ -1,6 +1,6 @@
 # IfErrorValueTaskAsyncExtensions.IfErrorAsync Methods
 ## Definition
-Namespace: [Maple.Result.Extensions.ValueTasks](namespace.md)<br>
+Namespace: [Maple.Results.Extensions.ValueTasks](namespace.md)<br>
 Assembly: Maple.Result.dll<br>
 
 Runs a specific asynchronous action or function, if the instance of `TResult` represents a failed operation (i.e., contains an [Error](../../Error/Error.md)), as an asynchronous operation.

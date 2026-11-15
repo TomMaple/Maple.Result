@@ -52,7 +52,12 @@ Add the `Maple.Result` package to your project using the Package Manager in your
 dotnet add package Maple.Result
 ```
 
-The `Maple.Result` package contains all the types and the core functionality of the *Result* pattern.
+The `Maple.Result` package contains all the types and the core functionality of the *Result* pattern, in the `Maple.Results` namespace:
+
+```csharp
+using Maple.Results;
+using Maple.Results.Extensions;  // extension methods: IfSuccess, Match, LINQ, …
+```
 
 ## Using the *Result*
 ```csharp
@@ -132,9 +137,9 @@ var displayNameResult =
 > The asynchronous extension methods (`IfSuccessAsync()`, `IfErrorAsync()`, `MatchAsync()`, `ToResultAsync()` and the LINQ `Select()` and `SelectMany()`) support both `Task` and `ValueTask`, so you can chain and `await` results regardless of which one your methods return.
 
 > [!IMPORTANT]
-> The `Task`-based methods live in the `Maple.Result.Extensions` namespace and the `ValueTask`-based ones in `Maple.Result.Extensions.ValueTasks`—import the one matching the style you use, as having both in scope makes a call with an `async` lambda ambiguous.
+> The `Task`-based methods live in the `Maple.Results.Extensions` namespace and the `ValueTask`-based ones in `Maple.Results.Extensions.ValueTasks`—import the one matching the style you use, as having both in scope makes a call with an `async` lambda ambiguous.
 
-See more: [Maple.Result.Extensions](https://github.com/TomMaple/Maple.Result/blob/main/docs/Reference/Extensions/namespace.md)
+See more: [Maple.Results.Extensions](https://github.com/TomMaple/Maple.Result/blob/main/docs/Reference/Extensions/namespace.md)
 
 # The Result Pattern
 ## Key Benefits
@@ -500,7 +505,7 @@ ResultConfiguration.ContinueOnCapturedContext = true;
 
 See more: [ResultConfiguration.ContinueOnCapturedContext](https://github.com/TomMaple/Maple.Result/blob/main/docs/Reference/ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md)
 
-See more: [Maple.Result.Extensions](https://github.com/TomMaple/Maple.Result/blob/main/docs/Reference/Extensions/namespace.md)
+See more: [Maple.Results.Extensions](https://github.com/TomMaple/Maple.Result/blob/main/docs/Reference/Extensions/namespace.md)
 
 # Mapping to HTTP responses
 Check:
@@ -594,9 +599,9 @@ This library minimizes the amount of extension methods:
 
 # Learn More
 ## Documentation
-* [Maple.Result](https://github.com/TomMaple/Maple.Result/blob/main/docs/Reference/namespace.md) — `Result`, `Error`, and other types
-* [Maple.Result.Extensions](https://github.com/TomMaple/Maple.Result/blob/main/docs/Reference/Extensions/namespace.md) — extension methods
-* [Maple.Result.Extensions.ValueTasks](https://github.com/TomMaple/Maple.Result/blob/main/docs/Reference/Extensions/ValueTasks/namespace.md) — `ValueTask`-based extension methods
+* [Maple.Results](https://github.com/TomMaple/Maple.Result/blob/main/docs/Reference/namespace.md) — `Result`, `Error`, and other types
+* [Maple.Results.Extensions](https://github.com/TomMaple/Maple.Result/blob/main/docs/Reference/Extensions/namespace.md) — extension methods
+* [Maple.Results.Extensions.ValueTasks](https://github.com/TomMaple/Maple.Result/blob/main/docs/Reference/Extensions/ValueTasks/namespace.md) — `ValueTask`-based extension methods
 * [Problem details format](https://github.com/TomMaple/Maple.Result/blob/main/docs/problem-details.md) — how an `Error` is written as an RFC 9457 problem details object and read back
 
 ## See also

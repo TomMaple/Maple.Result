@@ -1,6 +1,6 @@
 # ResultExtensions.ToResult(Result&lt;T&gt;) Method
 ## Definition
-Namespace: [Maple.Result.Extensions](namespace.md)<br>
+Namespace: [Maple.Results.Extensions](namespace.md)<br>
 Assembly: Maple.Result.dll<br>
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ResultExtensions.cs#L31" target="_blank">ResultExtensions.cs</a>
 

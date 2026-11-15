@@ -1,6 +1,6 @@
 # Error.WithErrorDetail Method
 ## Definition
-Namespace: [Maple.Result](../namespace.md)<br>
+Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
 
 Returns a copy of the [Error](Error.md) with an individual error occurrence appended to its [ErrorDetails](Error_ErrorDetails.md).

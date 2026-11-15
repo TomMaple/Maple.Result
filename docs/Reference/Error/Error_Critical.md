@@ -1,6 +1,6 @@
 # Error.Critical Method
 ## Definition
-Namespace: [Maple.Result](../namespace.md)<br>
+Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
 
 Creates a new instance of the [Error](Error.md) object with the [ErrorCategory](../ErrorCategory.md) *Critical*.

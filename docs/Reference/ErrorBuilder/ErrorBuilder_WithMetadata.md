@@ -1,6 +1,6 @@
 # ErrorBuilder.WithMetadata Method
 ## Definition
-Namespace: [Maple.Result](../namespace.md)<br>
+Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
 
 Adds or replaces entries of the [Metadata](../Error/Error_Metadata.md) of the error to build.

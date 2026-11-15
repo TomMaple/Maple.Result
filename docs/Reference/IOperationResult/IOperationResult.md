@@ -1,6 +1,6 @@
 # IOperationResult interface
 ## Definition
-Namespace: [Maple.Result](../namespace.md)<br>
+Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.cs#L25" target="_blank">Result.cs</a>
 
@@ -10,7 +10,7 @@ Represents the outcome of an operation that can either succeed or fail with an [
 public interface IOperationResult
 ```
 
-Derived [Maple.Result.Result](../Result/Result.md), [Maple.Result.Result&lt;T&gt;](../ResultT/ResultT.md)
+Derived [Maple.Results.Result](../Result/Result.md), [Maple.Results.Result&lt;T&gt;](../ResultT/ResultT.md)
 
 ## Properties
 | Name | Description |

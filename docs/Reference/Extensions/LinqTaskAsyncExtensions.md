@@ -1,6 +1,6 @@
 # LinqTaskAsyncExtensions Class
 ## Definition
-Namespace: [Maple.Result.Extensions](namespace.md)<br>
+Namespace: [Maple.Results.Extensions](namespace.md)<br>
 Assembly: Maple.Result.dll<br>
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqTaskAsyncExtensions.cs" target="_blank">LinqTaskAsyncExtensions.cs</a>
 

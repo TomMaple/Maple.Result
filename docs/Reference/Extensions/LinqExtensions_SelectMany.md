@@ -1,6 +1,6 @@
 # LinqExtensions.SelectMany Methods
 ## Definition
-Namespace: [Maple.Result.Extensions](namespace.md)<br>
+Namespace: [Maple.Results.Extensions](namespace.md)<br>
 Assembly: Maple.Result.dll<br>
 
 Enables the LINQ query syntax with more than one `from` clause for [Result&lt;T&gt;](../ResultT/ResultT.md).

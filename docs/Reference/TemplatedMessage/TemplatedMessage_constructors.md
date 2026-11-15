@@ -1,6 +1,6 @@
 # TemplatedMessage Constructors
 ## Definition
-Namespace: [Maple.Result](../namespace.md)<br>
+Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
 
 Initializes a new instance of the [TemplatedMessage](TemplatedMessage.md) record.

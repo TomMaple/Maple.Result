@@ -128,7 +128,9 @@ are marked breaking. Preview the notes locally with `git cliff --unreleased --st
 	* Types: unit, integration, functional, guard (convention); one project per type, named
 	  `Maple.Result.Tests.<Type>` (e.g., `Maple.Result.Tests.Unit`).
 	* Layout: the folders mirror the tested project (e.g., `src/Maple.Result/Validators/MetadataKeyValidator.cs` →
-	  `tests/Maple.Result.Tests.Unit/Validators/MetadataKeyValidatorUnitTests.cs`); namespaces follow the folders.
+	  `tests/Maple.Result.Tests.Unit/Validators/MetadataKeyValidatorUnitTests.cs`); namespaces follow the folders,
+	  under the root namespace `Maple.Results.Tests.<Type>` (the project and folder names keep the package name
+	  `Maple.Result`; the namespaces use `Maple.Results`, like the library).
 	* Test class: `<TestedType><TestType>Tests` (e.g., `ErrorBuilderUnitTests`). Tests of one concern across many types
 	  are named after the concern (e.g., `NullCheckUnitTests`, `SynchronizationContextUnitTests`).
 	* Test method: `<Member>_<Scenario>_<ExpectedBehavior>`

@@ -1,6 +1,6 @@
 # TemplatedMessage.TemplateId Property
 ## Definition
-Namespace: [Maple.Result](../namespace.md)<br>
+Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/TemplatedMessage.cs#L88" target="_blank">TemplatedMessage.cs</a>
 

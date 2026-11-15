@@ -1,6 +1,6 @@
 # LinqValueTaskAsyncExtensions.Select Methods
 ## Definition
-Namespace: [Maple.Result.Extensions.ValueTasks](namespace.md)<br>
+Namespace: [Maple.Results.Extensions.ValueTasks](namespace.md)<br>
 Assembly: Maple.Result.dll<br>
 
 Enables the single-clause LINQ query syntax (a `from … select …` query without an intermediate `from`) for [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result&lt;T&gt;](../../ResultT/ResultT.md)&gt;.
