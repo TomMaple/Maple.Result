@@ -60,8 +60,27 @@ are marked breaking. Preview the notes locally with `git cliff --unreleased --st
 	* Documentation shared by several members is written once and inherited with `<inheritdoc cref="…" />`; the local
 	  tags (e.g., `<summary>`, `<returns>`) go before it.
 1. Tests
-	* [Naming convention](https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-best-practices#naming-your-tests)
-	* Types: unit, integration, functional, guard (convention).
+	* Types: unit, integration, functional, guard (convention); one project per type, named
+	  `Maple.Result.Tests.<Type>` (e.g., `Maple.Result.Tests.Unit`).
+	* Layout: the folders mirror the tested project (e.g., `src/Maple.Result/Validators/MetadataKeyValidator.cs` →
+	  `tests/Maple.Result.Tests.Unit/Validators/MetadataKeyValidatorUnitTests.cs`); namespaces follow the folders.
+	* Test class: `<TestedType><TestType>Tests` (e.g., `ErrorBuilderUnitTests`). Tests of one concern across many types
+	  are named after the concern (e.g., `NullCheckUnitTests`, `SynchronizationContextUnitTests`).
+	* Test method: `<Member>_<Scenario>_<ExpectedBehavior>`
+	  ([naming convention](https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-best-practices#naming-your-tests)),
+	  e.g., `WithMetadata_InvalidKey_ThrowsArgumentException`.
+	* Several test files for one type: a `<TestedType>Tests` folder holds `<TestedType><TestType>Tests.cs` for the
+	  general tests and `<TestedType><Aspect><TestType>Tests.cs` for each aspect (e.g., `ErrorTests/ErrorUnitTests.cs`,
+	  `ErrorTests/ErrorEqualityUnitTests.cs`, `ErrorTests/ErrorMetadataUnitTests.cs`). The `Tests` suffix keeps the
+	  namespace from hiding the type (a folder `Error` would make the namespace `….Unit.Error` hide the `Error` type).
+	* Every class that is not a test class goes under `TestingInfrastructure/`, by kind:
+		* `Fakes/`: test doubles and mocking support (e.g., `SingleThreadSynchronizationContext`,
+		  `ResultDefaultValueProvider`),
+		* `Fixtures/`: xUnit class and collection fixtures, and collection definitions (e.g.,
+		  `ResultConfigurationCollection`),
+		* `Helpers/`: static helper methods (e.g., `SerializationHelper`),
+		* `TestData/`: test data shared by several test classes (e.g., `TheoryData` sources); test data used by one
+		  test class stays in that class.
 	* Each test is split into `// Arrange`, `// Act` and `// Assert` sections (`// Act & Assert` when they cannot be
 	  separated).
 	* Assertions use [Shouldly](https://docs.shouldly.org/); exceptions are captured with `Record.Exception(…)` and

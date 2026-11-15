@@ -46,6 +46,7 @@ public class ResultEqualityUnitTests
         // Arrange
         var first = Result.FromError(
             CreateError().WithErrorDetail("#/email", "The email is required.", "errors.email.required", ("minLength", 3)));
+
         var second = Result.FromError(
             CreateError().WithErrorDetail("#/email", "The email is required.", "errors.email.required", ("minLength", 3)));
 
@@ -61,6 +62,7 @@ public class ResultEqualityUnitTests
         // Arrange
         var first = Result.FromError(
             CreateError().WithErrorDetail("#/email", "The email is required.", "errors.email.required", ("minLength", 3)));
+
         var second = Result.FromError(
             CreateError().WithErrorDetail("#/email", "The email is required.", "errors.email.required", ("minLength", 5)));
 
@@ -141,6 +143,7 @@ public class ResultEqualityUnitTests
         // Arrange
         var first = Result<int>.FromError(
             CreateError().WithErrorDetail("#/email", "The email is required.", "errors.email.required", ("minLength", 3)));
+
         var second = Result<int>.FromError(
             CreateError().WithErrorDetail("#/email", "The email is required.", "errors.email.required", ("minLength", 3)));
 
@@ -156,6 +159,7 @@ public class ResultEqualityUnitTests
         // Arrange
         var first = Result<int>.FromError(
             CreateError().WithErrorDetail("#/email", "The email is required.", "errors.email.required", ("minLength", 3)));
+
         var second = Result<int>.FromError(
             CreateError().WithErrorDetail("#/email", "The email is required.", "errors.email.required", ("minLength", 5)));
 

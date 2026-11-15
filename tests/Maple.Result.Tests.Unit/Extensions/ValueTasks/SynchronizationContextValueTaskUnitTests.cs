@@ -9,7 +9,8 @@
  */
 
 using Maple.Result.Extensions.ValueTasks;
-using Maple.Result.Tests.Unit.Helpers;
+using Maple.Result.Tests.Unit.TestingInfrastructure.Fakes;
+using Maple.Result.Tests.Unit.TestingInfrastructure.Fixtures;
 using System;
 using System.Threading;
 using System.Threading.Tasks;

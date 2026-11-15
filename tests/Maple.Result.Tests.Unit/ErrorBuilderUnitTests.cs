@@ -727,6 +727,7 @@ public class ErrorBuilderUnitTests
         var sut = Sut.Validation(ErrorUri.None(), "Test title")
             .AddErrorDetail("#/first", "First detail")
             .WithMetadata("limit", 100);
+
         var built = sut.Build();
 
         // Act
