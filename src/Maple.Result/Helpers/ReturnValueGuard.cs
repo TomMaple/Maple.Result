@@ -23,7 +23,7 @@ namespace Maple.Result.Helpers;
 /// <remarks>
 ///     A <see langword="null" /> value of a <see cref="Result{T}" /> is not checked: it is a valid value when the type is nullable.
 /// </remarks>
-internal static class Returned
+internal static class ReturnValueGuard
 {
     /// <summary>
     ///     Returns the <paramref name="value" /> returned by the function named <paramref name="functionName" />, or throws if it is
@@ -58,7 +58,9 @@ internal static class Returned
     /// </exception>
     internal static NotNullTaskAwaitable<T> NotNullResult<T>(Task<T>? task, string functionName, bool continueOnCapturedContext)
     {
-        return new NotNullTaskAwaitable<T>(NotNullTask(task, functionName).ConfigureAwait(continueOnCapturedContext).GetAwaiter(), functionName);
+        var awaiter = NotNullTask(task, functionName).ConfigureAwait(continueOnCapturedContext).GetAwaiter();
+
+        return new NotNullTaskAwaitable<T>(awaiter, functionName);
     }
 
     /// <summary>
@@ -68,7 +70,9 @@ internal static class Returned
     /// <exception cref="InvalidOperationException">When awaited, if the result of the <paramref name="task" /> is <see langword="null" />.</exception>
     internal static NotNullValueTaskAwaitable<T> NotNullResult<T>(ValueTask<T> task, string functionName, bool continueOnCapturedContext)
     {
-        return new NotNullValueTaskAwaitable<T>(task.ConfigureAwait(continueOnCapturedContext).GetAwaiter(), functionName);
+        var awaiter = task.ConfigureAwait(continueOnCapturedContext).GetAwaiter();
+
+        return new NotNullValueTaskAwaitable<T>(awaiter, functionName);
     }
 
     /// <summary>

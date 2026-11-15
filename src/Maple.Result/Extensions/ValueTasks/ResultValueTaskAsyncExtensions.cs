@@ -51,7 +51,7 @@ public static class ResultValueTaskAsyncExtensions
         var result = await resultTask.ConfigureAwait(continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
 
         if (result is null)
-            throw Returned.NullAwaited(nameof(resultTask));
+            throw ReturnValueGuard.NullAwaited(nameof(resultTask));
 
         return result.IsSuccess()
             ? Result.Success()

@@ -83,7 +83,7 @@ public static class IfErrorValueTaskAsyncExtensions
             if (result.IsSuccess())
                 return result;
 
-            return await Returned.NotNullResult(ifErrorFunction(result.Error), nameof(ifErrorFunction), continueOnCapturedContext);
+            return await ReturnValueGuard.NotNullResult(ifErrorFunction(result.Error), nameof(ifErrorFunction), continueOnCapturedContext);
         }
     }
 
@@ -139,7 +139,7 @@ public static class IfErrorValueTaskAsyncExtensions
             var result = await resultTask.ConfigureAwait(continueOnCapturedContext);
 
             if (result is null)
-                throw Returned.NullAwaited(nameof(resultTask));
+                throw ReturnValueGuard.NullAwaited(nameof(resultTask));
 
             if (!result.IsSuccess())
                 await ifErrorAction(result.Error).ConfigureAwait(continueOnCapturedContext);
@@ -203,12 +203,12 @@ public static class IfErrorValueTaskAsyncExtensions
             var result = await resultTask.ConfigureAwait(continueOnCapturedContext);
 
             if (result is null)
-                throw Returned.NullAwaited(nameof(resultTask));
+                throw ReturnValueGuard.NullAwaited(nameof(resultTask));
 
             if (result.IsSuccess())
                 return result;
 
-            return await Returned.NotNullResult(ifErrorFunction(result.Error), nameof(ifErrorFunction), continueOnCapturedContext);
+            return await ReturnValueGuard.NotNullResult(ifErrorFunction(result.Error), nameof(ifErrorFunction), continueOnCapturedContext);
         }
     }
 }

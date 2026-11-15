@@ -68,7 +68,7 @@ public static class IfErrorTaskAsyncExtensions
         static async Task<TResult> Core(TResult result, Func<Error, Task> ifErrorAction, bool continueOnCapturedContext)
         {
             if (!result.IsSuccess())
-                await Returned.NotNullTask(ifErrorAction(result.Error), nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+                await ReturnValueGuard.NotNullTask(ifErrorAction(result.Error), nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
 
             return result;
         }
@@ -123,7 +123,7 @@ public static class IfErrorTaskAsyncExtensions
             if (result.IsSuccess())
                 return result;
 
-            return await Returned.NotNullResult(ifErrorFunction(result.Error), nameof(ifErrorFunction), continueOnCapturedContext);
+            return await ReturnValueGuard.NotNullResult(ifErrorFunction(result.Error), nameof(ifErrorFunction), continueOnCapturedContext);
         }
     }
 
@@ -183,10 +183,10 @@ public static class IfErrorTaskAsyncExtensions
             var result = await resultTask.ConfigureAwait(continueOnCapturedContext);
 
             if (result is null)
-                throw Returned.NullAwaited(nameof(resultTask));
+                throw ReturnValueGuard.NullAwaited(nameof(resultTask));
 
             if (!result.IsSuccess())
-                await Returned.NotNullTask(ifErrorAction(result.Error), nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+                await ReturnValueGuard.NotNullTask(ifErrorAction(result.Error), nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
 
             return result;
         }
@@ -250,12 +250,12 @@ public static class IfErrorTaskAsyncExtensions
             var result = await resultTask.ConfigureAwait(continueOnCapturedContext);
 
             if (result is null)
-                throw Returned.NullAwaited(nameof(resultTask));
+                throw ReturnValueGuard.NullAwaited(nameof(resultTask));
 
             if (result.IsSuccess())
                 return result;
 
-            return await Returned.NotNullResult(ifErrorFunction(result.Error), nameof(ifErrorFunction), continueOnCapturedContext);
+            return await ReturnValueGuard.NotNullResult(ifErrorFunction(result.Error), nameof(ifErrorFunction), continueOnCapturedContext);
         }
     }
 }

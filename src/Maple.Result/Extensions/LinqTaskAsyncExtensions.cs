@@ -68,7 +68,7 @@ public static class LinqTaskAsyncExtensions
             var resultValue = await result.ConfigureAwait(ResultConfiguration.ContinueOnCapturedContext);
 
             if (resultValue is null)
-                throw Returned.NullAwaited(nameof(result));
+                throw ReturnValueGuard.NullAwaited(nameof(result));
 
             return resultValue.IfSuccess(selector);
         }
@@ -118,12 +118,12 @@ public static class LinqTaskAsyncExtensions
             var resultValue = await result.ConfigureAwait(ResultConfiguration.ContinueOnCapturedContext);
 
             if (resultValue is null)
-                throw Returned.NullAwaited(nameof(result));
+                throw ReturnValueGuard.NullAwaited(nameof(result));
 
             if (!resultValue.IsSuccess())
                 return resultValue.Error;
 
-            return Result.FromError(Returned.NotNull(selector(resultValue.Value), nameof(selector)));
+            return Result.FromError(ReturnValueGuard.NotNull(selector(resultValue.Value), nameof(selector)));
         }
     }
 
@@ -180,11 +180,11 @@ public static class LinqTaskAsyncExtensions
             var resultValue = await result.ConfigureAwait(ResultConfiguration.ContinueOnCapturedContext);
 
             if (resultValue is null)
-                throw Returned.NullAwaited(nameof(result));
+                throw ReturnValueGuard.NullAwaited(nameof(result));
 
             return await resultValue.IfSuccessAsync(async Task<Result<TNext>> (x) =>
             {
-                var collectionResult = await Returned.NotNullResult(
+                var collectionResult = await ReturnValueGuard.NotNullResult(
                     collectionSelector(x), nameof(collectionSelector), ResultConfiguration.ContinueOnCapturedContext);
                 return collectionResult.IfSuccess(y => resultSelector(x, y));
             }).ConfigureAwait(ResultConfiguration.ContinueOnCapturedContext);
@@ -240,7 +240,7 @@ public static class LinqTaskAsyncExtensions
             var resultValue = await result.ConfigureAwait(ResultConfiguration.ContinueOnCapturedContext);
 
             if (resultValue is null)
-                throw Returned.NullAwaited(nameof(result));
+                throw ReturnValueGuard.NullAwaited(nameof(result));
 
             return resultValue.SelectMany(collectionSelector, resultSelector);
         }
@@ -293,7 +293,7 @@ public static class LinqTaskAsyncExtensions
             if (!result.IsSuccess())
                 return result.Error;
 
-            var collectionResult = await Returned.NotNullResult(
+            var collectionResult = await ReturnValueGuard.NotNullResult(
                 collectionSelector(result.Value), nameof(collectionSelector), ResultConfiguration.ContinueOnCapturedContext);
             return collectionResult.IfSuccess(y => resultSelector(result.Value, y));
         }
@@ -355,14 +355,14 @@ public static class LinqTaskAsyncExtensions
             var resultValue = await result.ConfigureAwait(ResultConfiguration.ContinueOnCapturedContext);
 
             if (resultValue is null)
-                throw Returned.NullAwaited(nameof(result));
+                throw ReturnValueGuard.NullAwaited(nameof(result));
 
             if (!resultValue.IsSuccess())
                 return resultValue.Error;
 
-            var collectionResult = await Returned.NotNullResult(
+            var collectionResult = await ReturnValueGuard.NotNullResult(
                 collectionSelector(resultValue.Value), nameof(collectionSelector), ResultConfiguration.ContinueOnCapturedContext);
-            return collectionResult.IfSuccess(y => Returned.NotNull(resultSelector(resultValue.Value, y), nameof(resultSelector)));
+            return collectionResult.IfSuccess(y => ReturnValueGuard.NotNull(resultSelector(resultValue.Value, y), nameof(resultSelector)));
         }
     }
 
@@ -421,7 +421,7 @@ public static class LinqTaskAsyncExtensions
             var resultValue = await result.ConfigureAwait(ResultConfiguration.ContinueOnCapturedContext);
 
             if (resultValue is null)
-                throw Returned.NullAwaited(nameof(result));
+                throw ReturnValueGuard.NullAwaited(nameof(result));
 
             return resultValue.SelectMany(collectionSelector, resultSelector);
         }
@@ -481,9 +481,9 @@ public static class LinqTaskAsyncExtensions
             if (!result.IsSuccess())
                 return result.Error;
 
-            var collectionResult = await Returned.NotNullResult(
+            var collectionResult = await ReturnValueGuard.NotNullResult(
                 collectionSelector(result.Value), nameof(collectionSelector), ResultConfiguration.ContinueOnCapturedContext);
-            return collectionResult.IfSuccess(y => Returned.NotNull(resultSelector(result.Value, y), nameof(resultSelector)));
+            return collectionResult.IfSuccess(y => ReturnValueGuard.NotNull(resultSelector(result.Value, y), nameof(resultSelector)));
         }
     }
 }

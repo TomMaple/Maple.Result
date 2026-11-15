@@ -91,7 +91,7 @@ public static class LinqExtensions
         if (!result.IsSuccess())
             return result.Error;
 
-        return Result.FromError(Returned.NotNull(selector(result.Value), nameof(selector)));
+        return Result.FromError(ReturnValueGuard.NotNull(selector(result.Value), nameof(selector)));
     }
 
     /// <summary>
@@ -139,7 +139,7 @@ public static class LinqExtensions
 
         return result.IfSuccess(x =>
         {
-            var collectionResult = Returned.NotNull(collectionSelector(x), nameof(collectionSelector));
+            var collectionResult = ReturnValueGuard.NotNull(collectionSelector(x), nameof(collectionSelector));
             return collectionResult.IfSuccess(y => resultSelector(x, y));
         });
     }
@@ -193,8 +193,8 @@ public static class LinqExtensions
 
         return result.IfSuccess(x =>
         {
-            var collectionResult = Returned.NotNull(collectionSelector(x), nameof(collectionSelector));
-            return collectionResult.IfSuccess(y => Returned.NotNull(resultSelector(x, y), nameof(resultSelector)));
+            var collectionResult = ReturnValueGuard.NotNull(collectionSelector(x), nameof(collectionSelector));
+            return collectionResult.IfSuccess(y => ReturnValueGuard.NotNull(resultSelector(x, y), nameof(resultSelector)));
         });
     }
 }
