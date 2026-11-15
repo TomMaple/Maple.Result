@@ -89,7 +89,10 @@ public sealed class ErrorBuilder
         _title = error.Title;
         _detail = error.Detail;
         _detailTemplated = error.DetailTemplated;
-        _instanceUri = error.InstanceUri is null ? null : new ErrorUri(error.InstanceUri);
+        _instanceUri = error.InstanceUri is null
+            ? null
+            : new ErrorUri(error.InstanceUri);
+
         _builtErrorDetails = error.ErrorDetailsCollection;
         _builtMetadata = error.MetadataDictionary;
     }

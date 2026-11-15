@@ -227,7 +227,9 @@ public sealed record TemplatedMessage
             Add(dictionary, key, value, parametersParameterName);
         }
 
-        var copy = dictionary is null ? null : new ImmutableStringDictionary(dictionary);
+        var copy = dictionary is null
+            ? null
+            : new ImmutableStringDictionary(dictionary);
 
         return new Validated(templateId, copy);
     }

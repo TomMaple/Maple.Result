@@ -92,7 +92,9 @@ public class NullCheckUnitTests
         // Arrange
         var methodInfo = Methods[method];
         var arguments = CreateArguments(methodInfo, nullParameter: null, nullReturningParameter: parameter, variant);
-        var expectedMessage = variant == NullTask ? $"The function ‘{parameter}’ returned a null task." : $"The function ‘{parameter}’ returned null.";
+        var expectedMessage = variant == NullTask
+            ? $"The function ‘{parameter}’ returned a null task."
+            : $"The function ‘{parameter}’ returned null.";
 
         // Act
         var exception = await Record.ExceptionAsync(() => InvokeAndAwait(methodInfo, arguments));
@@ -175,7 +177,12 @@ public class NullCheckUnitTests
         if (!method.IsGenericMethodDefinition)
             return method;
 
-        var arguments = method.GetGenericArguments().Select(a => a.Name == "TResult" ? typeof(Result) : typeof(int)).ToArray();
+        var arguments = method.GetGenericArguments()
+            .Select(a => a.Name == "TResult"
+                ? typeof(Result)
+                : typeof(int))
+            .ToArray();
+
         return method.MakeGenericMethod(arguments);
     }
 
@@ -263,7 +270,11 @@ public class NullCheckUnitTests
             return SourceError;
 
         if (type == typeof(Result))
-            return successful ? Result.Success() : Result.FromError(SourceError);
+        {
+            return successful
+                ? Result.Success()
+                : Result.FromError(SourceError);
+        }
 
         if (type == typeof(Task))
             return Task.CompletedTask;
@@ -317,7 +328,10 @@ public class NullCheckUnitTests
     {
         var invoke = delegateType.GetMethod("Invoke")!;
         var parameters = invoke.GetParameters().Select(p => Expression.Parameter(p.ParameterType, p.Name)).ToArray();
-        Expression body = invoke.ReturnType == typeof(void) ? Expression.Empty() : Expression.Constant(returnValue, invoke.ReturnType);
+        Expression body = invoke.ReturnType == typeof(void)
+            ? Expression.Empty()
+            : Expression.Constant(returnValue, invoke.ReturnType);
+
         return Expression.Lambda(delegateType, body, parameters).Compile();
     }
 

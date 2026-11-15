@@ -42,7 +42,9 @@ internal sealed class ResultDefaultValueProvider : LookupOrFallbackDefaultValueP
 
     protected override object? GetFallbackDefaultValue(Type type, Mock mock)
     {
-        return type.IsValueType ? Activator.CreateInstance(type) : null;
+        return type.IsValueType
+            ? Activator.CreateInstance(type)
+            : null;
     }
 
     private object CreateSuccessfulResult(Type type, Mock mock)
