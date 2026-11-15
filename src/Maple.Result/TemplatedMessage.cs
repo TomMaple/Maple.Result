@@ -207,7 +207,13 @@ public sealed record TemplatedMessage
 
         // The Params of another message (or the Metadata of an error) never change, so they are shared instead of copied.
         if (parameters is ImmutableStringDictionary shared)
-            return new Validated(templateId, shared.Count == 0 ? null : shared);
+        {
+            var sharedParams = shared.Count == 0
+                ? null
+                : shared;
+
+            return new Validated(templateId, sharedParams);
+        }
 
         // No dictionary for an empty collection; the size is known up front for most collections.
         var isCountKnown = parameters.TryGetNonEnumeratedCount(out var count);

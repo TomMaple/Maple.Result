@@ -274,7 +274,11 @@ public class NullCheckUnitTests
         if (IsDelegate(type))
         {
             var returnType = DelegateReturnType(type)!;
-            return CreateDelegate(type, returnType == typeof(void) ? null : CreateValue(returnType, successful: true));
+            var returnValue = returnType == typeof(void)
+                ? null
+                : CreateValue(returnType, successful: true);
+
+            return CreateDelegate(type, returnValue);
         }
 
         if (type.IsGenericType)
