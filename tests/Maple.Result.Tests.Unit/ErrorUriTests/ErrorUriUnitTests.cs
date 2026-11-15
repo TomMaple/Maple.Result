@@ -267,6 +267,32 @@ public class ErrorUriUnitTests
         result.Value.ShouldBe(tagValue);
     }
 
+    // RFC 3986 section 3.1: the scheme is case-insensitive; the "tag:" literal of the RFC 4151 ABNF matches any case.
+    [Theory]
+    [InlineData("TAG:example.com,2000:x")]
+    [InlineData("Tag:example.com,2000:x")]
+    [InlineData("tAg:example.com,2000:x")]
+    public void Tag_SchemeInAnyCase_ReturnsErrorUriWithTheValueAsPassed(string tagValue)
+    {
+        // Act
+        var result = ErrorUri.Tag(tagValue);
+
+        // Assert
+        result.Value.ShouldBe(tagValue);
+    }
+
+    // RFC 4151 section 2.4: tags are equal only when they are identical character by character.
+    [Fact]
+    public void Equals_TagsDifferingOnlyInSchemeCase_AreNotEqual()
+    {
+        // Arrange
+        var upperCase = ErrorUri.Tag("TAG:example.com,2000:x");
+        var lowerCase = ErrorUri.Tag("tag:example.com,2000:x");
+
+        // Act & Assert
+        upperCase.Equals(lowerCase).ShouldBeFalse();
+    }
+
     [Fact]
     public void Tag_NullTag_ThrowsArgumentNullExceptionNamingTheParameter()
     {
