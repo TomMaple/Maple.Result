@@ -22,7 +22,7 @@ The result is failed, so it has no value. The message names the title and the ty
 
 ## Remarks
 > [!CAUTION]
-> Check [IsSuccess](ResultT_IsSuccess.md) or [IsError](ResultT_IsError.md) before reading this property, or use [TryGetValue](ResultT_TryGetValue.md) or [GetValueOrDefault(T)](ResultT_GetValueOrDefault.md), which never throw.
+> Check [IsSuccess](ResultT_IsSuccess.md) or [IsError](ResultT_IsError.md) before reading this property, or use [TryGetValue](ResultT_TryGetValue.md), which never throws.
 
 A failed result has no value. Reading it throws instead of returning the default value of `T`, which for a value type would look like a valid value (e.g., `0` for a `Result<int>`), so a forgotten check fails at the point where the value is used.
 
@@ -38,6 +38,5 @@ Console.WriteLine(result.Value.Name);
 
 ## See Also
 * [TryGetValue](ResultT_TryGetValue.md)
-* [GetValueOrDefault(T)](ResultT_GetValueOrDefault.md)
 * [IsSuccess](ResultT_IsSuccess.md)
 * [Error](../Error/Error.md)

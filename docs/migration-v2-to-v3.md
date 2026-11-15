@@ -43,7 +43,7 @@ Version 3.0 makes `Result`, `Result<T>` and `Error` **immutable** and **always v
 11. Make sure the functions passed to the extension methods never return `null` where a result, an `Error` or a task is expected (see [Null results and null arguments of the extension methods](#null-results-and-null-arguments-of-the-extension-methods)).
 12. Upgrade the `Maple.Result.Extensions.*` packages together with `Maple.Result` (see [Extension packages](#extension-packages)).
 13. Replace `result.IsSuccess()` with `result.IsSuccess`, and `!result.IsSuccess()` with `result.IsError` (see [`IsSuccess` is a property; new `IsError`](#issuccess-is-a-property-new-iserror)).
-14. Make sure `Result<T>.Value` is read only on a successful result, or use `GetValueOrDefault(fallback)`; and do not write a failed `Result<T>` with the default serializers (see [`Result<T>.Value` throws on a failed result](#resulttvalue-throws-on-a-failed-result)).
+14. Make sure `Result<T>.Value` is read only on a successful result, or use `TryGetValue(out var value)`; and do not write a failed `Result<T>` with the default serializers (see [`Result<T>.Value` throws on a failed result](#resulttvalue-throws-on-a-failed-result)).
 
 ## Breaking changes
 
@@ -300,9 +300,6 @@ var count = result.Value;
 // or, in one statement
 if (!result.TryGetValue(out var count, out var error))
     return error;
-
-// or, when a fallback is fine
-var count = result.GetValueOrDefault(0);
 ```
 
 The type of `Value` is `T` instead of `T?`, and `IsSuccess` and `IsError` no longer carry a hint about `Value`: its nullability follows `T` (`string` for a `Result<string>`, `string?` for a `Result<string?>`), so the compiler no longer hides a `null` value of a nullable `T`.
@@ -390,7 +387,6 @@ The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an
 * **`ErrorCategory.LimitExceeded`** — see above.
 * **`ProblemDetailsMembers`** — the member names of the problem details object (`type`, `title`, `status`, …), shared by the packages that write and read problem details. See [Problem Details Format](problem-details.md).
 * **`TryGetValue` and `TryGetError`** — `if (!GetUser(id).TryGetValue(out var user, out var error)) return error;` reads the value of a `Result<T>` without an exception and gives the early return in one statement; `TryGetError(out var error)` on `Result`, `Result<T>` and `IOperationResult` does the same for the error. See [TryGetValue](Reference/ResultT/ResultT_TryGetValue.md) and [TryGetError](Reference/Result/Result_TryGetError.md).
-* **`Result<T>.GetValueOrDefault(fallback)`** — the value of a successful result, or the fallback for a failed one, without an exception. See [GetValueOrDefault](Reference/ResultT/ResultT_GetValueOrDefault.md).
 * **`ErrorUri.Other()`** — an absolute *URI* whose scheme has no factory method of its own (e.g., `mailto:`), for type and instance URIs read from other services; `Parse` and `TryParse` fall back to it. See [Other](Reference/ErrorUri/ErrorUri_Other.md).
 * **`ErrorUri.Parse()`**, **`ErrorUri.TryParse()`** and **`IParsable<ErrorUri>`** — create an `ErrorUri` when the kind is not known in advance: the kind is detected from the value (`about:blank`, `/…`, `tag:`, `urn:`, `http:`/`https:`) and validated as by its factory method. See [Parse](Reference/ErrorUri/ErrorUri_Parse.md).
 * **`ErrorUri.Urn()`** and **`ErrorUri.Relative()`** — `urn:` types and instances (*RFC 8141*), and relative references with the full path (e.g., the *RFC 9457* example `/account/12345/msgs/abc`). See [ErrorUri](Reference/ErrorUri/ErrorUri.md).
@@ -422,7 +418,7 @@ The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an
 | `IResult` (`Maple.Result`) | `IOperationResult` |
 | `result.IsSuccess()` | `result.IsSuccess` |
 | `!result.IsSuccess()` | `result.IsError` |
-| `result.Value` relied on as the default value of a failed result | `result.GetValueOrDefault(default)` or a check of `result.IsSuccess` |
+| `result.Value` relied on as the default value of a failed result | `result.TryGetValue(out var value) ? value : default` or a check of `result.IsSuccess` |
 | `WithErrorDetail(…, messageId: …, namedValues: …)` (named arguments) | `WithErrorDetail(…, detailTemplateId: …, detailNamedValues: …)` |
 | `var (id, parameters) = templatedMessage;` | `templatedMessage is { TemplateId: var id, Params: var parameters }` |
 | `JsonSerializer.Deserialize<Result<T>>(…)` / `Deserialize<Error>(…)` | your own DTO, or the planned converter packages |
