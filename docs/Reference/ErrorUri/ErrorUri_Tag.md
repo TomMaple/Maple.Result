@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Result](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorUri.cs#L132" target="_blank">ErrorUri.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorUri.cs#L138" target="_blank">ErrorUri.cs</a>
 
 Creates a new instance of the [ErrorUri](ErrorUri.md) record representing a *URI Tag*.
 
@@ -35,6 +35,8 @@ The method validates the value against the *RFC 4151* syntax, `tag:` *authority*
 * the specific part and the fragment consist of letters, digits, `-._~!$&'()*+,;=:@/?` and percent-encoded octets (`%XX`).
 
 The value is stored as passed, without normalization, so white space (including a trailing new line), invalid percent-encoding (e.g., `%zz`) and literal non-ASCII characters are rejected.
+
+The scheme is case-insensitive (*RFC 3986*, section 3.1), so `TAG:example.com,2026:x` is accepted. Tags are compared character by character (*RFC 4151*, section 2.4), so it is a different tag from `tag:example.com,2026:x`; use the lowercase `tag:`.
 
 ## Examples
 ```csharp

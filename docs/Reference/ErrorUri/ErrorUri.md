@@ -7,10 +7,12 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Provides a validated *URI* for the purpose of the *Error* record properties like [InstanceUri](../Error/Error_InstanceUri.md) and [TypeUri](../Error/Error_TypeUri.md).
 
 ```csharp
-public readonly record struct ErrorUri
+public readonly record struct ErrorUri : IParsable<ErrorUri>
 ```
 
 Inheritance [Object](https://learn.microsoft.com/dotnet/api/system.object) → [ValueType](https://learn.microsoft.com/dotnet/api/system.valuetype) → ErrorUri
+
+Implements [IParsable&lt;ErrorUri&gt;](https://learn.microsoft.com/dotnet/api/system.iparsable-1)
 
 
 ## Examples
@@ -48,13 +50,15 @@ var error = Error.Failure(ErrorUri.None(), "The operation could not be completed
 | [GetHashCode()](ErrorUri_GetHashCode.md) | Returns a hash code that is consistent with [Equals(ErrorUri)](ErrorUri_Equals.md). |
 | [Locator(String)](ErrorUri_Locator.md) | Creates a new instance of the [ErrorUri](ErrorUri.md) record with a *URI Locator* value. |
 | [None()](ErrorUri_None.md) |  Creates a new instance of the [ErrorUri](ErrorUri.md) record with the `about:blank` value. |
+| [Parse(String)](ErrorUri_Parse.md) | Creates a new instance of the [ErrorUri](ErrorUri.md) record of the kind that the value has (e.g., a *URI Tag* for `tag:…`). |
 | [Relative(String)](ErrorUri_Relative.md) | Creates a new instance of the [ErrorUri](ErrorUri.md) record with a relative *URI* reference with the full path. |
 | [Tag(String)](ErrorUri_Tag.md) | Creates a new instance of the [ErrorUri](ErrorUri.md) record with a *URI Tag* value. |
 | [ToString()](ErrorUri_ToString.md) | Returns the *URI* [Value](ErrorUri_Value.md). |
+| [TryParse(String, ErrorUri)](ErrorUri_TryParse.md) | Tries to create a new instance of the [ErrorUri](ErrorUri.md) record of the kind that the value has, without throwing. |
 | [Urn(String)](ErrorUri_Urn.md) | Creates a new instance of the [ErrorUri](ErrorUri.md) record with a *URN* value. |
 
 ## Remarks
-[ErrorUri](ErrorUri.md) has no public constructor: create it with one of the factory methods, which validate the value. An [ErrorUri](ErrorUri.md) therefore always holds a valid *URI* reference.
+[ErrorUri](ErrorUri.md) has no public constructor: create it with one of the factory methods, which validate the value, or, when the kind is not known in advance (e.g., a *URI* read from another service), with [Parse(String)](ErrorUri_Parse.md) or [TryParse(String, ErrorUri)](ErrorUri_TryParse.md), which detect the kind and apply the same validation. An [ErrorUri](ErrorUri.md) therefore always holds a valid *URI* reference.
 
 | Factory method | Value | Typical use |
 | -------------- | ----- | ----------- |

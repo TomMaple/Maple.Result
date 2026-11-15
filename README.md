@@ -314,6 +314,8 @@ It is a mandatory URI that identifies the type of the problem. It can be:
 * *URN* (`ErrorUri.Urn(…)`) — a persistent, non-dereferenceable name of the type of the problem (e.g., `urn:exampleapp:errors:signup:email-required`),
 * relative reference (`ErrorUri.Relative(…)`) — a full path resolved against the base URI of the response (e.g., `/errors/signup/email-required`); RFC 9457 recommends absolute URIs when possible.
 
+When the kind is not known in advance (e.g., a type URI read from another service), `ErrorUri.Parse(…)` and `ErrorUri.TryParse(…)` detect it from the value and apply the same validation.
+
 ### Instance URI
 It is an optional URI that identifies the specific occurrence of the problem. It can be:
 * *URI Locator* (`ErrorUri.Locator(…)`) — dereferencing it SHOULD provide the problem details object or information about the problem occurrence in other formats (e.g., `https://exampleapp/api/errors/982384293852/details`),

@@ -339,6 +339,7 @@ The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an
 * **`WithMetadata` with tuples** — `error.WithMetadata(("limit", 100), ("remaining", 0))` on `Error` and `ErrorBuilder` adds several entries in one call.
 * **`Error.WithErrorDetail()`** and **`Error.ToBuilder()`** — see above.
 * **`ErrorCategory.LimitExceeded`** — see above.
+* **`ErrorUri.Parse()`**, **`ErrorUri.TryParse()`** and **`IParsable<ErrorUri>`** — create an `ErrorUri` when the kind is not known in advance: the kind is detected from the value (`about:blank`, `/…`, `tag:`, `urn:`, `http:`/`https:`) and validated as by its factory method. See [Parse](Reference/ErrorUri/ErrorUri_Parse.md).
 * **`ErrorUri.Urn()`** and **`ErrorUri.Relative()`** — `urn:` types and instances (*RFC 8141*), and relative references with the full path (e.g., the *RFC 9457* example `/account/12345/msgs/abc`). See [ErrorUri](Reference/ErrorUri/ErrorUri.md).
 * **Mixed LINQ queries** — synchronous and asynchronous `from` clauses can be mixed in one query (e.g., `from user in GetUserAsync(id) from address in GetAddress(user) select …`); the query is then asynchronous and has to be awaited. See [SelectMany](Reference/Extensions/LinqTaskAsyncExtensions_SelectMany.md).
 * **`ResultConfiguration.ContinueOnCapturedContext`** — a global default for the `continueOnCapturedContext` argument of the asynchronous extension methods and for the LINQ query operators; see above.
