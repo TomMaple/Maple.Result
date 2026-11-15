@@ -69,6 +69,8 @@ are marked breaking. Preview the notes locally with `git cliff --unreleased --st
 	* Every source file starts with the SPDX license identifier and the copyright header.
 	* Members are ordered alphabetically within each `#region`.
 	* Chained calls go one per line, unless the whole statement fits on one line.
+	* A statement that spans several lines is followed by an empty line (Rider applies it, `.editorconfig`); a `return` is
+	  preceded by an empty line, except in a block of exactly two one-line statements.
 	* Conditional expressions (`?:`) go one operand per line, with `?` and `:` at the start of the line (Rider applies it,
 	  `.editorconfig`).
 	* In `src`, an argument or an initializer value is a simple expression: a variable, a constant or a literal, a member
