@@ -8,6 +8,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+using Maple.Result.Tests.Unit.TestingInfrastructure.Helpers;
 using System;
 
 namespace Maple.Result.Tests.Unit.ErrorUriTests;
@@ -50,8 +51,17 @@ public class ErrorUriParseUnitTests
         " https://example.com/x",   // a leading space
     ];
 
+    /// <summary>Values of a known kind that its factory rejects.</summary>
+    public static readonly TheoryData<string> InvalidValuesOfKnownKind =
+    [
+        "tag:example.com:x",
+        "urn:x",
+        "https://exa mple.com/x",
+        "//example.com/x",
+    ];
+
     /// <summary>Values of a known kind that its factory rejects, and the beginning of the factory's message.</summary>
-    public static readonly TheoryData<string, string> InvalidValuesOfKnownKind = new()
+    public static readonly TheoryData<string, string> InvalidValuesOfKnownKindWithMessages = new()
     {
         { "tag:example.com:x", "The URI tag is not valid." },
         { "urn:x", "The URN is not valid." },
@@ -98,7 +108,7 @@ public class ErrorUriParseUnitTests
     }
 
     [Theory]
-    [MemberData(nameof(InvalidValuesOfKnownKind))]
+    [MemberData(nameof(InvalidValuesOfKnownKindWithMessages))]
     public void Parse_InvalidValueOfKnownKind_ThrowsTheMessageOfItsFactory(string value, string expectedMessageStart)
     {
         // Act
@@ -127,6 +137,82 @@ public class ErrorUriParseUnitTests
 
         // Assert
         result.ShouldBe(errorUri);
+    }
+
+    #endregion
+
+    #region TryParse
+
+    [Theory]
+    [MemberData(nameof(ValidValues))]
+    public void TryParse_ValidValue_ReturnsTrueAndTheErrorUriOfItsKind(string value, ErrorUri expected)
+    {
+        // Act
+        var parsed = ErrorUri.TryParse(value, out var result);
+
+        // Assert
+        parsed.ShouldBeTrue();
+        result.ShouldBe(expected);
+        result.Value.ShouldBe(expected.Value);
+    }
+
+    [Theory]
+    [MemberData(nameof(UnknownKinds))]
+    public void TryParse_UnknownKind_ReturnsFalse(string value)
+    {
+        // Act
+        var parsed = ErrorUri.TryParse(value, out _);
+
+        // Assert
+        parsed.ShouldBeFalse();
+    }
+
+    [Theory]
+    [MemberData(nameof(InvalidValuesOfKnownKind))]
+    public void TryParse_InvalidValueOfKnownKind_ReturnsFalse(string value)
+    {
+        // Act
+        var parsed = ErrorUri.TryParse(value, out _);
+
+        // Assert
+        parsed.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void TryParse_Null_ReturnsFalse()
+    {
+        // Act
+        var parsed = ErrorUri.TryParse(null, out _);
+
+        // Assert
+        parsed.ShouldBeFalse();
+    }
+
+    [Theory]
+    [MemberData(nameof(ErrorUris))]
+    public void TryParse_ValueOfAnErrorUri_ReturnsAnEqualErrorUri(ErrorUri errorUri)
+    {
+        // Act
+        var parsed = ErrorUri.TryParse(errorUri.Value, out var result);
+
+        // Assert
+        parsed.ShouldBeTrue();
+        result.ShouldBe(errorUri);
+    }
+
+    // An exception would allocate; the values are checked by patterns, so a rejected value allocates nothing.
+    [Theory]
+    [InlineData("tag:example.com:x")]
+    [InlineData("urn:x")]
+    [InlineData("//example.com/x")]
+    [InlineData("mailto:support@example.com")]
+    public void TryParse_RejectedValue_AllocatesNothing(string value)
+    {
+        // Act
+        var allocated = AllocationHelper.AllocatedBytes(() => _ = ErrorUri.TryParse(value, out _));
+
+        // Assert
+        allocated.ShouldBe(0);
     }
 
     #endregion
