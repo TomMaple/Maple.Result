@@ -165,6 +165,8 @@
     <File Path="docs/Reference/Result/Result_IsError.md" />
     <File Path="docs/Reference/Result/Result_IsSuccess.md" />
     <File Path="docs/Reference/Result/Result_Success.md" />
+    <File Path="docs/Reference/Result/Result_Try.md" />
+    <File Path="docs/Reference/Result/Result_TryAsync.md" />
     <File Path="docs/Reference/Result/Result_TryGetError.md" />
   </Folder>
   <Folder Name="/docs/Reference/ResultConfiguration/">

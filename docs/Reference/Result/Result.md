@@ -62,6 +62,8 @@ public Result DeleteUser(int userId)
 | [FromError(Error)](Result_FromError.md) | Creates a new failure [Result](Result.md) from the specified [Error](../Error/Error.md). |
 | [FromValue&lt;T&gt;(T)](Result_FromValue.md) | Creates a new successful [Result&lt;T&gt;](../ResultT/ResultT.md) containing the specified value. |
 | [Success()](Result_Success.md) | Creates a new instance of successful [Result](Result.md). |
+| [Try](Result_Try.md) | Runs code that can throw and turns the exception into a failed result, with the error that a mapper function creates. |
+| [TryAsync](Result_TryAsync.md) | Runs asynchronous code that can throw and turns the exception into a failed result, with the error that a mapper function creates. |
 | [TryGetError(Error)](Result_TryGetError.md) | Gets the error of a failed result. |
 
 ## Operators
