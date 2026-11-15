@@ -354,9 +354,11 @@ public class NullCheckUnitTests
             case Task task:
                 await task;
                 break;
+
             case ValueTask valueTask:
                 await valueTask;
                 break;
+
             case not null when returned.GetType().IsGenericType && returned.GetType().GetGenericTypeDefinition() == typeof(ValueTask<>):
                 await (Task)returned.GetType().GetMethod(nameof(ValueTask<>.AsTask))!.Invoke(returned, null)!;
                 break;
