@@ -14,9 +14,11 @@ Enables the single-clause LINQ query syntax (a `from … select …` query witho
 ## Remarks
 A selector that returns an [Error](../Error/Error.md) makes the query fail: such a query returns a failed [Result](../Result/Result.md) instead of a **successful** `Result<Error>`.
 
+A selector that returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>` is not supported: the query does not await it, so such a query is a compile error. Await the operation with [IfSuccessAsync](IfSuccessTaskAsyncExtensions_IfSuccessAsync.md) instead, or chain it in a `from` clause whose function returns a `Task<Result<T>>`. To keep the task in the result on purpose, call `Select<T, Task>(…)` with explicit type arguments.
+
 
 ## Select&lt;T, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, TNext&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqTaskAsyncExtensions.cs#L59" target="_blank">LinqTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqTaskAsyncExtensions.cs#L61" target="_blank">LinqTaskAsyncExtensions.cs</a>
 
 Projects the value of a successful [Result&lt;T&gt;](../ResultT/ResultT.md) produced by the awaited `result` into a new [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result&lt;TNext&gt;](../ResultT/ResultT.md)&gt; by applying the provided selector function; or returns a new [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result&lt;TNext&gt;](../ResultT/ResultT.md)&gt; with the same error, otherwise.
 
@@ -63,7 +65,7 @@ var displayNameResult =
 
 
 ## Select&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqTaskAsyncExtensions.cs#L106" target="_blank">LinqTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqTaskAsyncExtensions.cs#L108" target="_blank">LinqTaskAsyncExtensions.cs</a>
 
 Applies the provided `selector` to the value of a successful [Result&lt;T&gt;](../ResultT/ResultT.md) produced by the awaited `result` and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) it returns; otherwise, returns a failed [Result](../Result/Result.md) with the original [Error](../Error/Error.md).
 

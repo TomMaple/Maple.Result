@@ -18,11 +18,13 @@ Enables the LINQ query syntax with more than one `from` clause for [Result&lt;T&
 ## Remarks
 A result selector that returns an [Error](../../Error/Error.md) makes the query fail: such a query returns a failed [Result](../../Result/Result.md) instead of a **successful** `Result<Error>`.
 
+A result selector that returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>` is not supported: the query does not await it, so such a query is a compile error. Await the operation with [IfSuccessAsync](IfSuccessValueTaskAsyncExtensions_IfSuccessAsync.md) instead, or chain it in a `from` clause whose function returns a `ValueTask<Result<T>>`. To keep the task in the result on purpose, call `SelectMany<T, TMiddle, Task>(…)` with explicit type arguments.
+
 The query syntax needs a value in every `from` clause, so it works with [Result&lt;T&gt;](../../ResultT/ResultT.md) but not with the non-generic [Result](../../Result/Result.md). A `ValueTask` and a `Task` cannot be mixed in one query.
 
 
 ## SelectMany&lt;T, TMiddle, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;T, TMiddle, TNext&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L165" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L167" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
 
 Returns a new instance of [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result&lt;TNext&gt;](../../ResultT/ResultT.md)&gt; instance by applying the provided selector functions if the current [Result&lt;T&gt;](../../ResultT/ResultT.md) if it is successful; or a new [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result&lt;TNext&gt;](../../ResultT/ResultT.md)&gt; instance with the same error, otherwise.
 
@@ -80,7 +82,7 @@ var emailResult =
 
 
 ## SelectMany&lt;T, TMiddle, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&lt;TMiddle&gt;&gt;, Func&lt;T, TMiddle, TNext&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L225" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L227" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
 
 Applies the synchronous `collectionSelector` and the `resultSelector` to the value of a successful [Result&lt;T&gt;](../../ResultT/ResultT.md) produced by the awaited `result`; otherwise, returns a failed result with the original [Error](../../Error/Error.md).
 
@@ -135,7 +137,7 @@ var addressResult =
 
 
 ## SelectMany&lt;T, TMiddle, TNext&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;T, TMiddle, TNext&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L277" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L279" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
 
 Applies the asynchronous `collectionSelector` and the `resultSelector` to the value of a successful `result`; otherwise, returns a failed result with the original [Error](../../Error/Error.md).
 
@@ -190,7 +192,7 @@ var ordersResult =
 
 
 ## SelectMany&lt;T, TMiddle&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;T, TMiddle, Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L342" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L344" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
 
 Applies the asynchronous `collectionSelector` and the `resultSelector` to the value of a successful [Result&lt;T&gt;](../../ResultT/ResultT.md) produced by the awaited `result` and returns a failed [Result](../../Result/Result.md) with the [Error](../../Error/Error.md) returned by `resultSelector`; otherwise, returns a failed [Result](../../Result/Result.md) with the first [Error](../../Error/Error.md).
 
@@ -242,7 +244,7 @@ var result =
 
 
 ## SelectMany&lt;T, TMiddle&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&lt;TMiddle&gt;&gt;, Func&lt;T, TMiddle, Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L407" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L409" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
 
 Applies the synchronous `collectionSelector` and the `resultSelector` to the value of a successful [Result&lt;T&gt;](../../ResultT/ResultT.md) produced by the awaited `result` and returns a failed [Result](../../Result/Result.md) with the [Error](../../Error/Error.md) returned by `resultSelector`; otherwise, returns a failed [Result](../../Result/Result.md) with the first [Error](../../Error/Error.md).
 
@@ -294,7 +296,7 @@ var result =
 
 
 ## SelectMany&lt;T, TMiddle&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;T, TMiddle, Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L463" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L465" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
 
 Applies the asynchronous `collectionSelector` and the `resultSelector` to the value of a successful [Result&lt;T&gt;](../../ResultT/ResultT.md) and returns a failed [Result](../../Result/Result.md) with the [Error](../../Error/Error.md) returned by `resultSelector`; otherwise, returns a failed [Result](../../Result/Result.md) with the first [Error](../../Error/Error.md).
 

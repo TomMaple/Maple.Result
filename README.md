@@ -479,7 +479,7 @@ var userTokenResult =
 ```
 
 > [!NOTE]
-> The query syntax needs a value in every `from` clause, so it works with `Result<T>` (and its `Task` and `ValueTask`) but not with the non-generic `Result`. Chain operations that return a `Result` with `IfSuccess()` / `IfSuccessAsync()` instead. Mixing a `Task` and a `ValueTask` in one query is not supported.
+> The query syntax needs a value in every `from` clause, so it works with `Result<T>` (and its `Task` and `ValueTask`) but not with the non-generic `Result`. Chain operations that return a `Result` with `IfSuccess()` / `IfSuccessAsync()` instead. Mixing a `Task` and a `ValueTask` in one query is not supported. A `select` that returns a task is a compile error, because the query would not await it: chain the operation in a `from` clause (with a function that returns `Task<Result<T>>`) or use `IfSuccessAsync()`.
 
 ### Asynchronous methods in UI applications
 The asynchronous extension methods that take a `Task` or `ValueTask` of a result await it with `ConfigureAwait(false)` by default, so the delegates you pass run on a thread-pool thread. That is the right choice for ASP.NET Core, console applications, Azure Functions and background services.
