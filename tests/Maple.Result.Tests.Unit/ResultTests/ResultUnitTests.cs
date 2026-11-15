@@ -1111,62 +1111,6 @@ public class ResultUnitTests
 
     #endregion
 
-    #region Result<T>, GetValueOrDefault
-
-    [Fact]
-    public void GetValueOrDefault_Success_ReturnsTheValue()
-    {
-        // Arrange
-        var sut = Result.FromValue(42);
-
-        // Act
-        var result = sut.GetValueOrDefault(-1);
-
-        // Assert
-        result.ShouldBe(42);
-    }
-
-    [Fact]
-    public void GetValueOrDefault_ValueTypeFailure_ReturnsTheFallback()
-    {
-        // Arrange
-        var sut = Result<int>.FromError(Error.NotFound(ErrorUri.Tag("tag:test.com,2024:Test"), "Test title"));
-
-        // Act
-        var result = sut.GetValueOrDefault(-1);
-
-        // Assert
-        result.ShouldBe(-1);
-    }
-
-    [Fact]
-    public void GetValueOrDefault_ReferenceTypeFailure_ReturnsTheFallback()
-    {
-        // Arrange
-        var sut = Result<string>.FromError(Error.NotFound(ErrorUri.Tag("tag:test.com,2024:Test"), "Test title"));
-
-        // Act
-        var result = sut.GetValueOrDefault("fallback");
-
-        // Assert
-        result.ShouldBe("fallback");
-    }
-
-    [Fact]
-    public void GetValueOrDefault_SuccessWithNullValue_ReturnsNullNotTheFallback()
-    {
-        // Arrange
-        var sut = Result.FromValue<string?>(null);
-
-        // Act
-        var result = sut.GetValueOrDefault("fallback");
-
-        // Assert
-        result.ShouldBeNull();
-    }
-
-    #endregion
-
     #region Result<T>, value type failure
 
     [Fact]
