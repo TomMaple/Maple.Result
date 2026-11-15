@@ -303,6 +303,24 @@ public sealed record Result<T> : IOperationResult
     public bool IsError => Error is not null;
 
     /// <summary>
+    ///     Gets the value of a successful result.
+    /// </summary>
+    /// <remarks>
+    ///     It never throws. Use it when the error is not needed (e.g., to fall back to another value); after it returns
+    ///     <see langword="false" />, <see cref="Error" /> is not <see langword="null" />.
+    /// </remarks>
+    /// <param name="value">
+    ///     When this method returns, the <see cref="Value" /> if the result is successful; otherwise, the default value of <typeparamref name="T" />.
+    /// </param>
+    /// <returns><see langword="true" /> if the result is successful; otherwise, <see langword="false" />.</returns>
+    [MemberNotNullWhen(false, nameof(Error))]
+    public bool TryGetValue([MaybeNullWhen(false)] out T value)
+    {
+        value = _value;
+        return Error is null;
+    }
+
+    /// <summary>
     ///     Gets the value of a successful result, or the <see cref="Error" /> of a failed one.
     /// </summary>
     /// <remarks>
@@ -322,24 +340,6 @@ public sealed record Result<T> : IOperationResult
         error = Error;
 
         return error is null;
-    }
-
-    /// <summary>
-    ///     Gets the value of a successful result.
-    /// </summary>
-    /// <remarks>
-    ///     It never throws. Use it when the error is not needed (e.g., to fall back to another value); after it returns
-    ///     <see langword="false" />, <see cref="Error" /> is not <see langword="null" />.
-    /// </remarks>
-    /// <param name="value">
-    ///     When this method returns, the <see cref="Value" /> if the result is successful; otherwise, the default value of <typeparamref name="T" />.
-    /// </param>
-    /// <returns><see langword="true" /> if the result is successful; otherwise, <see langword="false" />.</returns>
-    [MemberNotNullWhen(false, nameof(Error))]
-    public bool TryGetValue([MaybeNullWhen(false)] out T value)
-    {
-        value = _value;
-        return Error is null;
     }
 
     /// <summary>
