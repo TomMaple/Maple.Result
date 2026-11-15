@@ -1,12 +1,23 @@
 <Solution>
   <Folder Name="/.github/">
+    <File Path=".github/CODEOWNERS" />
     <File Path=".github/dependabot.yml" />
+  </Folder>
+  <Folder Name="/.github/scripts/">
+    <File Path=".github/scripts/changes.py" />
+    <File Path=".github/scripts/conventional_commit.py" />
+    <File Path=".github/scripts/filter_sarif.py" />
+    <File Path=".github/scripts/version.py" />
   </Folder>
   <Folder Name="/.github/workflows/">
     <File Path=".github/workflows/ci.yml" />
     <File Path=".github/workflows/codeql.yml" />
+    <File Path=".github/workflows/dependabot-auto-merge.yml" />
     <File Path=".github/workflows/draft-release.yml" />
+    <File Path=".github/workflows/pr-lint.yml" />
     <File Path=".github/workflows/publish.yml" />
+    <File Path=".github/workflows/scorecard.yml" />
+    <File Path=".github/workflows/workflow-lint.yml" />
   </Folder>
   <Folder Name="/.resources/">
     <File Path=".resources/icon.png" />
@@ -14,8 +25,7 @@
   <Folder Name="/docs/">
     <File Path="docs/conventions.md" />
     <File Path="docs/goals.md" />
-    <File Path="LICENSE" />
-    <File Path="README.md" />
+    <File Path="docs/migration-v2-to-v3.md" />
   </Folder>
   <Folder Name="/docs/Reference/">
     <File Path="docs/Reference/ErrorCategory.md" />
@@ -23,27 +33,57 @@
   </Folder>
   <Folder Name="/docs/Reference/Error/">
     <File Path="docs/Reference/Error/Error.md" />
-    <File Path="docs/Reference/Error/Error_AddDetail.md" />
     <File Path="docs/Reference/Error/Error_Category.md" />
     <File Path="docs/Reference/Error/Error_Conflict.md" />
-    <File Path="docs/Reference/Error/Error_constructors.md" />
     <File Path="docs/Reference/Error/Error_Critical.md" />
     <File Path="docs/Reference/Error/Error_Detail.md" />
     <File Path="docs/Reference/Error/Error_DetailTemplated.md" />
-    <File Path="docs/Reference/Error/Error_ErrorDetails.md" />
     <File Path="docs/Reference/Error/Error_Equals.md" />
+    <File Path="docs/Reference/Error/Error_ErrorDetails.md" />
     <File Path="docs/Reference/Error/Error_Failure.md" />
     <File Path="docs/Reference/Error/Error_GetHashCode.md" />
     <File Path="docs/Reference/Error/Error_InstanceUri.md" />
+    <File Path="docs/Reference/Error/Error_LimitExceeded.md" />
+    <File Path="docs/Reference/Error/Error_Metadata.md" />
     <File Path="docs/Reference/Error/Error_NotFound.md" />
     <File Path="docs/Reference/Error/Error_NotImplemented.md" />
     <File Path="docs/Reference/Error/Error_Timeout.md" />
     <File Path="docs/Reference/Error/Error_Title.md" />
+    <File Path="docs/Reference/Error/Error_ToBuilder.md" />
+    <File Path="docs/Reference/Error/Error_TryGetMetadata.md" />
     <File Path="docs/Reference/Error/Error_TypeUri.md" />
     <File Path="docs/Reference/Error/Error_Unauthenticated.md" />
     <File Path="docs/Reference/Error/Error_Unauthorized.md" />
     <File Path="docs/Reference/Error/Error_Unavailable.md" />
     <File Path="docs/Reference/Error/Error_Validation.md" />
+    <File Path="docs/Reference/Error/Error_WithErrorDetail.md" />
+    <File Path="docs/Reference/Error/Error_WithMetadata.md" />
+    <File Path="docs/Reference/Error/Error_WithoutMetadata.md" />
+  </Folder>
+  <Folder Name="/docs/Reference/ErrorBuilder/">
+    <File Path="docs/Reference/ErrorBuilder/ErrorBuilder.md" />
+    <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_AddErrorDetail.md" />
+    <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_Build.md" />
+    <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_Conflict.md" />
+    <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_constructors.md" />
+    <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_Critical.md" />
+    <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_Failure.md" />
+    <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_LimitExceeded.md" />
+    <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_NotFound.md" />
+    <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_NotImplemented.md" />
+    <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_Timeout.md" />
+    <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_Unauthenticated.md" />
+    <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_Unauthorized.md" />
+    <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_Unavailable.md" />
+    <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_Validation.md" />
+    <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_WithCategory.md" />
+    <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_WithDetail.md" />
+    <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_WithDetailTemplated.md" />
+    <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_WithInstanceUri.md" />
+    <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_WithMetadata.md" />
+    <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_WithoutMetadata.md" />
+    <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_WithTitle.md" />
+    <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_WithTypeUri.md" />
   </Folder>
   <Folder Name="/docs/Reference/ErrorDetail/">
     <File Path="docs/Reference/ErrorDetail/ErrorDetail.md" />
@@ -54,10 +94,17 @@
   </Folder>
   <Folder Name="/docs/Reference/ErrorUri/">
     <File Path="docs/Reference/ErrorUri/ErrorUri.md" />
-    <File Path="docs/Reference/ErrorUri/ErrorUri_constructors.md" />
+    <File Path="docs/Reference/ErrorUri/ErrorUri_Equals.md" />
+    <File Path="docs/Reference/ErrorUri/ErrorUri_GetHashCode.md" />
     <File Path="docs/Reference/ErrorUri/ErrorUri_Locator.md" />
     <File Path="docs/Reference/ErrorUri/ErrorUri_None.md" />
+    <File Path="docs/Reference/ErrorUri/ErrorUri_Other.md" />
+    <File Path="docs/Reference/ErrorUri/ErrorUri_Parse.md" />
+    <File Path="docs/Reference/ErrorUri/ErrorUri_Relative.md" />
     <File Path="docs/Reference/ErrorUri/ErrorUri_Tag.md" />
+    <File Path="docs/Reference/ErrorUri/ErrorUri_ToString.md" />
+    <File Path="docs/Reference/ErrorUri/ErrorUri_TryParse.md" />
+    <File Path="docs/Reference/ErrorUri/ErrorUri_Urn.md" />
     <File Path="docs/Reference/ErrorUri/ErrorUri_Value.md" />
   </Folder>
   <Folder Name="/docs/Reference/Extensions/">
@@ -65,42 +112,47 @@
     <File Path="docs/Reference/Extensions/IfErrorExtensions_IfError.md" />
     <File Path="docs/Reference/Extensions/IfErrorTaskAsyncExtensions.md" />
     <File Path="docs/Reference/Extensions/IfErrorTaskAsyncExtensions_IfErrorAsync.md" />
-    <File Path="docs/Reference/Extensions/IfErrorValueTaskAsyncExtensions.md" />
-    <File Path="docs/Reference/Extensions/IfErrorValueTaskAsyncExtensions_IfErrorAsync.md" />
     <File Path="docs/Reference/Extensions/IfSuccessExtensions.md" />
     <File Path="docs/Reference/Extensions/IfSuccessExtensions_IfSuccess.md" />
     <File Path="docs/Reference/Extensions/IfSuccessTaskAsyncExtensions.md" />
     <File Path="docs/Reference/Extensions/IfSuccessTaskAsyncExtensions_IfSuccessAsync.md" />
-    <File Path="docs/Reference/Extensions/IfSuccessValueTaskAsyncExtensions.md" />
-    <File Path="docs/Reference/Extensions/IfSuccessValueTaskAsyncExtensions_IfSuccessAsync.md" />
     <File Path="docs/Reference/Extensions/LinqExtensions.md" />
+    <File Path="docs/Reference/Extensions/LinqExtensions_Select.md" />
     <File Path="docs/Reference/Extensions/LinqExtensions_SelectMany.md" />
     <File Path="docs/Reference/Extensions/LinqTaskAsyncExtensions.md" />
+    <File Path="docs/Reference/Extensions/LinqTaskAsyncExtensions_Select.md" />
     <File Path="docs/Reference/Extensions/LinqTaskAsyncExtensions_SelectMany.md" />
-    <File Path="docs/Reference/Extensions/LinqValueTaskAsyncExtensions.md" />
-    <File Path="docs/Reference/Extensions/LinqValueTaskAsyncExtensions_SelectMany.md" />
     <File Path="docs/Reference/Extensions/MatchExtensions.md" />
     <File Path="docs/Reference/Extensions/MatchExtensions_Match.md" />
     <File Path="docs/Reference/Extensions/MatchTaskAsyncExtensions.md" />
     <File Path="docs/Reference/Extensions/MatchTaskAsyncExtensions_MatchAsync.md" />
-    <File Path="docs/Reference/Extensions/MatchValueTaskAsyncExtensions.md" />
-    <File Path="docs/Reference/Extensions/MatchValueTaskAsyncExtensions_MatchAsync.md" />
     <File Path="docs/Reference/Extensions/namespace.md" />
     <File Path="docs/Reference/Extensions/ResultExtensions.md" />
     <File Path="docs/Reference/Extensions/ResultExtensions_ToResult.md" />
     <File Path="docs/Reference/Extensions/ResultTaskAsyncExtensions.md" />
     <File Path="docs/Reference/Extensions/ResultTaskAsyncExtensions_ToResultAsync.md" />
-    <File Path="docs/Reference/Extensions/ResultValueTaskAsyncExtensions.md" />
-    <File Path="docs/Reference/Extensions/ResultValueTaskAsyncExtensions_ToResultAsync.md" />
   </Folder>
-  <Folder Name="/docs/Reference/IResult/">
-    <File Path="docs/Reference/IResult/IResult.md" />
-    <File Path="docs/Reference/IResult/IResult_Error.md" />
-    <File Path="docs/Reference/IResult/IResult_IsSuccess.md" />
+  <Folder Name="/docs/Reference/Extensions/ValueTasks/">
+    <File Path="docs/Reference/Extensions/ValueTasks/IfErrorValueTaskAsyncExtensions.md" />
+    <File Path="docs/Reference/Extensions/ValueTasks/IfErrorValueTaskAsyncExtensions_IfErrorAsync.md" />
+    <File Path="docs/Reference/Extensions/ValueTasks/IfSuccessValueTaskAsyncExtensions.md" />
+    <File Path="docs/Reference/Extensions/ValueTasks/IfSuccessValueTaskAsyncExtensions_IfSuccessAsync.md" />
+    <File Path="docs/Reference/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.md" />
+    <File Path="docs/Reference/Extensions/ValueTasks/LinqValueTaskAsyncExtensions_Select.md" />
+    <File Path="docs/Reference/Extensions/ValueTasks/LinqValueTaskAsyncExtensions_SelectMany.md" />
+    <File Path="docs/Reference/Extensions/ValueTasks/MatchValueTaskAsyncExtensions.md" />
+    <File Path="docs/Reference/Extensions/ValueTasks/MatchValueTaskAsyncExtensions_MatchAsync.md" />
+    <File Path="docs/Reference/Extensions/ValueTasks/namespace.md" />
+    <File Path="docs/Reference/Extensions/ValueTasks/ResultValueTaskAsyncExtensions.md" />
+    <File Path="docs/Reference/Extensions/ValueTasks/ResultValueTaskAsyncExtensions_ToResultAsync.md" />
+  </Folder>
+  <Folder Name="/docs/Reference/IOperationResult/">
+    <File Path="docs/Reference/IOperationResult/IOperationResult.md" />
+    <File Path="docs/Reference/IOperationResult/IOperationResult_Error.md" />
+    <File Path="docs/Reference/IOperationResult/IOperationResult_IsSuccess.md" />
   </Folder>
   <Folder Name="/docs/Reference/Result/">
     <File Path="docs/Reference/Result/Result.md" />
-    <File Path="docs/Reference/Result/Result_constructors.md" />
     <File Path="docs/Reference/Result/Result_Error.md" />
     <File Path="docs/Reference/Result/Result_FromError.md" />
     <File Path="docs/Reference/Result/Result_FromValue.md" />
@@ -108,9 +160,12 @@
     <File Path="docs/Reference/Result/Result_IsSuccess.md" />
     <File Path="docs/Reference/Result/Result_Success.md" />
   </Folder>
+  <Folder Name="/docs/Reference/ResultConfiguration/">
+    <File Path="docs/Reference/ResultConfiguration/ResultConfiguration.md" />
+    <File Path="docs/Reference/ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md" />
+  </Folder>
   <Folder Name="/docs/Reference/ResultT/">
     <File Path="docs/Reference/ResultT/ResultT.md" />
-    <File Path="docs/Reference/ResultT/ResultT_constructors.md" />
     <File Path="docs/Reference/ResultT/ResultT_Error.md" />
     <File Path="docs/Reference/ResultT/ResultT_FromError.md" />
     <File Path="docs/Reference/ResultT/ResultT_FromValue.md" />
@@ -126,8 +181,13 @@
     <File Path="docs/Reference/TemplatedMessage/TemplatedMessage_TemplateId.md" />
   </Folder>
   <Folder Name="/root/">
+    <File Path=".editorconfig" />
+    <File Path=".git-blame-ignore-revs" />
     <File Path=".gitattributes" />
     <File Path=".gitignore" />
+    <File Path="cliff.toml" />
+    <File Path="Directory.Build.props" />
+    <File Path="global.json" />
     <File Path="LICENSE" />
     <File Path="README.md" />
   </Folder>
