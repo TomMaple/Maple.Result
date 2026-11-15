@@ -12,6 +12,7 @@ using Maple.Result.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -34,6 +35,7 @@ namespace Maple.Result;
 ///         return a changed copy; to change several members at once, use <see cref="ToBuilder" /> and <see cref="ErrorBuilder.Build" />.
 ///     </para>
 /// </remarks>
+[DebuggerDisplay("{DebuggerDisplay,nq}")]
 public sealed record Error
 {
     #region consts
@@ -447,6 +449,26 @@ public sealed record Error
     #endregion
 
     #region string representation
+
+    /// <summary>
+    ///     The short text shown for the error in the debugger: the category, the title and, if there are any, the number of error details
+    ///     (e.g., <c>Validation "Invalid request" (3 details)</c>). <see cref="ToString" /> stays complete for the logs.
+    /// </summary>
+    internal string DebuggerDisplay
+    {
+        get
+        {
+            var count = ErrorDetailsCollection.Count;
+            if (count == 0)
+                return $"{Category} \"{Title}\"";
+
+            var unit = count == 1
+                ? "detail"
+                : "details";
+
+            return $"{Category} \"{Title}\" ({count} {unit})";
+        }
+    }
 
     /// <summary>
     ///     Appends the members of the error to the <see cref="ToString" /> output,

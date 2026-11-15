@@ -9,6 +9,7 @@
  */
 
 using System;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
@@ -54,6 +55,7 @@ public interface IOperationResult
 ///     The record is immutable. Create it with <see cref="Success" />, <see cref="FromError" /> or the implicit conversion from an <see cref="Error" />.
 /// </remarks>
 /// <inheritdoc cref="IOperationResult" />
+[DebuggerDisplay("{DebuggerDisplay,nq}")]
 public sealed record Result : IOperationResult
 {
     private static readonly Result SuccessResult = new(null);
@@ -148,6 +150,21 @@ public sealed record Result : IOperationResult
     #region string representation
 
     /// <summary>
+    ///     The short text shown for the result in the debugger: <c>Error: </c> and the debugger display of the <see cref="Error" /> for a failed
+    ///     result (e.g., <c>Error: NotFound "Missing"</c>), or <see cref="ToString" /> for a successful one.
+    /// </summary>
+    internal string DebuggerDisplay
+    {
+        get
+        {
+            if (Error is null)
+                return ToString();
+
+            return $"Error: {Error.DebuggerDisplay}";
+        }
+    }
+
+    /// <summary>
     ///     Appends the members of the result to the <see cref="ToString" /> output: the <see cref="Error" /> of a failed result,
     ///     and nothing for a successful one.
     /// </summary>
@@ -174,6 +191,7 @@ public sealed record Result : IOperationResult
 ///     or an <see cref="Error" />. It is successful exactly when it has no <see cref="Error" />.
 /// </remarks>
 /// <inheritdoc cref="IOperationResult" />
+[DebuggerDisplay("{DebuggerDisplay,nq}")]
 public sealed record Result<T> : IOperationResult
 {
     private readonly T _value;
@@ -323,6 +341,21 @@ public sealed record Result<T> : IOperationResult
     #endregion
 
     #region string representation
+
+    /// <summary>
+    ///     The short text shown for the result in the debugger: <c>Error: </c> and the debugger display of the <see cref="Error" /> for a failed
+    ///     result (e.g., <c>Error: NotFound "Missing"</c>), or <see cref="ToString" /> for a successful one.
+    /// </summary>
+    internal string DebuggerDisplay
+    {
+        get
+        {
+            if (Error is null)
+                return ToString();
+
+            return $"Error: {Error.DebuggerDisplay}";
+        }
+    }
 
     /// <summary>
     ///     Appends the members of the result to the <see cref="ToString" /> output: the <see cref="Value" /> of a successful result,

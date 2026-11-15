@@ -57,6 +57,8 @@ The default serializers (*System.Text.Json* and *Newtonsoft.Json*) can write an 
 ### Text representation
 `ToString()` writes all members, including the contents of [ErrorDetails](Error_ErrorDetails.md) and [Metadata](Error_Metadata.md), e.g., `Error { Category = NotFound, TypeUri = about:blank, Title = Missing, …, ErrorDetails = [], Metadata = {} }`.
 
+The debugger shows a short form instead: the category, the title and the number of error details, if there are any (e.g., `Validation "Invalid request" (3 details)`).
+
 ## Properties
 | Name | Description |
 | ---- | ----------- |
