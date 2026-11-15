@@ -186,7 +186,6 @@ public static class LinqValueTaskAsyncExtensions
             return await resultValue.IfSuccessAsync(async ValueTask<Result<TNext>> (x) =>
             {
                 var collectionTask = collectionSelector(x);
-
                 var collectionResult = await Guard.EnsureNotNullResult(
                     collectionTask, nameof(collectionSelector), ResultConfiguration.ContinueOnCapturedContext);
 

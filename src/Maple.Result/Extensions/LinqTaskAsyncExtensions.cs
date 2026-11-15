@@ -180,7 +180,6 @@ public static class LinqTaskAsyncExtensions
             return await resultValue.IfSuccessAsync(async Task<Result<TNext>> (x) =>
             {
                 var collectionTask = collectionSelector(x);
-
                 var collectionResult = await Guard.EnsureNotNullResult(
                     collectionTask, nameof(collectionSelector), ResultConfiguration.ContinueOnCapturedContext);
 
