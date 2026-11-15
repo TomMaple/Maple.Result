@@ -1,4 +1,7 @@
 # Conventions
+These conventions add to the shared [contributing guide](https://github.com/TomMaple/.github/blob/main/CONTRIBUTING.md) and win
+over it.
+
 ## Git
 1. Workflow: [GitHub flow](https://docs.github.com/en/get-started/using-github/github-flow)
 1. Branch naming:
@@ -17,11 +20,19 @@
 1. Commits:
 	* Changes in the `docs` folder go in a separate `docs:` commit, made after all the other changes (code and tests) are
 	  committed.
+1. Signing:
+	* Commits are signed (SSH signing, `commit.gpgsign = true`); `main` accepts only signed commits.
+	* A contributor’s unsigned commits are fine: the pull request is squashed, and GitHub signs the squash commit.
+	* Before merging your own branch with a merge commit, check that every commit is signed
+	  (`git log --format='%h %G? %s' main..`, all `G`); re-sign with `git rebase --force-rebase --gpg-sign main`.
 1. Before opening a pull request, all of these pass:
 	* `dotnet build -c Release`: no warnings (CI treats them as errors; this includes the code style, naming, trim and AOT
 	  rules),
 	* `dotnet test`,
 	* `dotnet format --verify-no-changes`.
+
+	The required checks are `build`, `pr-title`, `Analyze (csharp)` and `Analyze (actions)`. On a pull request without
+	code changes (e.g., only `docs/`), `build` and `Analyze (csharp)` are skipped, which counts as passed.
 1. Pull requests:
 	* The title follows the commit message rules: a squash merge turns the title into the subject of the commit on
 	  `main` and the description into its body, so the release notes and the version bump come from them.
@@ -33,6 +44,14 @@
 	* Create a merge commit only for your own branch whose every commit is a signed conventional commit; the commits
 	  then reach `main` unchanged.
 	* Rebase merging is disabled.
+	* Dependabot pull requests for NuGet minor and patch updates merge automatically once the required checks pass;
+	  NuGet majors and GitHub Actions updates are reviewed and merged by hand.
+1. Workflows:
+	* Every action is pinned to a full commit SHA with the version in a comment (`uses: owner/action@<sha> # vX.Y.Z`);
+	  the repository rejects unpinned actions.
+	* A new third-party action must be added to the allowlist (Settings → Actions → General) first.
+	* A workflow that provides a required check has no `paths` filter; its jobs are skipped instead
+	  (`.github/scripts/changes.py`).
 
 ## Releasing
 Pushes to `main` never publish. The CI workflow only builds, tests and uploads a `X.Y.Z-ci.N` package as a workflow artifact.
@@ -56,13 +75,18 @@ Version:
 * Pre-release: enter e.g. `3.0.0-rc.1`. The draft is marked as a pre-release automatically. The notes of the final
   `3.0.0` then list only the commits after `v3.0.0-rc.1`; merge the notes of the release candidates when editing it.
 
+Never create, move or delete a `v*` tag by hand: the `release-tags` ruleset protects them, and *Publish release*
+creates them.
+
 Release notes list only `feat`, `fix`, `perf` and breaking commits. `docs:`, `chore:` (including dependency bumps),
 `test:`, `ci:`, `build:`, `style:` and `refactor:` commits never appear, and neither do PR merge commits unless they
 are marked breaking. Preview the notes locally with `git cliff --unreleased --strip all`.
 
 ## C#
 1. Source code
-	* [Guidelines](https://learn.microsoft.com/en-us/dotnet/standard/design-guidelines/)
+	* [Framework design guidelines](https://learn.microsoft.com/en-us/dotnet/standard/design-guidelines/) (public API) and
+	  [C# coding conventions](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/coding-style/coding-conventions)
+	  (code style); where they differ from the rules below or from `.editorconfig`, the rules here win.
 	* Indent character: *space*.
 	* Constant naming style: *PascalCase*.
 	* Formatting: `.editorconfig`; lines up to 160 characters.
