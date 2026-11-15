@@ -227,7 +227,7 @@ public class ErrorUnitTests
     }
 
     [Fact]
-    public void Validation_TemplateIdAndEmptyNamedValues_ReturnsTemplateWithEmptyParams()
+    public void Validation_TemplateIdAndEmptyNamedValues_ReturnsTemplateWithNullParams()
     {
         // Act
         var sut = Sut.Validation(ErrorUri.None(), "Test title", detailTemplateId: "message-id",
@@ -235,8 +235,7 @@ public class ErrorUnitTests
 
         // Assert
         sut.DetailTemplated.ShouldNotBeNull();
-        sut.DetailTemplated.Params.ShouldNotBeNull();
-        sut.DetailTemplated.Params.ShouldBeEmpty();
+        sut.DetailTemplated.Params.ShouldBeNull();
     }
 
     [Fact]
@@ -254,6 +253,20 @@ public class ErrorUnitTests
     #endregion
 
     #region WithErrorDetail
+
+    [Fact]
+    public void WithErrorDetail_TemplateIdWithoutNamedValues_AddsDetailWithNullParams()
+    {
+        // Arrange
+        var sut = Sut.Validation(ErrorUri.None(), "Test title");
+
+        // Act
+        var result = sut.WithErrorDetail("#/email", "The email is required.", "errors.email.required");
+
+        // Assert
+        result.ErrorDetails[0].DetailTemplated.ShouldNotBeNull();
+        result.ErrorDetails[0].DetailTemplated!.Params.ShouldBeNull();
+    }
 
     [Fact]
     public void WithErrorDetail_DetailTextOnly_ReturnsCopyWithDetail()

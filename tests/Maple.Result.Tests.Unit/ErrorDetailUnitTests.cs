@@ -17,6 +17,20 @@ public class ErrorDetailUnitTests
     #region ctor
 
     [Fact]
+    public void Equals_DetailWithTemplateIdOnlyVsDetailAddedToError_AreEqual()
+    {
+        // Arrange
+        var detail = new ErrorDetail("#/email", "The email is required.", new TemplatedMessage("errors.email.required"));
+        var added = Error.Validation(ErrorUri.None(), "Test title")
+            .WithErrorDetail("#/email", "The email is required.", "errors.email.required")
+            .ErrorDetails[0];
+
+        // Act & Assert
+        detail.Equals(added).ShouldBeTrue();
+        detail.GetHashCode().ShouldBe(added.GetHashCode());
+    }
+
+    [Fact]
     public void Ctor_AllMembers_SetsThem()
     {
         // Arrange
