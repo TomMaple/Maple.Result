@@ -1,33 +1,41 @@
-# Builds, tests and packs the library on every push and pull request. Nothing is published from here:
+# Builds, tests and packs the library on pushes to main and on pull requests. Nothing is published from here:
 # releases go through the "Draft release" and "Publish" workflows (see docs/conventions.md, "Releasing").
+# The job id "build" is a required status check: keep the name, and never add a "paths" filter.
 # For more information, see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
 name: CI
 
 on:
   push:
-    branches: [ "**" ]
-    paths: [ "src/**", "tests/**", ".github/workflows/**", ".editorconfig" ]
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 env:
   ARTIFACTS_PATH: ${{ github.workspace }}/artifacts
+  RESULTS_PATH: ${{ github.workspace }}/test-results
+  REPORTGENERATOR_VERSION: 5.6.0
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
     steps:
     - name: Checkout
-      uses: actions/checkout@v7
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
         fetch-depth: 0
+        persist-credentials: false
 
     - name: Get bumped version
       id: git_cliff
-      uses: orhun/git-cliff-action@v4.9.1
+      uses: orhun/git-cliff-action@a9a95522b26fe6403f7bb24031f21fb573d0f5ff # v4.9.1
       with:
         version: v2.14.2
         args: --bumped-version
@@ -46,7 +54,7 @@ jobs:
         COMMIT: ${{ github.sha }}
 
     - name: Setup .NET 10
-      uses: actions/setup-dotnet@v6
+      uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
       with:
         dotnet-version: 10.0.x
 
@@ -54,22 +62,49 @@ jobs:
       run: dotnet restore
 
     - name: Check formatting
-      run: dotnet format --verify-no-changes --no-restore --verbosity normal
+      run: dotnet format --verify-no-changes --no-restore
 
+    # Directory.Build.props turns warnings into errors on GitHub Actions.
     - name: Build
-      run: dotnet build --no-restore -p:Version=${{ steps.calculate_version.outputs.package_version }} -p:InformationalVersion=${{ steps.calculate_version.outputs.informational_version }} --configuration Release --verbosity normal
+      run: dotnet build --no-restore --configuration Release "-p:Version=${PACKAGE_VERSION}" "-p:InformationalVersion=${INFORMATIONAL_VERSION}"
+      env:
+        PACKAGE_VERSION: ${{ steps.calculate_version.outputs.package_version }}
+        INFORMATIONAL_VERSION: ${{ steps.calculate_version.outputs.informational_version }}
 
     - name: Test
-      run: dotnet test --no-build --configuration Release --verbosity normal
+      run: >-
+        dotnet test --no-build --configuration Release --results-directory "$RESULTS_PATH"
+        --coverage --coverage-output-format cobertura --coverage-output coverage.cobertura.xml
+        --report-xunit-trx
+
+    - name: Coverage summary
+      if: ${{ !cancelled() }}
+      run: |
+        dotnet tool install --global dotnet-reportgenerator-globaltool --version "$REPORTGENERATOR_VERSION"
+        reportgenerator "-reports:${RESULTS_PATH}/coverage.cobertura.xml" "-targetdir:${RESULTS_PATH}/coverage-report" -reporttypes:MarkdownSummaryGithub
+        cat "${RESULTS_PATH}/coverage-report/SummaryGithub.md" >> "$GITHUB_STEP_SUMMARY"
+
+    - name: Upload test results and coverage
+      if: ${{ !cancelled() }}
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+      with:
+        name: test-results
+        path: ${{ env.RESULTS_PATH }}
+        retention-days: 7
+        if-no-files-found: warn
 
     - name: Generate NuGet package
-      run: dotnet pack src/Maple.Result/Maple.Result.csproj --no-build -o ${{ env.ARTIFACTS_PATH }} -p:Version=${{ steps.calculate_version.outputs.package_version }} -p:InformationalVersion=${{ steps.calculate_version.outputs.informational_version }} --configuration Release
+      run: dotnet pack src/Maple.Result/Maple.Result.csproj --no-build --configuration Release -o "$ARTIFACTS_PATH" "-p:Version=${PACKAGE_VERSION}" "-p:InformationalVersion=${INFORMATIONAL_VERSION}"
+      env:
+        PACKAGE_VERSION: ${{ steps.calculate_version.outputs.package_version }}
+        INFORMATIONAL_VERSION: ${{ steps.calculate_version.outputs.informational_version }}
 
     - name: Upload NuGet package
-      uses: actions/upload-artifact@v7
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
       with:
         name: nuget-${{ steps.calculate_version.outputs.package_version }}
         path: |
           ${{ env.ARTIFACTS_PATH }}/*.nupkg
           ${{ env.ARTIFACTS_PATH }}/*.snupkg
+        retention-days: 7
         if-no-files-found: error
