@@ -537,4 +537,90 @@ public class ErrorUriUnitTests
     }
 
     #endregion
+
+    #region Other
+
+    [Theory]
+    [InlineData("mailto:support@example.com")]
+    [InlineData("ftp://ftp.example.com/problems/out-of-credit")]
+    [InlineData("file:///var/problems/out-of-credit")]
+    [InlineData("x-vendor.problem+v1:out-of-credit")]                    // letters, digits, "+", "-" and "." in the scheme
+    [InlineData("MAILTO:support@example.com")]                          // the scheme in any case, stored as passed
+    [InlineData("data:,out-of-credit")]
+    [InlineData("custom:a/b?c=d#e")]                                    // a query and a fragment
+    [InlineData("custom:caf%C3%A9")]                                    // percent-encoding
+    [InlineData("custom:")]                                             // an empty hier-part (RFC 3986 path-empty)
+    public void Other_AbsoluteUriWithOtherScheme_ReturnsErrorUriWithTheValueAsPassed(string value)
+    {
+        // Act
+        var result = ErrorUri.Other(value);
+
+        // Assert
+        result.Value.ShouldBe(value);
+    }
+
+    [Theory]
+    [InlineData("about:blank", "None")]
+    [InlineData("about:srcdoc", "None")]
+    [InlineData("tag:example.com,2026:x", "Tag")]
+    [InlineData("TAG:example.com,2026:x", "Tag")]
+    [InlineData("urn:example:x", "Urn")]
+    [InlineData("http://example.com/x", "Locator")]
+    [InlineData("HTTPS://example.com/x", "Locator")]
+    public void Other_SupportedScheme_ThrowsUriFormatExceptionNamingItsFactory(string value, string factory)
+    {
+        // Act
+        var exception = Record.Exception(() => ErrorUri.Other(value));
+
+        // Assert
+        exception.ShouldBeOfType<UriFormatException>().Message.ShouldContain($"ErrorUri.{factory}");
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("out-of-credit")]                                       // no scheme
+    [InlineData("../probs/x")]                                          // a relative reference
+    [InlineData("/probs/x")]
+    [InlineData("1x:a")]                                                // a scheme starting with a digit
+    [InlineData("x_y:a")]                                               // "_" in the scheme
+    [InlineData(":a")]                                                  // an empty scheme
+    [InlineData(" mailto:a")]                                           // leading white space
+    [InlineData("mailto:a ")]                                           // trailing white space
+    [InlineData("mailto:a\n")]                                         // a trailing new line
+    [InlineData("mailto:a b")]                                          // a space
+    [InlineData("custom:a%zz")]                                         // invalid percent-encoding
+    [InlineData("custom:a%2")]                                          // truncated percent-encoding
+    [InlineData("custom:café")]                                         // a literal non-ASCII character
+    [InlineData("custom:a#b#c")]                                        // a second "#"
+    public void Other_InvalidAbsoluteUri_ThrowsUriFormatException(string value)
+    {
+        // Act
+        var exception = Record.Exception(() => ErrorUri.Other(value));
+
+        // Assert
+        exception.ShouldBeOfType<UriFormatException>().Message.ShouldStartWith("The URI is not a valid absolute URI.");
+    }
+
+    [Fact]
+    public void Other_Null_ThrowsArgumentNullExceptionNamingTheParameter()
+    {
+        // Act
+        var exception = Record.Exception(() => ErrorUri.Other(null!));
+
+        // Assert
+        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("uri");
+    }
+
+    [Fact]
+    public void Equals_OtherUrisDifferingOnlyInSchemeCase_AreNotEqual()
+    {
+        // Arrange
+        var upperCase = ErrorUri.Other("MAILTO:support@example.com");
+        var lowerCase = ErrorUri.Other("mailto:support@example.com");
+
+        // Act & Assert
+        upperCase.Equals(lowerCase).ShouldBeFalse();
+    }
+
+    #endregion
 }
