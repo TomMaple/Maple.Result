@@ -7,6 +7,9 @@
     <AssemblyName>Maple.Result</AssemblyName>
     <RootNamespace>Maple.Result</RootNamespace>
 
+    <!-- Marks the assembly as trimmable and turns on the trim, AOT and single-file analyzers. -->
+    <IsAotCompatible>true</IsAotCompatible>
+
     <PackageId>Maple.Result</PackageId>
     <Title>Maple.Result — Result pattern with RFC 9457 errors</Title>
     <Description>An abstraction which contains the value or the error of the operation. It can be mapped to the HTTP response if needed.</Description>
