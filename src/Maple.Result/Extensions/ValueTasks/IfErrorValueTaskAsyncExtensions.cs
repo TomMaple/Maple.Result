@@ -83,7 +83,7 @@ public static class IfErrorValueTaskAsyncExtensions
             if (result.IsSuccess())
                 return result;
 
-            return await ReturnValueGuard.NotNullResult(ifErrorFunction(result.Error), nameof(ifErrorFunction), continueOnCapturedContext);
+            return await Guard.EnsureNotNullResult(ifErrorFunction(result.Error), nameof(ifErrorFunction), continueOnCapturedContext);
         }
     }
 
@@ -136,10 +136,7 @@ public static class IfErrorValueTaskAsyncExtensions
 
         static async ValueTask<TResult> Core(ValueTask<TResult> resultTask, Func<Error, ValueTask> ifErrorAction, bool continueOnCapturedContext)
         {
-            var result = await resultTask.ConfigureAwait(continueOnCapturedContext);
-
-            if (result is null)
-                throw ReturnValueGuard.NullAwaited(nameof(resultTask));
+            var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
 
             if (!result.IsSuccess())
                 await ifErrorAction(result.Error).ConfigureAwait(continueOnCapturedContext);
@@ -200,15 +197,12 @@ public static class IfErrorValueTaskAsyncExtensions
 
         static async ValueTask<TResult> Core(ValueTask<TResult> resultTask, Func<Error, ValueTask<TResult>> ifErrorFunction, bool continueOnCapturedContext)
         {
-            var result = await resultTask.ConfigureAwait(continueOnCapturedContext);
-
-            if (result is null)
-                throw ReturnValueGuard.NullAwaited(nameof(resultTask));
+            var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
 
             if (result.IsSuccess())
                 return result;
 
-            return await ReturnValueGuard.NotNullResult(ifErrorFunction(result.Error), nameof(ifErrorFunction), continueOnCapturedContext);
+            return await Guard.EnsureNotNullResult(ifErrorFunction(result.Error), nameof(ifErrorFunction), continueOnCapturedContext);
         }
     }
 }

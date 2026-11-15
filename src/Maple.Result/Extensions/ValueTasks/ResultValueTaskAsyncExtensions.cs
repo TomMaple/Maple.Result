@@ -48,10 +48,8 @@ public static class ResultValueTaskAsyncExtensions
     /// </exception>
     public static async ValueTask<Result> ToResultAsync<T>(this ValueTask<Result<T>> resultTask, bool? continueOnCapturedContext = null)
     {
-        var result = await resultTask.ConfigureAwait(continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
-
-        if (result is null)
-            throw ReturnValueGuard.NullAwaited(nameof(resultTask));
+        var result = await Guard.EnsureNotNullAwaited(
+            resultTask, nameof(resultTask), continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
 
         return result.IsSuccess()
             ? Result.Success()

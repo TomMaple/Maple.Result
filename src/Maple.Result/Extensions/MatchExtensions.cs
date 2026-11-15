@@ -90,7 +90,7 @@ public static class MatchExtensions
         ArgumentNullException.ThrowIfNull(ifErrorAction);
 
         if (result.IsSuccess())
-            return ReturnValueGuard.NotNull(ifSuccessFunction(), nameof(ifSuccessFunction));
+            return Guard.EnsureNotNullReturned(ifSuccessFunction(), nameof(ifSuccessFunction));
 
         ifErrorAction(result.Error);
         return result;
@@ -125,8 +125,8 @@ public static class MatchExtensions
         ArgumentNullException.ThrowIfNull(ifErrorFunction);
 
         return result.IsSuccess()
-            ? ReturnValueGuard.NotNull(ifSuccessFunction(), nameof(ifSuccessFunction))
-            : ReturnValueGuard.NotNull(ifErrorFunction(result.Error), nameof(ifErrorFunction));
+            ? Guard.EnsureNotNullReturned(ifSuccessFunction(), nameof(ifSuccessFunction))
+            : Guard.EnsureNotNullReturned(ifErrorFunction(result.Error), nameof(ifErrorFunction));
     }
 
     /// <summary>
@@ -206,7 +206,7 @@ public static class MatchExtensions
         ArgumentNullException.ThrowIfNull(ifErrorAction);
 
         if (result.IsSuccess())
-            return Result.FromError(ReturnValueGuard.NotNull(ifSuccessFunction(), nameof(ifSuccessFunction)));
+            return Result.FromError(Guard.EnsureNotNullReturned(ifSuccessFunction(), nameof(ifSuccessFunction)));
 
         ifErrorAction(result.Error);
         return result;
@@ -276,7 +276,7 @@ public static class MatchExtensions
         ArgumentNullException.ThrowIfNull(ifErrorAction);
 
         if (result.IsSuccess())
-            return ReturnValueGuard.NotNull(ifSuccessFunction(), nameof(ifSuccessFunction));
+            return Guard.EnsureNotNullReturned(ifSuccessFunction(), nameof(ifSuccessFunction));
 
         ifErrorAction(result.Error);
         return result.Error;
@@ -314,8 +314,8 @@ public static class MatchExtensions
         ArgumentNullException.ThrowIfNull(ifErrorFunction);
 
         return result.IsSuccess()
-            ? ReturnValueGuard.NotNull(ifSuccessFunction(), nameof(ifSuccessFunction))
-            : ReturnValueGuard.NotNull(ifErrorFunction(result.Error), nameof(ifErrorFunction));
+            ? Guard.EnsureNotNullReturned(ifSuccessFunction(), nameof(ifSuccessFunction))
+            : Guard.EnsureNotNullReturned(ifErrorFunction(result.Error), nameof(ifErrorFunction));
     }
 
     #endregion
@@ -441,7 +441,7 @@ public static class MatchExtensions
         ArgumentNullException.ThrowIfNull(ifErrorAction);
 
         if (result.IsSuccess())
-            return Result.FromError(ReturnValueGuard.NotNull(ifSuccessFunction(result.Value), nameof(ifSuccessFunction)));
+            return Result.FromError(Guard.EnsureNotNullReturned(ifSuccessFunction(result.Value), nameof(ifSuccessFunction)));
 
         ifErrorAction(result.Error);
         return result.Error;
@@ -515,7 +515,7 @@ public static class MatchExtensions
         ArgumentNullException.ThrowIfNull(ifErrorAction);
 
         if (result.IsSuccess())
-            return ReturnValueGuard.NotNull(ifSuccessFunction(result.Value), nameof(ifSuccessFunction));
+            return Guard.EnsureNotNullReturned(ifSuccessFunction(result.Value), nameof(ifSuccessFunction));
 
         ifErrorAction(result.Error);
         return result.Error;
@@ -555,8 +555,8 @@ public static class MatchExtensions
         ArgumentNullException.ThrowIfNull(ifErrorFunction);
 
         return result.IsSuccess()
-            ? ReturnValueGuard.NotNull(ifSuccessFunction(result.Value), nameof(ifSuccessFunction))
-            : ReturnValueGuard.NotNull(ifErrorFunction(result.Error), nameof(ifErrorFunction));
+            ? Guard.EnsureNotNullReturned(ifSuccessFunction(result.Value), nameof(ifSuccessFunction))
+            : Guard.EnsureNotNullReturned(ifErrorFunction(result.Error), nameof(ifErrorFunction));
     }
 
     #endregion

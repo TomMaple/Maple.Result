@@ -53,10 +53,7 @@ public static class ResultTaskAsyncExtensions
 
         static async Task<Result> Core(Task<Result<T>> resultTask, bool continueOnCapturedContext)
         {
-            var result = await resultTask.ConfigureAwait(continueOnCapturedContext);
-
-            if (result is null)
-                throw ReturnValueGuard.NullAwaited(nameof(resultTask));
+            var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
 
             return result.IsSuccess()
                 ? Result.Success()

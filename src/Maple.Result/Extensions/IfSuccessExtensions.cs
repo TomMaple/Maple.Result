@@ -82,7 +82,7 @@ public static class IfSuccessExtensions
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
 
         if (result.IsSuccess())
-            return ReturnValueGuard.NotNull(ifSuccessFunction(), nameof(ifSuccessFunction));
+            return Guard.EnsureNotNullReturned(ifSuccessFunction(), nameof(ifSuccessFunction));
 
         return result;
     }
@@ -120,7 +120,7 @@ public static class IfSuccessExtensions
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
 
         if (result.IsSuccess())
-            return Result.FromError(ReturnValueGuard.NotNull(ifSuccessFunction(), nameof(ifSuccessFunction)));
+            return Result.FromError(Guard.EnsureNotNullReturned(ifSuccessFunction(), nameof(ifSuccessFunction)));
 
         return result;
     }
@@ -185,7 +185,7 @@ public static class IfSuccessExtensions
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
 
         if (result.IsSuccess())
-            return ReturnValueGuard.NotNull(ifSuccessFunction(), nameof(ifSuccessFunction));
+            return Guard.EnsureNotNullReturned(ifSuccessFunction(), nameof(ifSuccessFunction));
 
         return result.Error;
     }
@@ -250,7 +250,7 @@ public static class IfSuccessExtensions
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
 
         if (result.IsSuccess())
-            return ReturnValueGuard.NotNull(ifSuccessFunction(result.Value), nameof(ifSuccessFunction));
+            return Guard.EnsureNotNullReturned(ifSuccessFunction(result.Value), nameof(ifSuccessFunction));
 
         return result.Error;
     }
@@ -289,7 +289,7 @@ public static class IfSuccessExtensions
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
 
         if (result.IsSuccess())
-            return Result.FromError(ReturnValueGuard.NotNull(ifSuccessFunction(result.Value), nameof(ifSuccessFunction)));
+            return Result.FromError(Guard.EnsureNotNullReturned(ifSuccessFunction(result.Value), nameof(ifSuccessFunction)));
 
         return result.Error;
     }
@@ -366,7 +366,7 @@ public static class IfSuccessExtensions
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
 
         if (result.IsSuccess())
-            return ReturnValueGuard.NotNull(ifSuccessFunction(result.Value), nameof(ifSuccessFunction));
+            return Guard.EnsureNotNullReturned(ifSuccessFunction(result.Value), nameof(ifSuccessFunction));
 
         return result.Error;
     }

@@ -81,6 +81,6 @@ public static class IfErrorExtensions
         if (result.IsSuccess())
             return result;
 
-        return ReturnValueGuard.NotNull(ifErrorFunction(result.Error), nameof(ifErrorFunction));
+        return Guard.EnsureNotNullReturned(ifErrorFunction(result.Error), nameof(ifErrorFunction));
     }
 }
