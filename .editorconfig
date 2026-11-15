@@ -128,7 +128,10 @@ dotnet_naming_style.underscore_camel_case.required_prefix = _
 
 #
 # Naming: rules (most specific first; the blocks are kept in this order on purpose)
+# IDE1006 is set explicitly: without it, command-line builds do not report naming violations.
 #
+dotnet_diagnostic.IDE1006.severity = warning
+
 dotnet_naming_rule.interfaces_should_begin_with_i.severity = warning
 dotnet_naming_rule.interfaces_should_begin_with_i.style = begins_with_i
 dotnet_naming_rule.interfaces_should_begin_with_i.symbols = interfaces

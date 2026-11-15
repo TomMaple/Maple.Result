@@ -2,6 +2,7 @@
 ![NuGet Downloads](https://img.shields.io/nuget/dt/Maple.Result)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/TomMaple/Maple.Result/ci.yml)
 ![GitHub last commit](https://img.shields.io/github/last-commit/TomMaple/Maple.Result)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/TomMaple/Maple.Result/badge)](https://scorecard.dev/viewer/?uri=github.com/TomMaple/Maple.Result)
 
 
 
@@ -30,7 +31,8 @@ Although, there are many existing implementation of the *Result* pattern in C#, 
 * support for localization,
 * support for consistent error categorization,
 * support for precise error description,
-* following standards ([RFC 9457](https://datatracker.ietf.org/doc/html/rfc9457)).
+* following standards ([RFC 9457](https://datatracker.ietf.org/doc/html/rfc9457)),
+* Native AOT and trimming compatibility (checked by the trim and AOT analyzers in every build).
 
 # Quick Links
 * [Quick Start](https://github.com/TomMaple/Maple.Result#quick-start)
