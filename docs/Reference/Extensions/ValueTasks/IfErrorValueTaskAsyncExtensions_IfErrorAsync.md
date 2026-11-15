@@ -128,7 +128,7 @@ await userResult.IfErrorAsync(async error =>
 
 
 ## IfErrorAsync&lt;TResult&gt;(ValueTask&lt;TResult&gt;, Func&lt;Error, ValueTask&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/IfErrorValueTaskAsyncExtensions.cs#L126" target="_blank">IfErrorValueTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/IfErrorValueTaskAsyncExtensions.cs#L128" target="_blank">IfErrorValueTaskAsyncExtensions.cs</a>
 
 Executes the provided asynchronous function, if the provided asynchronous operation returns a failed`TResult` instance (i.e., contains an [Error](../../Error/Error.md)), and returns its result as an asynchronous operation.
 
@@ -182,7 +182,7 @@ var createUserResult = await _userService.CreateUserAsync(userData)
 
 
 ## IfErrorAsync&lt;TResult&gt;(ValueTask&lt;TResult&gt;, Func&lt;Error, ValueTask&lt;TResult&gt;&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/IfErrorValueTaskAsyncExtensions.cs#L187" target="_blank">IfErrorValueTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/IfErrorValueTaskAsyncExtensions.cs#L189" target="_blank">IfErrorValueTaskAsyncExtensions.cs</a>
 
 Executes the provided asynchronous function, if the provided asynchronous operation returns a failed`TResult` instance (i.e., contains an [Error](../../Error/Error.md)), and returns its result as an asynchronous operation.
 

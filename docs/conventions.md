@@ -69,6 +69,20 @@ are marked breaking. Preview the notes locally with `git cliff --unreleased --st
 	* Every source file starts with the SPDX license identifier and the copyright header.
 	* Members are ordered alphabetically within each `#region`.
 	* Chained calls go one per line, unless the whole statement fits on one line.
+	* Conditional expressions (`?:`) go one operand per line, with `?` and `:` at the start of the line (Rider applies it,
+	  `.editorconfig`).
+	* In `src`, an argument or an initializer value is a simple expression: a variable, a constant or a literal, a member
+	  access, `nameof`, a lambda, a `??` (but not `?? throw …`), a simple arithmetic expression (e.g., `count + 1`), or a
+	  string built for an exception message. Anything else is assigned to a well-named local variable first:
+		* to make it readable: a conditional expression, an `await`, a long or nested expression;
+		* to give it a meaning: a compound condition whose purpose is not obvious (`var isExpired = …;` rather than
+		  `if (a && (b || c))`);
+		* to make a failure easy to locate: a call, an object creation or any other expression that can throw is its own
+		  statement, also inside an argument list or an object initializer (e.g., `var successResult = ifSuccessFunction(x);`
+		  and then `Guard.EnsureNotNullReturned(successResult, …)`, not `Guard.EnsureNotNullReturned(ifSuccessFunction(x), …)`).
+
+	  The exceptions are a `this(…)` or `base(…)` constructor initializer and a field initializer, which no statement can
+	  precede. Tests may pass calls and other expressions as arguments where it keeps them readable.
 	* Exceptions name the caller’s parameter (e.g., `detailNamedValues` rather than the parameter of an internal helper).
 	* Invalid input is rejected with an exception; it is never silently normalized (e.g., trimmed or escaped) or dropped.
 1. XML documentation
