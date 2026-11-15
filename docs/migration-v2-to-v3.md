@@ -20,6 +20,7 @@ Version 3.0 makes `Result`, `Result<T>` and `Error` **immutable** and **always v
   * [`continueOnCapturedContext` is `bool?`](#continueoncapturedcontext-is-bool)
   * [`IResult` renamed to `IOperationResult`](#iresult-renamed-to-ioperationresult)
   * [`IfSuccess` and `Match` with an `Error` or a task](#ifsuccess-and-match-with-an-error-or-a-task)
+  * [`IfError` and `Match` with an error action that returns a task](#iferror-and-match-with-an-error-action-that-returns-a-task)
   * [Null results and null arguments of the extension methods](#null-results-and-null-arguments-of-the-extension-methods)
   * [Extension packages](#extension-packages)
 * [New features](#new-features)
@@ -34,8 +35,9 @@ Version 3.0 makes `Result`, `Result<T>` and `Error` **immutable** and **always v
 6. If you compare or snapshot the **written** JSON, see [Changed JSON output](#changed-json-output).
 7. Make sure error titles are never `null` or blank, and pass `null` instead of `ErrorUri.None()` as an instance *URI*.
 8. Fix the calls of `IfSuccess`, `Match` and the LINQ queries that no longer compile or that now return a failed result (see [`IfSuccess` and `Match` with an `Error` or a task](#ifsuccess-and-match-with-an-error-or-a-task)).
-9. Make sure the functions passed to the extension methods never return `null` where a result, an `Error` or a task is expected (see [Null results and null arguments of the extension methods](#null-results-and-null-arguments-of-the-extension-methods)).
-10. Upgrade the `Maple.Result.Extensions.*` packages together with `Maple.Result` (see [Extension packages](#extension-packages)).
+9. Replace the error actions of `IfError` and `Match` that return a task with the asynchronous methods (see [`IfError` and `Match` with an error action that returns a task](#iferror-and-match-with-an-error-action-that-returns-a-task)).
+10. Make sure the functions passed to the extension methods never return `null` where a result, an `Error` or a task is expected (see [Null results and null arguments of the extension methods](#null-results-and-null-arguments-of-the-extension-methods)).
+11. Upgrade the `Maple.Result.Extensions.*` packages together with `Maple.Result` (see [Extension packages](#extension-packages)).
 
 ## Breaking changes
 
@@ -278,6 +280,23 @@ var result = await Result.Success().IfSuccessAsync(() => SaveAsync());
 Result<Task> result = Result.Success().IfSuccess<Task>(() => SaveAsync());
 ```
 
+### `IfError` and `Match` with an error action that returns a task
+In 2.x, an error action that returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>` (e.g., `e => LogAsync(e)`) was accepted as an `Action<Error>` by `IfError` and by the `Match` overloads with an error action, and its task was **never awaited**. An `async` lambda became `async void`, so an exception thrown in it ended the process. In 3.0 such a call is a compile error (CS0619): use `IfErrorAsync` or `MatchAsync`, or, to start the task without awaiting it on purpose, discard it explicitly in a statement lambda.
+
+The `Match` overloads in which both functions return a value are not affected: `await result.Match(() => SaveAsync(), e => LogAsync(e))` still returns the task of the function that ran. An `async` success function in the synchronous `Match` (e.g., `Match(async () => await SaveAsync(), e => { })`) was already a compile error; it now reports the same message as the other unsupported calls instead of an ambiguity (CS0121).
+
+```csharp
+// 2.x: the task was never awaited (async void for an async lambda); 3.0: a compile error
+var result = userResult.IfError(error => LogAsync(error));
+var result = userResult.Match(user => user.Id, async error => await LogAsync(error));
+
+// 3.0: await it…
+var result = await userResult.IfErrorAsync(error => LogAsync(error));
+
+// …or start it without awaiting on purpose
+var result = userResult.IfError(error => { _ = LogAsync(error); });
+```
+
 ### Null results and null arguments of the extension methods
 In 2.x, a `null` returned by a function passed to `IfSuccess`, `IfError`, `Match` or a LINQ query was returned to the caller, caused a `NullReferenceException` inside the library, or an `ArgumentNullException` for a parameter the caller did not pass. In 3.0 the rules are the same for all extension methods (sync, `Task` and `ValueTask`):
 
@@ -321,6 +340,8 @@ The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an
 | `new ErrorUri(s)` | `ErrorUri.Tag(s)` / `ErrorUri.Locator(s)` / `ErrorUri.Urn(s)` / `ErrorUri.Relative(s)` / `ErrorUri.None()` |
 | `instanceUri: ErrorUri.None()` / `WithInstanceUri(ErrorUri.None())` | `instanceUri: null` / `WithInstanceUri(null)` |
 | `result.IfSuccess(() => SaveAsync())` (a function returning a task) | `await result.IfSuccessAsync(() => SaveAsync())` |
+| `result.IfError(e => LogAsync(e))` (an error action returning a task) | `await result.IfErrorAsync(e => LogAsync(e))` |
+| `result.Match(…, e => LogAsync(e))` (an error action returning a task) | `await result.MatchAsync(…, e => LogAsync(e))` |
 | `result.IfSuccess(x => Error…)` relied on as a `Result<Error>` | `result.IfSuccess<T, Error>(x => Error…)` |
 | `result.Match(x => Error…, e => …)` relied on as a `Result<Error>` | `result.Match<T, Error>(x => Error…, e => …)` |
 | `Dictionary<string, object>` passed as named values | `Dictionary<string, object?>` |
@@ -335,3 +356,4 @@ The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an
 * [Issue #102: Simplify Result and Error](https://github.com/TomMaple/Maple.Result/issues/102)
 * [Issue #105: SynchronizationContext of the asynchronous extension methods](https://github.com/TomMaple/Maple.Result/issues/105)
 * [Issue #121: Null results and synchronous argument checks of the extension methods](https://github.com/TomMaple/Maple.Result/issues/121)
+* [Issue #123: Task-returning error actions in `IfError` and `Match`](https://github.com/TomMaple/Maple.Result/issues/123)

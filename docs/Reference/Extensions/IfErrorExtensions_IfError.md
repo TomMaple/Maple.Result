@@ -11,9 +11,12 @@ Runs a specific action or function if the instance of `TResult` represents a fai
 | [IfError&lt;TResult&gt;(TResult, Action&lt;Error&gt;)](#iferrortresulttresult-actionerror) | Executes the provided action if the `TResult` instance represents a failed operation. |
 | [IfError&lt;TResult&gt;(TResult, Func&lt;Error, TResult&gt;)](#iferrortresulttresult-funcerror-tresult) | Executes the provided function if the `TResult` instance represents a failed operation and returns its result. |
 
+## Remarks
+An error action that returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>` (e.g., `error => LogAsync(error)`) is not supported: `IfError` does not await it, and an `async` lambda would run as `async void`, so such a call is a compile error. Use [IfErrorAsync](IfErrorTaskAsyncExtensions_IfErrorAsync.md) instead, or discard the task explicitly in a statement lambda (`error => { _ = LogAsync(error); }`) to start it without awaiting it on purpose.
+
 
 ## IfError&lt;TResult&gt;(TResult, Action&lt;Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/IfErrorExtensions.cs#L45" target="_blank">IfErrorExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/IfErrorExtensions.cs#L48" target="_blank">IfErrorExtensions.cs</a>
 
 Executes the provided action only if the instance of `TResult` represents a failed operation (i.e., contains an [Error](../Error/Error.md)).
 
@@ -55,7 +58,7 @@ createUserResult.IfError(error =>
 
 
 ## IfError&lt;TResult&gt;(TResult, Func&lt;Error, TResult&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/IfErrorExtensions.cs#L75" target="_blank">IfErrorExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/IfErrorExtensions.cs#L78" target="_blank">IfErrorExtensions.cs</a>
 
 Executes the provided function only if the instance of `TResult` represents a failed operation (i.e., contains an [Error](../Error/Error.md)).
 

@@ -15,6 +15,7 @@ using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Maple.Result.Tests.Unit.Extensions;
@@ -1808,7 +1809,7 @@ public class MatchExtensionsUnitTests
     {
         // Arrange
         var overloads = typeof(MatchExtensions).GetMethods()
-            .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is not null)
+            .Where(m => IsTrap(m, "The function returns a task"))
             .ToArray();
 
         // Act & Assert
@@ -2003,6 +2004,158 @@ public class MatchExtensionsUnitTests
         // Assert
         result.IsSuccess().ShouldBeTrue();
         result.Value.ShouldBeSameAs(TrapError);
+    }
+
+    #endregion
+
+    #region Match with an error action returning a task (overload trap, issue #123)
+
+    [Fact]
+    public void Match_ErrorActionReturningTaskOverloads_AreHiddenCompileErrors()
+    {
+        // Arrange
+        var overloads = typeof(MatchExtensions).GetMethods()
+            .Where(m => IsTrap(m, "The error action returns a task"))
+            .ToArray();
+
+        // Act & Assert
+        overloads.Length.ShouldBe(27);
+        overloads.ShouldAllBe(m => m.Name == "Match"
+                                   && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
+                                   && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
+    }
+
+    [Fact]
+    public void Match_TaskTrapOverloads_HavePriorityOne()
+    {
+        // Arrange
+        var overloads = typeof(MatchExtensions).GetMethods()
+            .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is not null && m.GetParameters().Any(p => IsTaskFunction(p.ParameterType)))
+            .ToArray();
+
+        // Act & Assert
+        overloads.Length.ShouldBe(9 + 4);
+        overloads.ShouldAllBe(m => Priority(m) == 1);
+    }
+
+    [Fact]
+    public void Match_ValueTaskTrapOverloads_HaveDefaultPriority()
+    {
+        // Arrange
+        var overloads = typeof(MatchExtensions).GetMethods()
+            .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is not null && !m.GetParameters().Any(p => IsTaskFunction(p.ParameterType)))
+            .ToArray();
+
+        // Act & Assert
+        overloads.Length.ShouldBe(18 + 4);
+        overloads.ShouldAllBe(m => Priority(m) == 0);
+    }
+
+    [Fact]
+    public void Match_OverloadsWithTwoFunctions_HavePriorityTwo()
+    {
+        // Arrange
+        var overloads = typeof(MatchExtensions).GetMethods()
+            .Where(m => m.Name == "Match" && m.GetCustomAttribute<ObsoleteAttribute>() is null && m.GetParameters()[2].Name == "ifErrorFunction")
+            .ToArray();
+
+        // Act & Assert
+        overloads.Length.ShouldBe(5);
+        overloads.ShouldAllBe(m => Priority(m) == 2);
+    }
+
+    [Fact]
+    public void Match_FailedResultWithStatementLambdaDiscardingTask_CallsErrorAction()
+    {
+        // Arrange
+        var sut = GetErrorResult();
+        var taskSource = new TaskCompletionSource();
+        Error? passedError = null;
+
+        // Act
+        var result = sut.Match(() => { }, e =>
+        {
+            passedError = e;
+            _ = taskSource.Task;
+        });
+
+        // Assert
+        result.ShouldBeSameAs(sut);
+        passedError.ShouldBeSameAs(sut.Error);
+    }
+
+    [Fact]
+    public void Match_FailedResultOfTWithStatementLambdaDiscardingTask_CallsErrorAction()
+    {
+        // Arrange
+        var sut = GetErrorResult<int>();
+        var taskSource = new TaskCompletionSource();
+        Error? passedError = null;
+
+        // Act
+        var result = sut.Match(x => x + 1, e =>
+        {
+            passedError = e;
+            _ = taskSource.Task;
+        });
+
+        // Assert
+        result.IsSuccess().ShouldBeFalse();
+        passedError.ShouldBeSameAs(sut.Error);
+    }
+
+    [Fact]
+    public void Match_FailedResultWithTaskFunctions_ReturnsTaskOfErrorFunction()
+    {
+        // Arrange
+        var sut = GetErrorResult();
+        var taskSource = new TaskCompletionSource();
+
+        // Act
+        Task result = sut.Match(() => Task.CompletedTask, _ => taskSource.Task);
+
+        // Assert
+        result.ShouldBeSameAs(taskSource.Task);
+    }
+
+    [Fact]
+    public void Match_SuccessfulResultOfTWithTaskFunctions_ReturnsTaskOfSuccessFunction()
+    {
+        // Arrange
+        var sut = Result<int>.FromValue(5);
+        var taskSource = new TaskCompletionSource();
+
+        // Act
+        Task result = sut.Match(_ => taskSource.Task, _ => Task.CompletedTask);
+
+        // Assert
+        result.ShouldBeSameAs(taskSource.Task);
+    }
+
+    #endregion
+
+    #region overload trap helpers
+
+    private static bool IsTrap(MethodInfo method, string messagePrefix)
+    {
+        var obsolete = method.GetCustomAttribute<ObsoleteAttribute>();
+
+        return obsolete?.Message is not null && obsolete.Message.StartsWith(messagePrefix, StringComparison.Ordinal);
+    }
+
+    private static int Priority(MethodInfo method)
+    {
+        return method.GetCustomAttribute<OverloadResolutionPriorityAttribute>()?.Priority ?? 0;
+    }
+
+    private static bool IsTaskFunction(Type parameterType)
+    {
+        if (!parameterType.IsGenericType)
+            return false;
+
+        var returnType = parameterType.GetGenericArguments()[^1];
+
+        return returnType == typeof(Task) || (returnType.IsGenericType && returnType.GetGenericTypeDefinition() == typeof(Task<>));
     }
 
     #endregion

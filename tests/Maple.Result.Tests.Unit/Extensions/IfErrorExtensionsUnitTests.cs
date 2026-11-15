@@ -12,6 +12,11 @@ using Maple.Result.Extensions;
 using Maple.Result.Tests.Unit.TestingInfrastructure.Fakes;
 using Moq;
 using System;
+using System.ComponentModel;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace Maple.Result.Tests.Unit.Extensions;
 
@@ -511,6 +516,59 @@ public class IfErrorExtensionsUnitTests
         result.ShouldNotBeNull();
         result.IsSuccess().ShouldBeFalse();
         result.Error.ShouldBe(funcError);
+    }
+
+    #endregion
+
+    #region IfError with an error action returning a task (overload trap, issue #123)
+
+    [Fact]
+    public void IfError_ErrorActionReturningTaskOverloads_AreHiddenCompileErrors()
+    {
+        // Arrange
+        var overloads = typeof(IfErrorExtensions).GetMethods()
+            .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is not null)
+            .ToArray();
+
+        // Act & Assert
+        overloads.Length.ShouldBe(3);
+        overloads.ShouldAllBe(m => m.Name == "IfError"
+                                   && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
+                                   && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
+    }
+
+    [Fact]
+    public void IfError_TaskTrapOverload_HasPriorityOne()
+    {
+        // Arrange
+        var overload = typeof(IfErrorExtensions).GetMethods()
+            .Single(m => m.GetCustomAttribute<ObsoleteAttribute>() is not null && m.GetParameters()[1].ParameterType == typeof(Func<Error, Task>));
+
+        // Act
+        var priority = overload.GetCustomAttribute<OverloadResolutionPriorityAttribute>()?.Priority;
+
+        // Assert
+        priority.ShouldBe(1);
+    }
+
+    [Fact]
+    public void IfError_FailedResultWithStatementLambdaDiscardingTask_CallsErrorAction()
+    {
+        // Arrange
+        var sut = GetErrorResult();
+        var taskSource = new TaskCompletionSource();
+        Error? passedError = null;
+
+        // Act
+        var result = sut.IfError(e =>
+        {
+            passedError = e;
+            _ = taskSource.Task;
+        });
+
+        // Assert
+        result.ShouldBeSameAs(sut);
+        passedError.ShouldBeSameAs(sut.Error);
     }
 
     #endregion
