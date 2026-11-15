@@ -26,10 +26,12 @@
     <File Path="docs/conventions.md" />
     <File Path="docs/goals.md" />
     <File Path="docs/migration-v2-to-v3.md" />
+    <File Path="docs/problem-details.md" />
   </Folder>
   <Folder Name="/docs/Reference/">
     <File Path="docs/Reference/ErrorCategory.md" />
     <File Path="docs/Reference/namespace.md" />
+    <File Path="docs/Reference/ProblemDetailsMembers.md" />
   </Folder>
   <Folder Name="/docs/Reference/Error/">
     <File Path="docs/Reference/Error/Error.md" />
