@@ -186,7 +186,6 @@ public static class MatchValueTaskAsyncExtensions
             if (result.IsSuccess())
             {
                 var successTask = ifSuccessFunction();
-
                 var error = await Guard.EnsureNotNullResult(successTask, nameof(ifSuccessFunction), continueOnCapturedContext);
 
                 return Result.FromError(error);
@@ -388,7 +387,6 @@ public static class MatchValueTaskAsyncExtensions
             if (result.IsSuccess())
             {
                 var successTask = ifSuccessFunction(result.Value);
-
                 var error = await Guard.EnsureNotNullResult(successTask, nameof(ifSuccessFunction), continueOnCapturedContext);
 
                 return Result.FromError(error);
@@ -818,7 +816,6 @@ public static class MatchValueTaskAsyncExtensions
             if (result.IsSuccess())
             {
                 var successTask = ifSuccessFunction();
-
                 var error = await Guard.EnsureNotNullResult(successTask, nameof(ifSuccessFunction), continueOnCapturedContext);
 
                 return Result.FromError(error);
@@ -1214,7 +1211,6 @@ public static class MatchValueTaskAsyncExtensions
             if (result.IsSuccess())
             {
                 var successTask = ifSuccessFunction(result.Value);
-
                 var error = await Guard.EnsureNotNullResult(successTask, nameof(ifSuccessFunction), continueOnCapturedContext);
 
                 return Result.FromError(error);

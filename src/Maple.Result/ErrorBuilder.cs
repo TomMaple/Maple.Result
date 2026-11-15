@@ -366,7 +366,6 @@ public sealed class ErrorBuilder
         params ReadOnlySpan<(string Key, object? Value)> detailNamedValues)
     {
         var detailTemplated = TemplatedMessage.CreateOptional(detailTemplateId, detailNamedValues, nameof(detailTemplateId), nameof(detailNamedValues));
-
         var errorDetail = new ErrorDetail(propertyPointer, detail, detailTemplated);
 
         return AddErrorDetail(errorDetail);

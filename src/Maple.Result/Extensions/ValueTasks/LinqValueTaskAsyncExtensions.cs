@@ -299,7 +299,6 @@ public static class LinqValueTaskAsyncExtensions
                 return result.Error;
 
             var collectionTask = collectionSelector(result.Value);
-
             var collectionResult = await Guard.EnsureNotNullResult(collectionTask, nameof(collectionSelector), ResultConfiguration.ContinueOnCapturedContext);
 
             return collectionResult.IfSuccess(y => resultSelector(result.Value, y));
@@ -366,7 +365,6 @@ public static class LinqValueTaskAsyncExtensions
                 return resultValue.Error;
 
             var collectionTask = collectionSelector(resultValue.Value);
-
             var collectionResult = await Guard.EnsureNotNullResult(collectionTask, nameof(collectionSelector), ResultConfiguration.ContinueOnCapturedContext);
 
             return collectionResult.IfSuccess(y =>
@@ -487,7 +485,6 @@ public static class LinqValueTaskAsyncExtensions
                 return result.Error;
 
             var collectionTask = collectionSelector(result.Value);
-
             var collectionResult = await Guard.EnsureNotNullResult(collectionTask, nameof(collectionSelector), ResultConfiguration.ContinueOnCapturedContext);
 
             return collectionResult.IfSuccess(y =>

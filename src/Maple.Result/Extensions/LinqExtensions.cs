@@ -146,7 +146,6 @@ public static class LinqExtensions
         return result.IfSuccess(x =>
         {
             var selectedCollection = collectionSelector(x);
-
             var collectionResult = Guard.EnsureNotNullReturned(selectedCollection, nameof(collectionSelector));
             return collectionResult.IfSuccess(y => resultSelector(x, y));
         });
@@ -202,7 +201,6 @@ public static class LinqExtensions
         return result.IfSuccess(x =>
         {
             var selectedCollection = collectionSelector(x);
-
             var collectionResult = Guard.EnsureNotNullReturned(selectedCollection, nameof(collectionSelector));
             return collectionResult.IfSuccess(y =>
             {
