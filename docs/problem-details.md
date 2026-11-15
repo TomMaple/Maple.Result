@@ -62,7 +62,7 @@ A member is written only when it has a value: `null` values and an empty `errors
 | ----------------- | --------- | ----------------- | -------------------------------- | -------- |
 | `type`            | string    | `TypeUri`         | always (`about:blank` when not specified) | `ProblemDetailsMembers.Type` |
 | `title`           | string    | `Title`           | always                           | `ProblemDetailsMembers.Title` |
-| `status`          | number    | `Category`        | always (see [Category and status](#category-and-status)) | `ProblemDetailsMembers.Status` |
+| `status`          | number    | `Category`        | always (mapped as in [Category and status](#category-and-status)) | `ProblemDetailsMembers.Status` |
 | `detail`          | string    | `Detail`          | when not `null`                  | `ProblemDetailsMembers.Detail` |
 | `instance`        | string    | `InstanceUri`     | when not `null`                  | `ProblemDetailsMembers.Instance` |
 | `errors`          | array     | `ErrorDetails`    | when not empty                   | `ProblemDetailsMembers.Errors` |
@@ -102,8 +102,10 @@ The top-level members of the format are **reserved**: `type`, `title`, `status`,
 Members added by the host are not reserved either: e.g., ASP.NET Core adds `traceId`. When a metadata entry has the same key, the package that writes the response decides which value wins and documents it.
 
 ## Category and status
-| `ErrorCategory`   | `status` written | `status` read        |
-| ----------------- | ---------------- | -------------------- |
+The table shows the **default** mapping. It can be customized in both directions: the packages that write problem details let you choose the `status` written for each category, and the packages that read them let you choose the category read for each status code (including the codes not listed below). The two directions are configured separately, so a custom mapping should keep them consistent when the same services write and read the errors.
+
+| `ErrorCategory`   | `status` written (default) | `status` read (default) |
+| ----------------- | -------------------------- | ----------------------- |
 | `Validation`      | 400              | 400                  |
 | `Unauthenticated` | 401              | 401                  |
 | `Unauthorized`    | 403              | 403                  |
@@ -121,7 +123,7 @@ Members added by the host are not reserved either: e.g., ASP.NET Core adds `trac
 ## Reading problem details
 Problem details written by other services do not always follow this format. The reader builds the `Error` with `ErrorBuilder`, so the validation of the core applies, and adapts the values as follows:
 
-* **`status`**: mapped to the category by the table above. A missing `status` is taken from the HTTP response.
+* **`status`**: mapped to the category by the [status mapping](#category-and-status) (the default one or a customized one). A missing `status` is taken from the HTTP response.
 * **`type`**: read with `ErrorUri.Parse()`; a missing `type` is `about:blank` (RFC 9457, section 3.1.1). A relative reference (e.g., `out-of-credit`) is resolved against the URI of the request (RFC 3986, section 5). Other schemes (e.g., `mailto:`) are kept as `ErrorUri.Other()`.
 * **`instance`**: read like `type`; a missing `instance` stays `null`.
 * **`title`**: a missing or blank `title` is replaced by the phrase of the HTTP status code (e.g., "Not Found", RFC 9457, section 3.1.3).

@@ -15,6 +15,8 @@ Inheritance [Object](https://learn.microsoft.com/dotnet/api/system.object) → [
 ## Remarks
 The members are ordered by the HTTP status code they relate to. The values are explicit and do not change between versions, because they are stored and serialized (e.g., as numbers in JSON). New categories are only ever added with new values.
 
+The HTTP status codes in the descriptions are the **default** mapping of the packages that write and read problem details; the mapping can be customized in both directions (category → status code and status code → category). See [Problem Details Format](../problem-details.md#category-and-status).
+
 ## Fields
 | Name            | Value | Description                          |
 | --------------- | ----- | ------------------------------------ |

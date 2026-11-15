@@ -279,7 +279,7 @@ var error = Error.Validation(
 ### Error Categories
 The error categories are based on the HTTP status codes—that’s why those have been included in the table.
 
-Although, mapping to HTTP responses is not part of this library and can be done differently.
+Although, mapping to HTTP responses is not part of this library and can be done differently. The status codes in the table are the **default** mapping of the `Maple.Result.Extensions.*` packages, which can be customized in both directions (category → status code and status code → category); see the [problem details format](https://github.com/TomMaple/Maple.Result/blob/main/docs/problem-details.md#category-and-status).
 
 | Category | Description | Solution | Example error | Corresponding HTTP status code |
 | -------- | ----------- | -------- | ------------- | ------------------------------ |

@@ -38,7 +38,7 @@ public static class ProblemDetailsMembers
     public const string Title = "title";
 
     /// <summary>
-    ///     The <c>status</c> member: the HTTP status code that corresponds to the <see cref="Error.Category" /> (<i>RFC 9457</i>, section 3.1.2).
+    ///     The <c>status</c> member: the HTTP status code mapped from the <see cref="Error.Category" /> (<i>RFC 9457</i>, section 3.1.2).
     /// </summary>
     public const string Status = "status";
 
