@@ -370,7 +370,7 @@ public class ErrorUriUnitTests
     }
 
     [Fact]
-    public void Tag_MalformedUri_ThrowsWithPreservedInnerException()
+    public void Tag_MalformedUri_ThrowsWithoutInnerException()
     {
         // Act
         var exception = Record.Exception(() => ErrorUri.Tag("error"));
@@ -378,7 +378,7 @@ public class ErrorUriUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<UriFormatException>();
-        exception.InnerException.ShouldNotBeNull();
+        exception.InnerException.ShouldBeNull();
     }
 
     #endregion
