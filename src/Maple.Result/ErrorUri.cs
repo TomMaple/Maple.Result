@@ -262,7 +262,10 @@ public readonly record struct ErrorUri : IParsable<ErrorUri>
         if (!isValid)
             return false;
 
-        result = kind == Kind.None ? None() : new ErrorUri(value);
+        result = kind == Kind.None
+            ? None()
+            : new ErrorUri(value);
+
         return true;
     }
 
