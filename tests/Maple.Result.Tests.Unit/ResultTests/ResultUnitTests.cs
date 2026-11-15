@@ -1067,7 +1067,7 @@ public class ResultUnitTests
     {
         // Arrange
         const string ExpectedMessage = "The result has no value, because the operation failed with the error ‘Test title’ "
-            + "(type ‘tag:test.com,2024:Test’). Check IsSuccess or IsError before reading Value, or use GetValueOrDefault.";
+            + "(type ‘tag:test.com,2024:Test’). Check IsSuccess or IsError before reading Value, or use TryGetValue.";
 
         var sut = Result<int>.FromError(Error.NotFound(ErrorUri.Tag("tag:test.com,2024:Test"), "Test title"));
 
