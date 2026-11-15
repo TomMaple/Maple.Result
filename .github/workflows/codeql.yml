@@ -19,6 +19,8 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
+permissions: {}
+
 jobs:
   # Tells whether the pull request changes code or workflows (.github/scripts/changes.py). Pushes and schedules always
   # run everything. A skipped job counts as passed for a required check; the jobs below run when this one fails.

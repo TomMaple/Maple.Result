@@ -21,6 +21,8 @@ env:
   RESULTS_PATH: ${{ github.workspace }}/test-results
   REPORTGENERATOR_VERSION: 5.6.0
 
+permissions: {}
+
 jobs:
   # Tells whether the pull request changes code or workflows (.github/scripts/changes.py). Pushes and schedules always
   # run everything. A skipped job counts as passed for a required check; the jobs below run when this one fails.
@@ -94,7 +96,7 @@ jobs:
         dotnet-version: 10.0.x
 
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore --locked-mode
 
     - name: Check formatting
       run: dotnet format --verify-no-changes --no-restore
