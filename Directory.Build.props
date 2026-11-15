@@ -1,0 +1,13 @@
+<Project>
+
+  <!-- Reports the code style rules of .editorconfig (IDE*) in command-line builds, not only in the IDE. -->
+  <PropertyGroup>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+  </PropertyGroup>
+
+  <!-- CI fails on any warning; local builds only report them. -->
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+</Project>

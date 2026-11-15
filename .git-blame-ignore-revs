@@ -1,0 +1,5 @@
+# Commits that only reformat code; `git blame` skips them when `blame.ignoreRevsFile` points here
+# (GitHub uses this file automatically). Run once: git config blame.ignoreRevsFile .git-blame-ignore-revs
+
+# style: Fixed the dotnet format findings, set the wrapping rules and checked the formatting in CI (#118)
+be10ae19bf4eac8c7636e436a442acf00a8aad4b

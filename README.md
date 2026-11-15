@@ -31,7 +31,8 @@ Although, there are many existing implementation of the *Result* pattern in C#, 
 * support for localization,
 * support for consistent error categorization,
 * support for precise error description,
-* following standards ([RFC 9457](https://datatracker.ietf.org/doc/html/rfc9457)).
+* following standards ([RFC 9457](https://datatracker.ietf.org/doc/html/rfc9457)),
+* Native AOT and trimming compatibility (checked by the trim and AOT analyzers in every build).
 
 # Quick Links
 * [Quick Start](https://github.com/TomMaple/Maple.Result#quick-start)
