@@ -68,7 +68,6 @@ public static class LinqTaskAsyncExtensions
         static async Task<Result<TNext>> Core(Task<Result<T>> result, Func<T, TNext> selector)
         {
             var resultValue = await Guard.EnsureNotNullAwaited(result, nameof(result), ResultConfiguration.ContinueOnCapturedContext);
-
             return resultValue.IfSuccess(selector);
         }
     }
@@ -119,7 +118,10 @@ public static class LinqTaskAsyncExtensions
             if (!resultValue.IsSuccess())
                 return resultValue.Error;
 
-            return Result.FromError(Guard.EnsureNotNullReturned(selector(resultValue.Value), nameof(selector)));
+            var returnedError = selector(resultValue.Value);
+            var error = Guard.EnsureNotNullReturned(returnedError, nameof(selector));
+
+            return Result.FromError(error);
         }
     }
 
@@ -177,8 +179,9 @@ public static class LinqTaskAsyncExtensions
 
             return await resultValue.IfSuccessAsync(async Task<Result<TNext>> (x) =>
             {
+                var collectionTask = collectionSelector(x);
                 var collectionResult = await Guard.EnsureNotNullResult(
-                    collectionSelector(x), nameof(collectionSelector), ResultConfiguration.ContinueOnCapturedContext);
+                    collectionTask, nameof(collectionSelector), ResultConfiguration.ContinueOnCapturedContext);
 
                 return collectionResult.IfSuccess(y => resultSelector(x, y));
             }).ConfigureAwait(ResultConfiguration.ContinueOnCapturedContext);
@@ -232,7 +235,6 @@ public static class LinqTaskAsyncExtensions
         static async Task<Result<TNext>> Core(Task<Result<T>> result, Func<T, Result<TMiddle>> collectionSelector, Func<T, TMiddle, TNext> resultSelector)
         {
             var resultValue = await Guard.EnsureNotNullAwaited(result, nameof(result), ResultConfiguration.ContinueOnCapturedContext);
-
             return resultValue.SelectMany(collectionSelector, resultSelector);
         }
     }
@@ -284,8 +286,8 @@ public static class LinqTaskAsyncExtensions
             if (!result.IsSuccess())
                 return result.Error;
 
-            var collectionResult = await Guard.EnsureNotNullResult(
-                collectionSelector(result.Value), nameof(collectionSelector), ResultConfiguration.ContinueOnCapturedContext);
+            var collectionTask = collectionSelector(result.Value);
+            var collectionResult = await Guard.EnsureNotNullResult(collectionTask, nameof(collectionSelector), ResultConfiguration.ContinueOnCapturedContext);
 
             return collectionResult.IfSuccess(y => resultSelector(result.Value, y));
         }
@@ -349,10 +351,14 @@ public static class LinqTaskAsyncExtensions
             if (!resultValue.IsSuccess())
                 return resultValue.Error;
 
-            var collectionResult = await Guard.EnsureNotNullResult(
-                collectionSelector(resultValue.Value), nameof(collectionSelector), ResultConfiguration.ContinueOnCapturedContext);
+            var collectionTask = collectionSelector(resultValue.Value);
+            var collectionResult = await Guard.EnsureNotNullResult(collectionTask, nameof(collectionSelector), ResultConfiguration.ContinueOnCapturedContext);
 
-            return collectionResult.IfSuccess(y => Guard.EnsureNotNullReturned(resultSelector(resultValue.Value, y), nameof(resultSelector)));
+            return collectionResult.IfSuccess(y =>
+            {
+                var selected = resultSelector(resultValue.Value, y);
+                return Guard.EnsureNotNullReturned(selected, nameof(resultSelector));
+            });
         }
     }
 
@@ -409,7 +415,6 @@ public static class LinqTaskAsyncExtensions
         static async Task<Result> Core(Task<Result<T>> result, Func<T, Result<TMiddle>> collectionSelector, Func<T, TMiddle, Error> resultSelector)
         {
             var resultValue = await Guard.EnsureNotNullAwaited(result, nameof(result), ResultConfiguration.ContinueOnCapturedContext);
-
             return resultValue.SelectMany(collectionSelector, resultSelector);
         }
     }
@@ -468,10 +473,14 @@ public static class LinqTaskAsyncExtensions
             if (!result.IsSuccess())
                 return result.Error;
 
-            var collectionResult = await Guard.EnsureNotNullResult(
-                collectionSelector(result.Value), nameof(collectionSelector), ResultConfiguration.ContinueOnCapturedContext);
+            var collectionTask = collectionSelector(result.Value);
+            var collectionResult = await Guard.EnsureNotNullResult(collectionTask, nameof(collectionSelector), ResultConfiguration.ContinueOnCapturedContext);
 
-            return collectionResult.IfSuccess(y => Guard.EnsureNotNullReturned(resultSelector(result.Value, y), nameof(resultSelector)));
+            return collectionResult.IfSuccess(y =>
+            {
+                var selected = resultSelector(result.Value, y);
+                return Guard.EnsureNotNullReturned(selected, nameof(resultSelector));
+            });
         }
     }
 

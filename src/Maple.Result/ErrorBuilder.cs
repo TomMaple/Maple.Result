@@ -89,7 +89,10 @@ public sealed class ErrorBuilder
         _title = error.Title;
         _detail = error.Detail;
         _detailTemplated = error.DetailTemplated;
-        _instanceUri = error.InstanceUri is null ? null : new ErrorUri(error.InstanceUri);
+        _instanceUri = error.InstanceUri is null
+            ? null
+            : new ErrorUri(error.InstanceUri);
+
         _builtErrorDetails = error.ErrorDetailsCollection;
         _builtMetadata = error.MetadataDictionary;
     }
@@ -214,6 +217,7 @@ public sealed class ErrorBuilder
         ValidateCategory(category);
 
         _category = category;
+
         return this;
     }
 
@@ -240,6 +244,7 @@ public sealed class ErrorBuilder
         ArgumentException.ThrowIfNullOrWhiteSpace(title);
 
         _title = title;
+
         return this;
     }
 
@@ -315,6 +320,7 @@ public sealed class ErrorBuilder
         }
 
         _instanceUri = instanceUri;
+
         return this;
     }
 
@@ -333,6 +339,7 @@ public sealed class ErrorBuilder
         ArgumentNullException.ThrowIfNull(errorDetail);
 
         GetPendingErrorDetails().Add(errorDetail);
+
         return this;
     }
 
@@ -363,8 +370,9 @@ public sealed class ErrorBuilder
         params ReadOnlySpan<(string Key, object? Value)> detailNamedValues)
     {
         var detailTemplated = TemplatedMessage.CreateOptional(detailTemplateId, detailNamedValues, nameof(detailTemplateId), nameof(detailNamedValues));
+        var errorDetail = new ErrorDetail(propertyPointer, detail, detailTemplated);
 
-        return AddErrorDetail(new ErrorDetail(propertyPointer, detail, detailTemplated));
+        return AddErrorDetail(errorDetail);
     }
 
     #endregion
@@ -387,6 +395,7 @@ public sealed class ErrorBuilder
         MetadataKeyValidator.Validate(key);
 
         GetPendingMetadata()[key] = value;
+
         return this;
     }
 

@@ -70,9 +70,15 @@ public static class MatchTaskAsyncExtensions
         static async Task<Result> Core(Result result, Func<Task> ifSuccessAction, Func<Error, Task> ifErrorAction, bool continueOnCapturedContext)
         {
             if (result.IsSuccess())
-                await Guard.EnsureNotNullTask(ifSuccessAction(), nameof(ifSuccessAction)).ConfigureAwait(continueOnCapturedContext);
+            {
+                var successTask = ifSuccessAction();
+                await Guard.EnsureNotNullTask(successTask, nameof(ifSuccessAction)).ConfigureAwait(continueOnCapturedContext);
+            }
             else
-                await Guard.EnsureNotNullTask(ifErrorAction(result.Error), nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+            {
+                var errorTask = ifErrorAction(result.Error);
+                await Guard.EnsureNotNullTask(errorTask, nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+            }
 
             return result;
         }
@@ -119,9 +125,14 @@ public static class MatchTaskAsyncExtensions
         static async Task<Result> Core(Result result, Func<Task<Result>> ifSuccessFunction, Func<Error, Task> ifErrorAction, bool continueOnCapturedContext)
         {
             if (result.IsSuccess())
-                return await Guard.EnsureNotNullResult(ifSuccessFunction(), nameof(ifSuccessFunction), continueOnCapturedContext);
+            {
+                var successTask = ifSuccessFunction();
+                return await Guard.EnsureNotNullResult(successTask, nameof(ifSuccessFunction), continueOnCapturedContext);
+            }
 
-            await Guard.EnsureNotNullTask(ifErrorAction(result.Error), nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+            var errorTask = ifErrorAction(result.Error);
+            await Guard.EnsureNotNullTask(errorTask, nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+
             return result;
         }
     }
@@ -170,9 +181,15 @@ public static class MatchTaskAsyncExtensions
             Func<Error, Task<Result>> ifErrorFunction,
             bool continueOnCapturedContext)
         {
-            return result.IsSuccess()
-                ? await Guard.EnsureNotNullResult(ifSuccessFunction(), nameof(ifSuccessFunction), continueOnCapturedContext)
-                : await Guard.EnsureNotNullResult(ifErrorFunction(result.Error), nameof(ifErrorFunction), continueOnCapturedContext);
+            if (result.IsSuccess())
+            {
+                var successTask = ifSuccessFunction();
+                return await Guard.EnsureNotNullResult(successTask, nameof(ifSuccessFunction), continueOnCapturedContext);
+            }
+
+            var errorTask = ifErrorFunction(result.Error);
+
+            return await Guard.EnsureNotNullResult(errorTask, nameof(ifErrorFunction), continueOnCapturedContext);
         }
     }
 
@@ -221,9 +238,14 @@ public static class MatchTaskAsyncExtensions
         static async Task<Result<T>> Core(Result result, Func<Task<T>> ifSuccessFunction, Func<Error, Task> ifErrorAction, bool continueOnCapturedContext)
         {
             if (result.IsSuccess())
-                return await Guard.EnsureNotNullTask(ifSuccessFunction(), nameof(ifSuccessFunction)).ConfigureAwait(continueOnCapturedContext);
+            {
+                var successTask = ifSuccessFunction();
+                return await Guard.EnsureNotNullTask(successTask, nameof(ifSuccessFunction)).ConfigureAwait(continueOnCapturedContext);
+            }
 
-            await Guard.EnsureNotNullTask(ifErrorAction(result.Error), nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+            var errorTask = ifErrorAction(result.Error);
+            await Guard.EnsureNotNullTask(errorTask, nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+
             return result.Error;
         }
     }
@@ -283,9 +305,16 @@ public static class MatchTaskAsyncExtensions
         static async Task<Result> Core(Result result, Func<Task<Error>> ifSuccessFunction, Func<Error, Task> ifErrorAction, bool continueOnCapturedContext)
         {
             if (result.IsSuccess())
-                return Result.FromError(await Guard.EnsureNotNullResult(ifSuccessFunction(), nameof(ifSuccessFunction), continueOnCapturedContext));
+            {
+                var successTask = ifSuccessFunction();
+                var error = await Guard.EnsureNotNullResult(successTask, nameof(ifSuccessFunction), continueOnCapturedContext);
 
-            await Guard.EnsureNotNullTask(ifErrorAction(result.Error), nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+                return Result.FromError(error);
+            }
+
+            var errorTask = ifErrorAction(result.Error);
+            await Guard.EnsureNotNullTask(errorTask, nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+
             return result;
         }
     }
@@ -333,9 +362,15 @@ public static class MatchTaskAsyncExtensions
 
         static async Task<T> Core(Result result, Func<Task<T>> ifSuccessFunction, Func<Error, Task<T>> ifErrorFunction, bool continueOnCapturedContext)
         {
-            return result.IsSuccess()
-                ? await Guard.EnsureNotNullTask(ifSuccessFunction(), nameof(ifSuccessFunction)).ConfigureAwait(continueOnCapturedContext)
-                : await Guard.EnsureNotNullTask(ifErrorFunction(result.Error), nameof(ifErrorFunction)).ConfigureAwait(continueOnCapturedContext);
+            if (result.IsSuccess())
+            {
+                var successTask = ifSuccessFunction();
+                return await Guard.EnsureNotNullTask(successTask, nameof(ifSuccessFunction)).ConfigureAwait(continueOnCapturedContext);
+            }
+
+            var errorTask = ifErrorFunction(result.Error);
+
+            return await Guard.EnsureNotNullTask(errorTask, nameof(ifErrorFunction)).ConfigureAwait(continueOnCapturedContext);
         }
     }
 
@@ -388,9 +423,14 @@ public static class MatchTaskAsyncExtensions
             bool continueOnCapturedContext)
         {
             if (result.IsSuccess())
-                return await Guard.EnsureNotNullResult(ifSuccessFunction(), nameof(ifSuccessFunction), continueOnCapturedContext);
+            {
+                var successTask = ifSuccessFunction();
+                return await Guard.EnsureNotNullResult(successTask, nameof(ifSuccessFunction), continueOnCapturedContext);
+            }
 
-            await Guard.EnsureNotNullTask(ifErrorAction(result.Error), nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+            var errorTask = ifErrorAction(result.Error);
+            await Guard.EnsureNotNullTask(errorTask, nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+
             return result.Error;
         }
     }
@@ -442,9 +482,15 @@ public static class MatchTaskAsyncExtensions
             Func<Error, Task<Result<T>>> ifErrorFunction,
             bool continueOnCapturedContext)
         {
-            return result.IsSuccess()
-                ? await Guard.EnsureNotNullResult(ifSuccessFunction(), nameof(ifSuccessFunction), continueOnCapturedContext)
-                : await Guard.EnsureNotNullResult(ifErrorFunction(result.Error), nameof(ifErrorFunction), continueOnCapturedContext);
+            if (result.IsSuccess())
+            {
+                var successTask = ifSuccessFunction();
+                return await Guard.EnsureNotNullResult(successTask, nameof(ifSuccessFunction), continueOnCapturedContext);
+            }
+
+            var errorTask = ifErrorFunction(result.Error);
+
+            return await Guard.EnsureNotNullResult(errorTask, nameof(ifErrorFunction), continueOnCapturedContext);
         }
     }
 
@@ -499,9 +545,15 @@ public static class MatchTaskAsyncExtensions
         static async Task<Result<T>> Core(Result<T> result, Func<T, Task> ifSuccessAction, Func<Error, Task> ifErrorAction, bool continueOnCapturedContext)
         {
             if (result.IsSuccess())
-                await Guard.EnsureNotNullTask(ifSuccessAction(result.Value), nameof(ifSuccessAction)).ConfigureAwait(continueOnCapturedContext);
+            {
+                var successTask = ifSuccessAction(result.Value);
+                await Guard.EnsureNotNullTask(successTask, nameof(ifSuccessAction)).ConfigureAwait(continueOnCapturedContext);
+            }
             else
-                await Guard.EnsureNotNullTask(ifErrorAction(result.Error), nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+            {
+                var errorTask = ifErrorAction(result.Error);
+                await Guard.EnsureNotNullTask(errorTask, nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+            }
 
             return result;
         }
@@ -562,12 +614,15 @@ public static class MatchTaskAsyncExtensions
         {
             if (result.IsSuccess())
             {
-                var nextTask = Guard.EnsureNotNullTask(ifSuccessFunction(result.Value), nameof(ifSuccessFunction));
+                var successTask = ifSuccessFunction(result.Value);
+                var nextTask = Guard.EnsureNotNullTask(successTask, nameof(ifSuccessFunction));
 
                 return await nextTask.ConfigureAwait(continueOnCapturedContext);
             }
 
-            await Guard.EnsureNotNullTask(ifErrorAction(result.Error), nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+            var errorTask = ifErrorAction(result.Error);
+            await Guard.EnsureNotNullTask(errorTask, nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+
             return result.Error;
         }
     }
@@ -638,12 +693,15 @@ public static class MatchTaskAsyncExtensions
         {
             if (result.IsSuccess())
             {
-                var error = await Guard.EnsureNotNullResult(ifSuccessFunction(result.Value), nameof(ifSuccessFunction), continueOnCapturedContext);
+                var successTask = ifSuccessFunction(result.Value);
+                var error = await Guard.EnsureNotNullResult(successTask, nameof(ifSuccessFunction), continueOnCapturedContext);
 
                 return Result.FromError(error);
             }
 
-            await Guard.EnsureNotNullTask(ifErrorAction(result.Error), nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+            var errorTask = ifErrorAction(result.Error);
+            await Guard.EnsureNotNullTask(errorTask, nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+
             return result.Error;
         }
     }
@@ -700,9 +758,15 @@ public static class MatchTaskAsyncExtensions
             Func<Error, Task<TNext>> ifErrorFunction,
             bool continueOnCapturedContext)
         {
-            return result.IsSuccess()
-                ? await Guard.EnsureNotNullTask(ifSuccessFunction(result.Value), nameof(ifSuccessFunction)).ConfigureAwait(continueOnCapturedContext)
-                : await Guard.EnsureNotNullTask(ifErrorFunction(result.Error), nameof(ifErrorFunction)).ConfigureAwait(continueOnCapturedContext);
+            if (result.IsSuccess())
+            {
+                var successTask = ifSuccessFunction(result.Value);
+                return await Guard.EnsureNotNullTask(successTask, nameof(ifSuccessFunction)).ConfigureAwait(continueOnCapturedContext);
+            }
+
+            var errorTask = ifErrorFunction(result.Error);
+
+            return await Guard.EnsureNotNullTask(errorTask, nameof(ifErrorFunction)).ConfigureAwait(continueOnCapturedContext);
         }
     }
 
@@ -760,9 +824,14 @@ public static class MatchTaskAsyncExtensions
             bool continueOnCapturedContext)
         {
             if (result.IsSuccess())
-                return await Guard.EnsureNotNullResult(ifSuccessFunction(result.Value), nameof(ifSuccessFunction), continueOnCapturedContext);
+            {
+                var successTask = ifSuccessFunction(result.Value);
+                return await Guard.EnsureNotNullResult(successTask, nameof(ifSuccessFunction), continueOnCapturedContext);
+            }
 
-            await Guard.EnsureNotNullTask(ifErrorAction(result.Error), nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+            var errorTask = ifErrorAction(result.Error);
+            await Guard.EnsureNotNullTask(errorTask, nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+
             return result.Error;
         }
     }
@@ -819,9 +888,15 @@ public static class MatchTaskAsyncExtensions
             Func<Error, Task<Result<TNext>>> ifErrorFunction,
             bool continueOnCapturedContext)
         {
-            return result.IsSuccess()
-                ? await Guard.EnsureNotNullResult(ifSuccessFunction(result.Value), nameof(ifSuccessFunction), continueOnCapturedContext)
-                : await Guard.EnsureNotNullResult(ifErrorFunction(result.Error), nameof(ifErrorFunction), continueOnCapturedContext);
+            if (result.IsSuccess())
+            {
+                var successTask = ifSuccessFunction(result.Value);
+                return await Guard.EnsureNotNullResult(successTask, nameof(ifSuccessFunction), continueOnCapturedContext);
+            }
+
+            var errorTask = ifErrorFunction(result.Error);
+
+            return await Guard.EnsureNotNullResult(errorTask, nameof(ifErrorFunction), continueOnCapturedContext);
         }
     }
 
@@ -882,9 +957,15 @@ public static class MatchTaskAsyncExtensions
             var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
 
             if (result.IsSuccess())
-                await Guard.EnsureNotNullTask(ifSuccessAction(), nameof(ifSuccessAction)).ConfigureAwait(continueOnCapturedContext);
+            {
+                var successTask = ifSuccessAction();
+                await Guard.EnsureNotNullTask(successTask, nameof(ifSuccessAction)).ConfigureAwait(continueOnCapturedContext);
+            }
             else
-                await Guard.EnsureNotNullTask(ifErrorAction(result.Error), nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+            {
+                var errorTask = ifErrorAction(result.Error);
+                await Guard.EnsureNotNullTask(errorTask, nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+            }
 
             return result;
         }
@@ -945,9 +1026,14 @@ public static class MatchTaskAsyncExtensions
             var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
 
             if (result.IsSuccess())
-                return await Guard.EnsureNotNullResult(ifSuccessFunction(), nameof(ifSuccessFunction), continueOnCapturedContext);
+            {
+                var successTask = ifSuccessFunction();
+                return await Guard.EnsureNotNullResult(successTask, nameof(ifSuccessFunction), continueOnCapturedContext);
+            }
 
-            await Guard.EnsureNotNullTask(ifErrorAction(result.Error), nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+            var errorTask = ifErrorAction(result.Error);
+            await Guard.EnsureNotNullTask(errorTask, nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+
             return result;
         }
     }
@@ -1004,9 +1090,15 @@ public static class MatchTaskAsyncExtensions
         {
             var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
 
-            return result.IsSuccess()
-                ? await Guard.EnsureNotNullResult(ifSuccessFunction(), nameof(ifSuccessFunction), continueOnCapturedContext)
-                : await Guard.EnsureNotNullResult(ifErrorFunction(result.Error), nameof(ifErrorFunction), continueOnCapturedContext);
+            if (result.IsSuccess())
+            {
+                var successTask = ifSuccessFunction();
+                return await Guard.EnsureNotNullResult(successTask, nameof(ifSuccessFunction), continueOnCapturedContext);
+            }
+
+            var errorTask = ifErrorFunction(result.Error);
+
+            return await Guard.EnsureNotNullResult(errorTask, nameof(ifErrorFunction), continueOnCapturedContext);
         }
     }
 
@@ -1066,9 +1158,14 @@ public static class MatchTaskAsyncExtensions
             var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
 
             if (result.IsSuccess())
-                return await Guard.EnsureNotNullTask(ifSuccessFunction(), nameof(ifSuccessFunction)).ConfigureAwait(continueOnCapturedContext);
+            {
+                var successTask = ifSuccessFunction();
+                return await Guard.EnsureNotNullTask(successTask, nameof(ifSuccessFunction)).ConfigureAwait(continueOnCapturedContext);
+            }
 
-            await Guard.EnsureNotNullTask(ifErrorAction(result.Error), nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+            var errorTask = ifErrorAction(result.Error);
+            await Guard.EnsureNotNullTask(errorTask, nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+
             return result.Error;
         }
     }
@@ -1139,9 +1236,16 @@ public static class MatchTaskAsyncExtensions
             var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
 
             if (result.IsSuccess())
-                return Result.FromError(await Guard.EnsureNotNullResult(ifSuccessFunction(), nameof(ifSuccessFunction), continueOnCapturedContext));
+            {
+                var successTask = ifSuccessFunction();
+                var error = await Guard.EnsureNotNullResult(successTask, nameof(ifSuccessFunction), continueOnCapturedContext);
 
-            await Guard.EnsureNotNullTask(ifErrorAction(result.Error), nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+                return Result.FromError(error);
+            }
+
+            var errorTask = ifErrorAction(result.Error);
+            await Guard.EnsureNotNullTask(errorTask, nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+
             return result;
         }
     }
@@ -1199,9 +1303,15 @@ public static class MatchTaskAsyncExtensions
         {
             var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
 
-            return result.IsSuccess()
-                ? await Guard.EnsureNotNullTask(ifSuccessFunction(), nameof(ifSuccessFunction)).ConfigureAwait(continueOnCapturedContext)
-                : await Guard.EnsureNotNullTask(ifErrorFunction(result.Error), nameof(ifErrorFunction)).ConfigureAwait(continueOnCapturedContext);
+            if (result.IsSuccess())
+            {
+                var successTask = ifSuccessFunction();
+                return await Guard.EnsureNotNullTask(successTask, nameof(ifSuccessFunction)).ConfigureAwait(continueOnCapturedContext);
+            }
+
+            var errorTask = ifErrorFunction(result.Error);
+
+            return await Guard.EnsureNotNullTask(errorTask, nameof(ifErrorFunction)).ConfigureAwait(continueOnCapturedContext);
         }
     }
 
@@ -1262,9 +1372,14 @@ public static class MatchTaskAsyncExtensions
             var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
 
             if (result.IsSuccess())
-                return await Guard.EnsureNotNullResult(ifSuccessFunction(), nameof(ifSuccessFunction), continueOnCapturedContext);
+            {
+                var successTask = ifSuccessFunction();
+                return await Guard.EnsureNotNullResult(successTask, nameof(ifSuccessFunction), continueOnCapturedContext);
+            }
 
-            await Guard.EnsureNotNullTask(ifErrorAction(result.Error), nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+            var errorTask = ifErrorAction(result.Error);
+            await Guard.EnsureNotNullTask(errorTask, nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+
             return result.Error;
         }
     }
@@ -1323,9 +1438,15 @@ public static class MatchTaskAsyncExtensions
         {
             var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
 
-            return result.IsSuccess()
-                ? await Guard.EnsureNotNullResult(ifSuccessFunction(), nameof(ifSuccessFunction), continueOnCapturedContext)
-                : await Guard.EnsureNotNullResult(ifErrorFunction(result.Error), nameof(ifErrorFunction), continueOnCapturedContext);
+            if (result.IsSuccess())
+            {
+                var successTask = ifSuccessFunction();
+                return await Guard.EnsureNotNullResult(successTask, nameof(ifSuccessFunction), continueOnCapturedContext);
+            }
+
+            var errorTask = ifErrorFunction(result.Error);
+
+            return await Guard.EnsureNotNullResult(errorTask, nameof(ifErrorFunction), continueOnCapturedContext);
         }
     }
 
@@ -1393,9 +1514,15 @@ public static class MatchTaskAsyncExtensions
             var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
 
             if (result.IsSuccess())
-                await Guard.EnsureNotNullTask(ifSuccessAction(result.Value), nameof(ifSuccessAction)).ConfigureAwait(continueOnCapturedContext);
+            {
+                var successTask = ifSuccessAction(result.Value);
+                await Guard.EnsureNotNullTask(successTask, nameof(ifSuccessAction)).ConfigureAwait(continueOnCapturedContext);
+            }
             else
-                await Guard.EnsureNotNullTask(ifErrorAction(result.Error), nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+            {
+                var errorTask = ifErrorAction(result.Error);
+                await Guard.EnsureNotNullTask(errorTask, nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+            }
 
             return result;
         }
@@ -1463,12 +1590,15 @@ public static class MatchTaskAsyncExtensions
 
             if (result.IsSuccess())
             {
-                var nextTask = Guard.EnsureNotNullTask(ifSuccessFunction(result.Value), nameof(ifSuccessFunction));
+                var successTask = ifSuccessFunction(result.Value);
+                var nextTask = Guard.EnsureNotNullTask(successTask, nameof(ifSuccessFunction));
 
                 return await nextTask.ConfigureAwait(continueOnCapturedContext);
             }
 
-            await Guard.EnsureNotNullTask(ifErrorAction(result.Error), nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+            var errorTask = ifErrorAction(result.Error);
+            await Guard.EnsureNotNullTask(errorTask, nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+
             return result.Error;
         }
     }
@@ -1545,12 +1675,15 @@ public static class MatchTaskAsyncExtensions
 
             if (result.IsSuccess())
             {
-                var error = await Guard.EnsureNotNullResult(ifSuccessFunction(result.Value), nameof(ifSuccessFunction), continueOnCapturedContext);
+                var successTask = ifSuccessFunction(result.Value);
+                var error = await Guard.EnsureNotNullResult(successTask, nameof(ifSuccessFunction), continueOnCapturedContext);
 
                 return Result.FromError(error);
             }
 
-            await Guard.EnsureNotNullTask(ifErrorAction(result.Error), nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+            var errorTask = ifErrorAction(result.Error);
+            await Guard.EnsureNotNullTask(errorTask, nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+
             return result.Error;
         }
     }
@@ -1614,9 +1747,15 @@ public static class MatchTaskAsyncExtensions
         {
             var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
 
-            return result.IsSuccess()
-                ? await Guard.EnsureNotNullTask(ifSuccessFunction(result.Value), nameof(ifSuccessFunction)).ConfigureAwait(continueOnCapturedContext)
-                : await Guard.EnsureNotNullTask(ifErrorFunction(result.Error), nameof(ifErrorFunction)).ConfigureAwait(continueOnCapturedContext);
+            if (result.IsSuccess())
+            {
+                var successTask = ifSuccessFunction(result.Value);
+                return await Guard.EnsureNotNullTask(successTask, nameof(ifSuccessFunction)).ConfigureAwait(continueOnCapturedContext);
+            }
+
+            var errorTask = ifErrorFunction(result.Error);
+
+            return await Guard.EnsureNotNullTask(errorTask, nameof(ifErrorFunction)).ConfigureAwait(continueOnCapturedContext);
         }
     }
 
@@ -1681,9 +1820,14 @@ public static class MatchTaskAsyncExtensions
             var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
 
             if (result.IsSuccess())
-                return await Guard.EnsureNotNullResult(ifSuccessFunction(result.Value), nameof(ifSuccessFunction), continueOnCapturedContext);
+            {
+                var successTask = ifSuccessFunction(result.Value);
+                return await Guard.EnsureNotNullResult(successTask, nameof(ifSuccessFunction), continueOnCapturedContext);
+            }
 
-            await Guard.EnsureNotNullTask(ifErrorAction(result.Error), nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+            var errorTask = ifErrorAction(result.Error);
+            await Guard.EnsureNotNullTask(errorTask, nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+
             return result.Error;
         }
     }
@@ -1746,9 +1890,15 @@ public static class MatchTaskAsyncExtensions
         {
             var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
 
-            return result.IsSuccess()
-                ? await Guard.EnsureNotNullResult(ifSuccessFunction(result.Value), nameof(ifSuccessFunction), continueOnCapturedContext)
-                : await Guard.EnsureNotNullResult(ifErrorFunction(result.Error), nameof(ifErrorFunction), continueOnCapturedContext);
+            if (result.IsSuccess())
+            {
+                var successTask = ifSuccessFunction(result.Value);
+                return await Guard.EnsureNotNullResult(successTask, nameof(ifSuccessFunction), continueOnCapturedContext);
+            }
+
+            var errorTask = ifErrorFunction(result.Error);
+
+            return await Guard.EnsureNotNullResult(errorTask, nameof(ifErrorFunction), continueOnCapturedContext);
         }
     }
 

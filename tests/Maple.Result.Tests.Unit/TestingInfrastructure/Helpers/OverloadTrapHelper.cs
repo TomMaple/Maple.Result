@@ -24,7 +24,6 @@ internal static class OverloadTrapHelper
     internal static bool IsTrap(MethodInfo method, string messagePrefix)
     {
         var obsolete = method.GetCustomAttribute<ObsoleteAttribute>();
-
         return obsolete?.Message is not null && obsolete.Message.StartsWith(messagePrefix, StringComparison.Ordinal);
     }
 

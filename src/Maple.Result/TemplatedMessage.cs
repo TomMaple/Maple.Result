@@ -106,7 +106,8 @@ public sealed record TemplatedMessage
     internal static TemplatedMessage Create(string templateId, ReadOnlySpan<(string Key, object? Value)> parameters,
         string templateIdParameterName, string parametersParameterName)
     {
-        return new TemplatedMessage(Validate(templateId, parameters, templateIdParameterName, parametersParameterName));
+        var validated = Validate(templateId, parameters, templateIdParameterName, parametersParameterName);
+        return new TemplatedMessage(validated);
     }
 
     /// <summary>
@@ -132,7 +133,10 @@ public sealed record TemplatedMessage
         string parametersParameterName)
     {
         if (templateId is not null)
-            return new TemplatedMessage(Validate(templateId, parameters, templateIdParameterName, parametersParameterName));
+        {
+            var validated = Validate(templateId, parameters, templateIdParameterName, parametersParameterName);
+            return new TemplatedMessage(validated);
+        }
 
         if (parameters is not null && parameters.Any())
             throw ParametersWithoutTemplateId(templateIdParameterName, parametersParameterName);
@@ -173,7 +177,10 @@ public sealed record TemplatedMessage
         hashCode.Add(TemplateId);
 
         if (ParamsDictionary is not null)
-            hashCode.Add(DictionaryHelper.GetHashCode(ParamsDictionary));
+        {
+            var paramsHashCode = DictionaryHelper.GetHashCode(ParamsDictionary);
+            hashCode.Add(paramsHashCode);
+        }
 
         return hashCode.ToHashCode();
     }
@@ -207,7 +214,13 @@ public sealed record TemplatedMessage
 
         // The Params of another message (or the Metadata of an error) never change, so they are shared instead of copied.
         if (parameters is ImmutableStringDictionary shared)
-            return new Validated(templateId, shared.Count == 0 ? null : shared);
+        {
+            var sharedParams = shared.Count == 0
+                ? null
+                : shared;
+
+            return new Validated(templateId, sharedParams);
+        }
 
         // No dictionary for an empty collection; the size is known up front for most collections.
         var isCountKnown = parameters.TryGetNonEnumeratedCount(out var count);
@@ -221,7 +234,9 @@ public sealed record TemplatedMessage
             Add(dictionary, key, value, parametersParameterName);
         }
 
-        var copy = dictionary is null ? null : new ImmutableStringDictionary(dictionary);
+        var copy = dictionary is null
+            ? null
+            : new ImmutableStringDictionary(dictionary);
 
         return new Validated(templateId, copy);
     }

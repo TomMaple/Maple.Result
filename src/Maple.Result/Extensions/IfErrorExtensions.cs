@@ -84,7 +84,9 @@ public static class IfErrorExtensions
         if (result.IsSuccess())
             return result;
 
-        return Guard.EnsureNotNullReturned(ifErrorFunction(result.Error), nameof(ifErrorFunction));
+        var errorResult = ifErrorFunction(result.Error);
+
+        return Guard.EnsureNotNullReturned(errorResult, nameof(ifErrorFunction));
     }
 
     #region Not supported: error actions returning a task

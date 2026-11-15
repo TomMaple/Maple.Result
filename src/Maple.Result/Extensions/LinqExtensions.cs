@@ -94,7 +94,10 @@ public static class LinqExtensions
         if (!result.IsSuccess())
             return result.Error;
 
-        return Result.FromError(Guard.EnsureNotNullReturned(selector(result.Value), nameof(selector)));
+        var returnedError = selector(result.Value);
+        var error = Guard.EnsureNotNullReturned(returnedError, nameof(selector));
+
+        return Result.FromError(error);
     }
 
     /// <summary>
@@ -142,7 +145,9 @@ public static class LinqExtensions
 
         return result.IfSuccess(x =>
         {
-            var collectionResult = Guard.EnsureNotNullReturned(collectionSelector(x), nameof(collectionSelector));
+            var selectedCollection = collectionSelector(x);
+            var collectionResult = Guard.EnsureNotNullReturned(selectedCollection, nameof(collectionSelector));
+
             return collectionResult.IfSuccess(y => resultSelector(x, y));
         });
     }
@@ -196,8 +201,14 @@ public static class LinqExtensions
 
         return result.IfSuccess(x =>
         {
-            var collectionResult = Guard.EnsureNotNullReturned(collectionSelector(x), nameof(collectionSelector));
-            return collectionResult.IfSuccess(y => Guard.EnsureNotNullReturned(resultSelector(x, y), nameof(resultSelector)));
+            var selectedCollection = collectionSelector(x);
+            var collectionResult = Guard.EnsureNotNullReturned(selectedCollection, nameof(collectionSelector));
+
+            return collectionResult.IfSuccess(y =>
+            {
+                var selected = resultSelector(x, y);
+                return Guard.EnsureNotNullReturned(selected, nameof(resultSelector));
+            });
         });
     }
 

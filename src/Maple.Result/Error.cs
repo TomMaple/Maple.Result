@@ -299,6 +299,7 @@ public sealed record Error
         }
 
         value = default;
+
         return false;
     }
 
@@ -437,7 +438,8 @@ public sealed record Error
         foreach (var errorDetail in ErrorDetailsCollection)
             hashCode.Add(errorDetail);
 
-        hashCode.Add(DictionaryHelper.GetHashCode(MetadataDictionary));
+        var metadataHashCode = DictionaryHelper.GetHashCode(MetadataDictionary);
+        hashCode.Add(metadataHashCode);
 
         return hashCode.ToHashCode();
     }
@@ -512,7 +514,6 @@ public sealed record Error
         ErrorUri? instanceUri, string? detailTemplateId, ReadOnlySpan<(string Key, object? Value)> detailNamedValues)
     {
         var detailTemplated = TemplatedMessage.CreateOptional(detailTemplateId, detailNamedValues, nameof(detailTemplateId), nameof(detailNamedValues));
-
         return Create(category, typeUri, title, detail, instanceUri, detailTemplated);
     }
 
@@ -544,7 +545,6 @@ public sealed record Error
         ErrorUri? instanceUri, string? detailTemplateId, IEnumerable<KeyValuePair<string, object?>>? detailNamedValues)
     {
         var detailTemplated = TemplatedMessage.CreateOptional(detailTemplateId, detailNamedValues, nameof(detailTemplateId), nameof(detailNamedValues));
-
         return Create(category, typeUri, title, detail, instanceUri, detailTemplated);
     }
 

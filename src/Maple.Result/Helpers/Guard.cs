@@ -45,7 +45,6 @@ internal static class Guard
     internal static NotNullTaskAwaitable<T> EnsureNotNullAwaited<T>(Task<T> task, string parameterName, bool continueOnCapturedContext)
     {
         var awaiter = task.ConfigureAwait(continueOnCapturedContext).GetAwaiter();
-
         return new NotNullTaskAwaitable<T>(awaiter, parameterName, true);
     }
 
@@ -53,7 +52,6 @@ internal static class Guard
     internal static NotNullValueTaskAwaitable<T> EnsureNotNullAwaited<T>(ValueTask<T> task, string parameterName, bool continueOnCapturedContext)
     {
         var awaiter = task.ConfigureAwait(continueOnCapturedContext).GetAwaiter();
-
         return new NotNullValueTaskAwaitable<T>(awaiter, parameterName, true);
     }
 
@@ -67,7 +65,6 @@ internal static class Guard
     internal static NotNullTaskAwaitable<T> EnsureNotNullResult<T>(Task<T>? task, string functionName, bool continueOnCapturedContext)
     {
         var awaiter = EnsureNotNullTask(task, functionName).ConfigureAwait(continueOnCapturedContext).GetAwaiter();
-
         return new NotNullTaskAwaitable<T>(awaiter, functionName, false);
     }
 
@@ -79,7 +76,6 @@ internal static class Guard
     internal static NotNullValueTaskAwaitable<T> EnsureNotNullResult<T>(ValueTask<T> task, string functionName, bool continueOnCapturedContext)
     {
         var awaiter = task.ConfigureAwait(continueOnCapturedContext).GetAwaiter();
-
         return new NotNullValueTaskAwaitable<T>(awaiter, functionName, false);
     }
 

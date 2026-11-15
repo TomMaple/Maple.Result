@@ -92,7 +92,9 @@ public class NullCheckUnitTests
         // Arrange
         var methodInfo = Methods[method];
         var arguments = CreateArguments(methodInfo, nullParameter: null, nullReturningParameter: parameter, variant);
-        var expectedMessage = variant == NullTask ? $"The function ‘{parameter}’ returned a null task." : $"The function ‘{parameter}’ returned null.";
+        var expectedMessage = variant == NullTask
+            ? $"The function ‘{parameter}’ returned a null task."
+            : $"The function ‘{parameter}’ returned null.";
 
         // Act
         var exception = await Record.ExceptionAsync(() => InvokeAndAwait(methodInfo, arguments));
@@ -175,7 +177,12 @@ public class NullCheckUnitTests
         if (!method.IsGenericMethodDefinition)
             return method;
 
-        var arguments = method.GetGenericArguments().Select(a => a.Name == "TResult" ? typeof(Result) : typeof(int)).ToArray();
+        var arguments = method.GetGenericArguments()
+            .Select(a => a.Name == "TResult"
+                ? typeof(Result)
+                : typeof(int))
+            .ToArray();
+
         return method.MakeGenericMethod(arguments);
     }
 
@@ -194,6 +201,7 @@ public class NullCheckUnitTests
             return type.Name;
 
         var name = type.Name[..type.Name.IndexOf('`')];
+
         return $"{name}<{string.Join(", ", type.GetGenericArguments().Select(TypeName))}>";
     }
 
@@ -263,7 +271,11 @@ public class NullCheckUnitTests
             return SourceError;
 
         if (type == typeof(Result))
-            return successful ? Result.Success() : Result.FromError(SourceError);
+        {
+            return successful
+                ? Result.Success()
+                : Result.FromError(SourceError);
+        }
 
         if (type == typeof(Task))
             return Task.CompletedTask;
@@ -274,7 +286,11 @@ public class NullCheckUnitTests
         if (IsDelegate(type))
         {
             var returnType = DelegateReturnType(type)!;
-            return CreateDelegate(type, returnType == typeof(void) ? null : CreateValue(returnType, successful: true));
+            var returnValue = returnType == typeof(void)
+                ? null
+                : CreateValue(returnType, successful: true);
+
+            return CreateDelegate(type, returnValue);
         }
 
         if (type.IsGenericType)
@@ -313,7 +329,10 @@ public class NullCheckUnitTests
     {
         var invoke = delegateType.GetMethod("Invoke")!;
         var parameters = invoke.GetParameters().Select(p => Expression.Parameter(p.ParameterType, p.Name)).ToArray();
-        Expression body = invoke.ReturnType == typeof(void) ? Expression.Empty() : Expression.Constant(returnValue, invoke.ReturnType);
+        Expression body = invoke.ReturnType == typeof(void)
+            ? Expression.Empty()
+            : Expression.Constant(returnValue, invoke.ReturnType);
+
         return Expression.Lambda(delegateType, body, parameters).Compile();
     }
 
@@ -335,9 +354,11 @@ public class NullCheckUnitTests
             case Task task:
                 await task;
                 break;
+
             case ValueTask valueTask:
                 await valueTask;
                 break;
+
             case not null when returned.GetType().IsGenericType && returned.GetType().GetGenericTypeDefinition() == typeof(ValueTask<>):
                 await (Task)returned.GetType().GetMethod(nameof(ValueTask<>.AsTask))!.Invoke(returned, null)!;
                 break;
