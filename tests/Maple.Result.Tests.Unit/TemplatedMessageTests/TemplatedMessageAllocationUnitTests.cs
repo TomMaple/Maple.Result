@@ -47,4 +47,35 @@ public class TemplatedMessageAllocationUnitTests
     }
 
     #endregion
+
+    #region equality (issue #128)
+
+    [Fact]
+    public void Equals_MessagesWithParams_AllocatesNothing()
+    {
+        // Arrange
+        var first = new TemplatedMessage("errors.length", ("min", 3), ("max", 10));
+        var second = new TemplatedMessage("errors.length", ("min", 3), ("max", 10));
+
+        // Act
+        var allocated = AllocationHelper.AllocatedBytes(() => _ = first.Equals(second));
+
+        // Assert
+        allocated.ShouldBe(0);
+    }
+
+    [Fact]
+    public void GetHashCode_MessageWithParams_AllocatesNothing()
+    {
+        // Arrange
+        var sut = new TemplatedMessage("errors.length", ("min", 3), ("max", 10));
+
+        // Act
+        var allocated = AllocationHelper.AllocatedBytes(() => _ = sut.GetHashCode());
+
+        // Assert
+        allocated.ShouldBe(0);
+    }
+
+    #endregion
 }
