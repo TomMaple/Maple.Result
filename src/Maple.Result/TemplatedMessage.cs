@@ -30,9 +30,6 @@ namespace Maple.Result;
 /// </remarks>
 public sealed record TemplatedMessage
 {
-    private static readonly ReadOnlyDictionary<string, object?> EmptyParams =
-        new(new Dictionary<string, object?>(StringComparer.Ordinal));
-
     #region constructors
 
     /// <summary>
@@ -41,7 +38,7 @@ public sealed record TemplatedMessage
     /// <param name="templateId">The identifier of the message template.</param>
     /// <param name="parameters">
     ///     The optional parameters (names and values) that might be required to generate a message from the template; values can be <see langword="null" />.
-    ///     When <see langword="null" />, <see cref="Params" /> is <see langword="null" />.
+    ///     When <see langword="null" /> or empty, <see cref="Params" /> is <see langword="null" />.
     /// </param>
     /// <exception cref="ArgumentNullException">
     ///     If the <paramref name="templateId" /> or a parameter name is <see langword="null" />.
@@ -65,7 +62,7 @@ public sealed record TemplatedMessage
     /// <param name="templateId">The identifier of the message template.</param>
     /// <param name="parameters">
     ///     The parameters (names and values) that might be required to generate a message from the template; values can be <see langword="null" />.
-    ///     When none are passed, <see cref="Params" /> is an empty dictionary.
+    ///     When none are passed, <see cref="Params" /> is <see langword="null" />.
     /// </param>
     /// <exception cref="ArgumentNullException">
     ///     If the <paramref name="templateId" /> or a parameter name is <see langword="null" />.
@@ -96,7 +93,7 @@ public sealed record TemplatedMessage
     /// </summary>
     /// <remarks>
     ///     A read-only dictionary built from the parameters passed to the constructor, with keys compared ordinally (case-sensitive);
-    ///     <see langword="null" /> when none were passed as key-value pairs. Values may be <see langword="null" />.
+    ///     <see langword="null" /> when there are no parameters, so it is never empty. Values may be <see langword="null" />.
     /// </remarks>
     public IReadOnlyDictionary<string, object?>? Params { get; }
 
@@ -235,9 +232,9 @@ public sealed record TemplatedMessage
             throw new ArgumentException($"The parameter ‘{key}’ is repeated.", parameterName);
     }
 
-    private static ReadOnlyDictionary<string, object?> ToReadOnly(Dictionary<string, object?> dictionary)
+    private static ReadOnlyDictionary<string, object?>? ToReadOnly(Dictionary<string, object?> dictionary)
     {
-        return dictionary.Count == 0 ? EmptyParams : new ReadOnlyDictionary<string, object?>(dictionary);
+        return dictionary.Count == 0 ? null : new ReadOnlyDictionary<string, object?>(dictionary);
     }
 
     private static ArgumentException ParametersWithoutTemplateId(string templateIdParameterName, string parametersParameterName)
