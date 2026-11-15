@@ -186,7 +186,9 @@ public sealed record Error
     ///         and be at least 3 characters long (<i>RFC 9457</i>, section 4); this is a recommendation and is not enforced.
     ///         Keys must not match the top-level members of the problem details format (<see cref="ProblemDetailsMembers" />, case-insensitively):
     ///         <c>type</c>, <c>title</c>, <c>status</c>, <c>detail</c>, <c>instance</c>, <c>errors</c> and <c>detailTemplated</c>;
-    ///         <see cref="WithMetadata(string, object?)" /> and <see cref="ErrorBuilder.WithMetadata(string, object?)" /> reject them.
+    ///         <see cref="WithMetadata(string, object?)" /> and <see cref="ErrorBuilder.WithMetadata(string, object?)" /> reject them,
+    ///         and they reject a key that differs only in case from an existing key (e.g., <c>retryAfter</c> next to <c>RetryAfter</c>):
+    ///         both would be the same member of a problem details object.
     ///     </para>
     ///     <para>
     ///         Values may be <see langword="null" />. Use <see cref="TryGetMetadata{T}" /> to read a value as a specific type.
@@ -312,8 +314,9 @@ public sealed record Error
     /// <param name="value">The value of the metadata entry; it may be <see langword="null" />.</param>
     /// <returns>A new instance of the <see cref="Error" /> object; the current instance is not modified.</returns>
     /// <exception cref="ArgumentException">
-    ///     If the <paramref name="key" /> is empty, whitespace-only or matches (case-insensitively) a standard problem details member:
-    ///     <c>type</c>, <c>title</c>, <c>status</c>, <c>detail</c>, <c>instance</c>, <c>errors</c> or <c>detailTemplated</c>.
+    ///     If the <paramref name="key" /> is empty, whitespace-only, matches (case-insensitively) a standard problem details member:
+    ///     <c>type</c>, <c>title</c>, <c>status</c>, <c>detail</c>, <c>instance</c>, <c>errors</c> or <c>detailTemplated</c>, or differs only in case
+    ///     from an existing key (the same key replaces the value).
     /// </exception>
     /// <exception cref="ArgumentNullException">If the <paramref name="key" /> is <see langword="null" />.</exception>
     public Error WithMetadata(string key, object? value)
@@ -331,7 +334,8 @@ public sealed record Error
     /// <returns>A new instance of the <see cref="Error" /> object; the current instance is not modified.</returns>
     /// <exception cref="ArgumentException">
     ///     If any key is empty, whitespace-only or matches (case-insensitively) a standard problem details member:
-    ///     <c>type</c>, <c>title</c>, <c>status</c>, <c>detail</c>, <c>instance</c>, <c>errors</c> or <c>detailTemplated</c>.
+    ///     <c>type</c>, <c>title</c>, <c>status</c>, <c>detail</c>, <c>instance</c>, <c>errors</c> or <c>detailTemplated</c>;
+    ///     or if a key differs only in case from an existing key or from another key of the same call (the same key replaces the value).
     /// </exception>
     /// <exception cref="ArgumentNullException">
     ///     If the <paramref name="metadata" /> or any key is <see langword="null" />.
@@ -355,7 +359,8 @@ public sealed record Error
     /// <returns>A new instance of the <see cref="Error" /> object; the current instance is not modified.</returns>
     /// <exception cref="ArgumentException">
     ///     If any key is empty, whitespace-only or matches (case-insensitively) a standard problem details member:
-    ///     <c>type</c>, <c>title</c>, <c>status</c>, <c>detail</c>, <c>instance</c>, <c>errors</c> or <c>detailTemplated</c>.
+    ///     <c>type</c>, <c>title</c>, <c>status</c>, <c>detail</c>, <c>instance</c>, <c>errors</c> or <c>detailTemplated</c>;
+    ///     or if a key differs only in case from an existing key or from another key of the same call (the same key replaces the value).
     /// </exception>
     /// <exception cref="ArgumentNullException">If any key is <see langword="null" />.</exception>
     public Error WithMetadata(params ReadOnlySpan<(string Key, object? Value)> metadata)
