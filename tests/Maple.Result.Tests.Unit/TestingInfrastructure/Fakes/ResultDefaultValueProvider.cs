@@ -12,7 +12,7 @@ using Moq;
 using System;
 using System.Threading.Tasks;
 
-namespace Maple.Result.Tests.Unit.TestingInfrastructure.Fakes;
+namespace Maple.Results.Tests.Unit.TestingInfrastructure.Fakes;
 
 /// <summary>
 ///     Default return values for mocked functions that the extension methods require to be non-null: a successful

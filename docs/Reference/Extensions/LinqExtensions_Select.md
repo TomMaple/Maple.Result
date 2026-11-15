@@ -1,6 +1,6 @@
 # LinqExtensions.Select Methods
 ## Definition
-Namespace: [Maple.Result.Extensions](namespace.md)<br>
+Namespace: [Maple.Results.Extensions](namespace.md)<br>
 Assembly: Maple.Result.dll<br>
 
 Enables the single-clause LINQ query syntax (a `from … select …` query without an intermediate `from`) for [Result&lt;T&gt;](../ResultT/ResultT.md).

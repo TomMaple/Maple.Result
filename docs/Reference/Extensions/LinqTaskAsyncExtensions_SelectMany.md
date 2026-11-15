@@ -1,6 +1,6 @@
 # LinqTaskAsyncExtensions.SelectMany Methods
 ## Definition
-Namespace: [Maple.Result.Extensions](namespace.md)<br>
+Namespace: [Maple.Results.Extensions](namespace.md)<br>
 Assembly: Maple.Result.dll<br>
 
 Enables the LINQ query syntax with more than one `from` clause for [Result&lt;T&gt;](../ResultT/ResultT.md) and [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result&lt;T&gt;](../ResultT/ResultT.md)&gt;, including queries that mix synchronous and asynchronous `from` clauses.

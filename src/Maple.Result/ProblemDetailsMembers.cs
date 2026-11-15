@@ -8,7 +8,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-namespace Maple.Result;
+namespace Maple.Results;
 
 /// <summary>
 ///     The member names of the problem details object (<i>RFC 9457</i>) that represents an <see cref="Error" />.
@@ -69,17 +69,17 @@ public static class ProblemDetailsMembers
     public const string DetailTemplated = "detailTemplated";
 
     /// <summary>
-    ///     The <c>pointer</c> member of an <see cref="Errors" /> item: the <see cref="Maple.Result.ErrorDetail.PropertyPointer" />.
+    ///     The <c>pointer</c> member of an <see cref="Errors" /> item: the <see cref="Maple.Results.ErrorDetail.PropertyPointer" />.
     /// </summary>
     public const string ErrorPointer = "pointer";
 
     /// <summary>
-    ///     The <c>detail</c> member of an <see cref="Errors" /> item: the <see cref="Maple.Result.ErrorDetail.Detail" />.
+    ///     The <c>detail</c> member of an <see cref="Errors" /> item: the <see cref="Maple.Results.ErrorDetail.Detail" />.
     /// </summary>
     public const string ErrorDetail = "detail";
 
     /// <summary>
-    ///     The <c>detailTemplated</c> member of an <see cref="Errors" /> item: the <see cref="Maple.Result.ErrorDetail.DetailTemplated" />
+    ///     The <c>detailTemplated</c> member of an <see cref="Errors" /> item: the <see cref="Maple.Results.ErrorDetail.DetailTemplated" />
     ///     object, with the <see cref="TemplateId" /> and <see cref="TemplateParams" /> members.
     /// </summary>
     public const string ErrorDetailTemplated = "detailTemplated";

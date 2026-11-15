@@ -8,14 +8,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using Maple.Result.Helpers;
+using Maple.Results.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace Maple.Result;
+namespace Maple.Results;
 
 /// <summary>
 ///     The structure for a templated message.

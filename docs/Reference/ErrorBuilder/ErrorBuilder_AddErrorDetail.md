@@ -1,6 +1,6 @@
 # ErrorBuilder.AddErrorDetail Method
 ## Definition
-Namespace: [Maple.Result](../namespace.md)<br>
+Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
 
 Appends an individual error occurrence to the [ErrorDetails](../Error/Error_ErrorDetails.md) of the error to build.

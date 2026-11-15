@@ -8,7 +8,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-namespace Maple.Result;
+namespace Maple.Results;
 
 /// <summary>
 ///     An enumeration representing the different categories of errors that can be returned by the Result record.

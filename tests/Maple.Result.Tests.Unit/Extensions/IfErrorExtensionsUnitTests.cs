@@ -8,8 +8,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using Maple.Result.Extensions;
-using Maple.Result.Tests.Unit.TestingInfrastructure.Fakes;
+using Maple.Results.Extensions;
+using Maple.Results.Tests.Unit.TestingInfrastructure.Fakes;
 using Moq;
 using System;
 using System.ComponentModel;
@@ -18,7 +18,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-namespace Maple.Result.Tests.Unit.Extensions;
+namespace Maple.Results.Tests.Unit.Extensions;
 
 public class IfErrorExtensionsUnitTests
 {

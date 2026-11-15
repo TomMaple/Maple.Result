@@ -9,9 +9,9 @@
  */
 
 using System.Collections.Generic;
-using Sut = Maple.Result.Error;
+using Sut = Maple.Results.Error;
 
-namespace Maple.Result.Tests.Unit.ErrorTests;
+namespace Maple.Results.Tests.Unit.ErrorTests;
 
 public class ErrorEqualityUnitTests
 {

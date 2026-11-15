@@ -1,6 +1,6 @@
 # IfSuccessValueTaskAsyncExtensions.IfSuccessAsync Methods
 ## Definition
-Namespace: [Maple.Result.Extensions.ValueTasks](namespace.md)<br>
+Namespace: [Maple.Results.Extensions.ValueTasks](namespace.md)<br>
 Assembly: Maple.Result.dll<br>
 
 Runs a specific asynchronous action or function, if the instance of [Result](../../Result/Result.md) and [Result&lt;T&gt;](../../ResultT/ResultT.md) represents a successful operation (i.e., does not contain an [Error](../../Error/Error.md)), as an asynchronous operation.

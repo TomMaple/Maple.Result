@@ -13,7 +13,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-namespace Maple.Result.Tests.Unit.TestingInfrastructure.Helpers;
+namespace Maple.Results.Tests.Unit.TestingInfrastructure.Helpers;
 
 /// <summary>
 ///     Reflection helpers for the hidden overloads that turn an unsupported call into a compile error (overload traps).

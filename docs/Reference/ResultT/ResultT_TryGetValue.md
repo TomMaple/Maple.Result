@@ -1,6 +1,6 @@
 # Result&lt;T&gt;.TryGetValue Method
 ## Definition
-Namespace: [Maple.Result](../namespace.md)<br>
+Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
 
 Gets the value of a successful result without an exception.

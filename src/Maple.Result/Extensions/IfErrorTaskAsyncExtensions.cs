@@ -8,12 +8,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using Maple.Result.Helpers;
+using Maple.Results.Helpers;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
-namespace Maple.Result.Extensions;
+namespace Maple.Results.Extensions;
 
 /// <summary>
 ///     The collection of extension methods for executing asynchronous actions or functions conditionally based on the error state of

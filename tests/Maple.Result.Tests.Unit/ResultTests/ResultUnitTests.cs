@@ -8,11 +8,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using Maple.Result.Tests.Unit.TestingInfrastructure.Helpers;
+using Maple.Results.Tests.Unit.TestingInfrastructure.Helpers;
 using System;
-using Sut = Maple.Result.Result;
+using Sut = Maple.Results.Result;
 
-namespace Maple.Result.Tests.Unit.ResultTests;
+namespace Maple.Results.Tests.Unit.ResultTests;
 
 public class ResultUnitTests
 {

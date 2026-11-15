@@ -1,6 +1,6 @@
 # Error.WithMetadata Method
 ## Definition
-Namespace: [Maple.Result](../namespace.md)<br>
+Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
 
 Returns a copy of the [Error](Error.md) with the specified [Metadata](Error_Metadata.md) entries added or replaced.

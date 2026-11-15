@@ -8,11 +8,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using Maple.Result.Helpers;
+using Maple.Results.Helpers;
 using System;
 using System.Threading.Tasks;
 
-namespace Maple.Result.Extensions;
+namespace Maple.Results.Extensions;
 
 /// <summary>
 ///     The collection of asynchronous extension methods for the <see cref="Result{T}" /> type.

@@ -8,14 +8,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using Maple.Result.Extensions.ValueTasks;
-using Maple.Result.Tests.Unit.TestingInfrastructure.Fakes;
-using Maple.Result.Tests.Unit.TestingInfrastructure.Fixtures;
+using Maple.Results.Extensions.ValueTasks;
+using Maple.Results.Tests.Unit.TestingInfrastructure.Fakes;
+using Maple.Results.Tests.Unit.TestingInfrastructure.Fixtures;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Maple.Result.Tests.Unit.Extensions.ValueTasks;
+namespace Maple.Results.Tests.Unit.Extensions.ValueTasks;
 
 /// <summary>
 ///     Verifies on which context the delegates passed to the <see cref="ValueTask" />-based extension methods run.

@@ -8,7 +8,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using Maple.Result.Extensions;
+using Maple.Results.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +16,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace Maple.Result.Tests.Unit.Extensions;
+namespace Maple.Results.Tests.Unit.Extensions;
 
 /// <summary>
 ///     The null checks of all extension methods (issue #121), checked over every public extension method by reflection:
@@ -29,7 +29,7 @@ public class NullCheckUnitTests
     private static readonly Error SourceError = Error.Failure(ErrorUri.None(), "0f6b1c1e-3f7d-4f43-9d4e-58b8b1a3c2d1", "Source error");
 
     private static readonly Dictionary<string, MethodInfo> Methods = typeof(Result).Assembly.GetExportedTypes()
-        .Where(t => t.Namespace?.StartsWith("Maple.Result.Extensions", StringComparison.Ordinal) == true)
+        .Where(t => t.Namespace?.StartsWith("Maple.Results.Extensions", StringComparison.Ordinal) == true)
         .SelectMany(t => t.GetMethods(BindingFlags.Public | BindingFlags.Static))
         .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is null)
         .Select(Close)

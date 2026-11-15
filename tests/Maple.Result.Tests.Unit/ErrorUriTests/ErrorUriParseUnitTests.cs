@@ -8,10 +8,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using Maple.Result.Tests.Unit.TestingInfrastructure.Helpers;
+using Maple.Results.Tests.Unit.TestingInfrastructure.Helpers;
 using System;
 
-namespace Maple.Result.Tests.Unit.ErrorUriTests;
+namespace Maple.Results.Tests.Unit.ErrorUriTests;
 
 public class ErrorUriParseUnitTests
 {

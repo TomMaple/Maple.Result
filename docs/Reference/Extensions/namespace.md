@@ -1,4 +1,4 @@
-# Maple.Result.Extensions Namespace
+# Maple.Results.Extensions Namespace
 Provides classes with extension methods for the [Result](../Result/Result.md) and [Result&lt;T&gt;](../ResultT/ResultT.md) types.
 
 ## Classes
@@ -16,5 +16,5 @@ Provides classes with extension methods for the [Result](../Result/Result.md) an
 | [ResultTaskAsyncExtensions](ResultTaskAsyncExtensions.md) | Provides asynchronous extension methods, represented by [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task), for the [Result&lt;T&gt;](../ResultT/ResultT.md) records. |
 
 ## See Also
-* [Maple.Result namespace](../namespace.md)
-* [Maple.Result.Extensions.ValueTasks namespace](ValueTasks/namespace.md)
+* [Maple.Results namespace](../namespace.md)
+* [Maple.Results.Extensions.ValueTasks namespace](ValueTasks/namespace.md)

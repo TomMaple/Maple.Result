@@ -1,6 +1,6 @@
 # ErrorBuilder.WithDetailTemplated Method
 ## Definition
-Namespace: [Maple.Result](../namespace.md)<br>
+Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
 
 Sets the [DetailTemplated](../Error/Error_DetailTemplated.md) of the error to build.

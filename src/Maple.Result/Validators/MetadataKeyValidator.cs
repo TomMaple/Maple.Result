@@ -11,7 +11,7 @@
 using System;
 using System.Collections.Frozen;
 
-namespace Maple.Result.Validators;
+namespace Maple.Results.Validators;
 
 /// <summary>
 ///     Validates the keys of the <see cref="Error.Metadata" /> entries.

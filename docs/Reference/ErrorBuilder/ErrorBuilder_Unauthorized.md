@@ -1,6 +1,6 @@
 # ErrorBuilder.Unauthorized(ErrorUri, String) Method
 ## Definition
-Namespace: [Maple.Result](../namespace.md)<br>
+Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L126" target="_blank">ErrorBuilder.cs</a>
 

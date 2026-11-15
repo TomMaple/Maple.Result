@@ -8,7 +8,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-namespace Maple.Result;
+namespace Maple.Results;
 
 /// <summary>
 ///     Global settings of the library.

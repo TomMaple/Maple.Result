@@ -8,11 +8,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using Maple.Result.Validators;
+using Maple.Results.Validators;
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Maple.Result;
+namespace Maple.Results;
 
 /// <summary>
 ///     Represents a <i>URI</i> that identifies or describes the type or category of an error in a standardized format.

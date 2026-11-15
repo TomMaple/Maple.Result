@@ -8,11 +8,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using Maple.Result.Helpers;
+using Maple.Results.Helpers;
 using System;
 using System.Threading.Tasks;
 
-namespace Maple.Result.Extensions.ValueTasks;
+namespace Maple.Results.Extensions.ValueTasks;
 
 /// <summary>
 ///     The collection of extension methods for executing asynchronous actions or functions based on the state of a <see cref="Result" /> instance.
@@ -22,8 +22,8 @@ namespace Maple.Result.Extensions.ValueTasks;
 ///     instance. These helpers centralize success/error handling logic by accepting delegates for each branch,
 ///     enabling concise match-like patterns across synchronous result workflows.
 ///     <para>
-///         These methods are declared in the <c>Maple.Result.Extensions.ValueTasks</c> namespace, separately from their
-///         <see cref="System.Threading.Tasks.Task" />-based counterparts in <c>Maple.Result.Extensions</c>, because both sets declare the same method names and
+///         These methods are declared in the <c>Maple.Results.Extensions.ValueTasks</c> namespace, separately from their
+///         <see cref="System.Threading.Tasks.Task" />-based counterparts in <c>Maple.Results.Extensions</c>, because both sets declare the same method names and
 ///         an asynchronous lambda is convertible to a <c>Func&lt;Task&gt;</c> as well as to a <c>Func&lt;ValueTask&gt;</c> delegate.
 ///         Importing only one of these namespaces keeps such calls unambiguous.
 ///     </para>

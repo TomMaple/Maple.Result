@@ -1,6 +1,6 @@
 # ResultConfiguration Class
 ## Definition
-Namespace: [Maple.Result](../namespace.md)<br>
+Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ResultConfiguration.cs#L19" target="_blank">ResultConfiguration.cs</a>
 
@@ -21,5 +21,5 @@ Set the properties once at application startup, before any other code of the lib
 | [ContinueOnCapturedContext](ResultConfiguration_ContinueOnCapturedContext.md) | The default value of the `continueOnCapturedContext` argument of the asynchronous extension methods, also used by the LINQ query operators. |
 
 ## See Also
-* [Maple.Result.Extensions namespace](../Extensions/namespace.md)
-* [Maple.Result.Extensions.ValueTasks namespace](../Extensions/ValueTasks/namespace.md)
+* [Maple.Results.Extensions namespace](../Extensions/namespace.md)
+* [Maple.Results.Extensions.ValueTasks namespace](../Extensions/ValueTasks/namespace.md)

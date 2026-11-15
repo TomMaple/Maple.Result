@@ -1,6 +1,6 @@
 # Error.Timeout Method
 ## Definition
-Namespace: [Maple.Result](../namespace.md)<br>
+Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
 
 Creates a new instance of the [Error](Error.md) object of the *Timeout* category.

@@ -11,7 +11,7 @@
 using System;
 using System.Text.RegularExpressions;
 
-namespace Maple.Result.Validators;
+namespace Maple.Results.Validators;
 
 internal static partial class UriOtherValidator
 {

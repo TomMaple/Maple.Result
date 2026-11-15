@@ -7,6 +7,7 @@ Version 3.0 makes `Result`, `Result<T>` and `Error` **immutable** and **always v
 ## Contents
 * [Quick checklist](#quick-checklist)
 * [Breaking changes](#breaking-changes)
+  * [Namespace renamed to `Maple.Results`](#namespace-renamed-to-mapleresults)
   * [New `LimitExceeded` error category](#new-limitexceeded-error-category)
   * [Public constructors removed](#public-constructors-removed)
   * [`AddDetail()` removed](#adddetail-removed)
@@ -30,22 +31,42 @@ Version 3.0 makes `Result`, `Result<T>` and `Error` **immutable** and **always v
 * [Search-and-replace reference](#search-and-replace-reference)
 
 ## Quick checklist
-1. Handle `ErrorCategory.LimitExceeded` in every exhaustive `switch` over `ErrorCategory`.
-2. Replace `error.AddDetail(...)` with `error = error.WithErrorDetail(...)` or an `ErrorBuilder`.
-3. Replace `error with { … }` with `error.ToBuilder()…Build()`.
-4. Replace `new Result()`, `new Result<T>()`, `new Error()` and `new ErrorUri(...)` with the factory methods.
-5. If you **read** `Result`, `Result<T>` or `Error` from JSON (e.g., Azure Durable Functions, message queues, caches, HTTP clients), see [No JSON deserialization without converters](#no-json-deserialization-without-converters).
-6. If you compare or snapshot the **written** JSON, see [Changed JSON output](#changed-json-output).
-7. Make sure error titles are never `null` or blank, and pass `null` instead of `ErrorUri.None()` as an instance *URI*.
-8. Fix the calls of `IfSuccess`, `Match` and the LINQ queries that no longer compile or that now return a failed result (see [`IfSuccess` and `Match` with an `Error` or a task](#ifsuccess-and-match-with-an-error-or-a-task)).
-9. Replace the error actions of `IfError` and `Match` that return a task with the asynchronous methods (see [`IfError` and `Match` with an error action that returns a task](#iferror-and-match-with-an-error-action-that-returns-a-task)).
-10. Replace the LINQ queries whose `select` returns a task with an asynchronous `from` clause or `IfSuccessAsync` (see [LINQ queries that select a task](#linq-queries-that-select-a-task)).
-11. Make sure the functions passed to the extension methods never return `null` where a result, an `Error` or a task is expected (see [Null results and null arguments of the extension methods](#null-results-and-null-arguments-of-the-extension-methods)).
-12. Upgrade the `Maple.Result.Extensions.*` packages together with `Maple.Result` (see [Extension packages](#extension-packages)).
-13. Replace `result.IsSuccess()` with `result.IsSuccess`, and `!result.IsSuccess()` with `result.IsError` (see [`IsSuccess` is a property; new `IsError`](#issuccess-is-a-property-new-iserror)).
-14. Make sure `Result<T>.Value` is read only on a successful result, or use `TryGetValue(out var value)`; and do not write a failed `Result<T>` with the default serializers (see [`Result<T>.Value` throws on a failed result](#resulttvalue-throws-on-a-failed-result)).
+1. Replace `using Maple.Result…;` with `using Maple.Results…;` (see [Namespace renamed to `Maple.Results`](#namespace-renamed-to-mapleresults)).
+2. Handle `ErrorCategory.LimitExceeded` in every exhaustive `switch` over `ErrorCategory`.
+3. Replace `error.AddDetail(...)` with `error = error.WithErrorDetail(...)` or an `ErrorBuilder`.
+4. Replace `error with { … }` with `error.ToBuilder()…Build()`.
+5. Replace `new Result()`, `new Result<T>()`, `new Error()` and `new ErrorUri(...)` with the factory methods.
+6. If you **read** `Result`, `Result<T>` or `Error` from JSON (e.g., Azure Durable Functions, message queues, caches, HTTP clients), see [No JSON deserialization without converters](#no-json-deserialization-without-converters).
+7. If you compare or snapshot the **written** JSON, see [Changed JSON output](#changed-json-output).
+8. Make sure error titles are never `null` or blank, and pass `null` instead of `ErrorUri.None()` as an instance *URI*.
+9. Fix the calls of `IfSuccess`, `Match` and the LINQ queries that no longer compile or that now return a failed result (see [`IfSuccess` and `Match` with an `Error` or a task](#ifsuccess-and-match-with-an-error-or-a-task)).
+10. Replace the error actions of `IfError` and `Match` that return a task with the asynchronous methods (see [`IfError` and `Match` with an error action that returns a task](#iferror-and-match-with-an-error-action-that-returns-a-task)).
+11. Replace the LINQ queries whose `select` returns a task with an asynchronous `from` clause or `IfSuccessAsync` (see [LINQ queries that select a task](#linq-queries-that-select-a-task)).
+12. Make sure the functions passed to the extension methods never return `null` where a result, an `Error` or a task is expected (see [Null results and null arguments of the extension methods](#null-results-and-null-arguments-of-the-extension-methods)).
+13. Upgrade the `Maple.Result.Extensions.*` packages together with `Maple.Result` (see [Extension packages](#extension-packages)).
+14. Replace `result.IsSuccess()` with `result.IsSuccess`, and `!result.IsSuccess()` with `result.IsError` (see [`IsSuccess` is a property; new `IsError`](#issuccess-is-a-property-new-iserror)).
+15. Make sure `Result<T>.Value` is read only on a successful result, or use `TryGetValue(out var value)`; and do not write a failed `Result<T>` with the default serializers (see [`Result<T>.Value` throws on a failed result](#resulttvalue-throws-on-a-failed-result)).
 
 ## Breaking changes
+### Namespace renamed to `Maple.Results`
+The namespaces are now `Maple.Results`, `Maple.Results.Extensions` and `Maple.Results.Extensions.ValueTasks`. The package ID (`Maple.Result`) and the assembly name (`Maple.Result.dll`) did not change.
+
+```csharp
+// before
+using Maple.Result;
+using Maple.Result.Extensions;
+
+// after
+using Maple.Results;
+using Maple.Results.Extensions;
+```
+
+The old namespace hid the type: inside any `Maple.*` namespace other than `Maple.Result.*` (an application or a library named `Maple.Something`), `Result` resolved to the namespace, so `Result.Success()`, `Result.FromValue(…)` and `Result.FromError(…)` did not compile (CS0234). A plural namespace with a singular type is the usual way out (`System.Threading.Tasks` and `Task`).
+
+> [!NOTE]
+> Inside any `Maple.*` namespace, the name `Results` now resolves to the namespace `Maple.Results`, so `Results.Ok()` of ASP.NET Core (Minimal APIs) does not compile there (CS0234). Use `TypedResults.Ok()` or the fully qualified `Microsoft.AspNetCore.Http.Results.Ok()`. Code in other namespaces is not affected.
+
+If you referenced a type by its full name (e.g., `Maple.Result.Error` in a `using` alias, in reflection or in a serialized type name such as `$type`), update it to `Maple.Results.…`.
 
 ### New `LimitExceeded` error category
 `ErrorCategory.LimitExceeded` (numeric value `10`) and the `Error.LimitExceeded(...)` factory methods have been added. Use the category when the request is valid and permitted, but a usage limit, quota or rate has been exhausted (HTTP `429`). `Unavailable` (HTTP `503`) now means only that a service is unavailable.
@@ -417,7 +438,10 @@ The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an
 | `result.IfSuccess(x => Error…)` relied on as a `Result<Error>` | `result.IfSuccess<T, Error>(x => Error…)` |
 | `result.Match(x => Error…, e => …)` relied on as a `Result<Error>` | `result.Match<T, Error>(x => Error…, e => …)` |
 | `Dictionary<string, object>` passed as named values | `Dictionary<string, object?>` |
-| `IResult` (`Maple.Result`) | `IOperationResult` |
+| `using Maple.Result;` | `using Maple.Results;` |
+| `using Maple.Result.Extensions;` | `using Maple.Results.Extensions;` |
+| `using Maple.Result.Extensions.ValueTasks;` | `using Maple.Results.Extensions.ValueTasks;` |
+| `IResult` (`Maple.Result`) | `IOperationResult` (`Maple.Results`) |
 | `result.IsSuccess()` | `result.IsSuccess` |
 | `!result.IsSuccess()` | `result.IsError` |
 | `result.Value` relied on as the default value of a failed result | `result.TryGetValue(out var value) ? value : default` or a check of `result.IsSuccess` |
@@ -428,6 +452,7 @@ The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an
 ## See Also
 * [README: Upgrading to 3.0](../README.md#upgrading-to-30)
 * [Reference documentation](Reference/namespace.md)
+* [Issue #178: Rename the namespace to Maple.Results](https://github.com/TomMaple/Maple.Result/issues/178)
 * [Issue #102: Simplify Result and Error](https://github.com/TomMaple/Maple.Result/issues/102)
 * [Issue #105: SynchronizationContext of the asynchronous extension methods](https://github.com/TomMaple/Maple.Result/issues/105)
 * [Issue #121: Null results and synchronous argument checks of the extension methods](https://github.com/TomMaple/Maple.Result/issues/121)

@@ -1,6 +1,6 @@
 # IfSuccessValueTaskAsyncExtensions Class
 ## Definition
-Namespace: [Maple.Result.Extensions.ValueTasks](namespace.md)<br>
+Namespace: [Maple.Results.Extensions.ValueTasks](namespace.md)<br>
 Assembly: Maple.Result.dll<br>
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/IfSuccessValueTaskAsyncExtensions.cs" target="_blank">IfSuccessValueTaskAsyncExtensions.cs</a>
 

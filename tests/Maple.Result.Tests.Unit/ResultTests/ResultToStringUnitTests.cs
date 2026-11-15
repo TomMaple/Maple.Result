@@ -8,7 +8,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-namespace Maple.Result.Tests.Unit.ResultTests;
+namespace Maple.Results.Tests.Unit.ResultTests;
 
 public class ResultToStringUnitTests
 {

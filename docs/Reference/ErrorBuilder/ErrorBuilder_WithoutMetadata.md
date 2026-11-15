@@ -1,6 +1,6 @@
 # ErrorBuilder.WithoutMetadata Method
 ## Definition
-Namespace: [Maple.Result](../namespace.md)<br>
+Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
 
 Removes some or all entries of the [Metadata](../Error/Error_Metadata.md) of the error to build.
