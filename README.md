@@ -1,7 +1,8 @@
-![NuGet Version](https://img.shields.io/nuget/v/Maple.Result?label=Maple.Result%20%E2%80%94%20nuget&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2FMaple.Result%2F)
-![NuGet Downloads](https://img.shields.io/nuget/dt/Maple.Result)
-![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/TomMaple/Maple.Result/ci.yml)
-![GitHub last commit](https://img.shields.io/github/last-commit/TomMaple/Maple.Result)
+[![NuGet Version](https://img.shields.io/nuget/v/Maple.Result?label=Maple.Result%20%E2%80%94%20nuget)](https://www.nuget.org/packages/Maple.Result/)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/Maple.Result)](https://www.nuget.org/packages/Maple.Result/)
+[![CI](https://img.shields.io/github/actions/workflow/status/TomMaple/Maple.Result/ci.yml?branch=main&label=CI)](https://github.com/TomMaple/Maple.Result/actions/workflows/ci.yml?query=branch%3Amain)
+[![GitHub last commit](https://img.shields.io/github/last-commit/TomMaple/Maple.Result/main)](https://github.com/TomMaple/Maple.Result/commits/main/)
+[![License: MIT](https://img.shields.io/github/license/TomMaple/Maple.Result)](https://github.com/TomMaple/Maple.Result/blob/main/LICENSE)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/TomMaple/Maple.Result/badge)](https://scorecard.dev/viewer/?uri=github.com/TomMaple/Maple.Result)
 
 
@@ -609,4 +610,9 @@ This library minimizes the amount of extension methods:
 * [language agnostic - Why not use exceptions as regular flow of control? - Stack Overflow](https://stackoverflow.com/questions/729379/why-not-use-exceptions-as-regular-flow-of-control)
 
 # Contribution
-Please contact author: engineer(at sign)blumail(dot)me
+Questions, ideas and contributions are welcome:
+* [Discussions](https://github.com/TomMaple/Maple.Result/discussions) — questions and ideas,
+* [Issues](https://github.com/TomMaple/Maple.Result/issues/new/choose) — bug reports and feature requests,
+* [Contributing guide](https://github.com/TomMaple/.github/blob/main/CONTRIBUTING.md) — how to propose a change,
+* [Code of Conduct](https://github.com/TomMaple/.github/blob/main/CODE_OF_CONDUCT.md),
+* [Security policy](https://github.com/TomMaple/.github/blob/main/SECURITY.md) — report vulnerabilities privately, never in a public issue.
