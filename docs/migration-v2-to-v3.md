@@ -257,6 +257,8 @@ ResultConfiguration.ContinueOnCapturedContext = true;
 ### `IResult` renamed to `IOperationResult`
 The common interface of `Result` and `Result<T>` was renamed from `IResult` to [`IOperationResult`](Reference/IOperationResult/IOperationResult.md). Its `Error` property did not change; `IsSuccess()` became a property and `IsError` was added (see [`IsSuccess` is a property; new `IsError`](#issuccess-is-a-property-new-iserror)).
 
+The interface also declares `TryGetError(out Error? error)`. If your own types implement `IOperationResult`, implement the `IsSuccess` and `IsError` properties and `TryGetError`, with the same nullable annotations (`[MemberNotNullWhen(false, nameof(Error))]` on `IsSuccess`, `[MemberNotNullWhen(true, nameof(Error))]` on `IsError`, `[NotNullWhen(true)]` on the `error` parameter).
+
 The old name clashed with `Microsoft.AspNetCore.Http.IResult`. ASP.NET Core web projects import `Microsoft.AspNetCore.Http` implicitly, and Minimal API endpoints commonly return `IResult`, so adding `using Maple.Result;` caused CS0104 (ambiguous reference) in endpoint signatures. If you added an alias to work around it (e.g., `using IResult = Microsoft.AspNetCore.Http.IResult;`), you can remove it.
 
 ```csharp
