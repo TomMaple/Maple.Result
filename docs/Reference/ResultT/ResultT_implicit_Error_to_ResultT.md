@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.cs#L380" target="_blank">Result.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.cs#L379" target="_blank">Result.cs</a>
 
 Defines an implicit conversion of a given [Error](../Error/Error.md) to a failure [Result&lt;T&gt;](ResultT.md) (without a value), with a provided error.
 
@@ -22,6 +22,11 @@ An [Error](../Error/Error.md) to implicitly convert.
 [Result&lt;T&gt;](ResultT.md)
 
 A new instance of the [Result&lt;T&gt;](ResultT.md) record (without a value) that represents a failed operation with the provided [Error](../Error/Error.md).
+
+### Exceptions
+[ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+
+`error` is `null`.
 
 ## Remarks
 > [!NOTE]

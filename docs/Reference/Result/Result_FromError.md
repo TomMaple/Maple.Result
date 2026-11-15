@@ -19,6 +19,11 @@ The [Error](../Error/Error.md) instance that represents the error that occurred.
 
 A new instance of the failure [Result](Result.md) instance with the provided instance of the [Error](../Error/Error.md) record.
 
+### Exceptions
+[ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+
+`error` is `null`.
+
 ## Remarks
 > [!NOTE]
 > This is a recommended way to create a new [Result](Result.md) instance (without value) with an error. Another way is to use the [Implicit(Error to Result)](Result_implicit_Error_to_Result.md) operator.
