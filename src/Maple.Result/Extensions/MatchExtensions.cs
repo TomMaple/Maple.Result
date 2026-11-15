@@ -11,6 +11,7 @@
 using Maple.Result.Helpers;
 using System;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Maple.Result.Extensions;
@@ -118,6 +119,7 @@ public static class MatchExtensions
     /// <exception cref="InvalidOperationException">
     ///     If <paramref name="ifSuccessFunction" /> returns <see langword="null" />, or <paramref name="ifErrorFunction" /> returns <see langword="null" />.
     /// </exception>
+    [OverloadResolutionPriority(2)]
     public static Result Match(this Result result, Func<Result> ifSuccessFunction, Func<Error, Result> ifErrorFunction)
     {
         ArgumentNullException.ThrowIfNull(result);
@@ -234,6 +236,7 @@ public static class MatchExtensions
     ///     If any of the <paramref name="result" />, <paramref name="ifSuccessFunction" />,
     ///     or <paramref name="ifErrorFunction" /> parameters are <see langword="null" />.
     /// </exception>
+    [OverloadResolutionPriority(2)]
     public static T Match<T>(this Result result, Func<T> ifSuccessFunction, Func<Error, T> ifErrorFunction)
     {
         ArgumentNullException.ThrowIfNull(result);
@@ -307,6 +310,7 @@ public static class MatchExtensions
     /// <exception cref="InvalidOperationException">
     ///     If <paramref name="ifSuccessFunction" /> returns <see langword="null" />, or <paramref name="ifErrorFunction" /> returns <see langword="null" />.
     /// </exception>
+    [OverloadResolutionPriority(2)]
     public static Result<T> Match<T>(this Result result, Func<Result<T>> ifSuccessFunction, Func<Error, Result<T>> ifErrorFunction)
     {
         ArgumentNullException.ThrowIfNull(result);
@@ -471,6 +475,7 @@ public static class MatchExtensions
     ///     If any of the <paramref name="result" />, <paramref name="ifSuccessFunction" />,
     ///     or <paramref name="ifErrorFunction" /> parameters are <see langword="null" />.
     /// </exception>
+    [OverloadResolutionPriority(2)]
     public static TNext Match<T, TNext>(this Result<T> result, Func<T, TNext> ifSuccessFunction, Func<Error, TNext> ifErrorFunction)
     {
         ArgumentNullException.ThrowIfNull(result);
@@ -548,6 +553,7 @@ public static class MatchExtensions
     /// <exception cref="InvalidOperationException">
     ///     If <paramref name="ifSuccessFunction" /> returns <see langword="null" />, or <paramref name="ifErrorFunction" /> returns <see langword="null" />.
     /// </exception>
+    [OverloadResolutionPriority(2)]
     public static Result<TNext> Match<T, TNext>(this Result<T> result, Func<T, Result<TNext>> ifSuccessFunction, Func<Error, Result<TNext>> ifErrorFunction)
     {
         ArgumentNullException.ThrowIfNull(result);
@@ -566,6 +572,9 @@ public static class MatchExtensions
     // These overloads turn a call with a function that returns a task into a compile error (CS0619). Without them, the call binds to the
     // generic overload, which wraps the task in a successful result without awaiting it (issue #119). They are more specific than the
     // generic overloads, so they are chosen first; an explicit type argument excludes them and selects the generic overload on purpose.
+    // The Task overloads have a higher priority than the ValueTask ones: an async lambda converts to both, which would be ambiguous (CS0121,
+    // issue #123). The overloads in which both functions return a value have a higher priority still, so that
+    // Match(() => SaveAsync(), e => LogAsync(e)) keeps returning the task.
 
     private const string TaskNotAwaitedMessage =
         "The function returns a task, which Match does not await. Use MatchAsync, or specify the type arguments " +
@@ -576,6 +585,7 @@ public static class MatchExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(TaskNotAwaitedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
     public static Result Match(this Result result, Func<Task> ifSuccessFunction, Action<Error> ifErrorAction)
     {
         throw new NotSupportedException(TaskNotAwaitedMessage);
@@ -586,6 +596,7 @@ public static class MatchExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(TaskNotAwaitedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
     public static Result Match<TNext>(this Result result, Func<Task<TNext>> ifSuccessFunction, Action<Error> ifErrorAction)
     {
         throw new NotSupportedException(TaskNotAwaitedMessage);
@@ -616,6 +627,7 @@ public static class MatchExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(TaskNotAwaitedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
     public static Result Match<T>(this Result<T> result, Func<T, Task> ifSuccessFunction, Action<Error> ifErrorAction)
     {
         throw new NotSupportedException(TaskNotAwaitedMessage);
@@ -626,6 +638,7 @@ public static class MatchExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(TaskNotAwaitedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
     public static Result Match<T, TNext>(this Result<T> result, Func<T, Task<TNext>> ifSuccessFunction, Action<Error> ifErrorAction)
     {
         throw new NotSupportedException(TaskNotAwaitedMessage);
@@ -649,6 +662,304 @@ public static class MatchExtensions
     public static Result Match<T, TNext>(this Result<T> result, Func<T, ValueTask<TNext>> ifSuccessFunction, Action<Error> ifErrorAction)
     {
         throw new NotSupportedException(TaskNotAwaitedMessage);
+    }
+
+    #endregion
+
+    #region Not supported: error actions returning a task
+
+    // These overloads turn a call with an error action that returns a task into a compile error (CS0619). Without them, a lambda
+    // that returns a task converts to Action<Error>, and the task is never awaited (an async lambda becomes async void, issue #123).
+    // A lambda whose body has a value prefers a delegate with a return type, so these overloads win over the Action<Error> ones.
+    // A Task<T> converts to Task, so the Task overloads also cover functions returning Task<T>. The priorities are explained above.
+
+    private const string ErrorActionTaskNotAwaitedMessage =
+        "The error action returns a task, which Match does not await. Use MatchAsync, or discard the task explicitly in a statement " +
+        "lambda (e.g., e => { _ = LogAsync(e); }).";
+
+    /// <summary>
+    ///     Not supported: the error action returns a task, which <c>Match</c> does not await; use <c>MatchAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ErrorActionTaskNotAwaitedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static Result Match(this Result result, Action ifSuccessAction, Func<Error, Task> ifErrorAction)
+    {
+        throw new NotSupportedException(ErrorActionTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error action returns a task, which <c>Match</c> does not await; use <c>MatchAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ErrorActionTaskNotAwaitedMessage, error: true)]
+    public static Result Match(this Result result, Action ifSuccessAction, Func<Error, ValueTask> ifErrorAction)
+    {
+        throw new NotSupportedException(ErrorActionTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error action returns a task, which <c>Match</c> does not await; use <c>MatchAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ErrorActionTaskNotAwaitedMessage, error: true)]
+    public static Result Match<TTaskResult>(this Result result, Action ifSuccessAction, Func<Error, ValueTask<TTaskResult>> ifErrorAction)
+    {
+        throw new NotSupportedException(ErrorActionTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error action returns a task, which <c>Match</c> does not await; use <c>MatchAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ErrorActionTaskNotAwaitedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static Result Match(this Result result, Func<Result> ifSuccessFunction, Func<Error, Task> ifErrorAction)
+    {
+        throw new NotSupportedException(ErrorActionTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error action returns a task, which <c>Match</c> does not await; use <c>MatchAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ErrorActionTaskNotAwaitedMessage, error: true)]
+    public static Result Match(this Result result, Func<Result> ifSuccessFunction, Func<Error, ValueTask> ifErrorAction)
+    {
+        throw new NotSupportedException(ErrorActionTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error action returns a task, which <c>Match</c> does not await; use <c>MatchAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ErrorActionTaskNotAwaitedMessage, error: true)]
+    public static Result Match<TTaskResult>(this Result result, Func<Result> ifSuccessFunction, Func<Error, ValueTask<TTaskResult>> ifErrorAction)
+    {
+        throw new NotSupportedException(ErrorActionTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error action returns a task, which <c>Match</c> does not await; use <c>MatchAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ErrorActionTaskNotAwaitedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static Result<T> Match<T>(this Result result, Func<T> ifSuccessFunction, Func<Error, Task> ifErrorAction)
+    {
+        throw new NotSupportedException(ErrorActionTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error action returns a task, which <c>Match</c> does not await; use <c>MatchAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ErrorActionTaskNotAwaitedMessage, error: true)]
+    public static Result<T> Match<T>(this Result result, Func<T> ifSuccessFunction, Func<Error, ValueTask> ifErrorAction)
+    {
+        throw new NotSupportedException(ErrorActionTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error action returns a task, which <c>Match</c> does not await; use <c>MatchAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ErrorActionTaskNotAwaitedMessage, error: true)]
+    public static Result<T> Match<T, TTaskResult>(this Result result, Func<T> ifSuccessFunction, Func<Error, ValueTask<TTaskResult>> ifErrorAction)
+    {
+        throw new NotSupportedException(ErrorActionTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error action returns a task, which <c>Match</c> does not await; use <c>MatchAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ErrorActionTaskNotAwaitedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static Result Match(this Result result, Func<Error> ifSuccessFunction, Func<Error, Task> ifErrorAction)
+    {
+        throw new NotSupportedException(ErrorActionTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error action returns a task, which <c>Match</c> does not await; use <c>MatchAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ErrorActionTaskNotAwaitedMessage, error: true)]
+    public static Result Match(this Result result, Func<Error> ifSuccessFunction, Func<Error, ValueTask> ifErrorAction)
+    {
+        throw new NotSupportedException(ErrorActionTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error action returns a task, which <c>Match</c> does not await; use <c>MatchAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ErrorActionTaskNotAwaitedMessage, error: true)]
+    public static Result Match<TTaskResult>(this Result result, Func<Error> ifSuccessFunction, Func<Error, ValueTask<TTaskResult>> ifErrorAction)
+    {
+        throw new NotSupportedException(ErrorActionTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error action returns a task, which <c>Match</c> does not await; use <c>MatchAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ErrorActionTaskNotAwaitedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static Result<T> Match<T>(this Result result, Func<Result<T>> ifSuccessFunction, Func<Error, Task> ifErrorAction)
+    {
+        throw new NotSupportedException(ErrorActionTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error action returns a task, which <c>Match</c> does not await; use <c>MatchAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ErrorActionTaskNotAwaitedMessage, error: true)]
+    public static Result<T> Match<T>(this Result result, Func<Result<T>> ifSuccessFunction, Func<Error, ValueTask> ifErrorAction)
+    {
+        throw new NotSupportedException(ErrorActionTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error action returns a task, which <c>Match</c> does not await; use <c>MatchAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ErrorActionTaskNotAwaitedMessage, error: true)]
+    public static Result<T> Match<T, TTaskResult>(this Result result, Func<Result<T>> ifSuccessFunction, Func<Error, ValueTask<TTaskResult>> ifErrorAction)
+    {
+        throw new NotSupportedException(ErrorActionTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error action returns a task, which <c>Match</c> does not await; use <c>MatchAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ErrorActionTaskNotAwaitedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static Result<T> Match<T>(this Result<T> result, Action<T> ifSuccessAction, Func<Error, Task> ifErrorAction)
+    {
+        throw new NotSupportedException(ErrorActionTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error action returns a task, which <c>Match</c> does not await; use <c>MatchAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ErrorActionTaskNotAwaitedMessage, error: true)]
+    public static Result<T> Match<T>(this Result<T> result, Action<T> ifSuccessAction, Func<Error, ValueTask> ifErrorAction)
+    {
+        throw new NotSupportedException(ErrorActionTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error action returns a task, which <c>Match</c> does not await; use <c>MatchAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ErrorActionTaskNotAwaitedMessage, error: true)]
+    public static Result<T> Match<T, TTaskResult>(this Result<T> result, Action<T> ifSuccessAction, Func<Error, ValueTask<TTaskResult>> ifErrorAction)
+    {
+        throw new NotSupportedException(ErrorActionTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error action returns a task, which <c>Match</c> does not await; use <c>MatchAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ErrorActionTaskNotAwaitedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static Result<TNext> Match<T, TNext>(this Result<T> result, Func<T, TNext> ifSuccessFunction, Func<Error, Task> ifErrorAction)
+    {
+        throw new NotSupportedException(ErrorActionTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error action returns a task, which <c>Match</c> does not await; use <c>MatchAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ErrorActionTaskNotAwaitedMessage, error: true)]
+    public static Result<TNext> Match<T, TNext>(this Result<T> result, Func<T, TNext> ifSuccessFunction, Func<Error, ValueTask> ifErrorAction)
+    {
+        throw new NotSupportedException(ErrorActionTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error action returns a task, which <c>Match</c> does not await; use <c>MatchAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ErrorActionTaskNotAwaitedMessage, error: true)]
+    public static Result<TNext> Match<T, TNext, TTaskResult>(
+        this Result<T> result,
+        Func<T, TNext> ifSuccessFunction,
+        Func<Error, ValueTask<TTaskResult>> ifErrorAction)
+    {
+        throw new NotSupportedException(ErrorActionTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error action returns a task, which <c>Match</c> does not await; use <c>MatchAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ErrorActionTaskNotAwaitedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static Result Match<T>(this Result<T> result, Func<T, Error> ifSuccessFunction, Func<Error, Task> ifErrorAction)
+    {
+        throw new NotSupportedException(ErrorActionTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error action returns a task, which <c>Match</c> does not await; use <c>MatchAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ErrorActionTaskNotAwaitedMessage, error: true)]
+    public static Result Match<T>(this Result<T> result, Func<T, Error> ifSuccessFunction, Func<Error, ValueTask> ifErrorAction)
+    {
+        throw new NotSupportedException(ErrorActionTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error action returns a task, which <c>Match</c> does not await; use <c>MatchAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ErrorActionTaskNotAwaitedMessage, error: true)]
+    public static Result Match<T, TTaskResult>(this Result<T> result, Func<T, Error> ifSuccessFunction, Func<Error, ValueTask<TTaskResult>> ifErrorAction)
+    {
+        throw new NotSupportedException(ErrorActionTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error action returns a task, which <c>Match</c> does not await; use <c>MatchAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ErrorActionTaskNotAwaitedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static Result<TNext> Match<T, TNext>(this Result<T> result, Func<T, Result<TNext>> ifSuccessFunction, Func<Error, Task> ifErrorAction)
+    {
+        throw new NotSupportedException(ErrorActionTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error action returns a task, which <c>Match</c> does not await; use <c>MatchAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ErrorActionTaskNotAwaitedMessage, error: true)]
+    public static Result<TNext> Match<T, TNext>(this Result<T> result, Func<T, Result<TNext>> ifSuccessFunction, Func<Error, ValueTask> ifErrorAction)
+    {
+        throw new NotSupportedException(ErrorActionTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error action returns a task, which <c>Match</c> does not await; use <c>MatchAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ErrorActionTaskNotAwaitedMessage, error: true)]
+    public static Result<TNext> Match<T, TNext, TTaskResult>(
+        this Result<T> result,
+        Func<T, Result<TNext>> ifSuccessFunction,
+        Func<Error, ValueTask<TTaskResult>> ifErrorAction)
+    {
+        throw new NotSupportedException(ErrorActionTaskNotAwaitedMessage);
     }
 
     #endregion

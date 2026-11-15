@@ -10,7 +10,10 @@
 
 using Maple.Result.Helpers;
 using System;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace Maple.Result.Extensions;
 
@@ -83,4 +86,52 @@ public static class IfErrorExtensions
 
         return Guard.EnsureNotNullReturned(ifErrorFunction(result.Error), nameof(ifErrorFunction));
     }
+
+    #region Not supported: error actions returning a task
+
+    // These overloads turn a call with an error action that returns a task into a compile error (CS0619). Without them, a lambda
+    // that returns a task converts to Action<Error>, and the task is never awaited (an async lambda becomes async void, issue #123).
+    // A lambda whose body has a value prefers a delegate with a return type, so these overloads win over the Action<Error> one.
+    // A Task<T> converts to Task, so the Task overload also covers functions returning Task<T>. It has a higher priority than the
+    // ValueTask ones: an async lambda converts to both, which would be ambiguous (CS0121).
+
+    private const string ErrorActionTaskNotAwaitedMessage =
+        "The error action returns a task, which IfError does not await. Use IfErrorAsync, or discard the task explicitly in a " +
+        "statement lambda (e.g., e => { _ = LogAsync(e); }).";
+
+    /// <summary>
+    ///     Not supported: the error action returns a task, which <c>IfError</c> does not await; use <c>IfErrorAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ErrorActionTaskNotAwaitedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static TResult IfError<TResult>([DisallowNull] this TResult result, Func<Error, Task> ifErrorAction)
+        where TResult : IOperationResult
+    {
+        throw new NotSupportedException(ErrorActionTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error action returns a task, which <c>IfError</c> does not await; use <c>IfErrorAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ErrorActionTaskNotAwaitedMessage, error: true)]
+    public static TResult IfError<TResult>([DisallowNull] this TResult result, Func<Error, ValueTask> ifErrorAction)
+        where TResult : IOperationResult
+    {
+        throw new NotSupportedException(ErrorActionTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error action returns a task, which <c>IfError</c> does not await; use <c>IfErrorAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ErrorActionTaskNotAwaitedMessage, error: true)]
+    public static TResult IfError<TResult, TTaskResult>([DisallowNull] this TResult result, Func<Error, ValueTask<TTaskResult>> ifErrorAction)
+        where TResult : IOperationResult
+    {
+        throw new NotSupportedException(ErrorActionTaskNotAwaitedMessage);
+    }
+
+    #endregion
 }
