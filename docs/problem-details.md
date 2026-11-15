@@ -102,21 +102,22 @@ The top-level members of the format are **reserved**: `type`, `title`, `status`,
 Members added by the host are not reserved either: e.g., ASP.NET Core adds `traceId`. When a metadata entry has the same key, the package that writes the response decides which value wins and documents it.
 
 ## Category and status
-The table shows the **default** mapping. It can be customized in both directions: the packages that write problem details let you choose the `status` written for each category, and the packages that read them let you choose the category read for each status code (including the codes not listed below). The two directions are configured separately, so a custom mapping should keep them consistent when the same services write and read the errors.
+> [!NOTE]
+> The table shows the **default** mapping. It can be customized in both directions: the packages that write problem details let you choose the `status` written for each category, and the packages that read them let you choose the category read for each status code (including the codes not listed below). The two directions are configured separately, so a custom mapping should keep them consistent when the same services write and read the errors.
 
 | `ErrorCategory`   | `status` written (default) | `status` read (default) |
 | ----------------- | -------------------------- | ----------------------- |
-| `Validation`      | 400              | 400                  |
-| `Unauthenticated` | 401              | 401                  |
-| `Unauthorized`    | 403              | 403                  |
-| `NotFound`        | 404              | 404                  |
-| `Timeout`         | 408              | 408, 504             |
-| `Conflict`        | 409              | 409                  |
-| `Failure`         | 422              | 422, any other code  |
-| `LimitExceeded`   | 429              | 429                  |
-| `Critical`        | 500              | 500                  |
-| `NotImplemented`  | 501              | 501                  |
-| `Unavailable`     | 503              | 503                  |
+| `Validation`      | 400                        | 400                     |
+| `Unauthenticated` | 401                        | 401                     |
+| `Unauthorized`    | 403                        | 403                     |
+| `NotFound`        | 404                        | 404                     |
+| `Timeout`         | 408                        | 408, 504                |
+| `Conflict`        | 409                        | 409                     |
+| `Failure`         | 422                        | 422, any other code     |
+| `LimitExceeded`   | 429                        | 429                     |
+| `Critical`        | 500                        | 500                     |
+| `NotImplemented`  | 501                        | 501                     |
+| `Unavailable`     | 503                        | 503                     |
 
 `LimitExceeded` (429) is new in 3.0; the 2.x packages map 429 to `Failure`. See [ErrorCategory](Reference/ErrorCategory.md) for when to use each category.
 
