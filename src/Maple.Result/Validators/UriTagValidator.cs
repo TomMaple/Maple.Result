@@ -26,8 +26,10 @@ internal static partial class UriTagValidator
     // This rejects impossible values such as month 13 or day 32 without asserting a real calendar date (for example, it still accepts 02-30).
     //   specific = *( pchar / "/" / "?" ), fragment = *( pchar / "/" / "?" ), where pchar allows "%" only as pct-encoded = "%" HEXDIG HEXDIG.
     // The pattern ends with \z, not $, which would also match before a trailing newline.
+    // The scheme is case-insensitive (RFC 3986 section 3.1; the "tag:" literal of the ABNF matches any case); the value is stored as passed,
+    // and tags are compared character by character (RFC 4151 section 2.4), so "TAG:…" and "tag:…" are different tags.
     [GeneratedRegex(
-        "^tag:" +
+        "^(?i:tag):" +
         // authorityName = DNSname / emailAddress
         @"(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)*" +
         @"|[A-Za-z0-9._-]+@[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)*)" +
