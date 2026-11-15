@@ -205,11 +205,21 @@ public sealed record TemplatedMessage
         if (parameters is null)
             return new Validated(templateId, null);
 
-        var dictionary = new Dictionary<string, object?>(StringComparer.Ordinal);
-        foreach (var (key, value) in parameters)
-            Add(dictionary, key, value, parametersParameterName);
+        // No dictionary for an empty collection; the size is known up front for most collections.
+        var isCountKnown = parameters.TryGetNonEnumeratedCount(out var count);
+        if (isCountKnown && count == 0)
+            return new Validated(templateId, null);
 
-        return new Validated(templateId, ToReadOnly(dictionary));
+        Dictionary<string, object?>? dictionary = null;
+        foreach (var (key, value) in parameters)
+        {
+            dictionary ??= new Dictionary<string, object?>(count, StringComparer.Ordinal);
+            Add(dictionary, key, value, parametersParameterName);
+        }
+
+        var copy = dictionary is null ? null : new ReadOnlyCopy(dictionary);
+
+        return new Validated(templateId, copy);
     }
 
     private static Validated Validate(string templateId, ReadOnlySpan<(string Key, object? Value)> parameters,
@@ -217,11 +227,16 @@ public sealed record TemplatedMessage
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(templateId, templateIdParameterName);
 
+        if (parameters.IsEmpty)
+            return new Validated(templateId, null);
+
         var dictionary = new Dictionary<string, object?>(parameters.Length, StringComparer.Ordinal);
         foreach (var (key, value) in parameters)
             Add(dictionary, key, value, parametersParameterName);
 
-        return new Validated(templateId, ToReadOnly(dictionary));
+        var copy = new ReadOnlyCopy(dictionary);
+
+        return new Validated(templateId, copy);
     }
 
     private static void Add(Dictionary<string, object?> dictionary, string key, object? value, string parameterName)
@@ -231,11 +246,6 @@ public sealed record TemplatedMessage
 
         if (!dictionary.TryAdd(key, value))
             throw new ArgumentException($"The parameter ‘{key}’ is repeated.", parameterName);
-    }
-
-    private static ReadOnlyCopy? ToReadOnly(Dictionary<string, object?> dictionary)
-    {
-        return dictionary.Count == 0 ? null : new ReadOnlyCopy(dictionary);
     }
 
     private static ArgumentException ParametersWithoutTemplateId(string templateIdParameterName, string parametersParameterName)
