@@ -87,6 +87,11 @@ are marked breaking. Preview the notes locally with `git cliff --unreleased --st
 	  then asserted.
 	* No loops in assertions: one case per test, or per `[InlineData]` / `[MemberData]` row of a `[Theory]`.
 	* Every bug fix comes with a test that fails without the fix.
+	* Code written with an AI assistant is developed test-first
+	  ([TDD](https://martinfowler.com/bliki/TestDrivenDevelopment.html)): first the tests that describe the change are
+	  written and seen to fail, then the implementation makes them pass, then the code is refactored while they stay
+	  green. The tests are reviewed before the implementation, so they state the intended behaviour rather than repeat
+	  what the code happens to do.
 
 ## Documentation
 1. Typography: all texts (XML documentation, exception messages, Markdown documentation) use typographic characters:
