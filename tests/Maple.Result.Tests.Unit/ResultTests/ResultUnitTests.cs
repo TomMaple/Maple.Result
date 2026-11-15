@@ -576,8 +576,8 @@ public class ResultUnitTests
         result.ShouldBe(ExpectedTitle);
     }
 
-    // Compile-time check as well: without [MemberNotNullWhen(false, nameof(Value))] on IsError,
-    // reading Value.Length after the early return would be a nullable warning (an error in CI).
+    // Compile-time check as well: Value is a string (T) for a Result<string>,
+    // so reading Value.Length after the early return gives no nullable warning (an error in CI).
     [Fact]
     public void IsError_ResultTSuccessAfterEarlyReturn_ValueIsNotNull()
     {
@@ -934,12 +934,11 @@ public class ResultUnitTests
         result.ShouldBe(ExpectedText);
     }
 
+    // The default serializers read every public property, and Value throws on a failed result; a converter package is needed.
     [Fact]
-    public void Serialize_ReferenceTypeAndErrorAllPropertiesAndMicrosoftSerializer_ReturnsSerializedValueWithAllProperties()
+    public void Serialize_ReferenceTypeAndErrorAndMicrosoftSerializer_ThrowsInvalidOperationException()
     {
         // Arrange
-        const string ExpectedText = """{"Value":null,"Error":{"Category":3,"TypeUri":"tag:test.com,2024:Test","Title":"Test title","Detail":"Test description.","DetailTemplated":{"TemplateId":"messageId","Params":{"key1":"value1","key2":"value2"}},"InstanceUri":"http://test.com/instance/1013","ErrorDetails":[{"PropertyPointer":"#/property1","Detail":"Property 1 test detail","DetailTemplated":{"TemplateId":"message-property-id","Params":{"pk1":"pv1","pk2":"pv2"}}}],"Metadata":{}},"IsSuccess":false,"IsError":true}""";
-
         var error = Error.NotFound(
             ErrorUri.Tag("tag:test.com,2024:Test"),
             "Test title",
@@ -953,18 +952,17 @@ public class ResultUnitTests
         var sut = Result<TestClass>.FromError(error);
 
         // Act
-        var result = SerializationHelper.SerializeWithMicrosoft(sut);
+        var exception = Record.Exception(() => SerializationHelper.SerializeWithMicrosoft(sut));
 
         // Assert
-        result.ShouldBe(ExpectedText);
+        exception.ShouldBeOfType<InvalidOperationException>();
     }
 
+    // The default serializers read every public property, and Value throws on a failed result; a converter package is needed.
     [Fact]
-    public void Serialize_ReferenceTypeAndErrorAllPropertiesAndNewtonsoftSerializer_ReturnsSerializedValueWithAllProperties()
+    public void Serialize_ReferenceTypeAndErrorAndNewtonsoftSerializer_ThrowsJsonSerializationException()
     {
         // Arrange
-        const string ExpectedText = """{"Value":null,"Error":{"Category":3,"TypeUri":"tag:test.com,2024:Test","Title":"Test title","Detail":"Test description.","DetailTemplated":{"TemplateId":"messageId","Params":{"key1":"value1","key2":"value2"}},"InstanceUri":"http://test.com/instance/1013","ErrorDetails":[{"PropertyPointer":"#/property1","Detail":"Property 1 test detail","DetailTemplated":{"TemplateId":"message-property-id","Params":{"pk1":"pv1","pk2":"pv2"}}}],"Metadata":{}},"IsSuccess":false,"IsError":true}""";
-
         var error = Error.NotFound(
             ErrorUri.Tag("tag:test.com,2024:Test"),
             "Test title",
@@ -978,18 +976,18 @@ public class ResultUnitTests
         var sut = Result<TestClass>.FromError(error);
 
         // Act
-        var result = SerializationHelper.SerializeWithNewtonsoft(sut);
+        var exception = Record.Exception(() => SerializationHelper.SerializeWithNewtonsoft(sut));
 
         // Assert
-        result.ShouldBe(ExpectedText);
+        exception.ShouldBeOfType<Newtonsoft.Json.JsonSerializationException>()
+            .InnerException.ShouldBeOfType<InvalidOperationException>();
     }
 
+    // The default serializers read every public property, and Value throws on a failed result; a converter package is needed.
     [Fact]
-    public void Serialize_ValueTypeAndErrorAllPropertiesAndMicrosoftSerializer_ReturnsSerializedValueWithAllProperties()
+    public void Serialize_ValueTypeAndErrorAndMicrosoftSerializer_ThrowsInvalidOperationException()
     {
         // Arrange
-        const string ExpectedText = """{"Value":0,"Error":{"Category":3,"TypeUri":"tag:test.com,2024:Test","Title":"Test title","Detail":"Test description.","DetailTemplated":{"TemplateId":"messageId","Params":{"key1":"value1","key2":"value2"}},"InstanceUri":"http://test.com/instance/1013","ErrorDetails":[{"PropertyPointer":"#/property1","Detail":"Property 1 test detail","DetailTemplated":{"TemplateId":"message-property-id","Params":{"pk1":"pv1","pk2":"pv2"}}}],"Metadata":{}},"IsSuccess":false,"IsError":true}""";
-
         var error = Error.NotFound(
             ErrorUri.Tag("tag:test.com,2024:Test"),
             "Test title",
@@ -1003,18 +1001,17 @@ public class ResultUnitTests
         var sut = Result<int>.FromError(error);
 
         // Act
-        var result = SerializationHelper.SerializeWithMicrosoft(sut);
+        var exception = Record.Exception(() => SerializationHelper.SerializeWithMicrosoft(sut));
 
         // Assert
-        result.ShouldBe(ExpectedText);
+        exception.ShouldBeOfType<InvalidOperationException>();
     }
 
+    // The default serializers read every public property, and Value throws on a failed result; a converter package is needed.
     [Fact]
-    public void Serialize_ValueTypeAndErrorAllPropertiesAndNewtonsoftSerializer_ReturnsSerializedValueWithAllProperties()
+    public void Serialize_ValueTypeAndErrorAndNewtonsoftSerializer_ThrowsJsonSerializationException()
     {
         // Arrange
-        const string ExpectedText = """{"Value":0,"Error":{"Category":3,"TypeUri":"tag:test.com,2024:Test","Title":"Test title","Detail":"Test description.","DetailTemplated":{"TemplateId":"messageId","Params":{"key1":"value1","key2":"value2"}},"InstanceUri":"http://test.com/instance/1013","ErrorDetails":[{"PropertyPointer":"#/property1","Detail":"Property 1 test detail","DetailTemplated":{"TemplateId":"message-property-id","Params":{"pk1":"pv1","pk2":"pv2"}}}],"Metadata":{}},"IsSuccess":false,"IsError":true}""";
-
         var error = Error.NotFound(
             ErrorUri.Tag("tag:test.com,2024:Test"),
             "Test title",
@@ -1028,10 +1025,144 @@ public class ResultUnitTests
         var sut = Result<int>.FromError(error);
 
         // Act
-        var result = SerializationHelper.SerializeWithNewtonsoft(sut);
+        var exception = Record.Exception(() => SerializationHelper.SerializeWithNewtonsoft(sut));
 
         // Assert
-        result.ShouldBe(ExpectedText);
+        exception.ShouldBeOfType<Newtonsoft.Json.JsonSerializationException>()
+            .InnerException.ShouldBeOfType<InvalidOperationException>();
+    }
+
+    #endregion
+
+    #region Result<T>, Value
+
+    [Fact]
+    public void Value_ValueTypeFailure_ThrowsInvalidOperationException()
+    {
+        // Arrange
+        var sut = Result<int>.FromError(Error.NotFound(ErrorUri.Tag("tag:test.com,2024:Test"), "Test title"));
+
+        // Act
+        var exception = Record.Exception(() => sut.Value);
+
+        // Assert
+        exception.ShouldBeOfType<InvalidOperationException>();
+    }
+
+    [Fact]
+    public void Value_ReferenceTypeFailure_ThrowsInvalidOperationException()
+    {
+        // Arrange
+        var sut = Result<string>.FromError(Error.NotFound(ErrorUri.Tag("tag:test.com,2024:Test"), "Test title"));
+
+        // Act
+        var exception = Record.Exception(() => sut.Value);
+
+        // Assert
+        exception.ShouldBeOfType<InvalidOperationException>();
+    }
+
+    [Fact]
+    public void Value_Failure_ExceptionMessageNamesTheError()
+    {
+        // Arrange
+        const string ExpectedMessage = "The result has no value, because the operation failed with the error ‘Test title’ "
+            + "(type ‘tag:test.com,2024:Test’). Check IsSuccess or IsError before reading Value, or use GetValueOrDefault.";
+
+        var sut = Result<int>.FromError(Error.NotFound(ErrorUri.Tag("tag:test.com,2024:Test"), "Test title"));
+
+        // Act
+        var exception = Record.Exception(() => sut.Value);
+
+        // Assert
+        exception.ShouldNotBeNull().Message.ShouldBe(ExpectedMessage);
+    }
+
+    [Fact]
+    public void Value_ValueTypeSuccessWithDefaultValue_ReturnsTheValue()
+    {
+        // Arrange
+        var sut = Result.FromValue(0);
+
+        // Act
+        var result = sut.Value;
+
+        // Assert
+        result.ShouldBe(0);
+    }
+
+    // Compile-time check as well: Value is a string (T), not a string?, so reading Value.Length after the check
+    // gives no nullable warning (an error in CI), without a [MemberNotNullWhen] hint.
+    [Fact]
+    public void Value_NonNullableReferenceTypeAfterIsSuccess_ReturnsTheValue()
+    {
+        // Arrange
+        const int ExpectedLength = 5;
+        var sut = Result.FromValue("value");
+        var result = 0;
+
+        // Act
+        if (sut.IsSuccess)
+            result = sut.Value.Length;
+
+        // Assert
+        result.ShouldBe(ExpectedLength);
+    }
+
+    #endregion
+
+    #region Result<T>, GetValueOrDefault
+
+    [Fact]
+    public void GetValueOrDefault_Success_ReturnsTheValue()
+    {
+        // Arrange
+        var sut = Result.FromValue(42);
+
+        // Act
+        var result = sut.GetValueOrDefault(-1);
+
+        // Assert
+        result.ShouldBe(42);
+    }
+
+    [Fact]
+    public void GetValueOrDefault_ValueTypeFailure_ReturnsTheFallback()
+    {
+        // Arrange
+        var sut = Result<int>.FromError(Error.NotFound(ErrorUri.Tag("tag:test.com,2024:Test"), "Test title"));
+
+        // Act
+        var result = sut.GetValueOrDefault(-1);
+
+        // Assert
+        result.ShouldBe(-1);
+    }
+
+    [Fact]
+    public void GetValueOrDefault_ReferenceTypeFailure_ReturnsTheFallback()
+    {
+        // Arrange
+        var sut = Result<string>.FromError(Error.NotFound(ErrorUri.Tag("tag:test.com,2024:Test"), "Test title"));
+
+        // Act
+        var result = sut.GetValueOrDefault("fallback");
+
+        // Assert
+        result.ShouldBe("fallback");
+    }
+
+    [Fact]
+    public void GetValueOrDefault_SuccessWithNullValue_ReturnsNullNotTheFallback()
+    {
+        // Arrange
+        var sut = Result.FromValue<string?>(null);
+
+        // Act
+        var result = sut.GetValueOrDefault("fallback");
+
+        // Assert
+        result.ShouldBeNull();
     }
 
     #endregion
@@ -1051,7 +1182,6 @@ public class ResultUnitTests
         result.ShouldNotBeNull();
         result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBe(error);
-        result.Value.ShouldBe(0);
     }
 
     [Fact]
@@ -1067,37 +1197,6 @@ public class ResultUnitTests
         result.ShouldNotBeNull();
         result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBe(error);
-        result.Value.ShouldBe(Guid.Empty);
-    }
-
-    #endregion
-
-    #region Result<T>, value type serialization
-
-    [Fact]
-    public void Serialize_ErrorWithValueTypeAndMicrosoftSerializer_WritesDefaultValue()
-    {
-        // Arrange
-        var sut = Result<int>.FromError(Error.NotFound(ErrorUri.Tag("tag:test.com,2024:Test"), "Test title"));
-
-        // Act
-        var result = SerializationHelper.SerializeWithMicrosoft(sut);
-
-        // Assert
-        result.ShouldContain("\"Value\":0");
-    }
-
-    [Fact]
-    public void Serialize_ErrorWithValueTypeAndNewtonsoftSerializer_WritesDefaultValue()
-    {
-        // Arrange
-        var sut = Result<int>.FromError(Error.NotFound(ErrorUri.Tag("tag:test.com,2024:Test"), "Test title"));
-
-        // Act
-        var result = SerializationHelper.SerializeWithNewtonsoft(sut);
-
-        // Assert
-        result.ShouldContain("\"Value\":0");
     }
 
     #endregion
@@ -1278,11 +1377,10 @@ public class ResultUnitTests
     public void Deserialize_FailedResultOfTAndMicrosoftSerializer_ThrowsNotSupportedException()
     {
         // Arrange
-        var json = SerializationHelper.SerializeWithMicrosoft(
-            Result<int>.FromError(Error.NotFound(ErrorUri.Tag("tag:test.com,2024:Test"), "Test title")));
+        const string Json = """{"Error":{"Category":3,"TypeUri":"tag:test.com,2024:Test","Title":"Test title"}}""";
 
         // Act
-        var exception = Record.Exception(() => System.Text.Json.JsonSerializer.Deserialize<Result<int>>(json));
+        var exception = Record.Exception(() => System.Text.Json.JsonSerializer.Deserialize<Result<int>>(Json));
 
         // Assert
         exception.ShouldNotBeNull();
@@ -1293,11 +1391,10 @@ public class ResultUnitTests
     public void Deserialize_FailedResultOfTAndNewtonsoftSerializer_ThrowsJsonSerializationException()
     {
         // Arrange
-        var json = SerializationHelper.SerializeWithNewtonsoft(
-            Result<int>.FromError(Error.NotFound(ErrorUri.Tag("tag:test.com,2024:Test"), "Test title")));
+        const string Json = """{"Error":{"Category":3,"TypeUri":"tag:test.com,2024:Test","Title":"Test title"}}""";
 
         // Act
-        var exception = Record.Exception(() => Newtonsoft.Json.JsonConvert.DeserializeObject<Result<int>>(json));
+        var exception = Record.Exception(() => Newtonsoft.Json.JsonConvert.DeserializeObject<Result<int>>(Json));
 
         // Assert
         exception.ShouldNotBeNull();

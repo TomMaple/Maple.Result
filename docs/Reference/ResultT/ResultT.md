@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Result](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.cs#L158" target="_blank">Result.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.cs#L177" target="_blank">Result.cs</a>
 
 Represents the outcome of an operation that can either succeed or fail with an [Error](../Error/Error.md).
 
@@ -23,7 +23,7 @@ Implements [IOperationResult](../IOperationResult/IOperationResult.md)
 If the operation is successful, the [IsSuccess](ResultT_IsSuccess.md) property is `true` and the [Value](ResultT_Value.md) property will hold the returned value. If the operation has failed, the [IsSuccess](ResultT_IsSuccess.md) property is `false` (and [IsError](ResultT_IsError.md) is `true`), and the [Error](ResultT_Error.md) property will contain details about the failure.
 
 > [!CAUTION]
-> Always check that the [IsSuccess](ResultT_IsSuccess.md) property is `true` before reading the [Value](ResultT_Value.md) property. On a failed result, [Value](ResultT_Value.md) holds the default value of `T`, which for a value type is not `null` (for example, `0` for a `Result<int>`), so a `null` check alone cannot tell success from failure.
+> Check [IsSuccess](ResultT_IsSuccess.md) or [IsError](ResultT_IsError.md) before reading the [Value](ResultT_Value.md) property: on a failed result it throws an `InvalidOperationException`. Use [GetValueOrDefault(T)](ResultT_GetValueOrDefault.md) to read the value without an exception.
 
 The record is immutable and has no public constructor. Create it with [Result&lt;T&gt;.FromValue(T)](ResultT_FromValue.md), [Result&lt;T&gt;.FromError(Error)](ResultT_FromError.md), or the [Implicit(Error to Result&lt;T&gt;)](ResultT_implicit_Error_to_ResultT.md) or [Implicit(T to Result&lt;T&gt;)](ResultT_implicit_T_to_ResultT.md) operator. A result is successful exactly when it has no [Error](ResultT_Error.md); a successful result of a nullable `T` can carry a `null` value.
 
@@ -83,9 +83,13 @@ public Result<User> GetUser(int userId)
 ```
 
 ## Serialization
-The default serializers ([System.Text.Json](https://learn.microsoft.com/dotnet/api/system.text.json.jsonserializer) and [Newtonsoft.Json](https://www.newtonsoft.com/json)) can write a [Result&lt;T&gt;](ResultT.md) as JSON. All public properties are written: a successful result writes `"Error":null`, a failed result writes the default value of `T` as its [Value](ResultT_Value.md) (e.g., `{"Value":0,"Error":{…},"IsSuccess":false,"IsError":true}` for a `Result<int>`, or `"Value":null` for a reference type), and both [IsSuccess](ResultT_IsSuccess.md) and [IsError](ResultT_IsError.md) are always written.
+The default serializers ([System.Text.Json](https://learn.microsoft.com/dotnet/api/system.text.json.jsonserializer) and [Newtonsoft.Json](https://www.newtonsoft.com/json)) read every public property. They can write a **successful** [Result&lt;T&gt;](ResultT.md) (e.g., `{"Value":128,"Error":null,"IsSuccess":true,"IsError":false}`), but writing a **failed** one throws, because its [Value](ResultT_Value.md) throws: *System.Text.Json* throws the `InvalidOperationException`, and *Newtonsoft.Json* wraps it in a `JsonSerializationException`. Use a dedicated converter, or map the result to your own DTO.
 
 Reading a [Result&lt;T&gt;](ResultT.md) back requires a dedicated converter, because the type has no public constructor or setters. Without one, deserialization fails.
+
+`ToString()` writes only the [Value](ResultT_Value.md) of a successful result (e.g., `Result { Value = 42 }`) or the [Error](ResultT_Error.md) of a failed one (`Result { Error = Error { … } }`); it never throws.
+
+`ToString()` writes only the [Value](ResultT_Value.md) of a successful result (e.g., `Result { Value = 42 }`) or the [Error](ResultT_Error.md) of a failed one (`Result { Error = Error { … } }`); it never throws.
 
 ## Properties
 | Name | Description |
@@ -93,13 +97,15 @@ Reading a [Result&lt;T&gt;](ResultT.md) back requires a dedicated converter, bec
 | [Error](ResultT_Error.md) | Gets the error details if the result represents a failure. |
 | [IsError](ResultT_IsError.md) | Gets a value indicating whether the result represents a failed operation. |
 | [IsSuccess](ResultT_IsSuccess.md) | Gets a value indicating whether the result represents a successful operation. |
-| [Value](ResultT_Value.md) | Gets the operation value if the result represents a successful operation. |
+| [Value](ResultT_Value.md) | Gets the value of a successful operation; throws for a failed one. |
 
 ## Methods
 | Name | Description |
 | ---- | ----------- |
 | [FromError(Error)](ResultT_FromError.md) | Creates a new failure [Result&lt;T&gt;](ResultT.md) from the specified [Error](../Error/Error.md). |
 | [FromValue(T)](ResultT_FromValue.md) | Creates a new successful [Result&lt;T&gt;](ResultT.md) containing the specified value. |
+| [GetValueOrDefault(T)](ResultT_GetValueOrDefault.md) | Returns the value of a successful result, or the specified fallback value for a failed one. |
+| [GetValueOrDefault(T)](ResultT_GetValueOrDefault.md) | Returns the value of a successful result, or the specified fallback value for a failed one. |
 
 ## Operators
 | Name | Description |
