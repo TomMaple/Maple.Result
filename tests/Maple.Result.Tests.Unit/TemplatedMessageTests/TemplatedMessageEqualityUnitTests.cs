@@ -125,15 +125,16 @@ public class TemplatedMessageEqualityUnitTests
     }
 
     [Fact]
-    public void Equals_MessageWithNullParamsVsEmptyParams_AreNotEqual()
+    public void Equals_MessageWithoutParamsVsEmptyParams_AreEqual()
     {
         // Arrange
-        var withNullParams = new Sut("template.id");
+        var withoutParams = new Sut("template.id");
         var withEmptyParams = new Sut("template.id", new Dictionary<string, object?>());
 
         // Act & Assert
-        withNullParams.Equals(withEmptyParams).ShouldBeFalse();
-        (withNullParams == withEmptyParams).ShouldBeFalse();
+        withoutParams.Equals(withEmptyParams).ShouldBeTrue();
+        (withoutParams == withEmptyParams).ShouldBeTrue();
+        withoutParams.GetHashCode().ShouldBe(withEmptyParams.GetHashCode());
     }
 
     #endregion

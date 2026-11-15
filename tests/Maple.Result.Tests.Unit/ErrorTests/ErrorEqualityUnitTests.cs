@@ -18,6 +18,20 @@ public class ErrorEqualityUnitTests
     #region value equality
 
     [Fact]
+    public void Equals_FactoryAndBuilderWithTemplateIdOnly_AreEqual()
+    {
+        // Arrange
+        var fromFactory = Sut.Validation(ErrorUri.None(), "Test title", detailTemplateId: "message-id");
+        var fromBuilder = ErrorBuilder.Validation(ErrorUri.None(), "Test title")
+            .WithDetailTemplated("message-id")
+            .Build();
+
+        // Act & Assert
+        fromFactory.Equals(fromBuilder).ShouldBeTrue();
+        fromFactory.GetHashCode().ShouldBe(fromBuilder.GetHashCode());
+    }
+
+    [Fact]
     public void Equals_TwoIdenticallyBuiltErrorsWithoutDetails_AreEqual()
     {
         // Arrange

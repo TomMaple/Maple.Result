@@ -184,25 +184,33 @@ public class TemplatedMessageUnitTests
     }
 
     [Fact]
-    public void Ctor_EmptyCollectionExpression_BuildsEmptyParams()
+    public void Ctor_EmptyCollectionExpression_BuildsNullParams()
     {
         // Act
         var sut = new TemplatedMessage("errors.length", []);
 
         // Assert
-        sut.Params.ShouldNotBeNull();
-        sut.Params.ShouldBeEmpty();
+        sut.Params.ShouldBeNull();
     }
 
     [Fact]
-    public void Ctor_EmptyTupleArray_BuildsEmptyParams()
+    public void Ctor_EmptyTupleArray_BuildsNullParams()
     {
         // Act
         var sut = new TemplatedMessage("errors.length", Array.Empty<(string Key, object? Value)>());
 
         // Assert
-        sut.Params.ShouldNotBeNull();
-        sut.Params.ShouldBeEmpty();
+        sut.Params.ShouldBeNull();
+    }
+
+    [Fact]
+    public void Ctor_EmptyDictionary_BuildsNullParams()
+    {
+        // Act
+        var sut = new TemplatedMessage("errors.length", new Dictionary<string, object?>());
+
+        // Assert
+        sut.Params.ShouldBeNull();
     }
 
     [Fact]
@@ -291,7 +299,7 @@ public class TemplatedMessageUnitTests
     }
 
     [Fact]
-    public void ToString_EmptyParams_WritesEmptyDictionary()
+    public void ToString_EmptyParams_WritesNothingForParams()
     {
         // Arrange
         var sut = new TemplatedMessage("message-id", new Dictionary<string, object?>());
@@ -300,7 +308,7 @@ public class TemplatedMessageUnitTests
         var result = sut.ToString();
 
         // Assert
-        result.ShouldBe("TemplatedMessage { TemplateId = message-id, Params = {} }");
+        result.ShouldBe("TemplatedMessage { TemplateId = message-id, Params =  }");
     }
 
     [Fact]
@@ -337,10 +345,10 @@ public class TemplatedMessageUnitTests
     }
 
     [Fact]
-    public void Serialize_EmptyParams_ReturnsSerializedValueWithEmptyParams()
+    public void Serialize_EmptyParams_ReturnsSerializedValueWithoutParams()
     {
         // Arrange
-        const string ExpectedText = "{\"templateId\":\"user.account.activated\",\"params\":{}}";
+        const string ExpectedText = "{\"templateId\":\"user.account.activated\"}";
 
         const string TemplateId = "user.account.activated";
         var sut = new TemplatedMessage(TemplateId, new Dictionary<string, object?>());

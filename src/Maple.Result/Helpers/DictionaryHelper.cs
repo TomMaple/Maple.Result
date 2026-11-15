@@ -9,7 +9,6 @@
  */
 
 using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace Maple.Result.Helpers;
@@ -17,13 +16,17 @@ namespace Maple.Result.Helpers;
 /// <summary>
 ///     Content-based (order-independent) equality and hashing for string-keyed dictionaries, and their text representation.
 /// </summary>
+/// <remarks>
+///     The methods enumerate <see cref="ImmutableStringDictionary.Items" /> directly: its struct enumerator allocates nothing, while an
+///     enumerator obtained through an interface is allocated on the heap on every call.
+/// </remarks>
 internal static class DictionaryHelper
 {
     /// <summary>
     ///     Appends the entries of the dictionary to the <paramref name="builder" /> as <c>{ key = value, … }</c> (<c>{}</c> when empty),
     ///     in the style of the compiler-generated <c>ToString</c> of a record.
     /// </summary>
-    internal static void Append(StringBuilder builder, IReadOnlyDictionary<string, object?> dictionary)
+    internal static void Append(StringBuilder builder, ImmutableStringDictionary dictionary)
     {
         if (dictionary.Count == 0)
         {
@@ -34,7 +37,7 @@ internal static class DictionaryHelper
         builder.Append("{ ");
 
         var first = true;
-        foreach (var pair in dictionary)
+        foreach (var pair in dictionary.Items)
         {
             if (!first)
                 builder.Append(", ");
@@ -49,7 +52,7 @@ internal static class DictionaryHelper
     /// <summary>
     ///     Determines whether two dictionaries contain the same keys with equal values, regardless of order.
     /// </summary>
-    internal static bool Equal(IReadOnlyDictionary<string, object?>? left, IReadOnlyDictionary<string, object?>? right)
+    internal static bool Equal(ImmutableStringDictionary? left, ImmutableStringDictionary? right)
     {
         if (ReferenceEquals(left, right))
             return true;
@@ -57,9 +60,9 @@ internal static class DictionaryHelper
         if (left is null || right is null || left.Count != right.Count)
             return false;
 
-        foreach (var pair in left)
+        foreach (var pair in left.Items)
         {
-            if (!right.TryGetValue(pair.Key, out var value) || !Equals(pair.Value, value))
+            if (!right.Items.TryGetValue(pair.Key, out var value) || !Equals(pair.Value, value))
                 return false;
         }
 
@@ -69,11 +72,11 @@ internal static class DictionaryHelper
     /// <summary>
     ///     Returns an order-independent hash code of the dictionary entries, consistent with <see cref="Equal" />.
     /// </summary>
-    internal static int GetHashCode(IReadOnlyDictionary<string, object?> dictionary)
+    internal static int GetHashCode(ImmutableStringDictionary dictionary)
     {
         // Combine the entries in an order-independent way, since a dictionary is unordered.
         var hashCode = 0;
-        foreach (var pair in dictionary)
+        foreach (var pair in dictionary.Items)
             hashCode ^= HashCode.Combine(pair.Key, pair.Value);
 
         return hashCode;

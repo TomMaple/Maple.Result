@@ -11,7 +11,6 @@
 using Maple.Result.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -25,14 +24,11 @@ namespace Maple.Result;
 ///     <para>The purpose of this structure is to provide a way to generate client-side localized messages.</para>
 ///     <para>
 ///         The record is immutable: its properties are get-only, and the parameters are copied into a read-only dictionary when the instance is created,
-///         so later changes to the source are not reflected.
+///         so later changes to the source are not reflected. The <see cref="Params" /> of another message cannot change, so they are shared, not copied.
 ///     </para>
 /// </remarks>
 public sealed record TemplatedMessage
 {
-    private static readonly ReadOnlyDictionary<string, object?> EmptyParams =
-        new(new Dictionary<string, object?>(StringComparer.Ordinal));
-
     #region constructors
 
     /// <summary>
@@ -41,7 +37,7 @@ public sealed record TemplatedMessage
     /// <param name="templateId">The identifier of the message template.</param>
     /// <param name="parameters">
     ///     The optional parameters (names and values) that might be required to generate a message from the template; values can be <see langword="null" />.
-    ///     When <see langword="null" />, <see cref="Params" /> is <see langword="null" />.
+    ///     When <see langword="null" /> or empty, <see cref="Params" /> is <see langword="null" />.
     /// </param>
     /// <exception cref="ArgumentNullException">
     ///     If the <paramref name="templateId" /> or a parameter name is <see langword="null" />.
@@ -65,7 +61,7 @@ public sealed record TemplatedMessage
     /// <param name="templateId">The identifier of the message template.</param>
     /// <param name="parameters">
     ///     The parameters (names and values) that might be required to generate a message from the template; values can be <see langword="null" />.
-    ///     When none are passed, <see cref="Params" /> is an empty dictionary.
+    ///     When none are passed, <see cref="Params" /> is <see langword="null" />.
     /// </param>
     /// <exception cref="ArgumentNullException">
     ///     If the <paramref name="templateId" /> or a parameter name is <see langword="null" />.
@@ -81,7 +77,7 @@ public sealed record TemplatedMessage
     private TemplatedMessage(Validated validated)
     {
         TemplateId = validated.TemplateId;
-        Params = validated.Params;
+        ParamsDictionary = validated.Params;
     }
 
     #endregion
@@ -96,9 +92,11 @@ public sealed record TemplatedMessage
     /// </summary>
     /// <remarks>
     ///     A read-only dictionary built from the parameters passed to the constructor, with keys compared ordinally (case-sensitive);
-    ///     <see langword="null" /> when none were passed as key-value pairs. Values may be <see langword="null" />.
+    ///     <see langword="null" /> when there are no parameters, so it is never empty. Values may be <see langword="null" />.
     /// </remarks>
-    public IReadOnlyDictionary<string, object?>? Params { get; }
+    public IReadOnlyDictionary<string, object?>? Params => ParamsDictionary;
+
+    internal ImmutableStringDictionary? ParamsDictionary { get; }
 
     #region internal factory methods
 
@@ -159,7 +157,7 @@ public sealed record TemplatedMessage
         return other is not null
                && EqualityContract == other.EqualityContract
                && TemplateId == other.TemplateId
-               && DictionaryHelper.Equal(Params, other.Params);
+               && DictionaryHelper.Equal(ParamsDictionary, other.ParamsDictionary);
     }
 
     /// <summary>
@@ -174,8 +172,8 @@ public sealed record TemplatedMessage
         hashCode.Add(EqualityContract);
         hashCode.Add(TemplateId);
 
-        if (Params is not null)
-            hashCode.Add(DictionaryHelper.GetHashCode(Params));
+        if (ParamsDictionary is not null)
+            hashCode.Add(DictionaryHelper.GetHashCode(ParamsDictionary));
 
         return hashCode.ToHashCode();
     }
@@ -191,8 +189,8 @@ public sealed record TemplatedMessage
         builder.Append("TemplateId = ").Append(TemplateId);
         builder.Append(", Params = ");
 
-        if (Params is not null)
-            DictionaryHelper.Append(builder, Params);
+        if (ParamsDictionary is not null)
+            DictionaryHelper.Append(builder, ParamsDictionary);
 
         return true;
     }
@@ -207,11 +205,25 @@ public sealed record TemplatedMessage
         if (parameters is null)
             return new Validated(templateId, null);
 
-        var dictionary = new Dictionary<string, object?>(StringComparer.Ordinal);
-        foreach (var (key, value) in parameters)
-            Add(dictionary, key, value, parametersParameterName);
+        // The Params of another message (or the Metadata of an error) never change, so they are shared instead of copied.
+        if (parameters is ImmutableStringDictionary shared)
+            return new Validated(templateId, shared.Count == 0 ? null : shared);
 
-        return new Validated(templateId, ToReadOnly(dictionary));
+        // No dictionary for an empty collection; the size is known up front for most collections.
+        var isCountKnown = parameters.TryGetNonEnumeratedCount(out var count);
+        if (isCountKnown && count == 0)
+            return new Validated(templateId, null);
+
+        Dictionary<string, object?>? dictionary = null;
+        foreach (var (key, value) in parameters)
+        {
+            dictionary ??= new Dictionary<string, object?>(count, StringComparer.Ordinal);
+            Add(dictionary, key, value, parametersParameterName);
+        }
+
+        var copy = dictionary is null ? null : new ImmutableStringDictionary(dictionary);
+
+        return new Validated(templateId, copy);
     }
 
     private static Validated Validate(string templateId, ReadOnlySpan<(string Key, object? Value)> parameters,
@@ -219,11 +231,16 @@ public sealed record TemplatedMessage
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(templateId, templateIdParameterName);
 
+        if (parameters.IsEmpty)
+            return new Validated(templateId, null);
+
         var dictionary = new Dictionary<string, object?>(parameters.Length, StringComparer.Ordinal);
         foreach (var (key, value) in parameters)
             Add(dictionary, key, value, parametersParameterName);
 
-        return new Validated(templateId, ToReadOnly(dictionary));
+        var copy = new ImmutableStringDictionary(dictionary);
+
+        return new Validated(templateId, copy);
     }
 
     private static void Add(Dictionary<string, object?> dictionary, string key, object? value, string parameterName)
@@ -235,11 +252,6 @@ public sealed record TemplatedMessage
             throw new ArgumentException($"The parameter ‘{key}’ is repeated.", parameterName);
     }
 
-    private static ReadOnlyDictionary<string, object?> ToReadOnly(Dictionary<string, object?> dictionary)
-    {
-        return dictionary.Count == 0 ? EmptyParams : new ReadOnlyDictionary<string, object?>(dictionary);
-    }
-
     private static ArgumentException ParametersWithoutTemplateId(string templateIdParameterName, string parametersParameterName)
     {
         return new ArgumentException(
@@ -247,7 +259,7 @@ public sealed record TemplatedMessage
             parametersParameterName);
     }
 
-    private readonly record struct Validated(string TemplateId, ReadOnlyDictionary<string, object?>? Params);
+    private readonly record struct Validated(string TemplateId, ImmutableStringDictionary? Params);
 
     #endregion
 }

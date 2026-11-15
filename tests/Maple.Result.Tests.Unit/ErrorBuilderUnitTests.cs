@@ -310,7 +310,7 @@ public class ErrorBuilderUnitTests
         result.DetailTemplated.ShouldBeNull();
     }
     [Fact]
-    public void WithDetailTemplated_TemplateIdAndNullValues_BuildsEmptyParams()
+    public void WithDetailTemplated_TemplateIdAndNullValues_BuildsNullParams()
     {
         // Act
         var result = Sut.Validation(ErrorUri.None(), "Test title")
@@ -319,8 +319,20 @@ public class ErrorBuilderUnitTests
 
         // Assert
         result.DetailTemplated.ShouldNotBeNull();
-        result.DetailTemplated.Params.ShouldNotBeNull();
-        result.DetailTemplated.Params.ShouldBeEmpty();
+        result.DetailTemplated.Params.ShouldBeNull();
+    }
+
+    [Fact]
+    public void WithDetailTemplated_TemplateIdOnly_BuildsNullParams()
+    {
+        // Act
+        var result = Sut.Validation(ErrorUri.None(), "Test title")
+            .WithDetailTemplated("message-id")
+            .Build();
+
+        // Assert
+        result.DetailTemplated.ShouldNotBeNull();
+        result.DetailTemplated.Params.ShouldBeNull();
     }
     [Fact]
     public void WithDetailTemplated_DuplicateName_ThrowsArgumentException()
@@ -353,6 +365,19 @@ public class ErrorBuilderUnitTests
     #endregion
 
     #region AddErrorDetail
+
+    [Fact]
+    public void AddErrorDetail_TemplateIdWithoutNamedValues_BuildsDetailWithNullParams()
+    {
+        // Act
+        var result = Sut.Validation(ErrorUri.None(), "Test title")
+            .AddErrorDetail("#/email", "The email is required.", "errors.email.required")
+            .Build();
+
+        // Assert
+        result.ErrorDetails[0].DetailTemplated.ShouldNotBeNull();
+        result.ErrorDetails[0].DetailTemplated!.Params.ShouldBeNull();
+    }
 
     [Fact]
     public void AddErrorDetail_SeveralDetails_KeepsTheirOrder()
