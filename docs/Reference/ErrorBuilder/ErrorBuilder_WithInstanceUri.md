@@ -22,7 +22,7 @@ The current instance of the [ErrorBuilder](ErrorBuilder.md) class.
 ### Exceptions
 [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception)
 
-The `instanceUri` is `about:blank` ([ErrorUri.None()](../ErrorUri/ErrorUri_None.md) or a default [ErrorUri](../ErrorUri/ErrorUri.md)). The builder is not changed.
+The `instanceUri` is `about:blank` ([ErrorUri.None](../ErrorUri/ErrorUri_None.md) or a default [ErrorUri](../ErrorUri/ErrorUri.md)). The builder is not changed.
 
 ## Remarks
 `about:blank` has a meaning only as a type (*RFC 9457*, section 4.2.1), so it is rejected as an instance; pass `null` when there is no instance.

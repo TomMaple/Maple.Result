@@ -46,7 +46,7 @@ public class ErrorUnitTests
     public void Validation_RelativeInstanceUri_ReturnsErrorWithRelativeInstanceUri()
     {
         // Act
-        var sut = Sut.Validation(ErrorUri.None(), "Test title", instanceUri: ErrorUri.Relative("/account/12345/msgs/abc"));
+        var sut = Sut.Validation(ErrorUri.None, "Test title", instanceUri: ErrorUri.Relative("/account/12345/msgs/abc"));
 
         // Assert
         sut.InstanceUri.ShouldBe("/account/12345/msgs/abc");
@@ -56,7 +56,7 @@ public class ErrorUnitTests
     public void Validation_NoneInstanceUri_ThrowsArgumentException()
     {
         // Act
-        var exception = Record.Exception(() => Sut.Validation(ErrorUri.None(), "Test title", instanceUri: ErrorUri.None()));
+        var exception = Record.Exception(() => Sut.Validation(ErrorUri.None, "Test title", instanceUri: ErrorUri.None));
 
         // Assert
         exception.ShouldNotBeNull();
@@ -69,7 +69,7 @@ public class ErrorUnitTests
     public void Validation_DefaultInstanceUri_ThrowsArgumentException()
     {
         // Act
-        var exception = Record.Exception(() => Sut.Validation(ErrorUri.None(), "Test title", instanceUri: default(ErrorUri)));
+        var exception = Record.Exception(() => Sut.Validation(ErrorUri.None, "Test title", instanceUri: default(ErrorUri)));
 
         // Assert
         exception.ShouldNotBeNull();
@@ -81,7 +81,7 @@ public class ErrorUnitTests
     public void Validation_NullTitle_ThrowsArgumentNullException()
     {
         // Act
-        var exception = Record.Exception(() => Sut.Validation(ErrorUri.None(), null!));
+        var exception = Record.Exception(() => Sut.Validation(ErrorUri.None, null!));
 
         // Assert
         exception.ShouldNotBeNull();
@@ -95,7 +95,7 @@ public class ErrorUnitTests
     public void Validation_BlankTitle_ThrowsArgumentException(string title)
     {
         // Act
-        var exception = Record.Exception(() => Sut.Validation(ErrorUri.None(), title));
+        var exception = Record.Exception(() => Sut.Validation(ErrorUri.None, title));
 
         // Assert
         exception.ShouldNotBeNull();
@@ -108,7 +108,7 @@ public class ErrorUnitTests
     public void Validation_BlankDetailTemplateId_ThrowsArgumentException(string detailTemplateId)
     {
         // Act
-        var exception = Record.Exception(() => Sut.Validation(ErrorUri.None(), "Test title",
+        var exception = Record.Exception(() => Sut.Validation(ErrorUri.None, "Test title",
             detailTemplateId: detailTemplateId));
 
         // Assert
@@ -120,7 +120,7 @@ public class ErrorUnitTests
     public void Validation_NullNamedValue_KeepsNullValue()
     {
         // Act
-        var sut = Sut.Validation(ErrorUri.None(), "Test title", detailTemplateId: "message-id",
+        var sut = Sut.Validation(ErrorUri.None, "Test title", detailTemplateId: "message-id",
             detailNamedValues: ("key", null));
 
         // Assert
@@ -137,7 +137,7 @@ public class ErrorUnitTests
         (string Key, object? Value)[] namedValues = [("min", 3), ("max", 10)];
 
         // Act
-        var sut = Sut.Validation(ErrorUri.None(), "Test title", null, null, "message-id", namedValues);
+        var sut = Sut.Validation(ErrorUri.None, "Test title", null, null, "message-id", namedValues);
 
         // Assert
         sut.DetailTemplated.ShouldNotBeNull();
@@ -148,7 +148,7 @@ public class ErrorUnitTests
     public void Validation_RepeatedNamedValue_ThrowsArgumentException()
     {
         // Act
-        var exception = Record.Exception(() => Sut.Validation(ErrorUri.None(), "Test title",
+        var exception = Record.Exception(() => Sut.Validation(ErrorUri.None, "Test title",
             detailTemplateId: "message-id", detailNamedValues: [("min", 3), ("min", 4)]));
 
         // Assert
@@ -165,7 +165,7 @@ public class ErrorUnitTests
         var namedValues = new List<KeyValuePair<string, object?>> { new("min", 3), new("min", 4) };
 
         // Act
-        var exception = Record.Exception(() => Sut.Validation(ErrorUri.None(), "Test title",
+        var exception = Record.Exception(() => Sut.Validation(ErrorUri.None, "Test title",
             detailTemplateId: "message-id", detailNamedValues: namedValues));
 
         // Assert
@@ -178,7 +178,7 @@ public class ErrorUnitTests
     public void Validation_NullName_ThrowsArgumentNullException()
     {
         // Act
-        var exception = Record.Exception(() => Sut.Validation(ErrorUri.None(), "Test title", null, null,
+        var exception = Record.Exception(() => Sut.Validation(ErrorUri.None, "Test title", null, null,
             "message-id", (null!, 3)));
 
         // Assert
@@ -191,7 +191,7 @@ public class ErrorUnitTests
     public void Validation_NamedValuesWithoutTemplateId_ThrowsArgumentException()
     {
         // Act
-        var exception = Record.Exception(() => Sut.Validation(ErrorUri.None(), "Test title", null, null, null,
+        var exception = Record.Exception(() => Sut.Validation(ErrorUri.None, "Test title", null, null, null,
             ("min", 3)));
 
         // Assert
@@ -207,7 +207,7 @@ public class ErrorUnitTests
         var namedValues = new Dictionary<string, object?> { ["min"] = 3 };
 
         // Act
-        var exception = Record.Exception(() => Sut.Validation(ErrorUri.None(), "Test title",
+        var exception = Record.Exception(() => Sut.Validation(ErrorUri.None, "Test title",
             detailNamedValues: namedValues));
 
         // Assert
@@ -220,7 +220,7 @@ public class ErrorUnitTests
     public void Validation_EmptyNamedValuesWithoutTemplateId_ReturnsErrorWithoutTemplate()
     {
         // Act
-        var sut = Sut.Validation(ErrorUri.None(), "Test title", detailNamedValues: []);
+        var sut = Sut.Validation(ErrorUri.None, "Test title", detailNamedValues: []);
 
         // Assert
         sut.DetailTemplated.ShouldBeNull();
@@ -230,7 +230,7 @@ public class ErrorUnitTests
     public void Validation_TemplateIdAndEmptyNamedValues_ReturnsTemplateWithNullParams()
     {
         // Act
-        var sut = Sut.Validation(ErrorUri.None(), "Test title", detailTemplateId: "message-id",
+        var sut = Sut.Validation(ErrorUri.None, "Test title", detailTemplateId: "message-id",
             detailNamedValues: []);
 
         // Assert
@@ -242,7 +242,7 @@ public class ErrorUnitTests
     public void Validation_TemplateIdAndNullNamedValueSequence_ReturnsTemplateWithoutParams()
     {
         // Act
-        var sut = Sut.Validation(ErrorUri.None(), "Test title", detailTemplateId: "message-id",
+        var sut = Sut.Validation(ErrorUri.None, "Test title", detailTemplateId: "message-id",
             detailNamedValues: null);
 
         // Assert
@@ -258,7 +258,7 @@ public class ErrorUnitTests
     public void WithErrorDetail_TemplateIdWithoutNamedValues_AddsDetailWithNullParams()
     {
         // Arrange
-        var sut = Sut.Validation(ErrorUri.None(), "Test title");
+        var sut = Sut.Validation(ErrorUri.None, "Test title");
 
         // Act
         var result = sut.WithErrorDetail("#/email", "The email is required.", "errors.email.required");
@@ -326,7 +326,7 @@ public class ErrorUnitTests
     {
         // Arrange
         var detail = new ErrorDetail("#/second", "Second detail");
-        var sut = Sut.Validation(ErrorUri.None(), "Test title").WithErrorDetail("#/first", "First detail");
+        var sut = Sut.Validation(ErrorUri.None, "Test title").WithErrorDetail("#/first", "First detail");
 
         // Act
         var result = sut.WithErrorDetail(detail);
@@ -341,7 +341,7 @@ public class ErrorUnitTests
     public void WithErrorDetail_Always_LeavesOriginalUnchanged()
     {
         // Arrange
-        var sut = Sut.Validation(ErrorUri.None(), "Test title").WithErrorDetail("#/first", "First detail");
+        var sut = Sut.Validation(ErrorUri.None, "Test title").WithErrorDetail("#/first", "First detail");
 
         // Act
         var result = sut.WithErrorDetail("#/second", "Second detail");
@@ -358,7 +358,7 @@ public class ErrorUnitTests
     public void WithErrorDetail_NullErrorDetail_ThrowsArgumentNullException()
     {
         // Arrange
-        var sut = Sut.Validation(ErrorUri.None(), "Test title");
+        var sut = Sut.Validation(ErrorUri.None, "Test title");
 
         // Act
         var exception = Record.Exception(() => sut.WithErrorDetail(null!));
@@ -372,7 +372,7 @@ public class ErrorUnitTests
     public void WithErrorDetail_NamedValuesWithoutTemplateId_ThrowsArgumentException()
     {
         // Arrange
-        var sut = Sut.Validation(ErrorUri.None(), "Test title");
+        var sut = Sut.Validation(ErrorUri.None, "Test title");
 
         // Act
         var exception = Record.Exception(() => sut.WithErrorDetail("#/name", "Too short.", null, ("min", 3)));
@@ -386,7 +386,7 @@ public class ErrorUnitTests
     public void WithErrorDetail_NullDetailText_ThrowsArgumentNullException()
     {
         // Arrange
-        var sut = Sut.Validation(ErrorUri.None(), "Test title");
+        var sut = Sut.Validation(ErrorUri.None, "Test title");
 
         // Act
         var exception = Record.Exception(() => sut.WithErrorDetail("#/property", null!));
@@ -400,7 +400,7 @@ public class ErrorUnitTests
     public void ErrorDetails_CastToMutableList_CannotBeModified()
     {
         // Arrange
-        var sut = Sut.Validation(ErrorUri.None(), "Test title").WithErrorDetail("#/property", "Detail");
+        var sut = Sut.Validation(ErrorUri.None, "Test title").WithErrorDetail("#/property", "Detail");
 
         // Act
         var exception = Record.Exception(() => ((IList<ErrorDetail>)sut.ErrorDetails).Add(new ErrorDetail(null, "x")));
@@ -436,7 +436,7 @@ public class ErrorUnitTests
     public void ToBuilder_ChangedTitle_ReturnsCopyAndLeavesOriginalUnchanged()
     {
         // Arrange
-        var sut = Sut.Conflict(ErrorUri.None(), "Original title").WithErrorDetail("#/property", "Detail");
+        var sut = Sut.Conflict(ErrorUri.None, "Original title").WithErrorDetail("#/property", "Detail");
 
         // Act
         var result = sut.ToBuilder().WithTitle("Changed title").Build();
@@ -455,7 +455,7 @@ public class ErrorUnitTests
     public void Deserialize_MicrosoftSerializer_ThrowsNotSupportedException()
     {
         // Arrange
-        var json = SerializationHelper.SerializeWithMicrosoft(Sut.NotFound(ErrorUri.None(), "Test title"));
+        var json = SerializationHelper.SerializeWithMicrosoft(Sut.NotFound(ErrorUri.None, "Test title"));
 
         // Act
         var exception = Record.Exception(() => System.Text.Json.JsonSerializer.Deserialize<Sut>(json));
@@ -469,7 +469,7 @@ public class ErrorUnitTests
     public void Deserialize_NewtonsoftSerializer_ThrowsJsonSerializationException()
     {
         // Arrange
-        var json = SerializationHelper.SerializeWithNewtonsoft(Sut.NotFound(ErrorUri.None(), "Test title"));
+        var json = SerializationHelper.SerializeWithNewtonsoft(Sut.NotFound(ErrorUri.None, "Test title"));
 
         // Act
         var exception = Record.Exception(() => Newtonsoft.Json.JsonConvert.DeserializeObject<Sut>(json));
@@ -511,7 +511,7 @@ public class ErrorUnitTests
         const string Expected = "Error { Category = NotFound, TypeUri = about:blank, Title = Missing, Detail = , "
             + "DetailTemplated = , InstanceUri = , ErrorDetails = [], Metadata = {} }";
 
-        var sut = Sut.NotFound(ErrorUri.None(), "Missing");
+        var sut = Sut.NotFound(ErrorUri.None, "Missing");
 
         // Act
         var result = sut.ToString();

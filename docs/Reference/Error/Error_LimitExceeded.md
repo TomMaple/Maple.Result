@@ -45,7 +45,7 @@ A mandatory short, human-readable summary of the problem.
 An optional, human-readable explanation specific to this occurrence of the problem.
 
 #### `instanceUri` [ErrorUri](../ErrorUri/ErrorUri.md)
-An optional *URI* reference that identifies the specific occurrence of the problem. It must not be `about:blank` ([ErrorUri.None()](../ErrorUri/ErrorUri_None.md) or a default [ErrorUri](../ErrorUri/ErrorUri.md)); pass `null` when there is no instance.
+An optional *URI* reference that identifies the specific occurrence of the problem. It must not be `about:blank` ([ErrorUri.None](../ErrorUri/ErrorUri_None.md) or a default [ErrorUri](../ErrorUri/ErrorUri.md)); pass `null` when there is no instance.
 
 #### `detailTemplateId` [String](https://learn.microsoft.com/dotnet/api/system.string)
 An optional identifier of the message template to generate custom, localized message.
@@ -110,7 +110,7 @@ A mandatory short, human-readable summary of the problem.
 An optional, human-readable explanation specific to this occurrence of the problem.
 
 #### `instanceUri` [ErrorUri](../ErrorUri/ErrorUri.md)
-An optional *URI* reference that identifies the specific occurrence of the problem. It must not be `about:blank` ([ErrorUri.None()](../ErrorUri/ErrorUri_None.md) or a default [ErrorUri](../ErrorUri/ErrorUri.md)); pass `null` when there is no instance.
+An optional *URI* reference that identifies the specific occurrence of the problem. It must not be `about:blank` ([ErrorUri.None](../ErrorUri/ErrorUri_None.md) or a default [ErrorUri](../ErrorUri/ErrorUri.md)); pass `null` when there is no instance.
 
 #### `detailTemplateId` [String](https://learn.microsoft.com/dotnet/api/system.string)
 An optional identifier of the message template to generate custom, localized message.

@@ -21,7 +21,7 @@ public class ErrorDetailUnitTests
     {
         // Arrange
         var detail = new ErrorDetail("#/email", "The email is required.", new TemplatedMessage("errors.email.required"));
-        var added = Error.Validation(ErrorUri.None(), "Test title")
+        var added = Error.Validation(ErrorUri.None, "Test title")
             .WithErrorDetail("#/email", "The email is required.", "errors.email.required")
             .ErrorDetails[0];
 

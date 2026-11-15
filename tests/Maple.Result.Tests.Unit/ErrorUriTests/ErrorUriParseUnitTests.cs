@@ -20,10 +20,10 @@ public class ErrorUriParseUnitTests
     /// <summary>Valid values and the error URI that the factory of their kind creates.</summary>
     public static readonly TheoryData<string, ErrorUri> ValidValues = new()
     {
-        { "about:blank", ErrorUri.None() },
-        // RFC 3986 section 3.1: the scheme is case-insensitive; None() always stores "about:blank".
-        { "ABOUT:blank", ErrorUri.None() },
-        { "About:blank", ErrorUri.None() },
+        { "about:blank", ErrorUri.None },
+        // RFC 3986 section 3.1: the scheme is case-insensitive; None always stores "about:blank".
+        { "ABOUT:blank", ErrorUri.None },
+        { "About:blank", ErrorUri.None },
         { "/account/12345/msgs/abc", ErrorUri.Relative("/account/12345/msgs/abc") },
         { "tag:example.com,2026:errors:out-of-credit", ErrorUri.Tag("tag:example.com,2026:errors:out-of-credit") },
         { "TAG:example.com,2026:x", ErrorUri.Tag("TAG:example.com,2026:x") },
@@ -76,7 +76,7 @@ public class ErrorUriParseUnitTests
     /// <summary>Error URIs of every kind, for the round-trip through their value.</summary>
     public static readonly TheoryData<ErrorUri> ErrorUris =
     [
-        ErrorUri.None(),
+        ErrorUri.None,
         default(ErrorUri),
         ErrorUri.Relative("/account/12345/msgs/abc"),
         ErrorUri.Tag("tag:example.com,2026:errors:out-of-credit"),

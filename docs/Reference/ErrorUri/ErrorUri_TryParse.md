@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorUri.cs#L278" target="_blank">ErrorUri.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorUri.cs#L279" target="_blank">ErrorUri.cs</a>
 
 Tries to create a new instance of the [ErrorUri](ErrorUri.md) record of the kind that the value has, with the rules of [Parse(String)](ErrorUri_Parse.md).
 
@@ -30,7 +30,7 @@ On failure, `result` is the default [ErrorUri](ErrorUri.md), whose [Value](Error
 ## Examples
 ```csharp
 if (!ErrorUri.TryParse(problemDetails.Type, out var typeUri))
-    typeUri = ErrorUri.None();
+    typeUri = ErrorUri.None;
 ```
 
 ## See Also

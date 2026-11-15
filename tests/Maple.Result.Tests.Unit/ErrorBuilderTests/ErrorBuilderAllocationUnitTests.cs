@@ -85,7 +85,7 @@ public class ErrorBuilderAllocationUnitTests
 
     private static Sut CreateBuilder()
     {
-        return Sut.Validation(ErrorUri.None(), "Test title");
+        return Sut.Validation(ErrorUri.None, "Test title");
     }
 
     #endregion

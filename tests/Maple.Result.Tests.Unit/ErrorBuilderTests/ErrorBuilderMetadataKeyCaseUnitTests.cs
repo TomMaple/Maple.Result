@@ -19,7 +19,7 @@ public class ErrorBuilderMetadataKeyCaseUnitTests
 {
     private static ErrorBuilder CreateSut()
     {
-        return ErrorBuilder.NotFound(ErrorUri.None(), "Missing")
+        return ErrorBuilder.NotFound(ErrorUri.None, "Missing")
             .WithMetadata("RetryAfter", 30);
     }
 
@@ -132,7 +132,7 @@ public class ErrorBuilderMetadataKeyCaseUnitTests
     public void WithMetadataTuples_KeysDifferingOnlyInCaseInOneCall_ThrowsArgumentException()
     {
         // Arrange
-        var sut = ErrorBuilder.NotFound(ErrorUri.None(), "Missing");
+        var sut = ErrorBuilder.NotFound(ErrorUri.None, "Missing");
 
         // Act
         var exception = Record.Exception(() => sut.WithMetadata(("Limit", 100), ("remaining", 0), ("limit", 200)));
@@ -148,7 +148,7 @@ public class ErrorBuilderMetadataKeyCaseUnitTests
         const string ExpectedMessage = "The metadata keys ‘Limit’ and ‘limit’ differ only in case. "
             + "Keys that differ only in case would be the same member of a problem details object. (Parameter 'metadata')";
 
-        var sut = ErrorBuilder.NotFound(ErrorUri.None(), "Missing");
+        var sut = ErrorBuilder.NotFound(ErrorUri.None, "Missing");
 
         // Act
         var exception = Record.Exception(() => sut.WithMetadata(("Limit", 100), ("remaining", 0), ("limit", 200)));
@@ -214,7 +214,7 @@ public class ErrorBuilderMetadataKeyCaseUnitTests
             new("limit", 200)
         };
 
-        var sut = ErrorBuilder.NotFound(ErrorUri.None(), "Missing");
+        var sut = ErrorBuilder.NotFound(ErrorUri.None, "Missing");
 
         // Act
         var exception = Record.Exception(() => sut.WithMetadata(metadata));

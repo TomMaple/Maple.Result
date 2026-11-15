@@ -41,7 +41,7 @@ public class NamespaceShadowingUnitTests
     public void FromError_CalledFromAnotherMapleNamespace_ReturnsFailedResult()
     {
         // Arrange
-        var error = Error.NotFound(ErrorUri.None(), "Missing");
+        var error = Error.NotFound(ErrorUri.None, "Missing");
 
         // Act
         var result = Result.FromError(error);

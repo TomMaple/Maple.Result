@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorUri.cs#L217" target="_blank">ErrorUri.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorUri.cs#L218" target="_blank">ErrorUri.cs</a>
 
 Creates a new instance of the [ErrorUri](ErrorUri.md) record with an absolute *URI* whose scheme has no factory method of its own (e.g., `mailto:`, `ftp:` or a custom scheme).
 

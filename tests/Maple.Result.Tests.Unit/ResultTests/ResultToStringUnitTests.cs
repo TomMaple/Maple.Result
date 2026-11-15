@@ -36,7 +36,7 @@ public class ResultToStringUnitTests
     {
         // Arrange
         const string Expected = "Result { Error = " + ExpectedError + " }";
-        var sut = Result.FromError(Error.NotFound(ErrorUri.None(), "Missing"));
+        var sut = Result.FromError(Error.NotFound(ErrorUri.None, "Missing"));
 
         // Act
         var result = sut.ToString();
@@ -82,7 +82,7 @@ public class ResultToStringUnitTests
     {
         // Arrange
         const string Expected = "Result { Error = " + ExpectedError + " }";
-        var sut = Result<int>.FromError(Error.NotFound(ErrorUri.None(), "Missing"));
+        var sut = Result<int>.FromError(Error.NotFound(ErrorUri.None, "Missing"));
 
         // Act
         var result = sut.ToString();
@@ -96,7 +96,7 @@ public class ResultToStringUnitTests
     {
         // Arrange
         const string Expected = "Result { Error = " + ExpectedError + " }";
-        var sut = Result<string>.FromError(Error.NotFound(ErrorUri.None(), "Missing"));
+        var sut = Result<string>.FromError(Error.NotFound(ErrorUri.None, "Missing"));
 
         // Act
         var result = sut.ToString();

@@ -90,12 +90,13 @@ public readonly record struct ErrorUri : IParsable<ErrorUri>
     public string Value => _value ?? NoneValue;
 
     /// <summary>
-    ///     Returns a new instance of the no-value <see cref="ErrorUri" />: <c>about:blank</c>.
+    ///     Gets the no-value <see cref="ErrorUri" />: <c>about:blank</c>.
     /// </summary>
-    public static ErrorUri None()
-    {
-        return new ErrorUri(NoneValue);
-    }
+    /// <remarks>
+    ///     It equals <see langword="default" />(<see cref="ErrorUri" />) and <c>ErrorUri.Parse("about:blank")</c>.
+    ///     <i>RFC 9457</i> defines <c>about:blank</c> as the type of a problem that has no additional semantics beyond the HTTP status code.
+    /// </remarks>
+    public static ErrorUri None { get; } = new(NoneValue);
 
     /// <summary>
     ///     Returns a new instance of the <see cref="ErrorUri" /> with a valid <i>URI Locator</i>.
@@ -256,7 +257,7 @@ public readonly record struct ErrorUri : IParsable<ErrorUri>
 
         return DetectKind(value) switch
         {
-            Kind.None => None(),
+            Kind.None => None,
             Kind.Relative => Relative(value),
             Kind.Tag => Tag(value),
             Kind.Urn => Urn(value),
@@ -298,7 +299,7 @@ public readonly record struct ErrorUri : IParsable<ErrorUri>
             return false;
 
         result = kind == Kind.None
-            ? None()
+            ? None
             : new ErrorUri(value);
 
         return true;

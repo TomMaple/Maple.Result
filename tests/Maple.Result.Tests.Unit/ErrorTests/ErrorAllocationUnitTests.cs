@@ -55,7 +55,7 @@ public class ErrorAllocationUnitTests
 
     private static Sut CreateError()
     {
-        return Sut.Validation(ErrorUri.None(), "Test title");
+        return Sut.Validation(ErrorUri.None, "Test title");
     }
 
     #endregion
