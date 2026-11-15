@@ -12,7 +12,7 @@ using System;
 using System.Collections.Generic;
 using Sut = Maple.Result.ErrorBuilder;
 
-namespace Maple.Result.Tests.Unit;
+namespace Maple.Result.Tests.Unit.ErrorBuilderTests;
 
 public class ErrorBuilderUnitTests
 {
