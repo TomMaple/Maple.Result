@@ -121,19 +121,28 @@ public class ResultUnitTests
     #region Result, FromError()
 
     [Fact]
-    public void FromError_NullError_ThrowsException()
+    public void FromError_NullError_ThrowsArgumentNullExceptionWithTheStandardMessage()
     {
+        // Arrange
+        // The standard message of ArgumentNullException, as thrown by ArgumentNullException.ThrowIfNull (culture-independent).
+        var expectedMessage = new ArgumentNullException("error").Message;
+
         // Act
         var exception = Record.Exception(() => Sut.FromError(null!));
 
         // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception.ShouldBeOfType<ArgumentNullException>();
+        argumentNullException.ParamName.ShouldBe("error");
+        argumentNullException.Message.ShouldBe(expectedMessage);
     }
 
     [Fact]
-    public void ImplicitOperator_NullError_ThrowsException()
+    public void ImplicitOperator_NullError_ThrowsArgumentNullExceptionWithTheStandardMessage()
     {
+        // Arrange
+        // The standard message of ArgumentNullException, as thrown by ArgumentNullException.ThrowIfNull (culture-independent).
+        var expectedMessage = new ArgumentNullException("error").Message;
+
         // Act
         var exception = Record.Exception(() =>
         {
@@ -141,8 +150,9 @@ public class ResultUnitTests
         });
 
         // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception.ShouldBeOfType<ArgumentNullException>();
+        argumentNullException.ParamName.ShouldBe("error");
+        argumentNullException.Message.ShouldBe(expectedMessage);
     }
 
     [Fact]
@@ -760,19 +770,28 @@ public class ResultUnitTests
     #region Result, FromError()
 
     [Fact]
-    public void FromError_ValueNullError_ThrowsException()
+    public void FromError_ValueNullError_ThrowsArgumentNullExceptionWithTheStandardMessage()
     {
+        // Arrange
+        // The standard message of ArgumentNullException, as thrown by ArgumentNullException.ThrowIfNull (culture-independent).
+        var expectedMessage = new ArgumentNullException("error").Message;
+
         // Act
         var exception = Record.Exception(() => Result<TestClass>.FromError(null!));
 
         // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception.ShouldBeOfType<ArgumentNullException>();
+        argumentNullException.ParamName.ShouldBe("error");
+        argumentNullException.Message.ShouldBe(expectedMessage);
     }
 
     [Fact]
-    public void ImplicitOperator_ValueNullError_ThrowsException()
+    public void ImplicitOperator_ValueNullError_ThrowsArgumentNullExceptionWithTheStandardMessage()
     {
+        // Arrange
+        // The standard message of ArgumentNullException, as thrown by ArgumentNullException.ThrowIfNull (culture-independent).
+        var expectedMessage = new ArgumentNullException("error").Message;
+
         // Act
         var exception = Record.Exception(() =>
         {
@@ -780,8 +799,9 @@ public class ResultUnitTests
         });
 
         // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception.ShouldBeOfType<ArgumentNullException>();
+        argumentNullException.ParamName.ShouldBe("error");
+        argumentNullException.Message.ShouldBe(expectedMessage);
     }
 
     [Fact]
