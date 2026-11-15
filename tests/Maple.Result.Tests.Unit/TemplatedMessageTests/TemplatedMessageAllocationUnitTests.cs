@@ -78,4 +78,49 @@ public class TemplatedMessageAllocationUnitTests
     }
 
     #endregion
+
+    #region parameters of another message (issue #128)
+
+    [Fact]
+    public void Ctor_ParamsOfAnotherMessage_SharesTheDictionary()
+    {
+        // Arrange
+        var source = new TemplatedMessage("errors.length", ("min", 3), ("max", 10));
+
+        // Act
+        var sut = new TemplatedMessage("errors.range", source.Params);
+
+        // Assert
+        sut.Params.ShouldBeSameAs(source.Params);
+    }
+
+    [Fact]
+    public void Ctor_ParamsOfAnotherMessage_AllocatesOnlyTheMessage()
+    {
+        // Arrange
+        var source = new TemplatedMessage("errors.length", ("min", 3), ("max", 10));
+        var expected = AllocationHelper.AllocatedBytes(() => _ = new TemplatedMessage("errors.range"));
+
+        // Act
+        var allocated = AllocationHelper.AllocatedBytes(() => _ = new TemplatedMessage("errors.range", source.Params));
+
+        // Assert
+        allocated.ShouldBe(expected);
+    }
+
+    [Fact]
+    public void Ctor_DictionaryWithSameContentAsParams_CopiesIt()
+    {
+        // Arrange
+        var parameters = new Dictionary<string, object?> { ["min"] = 3, ["max"] = 10 };
+
+        // Act
+        var sut = new TemplatedMessage("errors.length", parameters);
+
+        // Assert
+        sut.Params.ShouldNotBeSameAs(parameters);
+        sut.Params.ShouldBe(parameters, ignoreOrder: true);
+    }
+
+    #endregion
 }
