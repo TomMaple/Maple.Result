@@ -2,6 +2,7 @@
 ![NuGet Downloads](https://img.shields.io/nuget/dt/Maple.Result)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/TomMaple/Maple.Result/ci.yml)
 ![GitHub last commit](https://img.shields.io/github/last-commit/TomMaple/Maple.Result)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/TomMaple/Maple.Result/badge)](https://scorecard.dev/viewer/?uri=github.com/TomMaple/Maple.Result)
 
 
 
