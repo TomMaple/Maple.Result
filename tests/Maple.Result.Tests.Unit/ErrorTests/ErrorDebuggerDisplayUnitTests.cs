@@ -31,7 +31,7 @@ public class ErrorDebuggerDisplayUnitTests
     {
         // Arrange
         const string Expected = "NotFound \"Missing\"";
-        var sut = Sut.NotFound(ErrorUri.None(), "Missing");
+        var sut = Sut.NotFound(ErrorUri.None, "Missing");
 
         // Act
         var result = sut.DebuggerDisplay;
@@ -45,7 +45,7 @@ public class ErrorDebuggerDisplayUnitTests
     {
         // Arrange
         const string Expected = "Validation \"Invalid request\" (1 detail)";
-        var sut = Sut.Validation(ErrorUri.None(), "Invalid request")
+        var sut = Sut.Validation(ErrorUri.None, "Invalid request")
             .WithErrorDetail("/name", "The name is required.");
 
         // Act
@@ -60,7 +60,7 @@ public class ErrorDebuggerDisplayUnitTests
     {
         // Arrange
         const string Expected = "Validation \"Invalid request\" (3 details)";
-        var sut = Sut.Validation(ErrorUri.None(), "Invalid request")
+        var sut = Sut.Validation(ErrorUri.None, "Invalid request")
             .WithErrorDetail("/name", "The name is required.")
             .WithErrorDetail("/email", "The email is required.")
             .WithErrorDetail("/age", "The age must be at least 18.");
@@ -77,7 +77,7 @@ public class ErrorDebuggerDisplayUnitTests
     {
         // Arrange
         const string Expected = "Conflict \"Already exists\"";
-        var sut = Sut.Conflict(ErrorUri.None(), "Already exists", "The user already exists.")
+        var sut = Sut.Conflict(ErrorUri.None, "Already exists", "The user already exists.")
             .WithMetadata("userId", 42);
 
         // Act

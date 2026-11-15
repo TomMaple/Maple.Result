@@ -27,7 +27,7 @@ internal sealed class ResultDefaultValueProvider : LookupOrFallbackDefaultValueP
 {
     internal static readonly ResultDefaultValueProvider Instance = new();
 
-    private static readonly Error DefaultError = Error.Failure(ErrorUri.None(), "d5c4d8a2-6f0e-4d7b-9a51-3f1c8e2b7a40", "Default error");
+    private static readonly Error DefaultError = Error.Failure(ErrorUri.None, "d5c4d8a2-6f0e-4d7b-9a51-3f1c8e2b7a40", "Default error");
 
     private ResultDefaultValueProvider()
     {

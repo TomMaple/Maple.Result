@@ -1033,17 +1033,17 @@ public class IfErrorTaskAsyncExtensionsUnitTests
 
     private static Result GetErrorResult()
     {
-        return Error.Failure(ErrorUri.None(), "4b3612e7-d22a-45f2-9a5c-4a8c14d39141", "Error title 1");
+        return Error.Failure(ErrorUri.None, "4b3612e7-d22a-45f2-9a5c-4a8c14d39141", "Error title 1");
     }
 
     private static Result<T> GetErrorResult<T>()
     {
-        return Error.Failure(ErrorUri.None(), "ff7711a7-c224-4280-816c-1722864177cf", "Error title 2");
+        return Error.Failure(ErrorUri.None, "ff7711a7-c224-4280-816c-1722864177cf", "Error title 2");
     }
 
     private static Error GetReplacementError()
     {
-        return Error.Failure(ErrorUri.None(), "53e1e02c-3e21-47c9-9e1a-93ba22f03ba8", "Replacement error");
+        return Error.Failure(ErrorUri.None, "53e1e02c-3e21-47c9-9e1a-93ba22f03ba8", "Replacement error");
     }
 
     #endregion

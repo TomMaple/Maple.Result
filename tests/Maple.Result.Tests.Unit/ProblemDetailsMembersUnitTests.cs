@@ -52,7 +52,7 @@ public class ProblemDetailsMembersUnitTests
     public void WithMetadata_TopLevelMemberAsKey_ThrowsArgumentException(string member)
     {
         // Arrange
-        var sut = Error.Validation(ErrorUri.None(), "Test title");
+        var sut = Error.Validation(ErrorUri.None, "Test title");
 
         // Act
         var exception = Record.Exception(() => sut.WithMetadata(member, 1));
@@ -69,7 +69,7 @@ public class ProblemDetailsMembersUnitTests
     public void WithMetadata_NestedMemberAsKey_AddsTheEntry(string member)
     {
         // Arrange
-        var sut = Error.Validation(ErrorUri.None(), "Test title");
+        var sut = Error.Validation(ErrorUri.None, "Test title");
 
         // Act
         var result = sut.WithMetadata(member, 1);

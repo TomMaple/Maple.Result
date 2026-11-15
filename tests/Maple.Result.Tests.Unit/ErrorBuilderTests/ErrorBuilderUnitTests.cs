@@ -52,7 +52,7 @@ public class ErrorBuilderUnitTests
     public void Ctor_UndefinedCategory_ThrowsArgumentOutOfRangeException()
     {
         // Act
-        var exception = Record.Exception(() => new Sut((ErrorCategory)999, ErrorUri.None(), "Test title"));
+        var exception = Record.Exception(() => new Sut((ErrorCategory)999, ErrorUri.None, "Test title"));
 
         // Assert
         exception.ShouldNotBeNull();
@@ -64,7 +64,7 @@ public class ErrorBuilderUnitTests
     public void Ctor_NullTitle_ThrowsArgumentNullException()
     {
         // Act
-        var exception = Record.Exception(() => new Sut(ErrorCategory.Failure, ErrorUri.None(), null!));
+        var exception = Record.Exception(() => new Sut(ErrorCategory.Failure, ErrorUri.None, null!));
 
         // Assert
         exception.ShouldNotBeNull();
@@ -77,7 +77,7 @@ public class ErrorBuilderUnitTests
     public void Ctor_BlankTitle_ThrowsArgumentException(string title)
     {
         // Act
-        var exception = Record.Exception(() => new Sut(ErrorCategory.Failure, ErrorUri.None(), title));
+        var exception = Record.Exception(() => new Sut(ErrorCategory.Failure, ErrorUri.None, title));
 
         // Assert
         exception.ShouldNotBeNull();
@@ -123,7 +123,7 @@ public class ErrorBuilderUnitTests
         ErrorCategory _)
     {
         // Act
-        var exception = Record.Exception(() => factory(ErrorUri.None(), " "));
+        var exception = Record.Exception(() => factory(ErrorUri.None, " "));
 
         // Assert
         exception.ShouldNotBeNull();
@@ -141,7 +141,7 @@ public class ErrorBuilderUnitTests
         var detailTemplated = new TemplatedMessage("message-id", new Dictionary<string, object?> { ["key"] = "value" });
 
         // Act
-        var result = Sut.Validation(ErrorUri.None(), "Initial title")
+        var result = Sut.Validation(ErrorUri.None, "Initial title")
             .WithCategory(ErrorCategory.NotFound)
             .WithTypeUri(ErrorUri.Tag("tag:test.com,2024:Test"))
             .WithTitle("Test title")
@@ -163,11 +163,11 @@ public class ErrorBuilderUnitTests
     public void Setters_Always_ReturnSameBuilder()
     {
         // Arrange
-        var sut = Sut.Validation(ErrorUri.None(), "Test title");
+        var sut = Sut.Validation(ErrorUri.None, "Test title");
 
         // Act & Assert
         sut.WithCategory(ErrorCategory.Failure).ShouldBeSameAs(sut);
-        sut.WithTypeUri(ErrorUri.None()).ShouldBeSameAs(sut);
+        sut.WithTypeUri(ErrorUri.None).ShouldBeSameAs(sut);
         sut.WithTitle("Other title").ShouldBeSameAs(sut);
         sut.WithDetail("Detail").ShouldBeSameAs(sut);
         sut.WithDetailTemplated("message-id").ShouldBeSameAs(sut);
@@ -185,7 +185,7 @@ public class ErrorBuilderUnitTests
     public void Setters_NullOptionalMembers_ClearThem()
     {
         // Arrange
-        var sut = Sut.Validation(ErrorUri.None(), "Test title")
+        var sut = Sut.Validation(ErrorUri.None, "Test title")
             .WithDetail("Detail")
             .WithDetailTemplated("message-id")
             .WithInstanceUri(ErrorUri.Locator("http://test.com/instance/1013"));
@@ -207,11 +207,11 @@ public class ErrorBuilderUnitTests
     public void WithInstanceUri_None_ThrowsArgumentExceptionAndKeepsPreviousValue()
     {
         // Arrange
-        var sut = Sut.Validation(ErrorUri.None(), "Test title")
+        var sut = Sut.Validation(ErrorUri.None, "Test title")
             .WithInstanceUri(ErrorUri.Relative("/account/12345/msgs/abc"));
 
         // Act
-        var exception = Record.Exception(() => sut.WithInstanceUri(ErrorUri.None()));
+        var exception = Record.Exception(() => sut.WithInstanceUri(ErrorUri.None));
 
         // Assert
         exception.ShouldNotBeNull();
@@ -224,7 +224,7 @@ public class ErrorBuilderUnitTests
     public void WithInstanceUri_Default_ThrowsArgumentException()
     {
         // Arrange
-        var sut = Sut.Validation(ErrorUri.None(), "Test title");
+        var sut = Sut.Validation(ErrorUri.None, "Test title");
 
         // Act
         var exception = Record.Exception(() => sut.WithInstanceUri(default(ErrorUri)));
@@ -239,7 +239,7 @@ public class ErrorBuilderUnitTests
     public void WithInstanceUri_Urn_BuildsErrorWithUrnInstanceUri()
     {
         // Act
-        var result = Sut.Validation(ErrorUri.None(), "Test title")
+        var result = Sut.Validation(ErrorUri.None, "Test title")
             .WithInstanceUri(ErrorUri.Urn("urn:uuid:6e8bc430-9c3a-11d9-9669-0800200c9a66"))
             .Build();
 
@@ -251,7 +251,7 @@ public class ErrorBuilderUnitTests
     public void WithCategory_UndefinedCategory_ThrowsArgumentOutOfRangeExceptionAndKeepsPreviousValue()
     {
         // Arrange
-        var sut = Sut.Validation(ErrorUri.None(), "Test title");
+        var sut = Sut.Validation(ErrorUri.None, "Test title");
 
         // Act
         var exception = Record.Exception(() => sut.WithCategory((ErrorCategory)999));
@@ -269,7 +269,7 @@ public class ErrorBuilderUnitTests
     public void WithTitle_NullOrBlankTitle_ThrowsArgumentExceptionAndKeepsPreviousValue(string? title)
     {
         // Arrange
-        var sut = Sut.Validation(ErrorUri.None(), "Test title");
+        var sut = Sut.Validation(ErrorUri.None, "Test title");
 
         // Act
         var exception = Record.Exception(() => sut.WithTitle(title!));
@@ -284,7 +284,7 @@ public class ErrorBuilderUnitTests
     public void WithDetailTemplated_TemplateIdAndNamedValues_BuildsTemplatedMessage()
     {
         // Act
-        var result = Sut.Validation(ErrorUri.None(), "Test title")
+        var result = Sut.Validation(ErrorUri.None, "Test title")
             .WithDetailTemplated("message-id", ("min", 3), ("name", null))
             .Build();
 
@@ -301,7 +301,7 @@ public class ErrorBuilderUnitTests
     public void WithDetailTemplated_NullLiteral_ClearsTheValue()
     {
         // Act
-        var result = Sut.Validation(ErrorUri.None(), "Test title")
+        var result = Sut.Validation(ErrorUri.None, "Test title")
             .WithDetailTemplated("message-id")
             .WithDetailTemplated(null)
             .Build();
@@ -313,7 +313,7 @@ public class ErrorBuilderUnitTests
     public void WithDetailTemplated_TemplateIdAndNullValues_BuildsNullParams()
     {
         // Act
-        var result = Sut.Validation(ErrorUri.None(), "Test title")
+        var result = Sut.Validation(ErrorUri.None, "Test title")
             .WithDetailTemplated("message-id", null)
             .Build();
 
@@ -326,7 +326,7 @@ public class ErrorBuilderUnitTests
     public void WithDetailTemplated_TemplateIdOnly_BuildsNullParams()
     {
         // Act
-        var result = Sut.Validation(ErrorUri.None(), "Test title")
+        var result = Sut.Validation(ErrorUri.None, "Test title")
             .WithDetailTemplated("message-id")
             .Build();
 
@@ -338,7 +338,7 @@ public class ErrorBuilderUnitTests
     public void WithDetailTemplated_DuplicateName_ThrowsArgumentException()
     {
         // Arrange
-        var sut = Sut.Validation(ErrorUri.None(), "Test title");
+        var sut = Sut.Validation(ErrorUri.None, "Test title");
 
         // Act
         var exception = Record.Exception(() => sut.WithDetailTemplated("message-id", ("min", 3), ("min", 4)));
@@ -352,7 +352,7 @@ public class ErrorBuilderUnitTests
     public void WithDetailTemplated_BlankTemplateId_ThrowsArgumentException()
     {
         // Arrange
-        var sut = Sut.Validation(ErrorUri.None(), "Test title");
+        var sut = Sut.Validation(ErrorUri.None, "Test title");
 
         // Act
         var exception = Record.Exception(() => sut.WithDetailTemplated(" "));
@@ -370,7 +370,7 @@ public class ErrorBuilderUnitTests
     public void AddErrorDetail_TemplateIdWithoutNamedValues_BuildsDetailWithNullParams()
     {
         // Act
-        var result = Sut.Validation(ErrorUri.None(), "Test title")
+        var result = Sut.Validation(ErrorUri.None, "Test title")
             .AddErrorDetail("#/email", "The email is required.", "errors.email.required")
             .Build();
 
@@ -383,7 +383,7 @@ public class ErrorBuilderUnitTests
     public void AddErrorDetail_SeveralDetails_KeepsTheirOrder()
     {
         // Arrange
-        var sut = Sut.Validation(ErrorUri.None(), "Test title");
+        var sut = Sut.Validation(ErrorUri.None, "Test title");
 
         // Act
         foreach (var field in new[] { "name", "email", "age" })
@@ -405,7 +405,7 @@ public class ErrorBuilderUnitTests
         var detail = new ErrorDetail("#/name", "The name is required.");
 
         // Act
-        var result = Sut.Validation(ErrorUri.None(), "Test title").AddErrorDetail(detail).Build();
+        var result = Sut.Validation(ErrorUri.None, "Test title").AddErrorDetail(detail).Build();
 
         // Assert
         result.ErrorDetails.ShouldHaveSingleItem().ShouldBeSameAs(detail);
@@ -415,7 +415,7 @@ public class ErrorBuilderUnitTests
     public void AddErrorDetail_MessageIdAndNamedValues_BuildsTemplatedDetail()
     {
         // Act
-        var result = Sut.Validation(ErrorUri.None(), "Test title")
+        var result = Sut.Validation(ErrorUri.None, "Test title")
             .AddErrorDetail("#/name", "Too short.", "errors.name.length", ("min", 3), ("max", null))
             .Build();
 
@@ -434,7 +434,7 @@ public class ErrorBuilderUnitTests
     public void AddErrorDetail_NamedValuesWithoutTemplateId_ThrowsArgumentExceptionAndAddsNothing()
     {
         // Arrange
-        var sut = Sut.Validation(ErrorUri.None(), "Test title");
+        var sut = Sut.Validation(ErrorUri.None, "Test title");
 
         // Act
         var exception = Record.Exception(() => sut.AddErrorDetail("#/name", "Too short.", null, ("min", 3)));
@@ -450,7 +450,7 @@ public class ErrorBuilderUnitTests
     public void AddErrorDetail_NoTemplateIdAndNoNamedValues_AddsDetailWithoutTemplate()
     {
         // Act
-        var result = Sut.Validation(ErrorUri.None(), "Test title")
+        var result = Sut.Validation(ErrorUri.None, "Test title")
             .AddErrorDetail("#/name", "Too short.")
             .Build();
 
@@ -462,7 +462,7 @@ public class ErrorBuilderUnitTests
     public void AddErrorDetail_RepeatedName_ThrowsArgumentExceptionWithClearMessage()
     {
         // Arrange
-        var sut = Sut.Validation(ErrorUri.None(), "Test title");
+        var sut = Sut.Validation(ErrorUri.None, "Test title");
 
         // Act
         var exception = Record.Exception(() => sut.AddErrorDetail("#/name", "Too short.", "errors.length",
@@ -479,7 +479,7 @@ public class ErrorBuilderUnitTests
     public void AddErrorDetail_NullErrorDetail_ThrowsArgumentNullException()
     {
         // Arrange
-        var sut = Sut.Validation(ErrorUri.None(), "Test title");
+        var sut = Sut.Validation(ErrorUri.None, "Test title");
 
         // Act
         var exception = Record.Exception(() => sut.AddErrorDetail(null!));
@@ -493,7 +493,7 @@ public class ErrorBuilderUnitTests
     public void AddErrorDetail_NullDetailText_ThrowsArgumentNullExceptionAndAddsNothing()
     {
         // Arrange
-        var sut = Sut.Validation(ErrorUri.None(), "Test title");
+        var sut = Sut.Validation(ErrorUri.None, "Test title");
 
         // Act
         var exception = Record.Exception(() => sut.AddErrorDetail("#/name", null!));
@@ -512,7 +512,7 @@ public class ErrorBuilderUnitTests
     public void WithMetadata_NewAndRepeatedKeys_AddsAndReplacesValues()
     {
         // Act
-        var result = Sut.LimitExceeded(ErrorUri.None(), "Test title")
+        var result = Sut.LimitExceeded(ErrorUri.None, "Test title")
             .WithMetadata("limit", 100)
             .WithMetadata("remaining", 5)
             .WithMetadata("remaining", 0)
@@ -530,7 +530,7 @@ public class ErrorBuilderUnitTests
     public void WithMetadata_Sequence_AddsAndReplacesEntries()
     {
         // Act
-        var result = Sut.LimitExceeded(ErrorUri.None(), "Test title")
+        var result = Sut.LimitExceeded(ErrorUri.None, "Test title")
             .WithMetadata("limit", 100)
             .WithMetadata(new Dictionary<string, object?> { ["limit"] = 200, ["policy"] = "monthly" })
             .Build();
@@ -549,7 +549,7 @@ public class ErrorBuilderUnitTests
     public void WithMetadata_InvalidKey_ThrowsArgumentException(string key)
     {
         // Arrange
-        var sut = Sut.LimitExceeded(ErrorUri.None(), "Test title");
+        var sut = Sut.LimitExceeded(ErrorUri.None, "Test title");
 
         // Act
         var exception = Record.Exception(() => sut.WithMetadata(key, 1));
@@ -563,7 +563,7 @@ public class ErrorBuilderUnitTests
     public void WithMetadata_NullKey_ThrowsArgumentNullException()
     {
         // Arrange
-        var sut = Sut.LimitExceeded(ErrorUri.None(), "Test title");
+        var sut = Sut.LimitExceeded(ErrorUri.None, "Test title");
 
         // Act
         var exception = Record.Exception(() => sut.WithMetadata(null!, 1));
@@ -577,7 +577,7 @@ public class ErrorBuilderUnitTests
     public void WithMetadata_NullSequence_ThrowsArgumentNullException()
     {
         // Arrange
-        var sut = Sut.LimitExceeded(ErrorUri.None(), "Test title");
+        var sut = Sut.LimitExceeded(ErrorUri.None, "Test title");
 
         // Act
         var exception = Record.Exception(() => sut.WithMetadata((IEnumerable<KeyValuePair<string, object?>>)null!));
@@ -591,7 +591,7 @@ public class ErrorBuilderUnitTests
     public void WithMetadata_SequenceWithInvalidKey_ThrowsAndAppliesNoEntry()
     {
         // Arrange
-        var sut = Sut.LimitExceeded(ErrorUri.None(), "Test title").WithMetadata("limit", 100);
+        var sut = Sut.LimitExceeded(ErrorUri.None, "Test title").WithMetadata("limit", 100);
 
         // Act
         var exception = Record.Exception(() => sut.WithMetadata([
@@ -612,7 +612,7 @@ public class ErrorBuilderUnitTests
     public void WithMetadata_Tuples_AddsAndReplacesEntries()
     {
         // Act
-        var result = Sut.LimitExceeded(ErrorUri.None(), "Test title")
+        var result = Sut.LimitExceeded(ErrorUri.None, "Test title")
             .WithMetadata("limit", 100)
             .WithMetadata(("limit", 200), ("remaining", 0), ("traceId", null))
             .Build();
@@ -628,7 +628,7 @@ public class ErrorBuilderUnitTests
     public void WithMetadata_TuplesWithRepeatedKey_TakesLastValue()
     {
         // Act
-        var result = Sut.LimitExceeded(ErrorUri.None(), "Test title")
+        var result = Sut.LimitExceeded(ErrorUri.None, "Test title")
             .WithMetadata(("limit", 100), ("limit", 200))
             .Build();
 
@@ -640,7 +640,7 @@ public class ErrorBuilderUnitTests
     public void WithMetadata_TuplesWithInvalidKey_ThrowsAndAppliesNoEntry()
     {
         // Arrange
-        var sut = Sut.LimitExceeded(ErrorUri.None(), "Test title").WithMetadata("limit", 100);
+        var sut = Sut.LimitExceeded(ErrorUri.None, "Test title").WithMetadata("limit", 100);
 
         // Act
         var exception = Record.Exception(() => sut.WithMetadata(("limit", 200), ("policy", "monthly"), ("status", 429)));
@@ -657,7 +657,7 @@ public class ErrorBuilderUnitTests
     public void WithMetadata_TuplesWithNullKey_ThrowsArgumentNullException()
     {
         // Arrange
-        var sut = Sut.LimitExceeded(ErrorUri.None(), "Test title");
+        var sut = Sut.LimitExceeded(ErrorUri.None, "Test title");
 
         // Act
         var exception = Record.Exception(() => sut.WithMetadata((null!, 1)));
@@ -671,7 +671,7 @@ public class ErrorBuilderUnitTests
     public void WithMetadata_EmptyCollectionExpression_LeavesMetadataUnchanged()
     {
         // Arrange
-        var sut = Sut.LimitExceeded(ErrorUri.None(), "Test title").WithMetadata("limit", 100);
+        var sut = Sut.LimitExceeded(ErrorUri.None, "Test title").WithMetadata("limit", 100);
 
         // Act
         var result = sut.WithMetadata([]).Build();
@@ -683,7 +683,7 @@ public class ErrorBuilderUnitTests
     public void WithoutMetadata_ExistingAndAbsentKeys_RemovesOnlyExistingEntry()
     {
         // Act
-        var result = Sut.LimitExceeded(ErrorUri.None(), "Test title")
+        var result = Sut.LimitExceeded(ErrorUri.None, "Test title")
             .WithMetadata("limit", 100)
             .WithMetadata("remaining", 0)
             .WithoutMetadata("limit")
@@ -702,7 +702,7 @@ public class ErrorBuilderUnitTests
     public void WithoutMetadata_NullOrBlankKey_ThrowsArgumentException(string? key)
     {
         // Arrange
-        var sut = Sut.LimitExceeded(ErrorUri.None(), "Test title");
+        var sut = Sut.LimitExceeded(ErrorUri.None, "Test title");
 
         // Act
         var exception = Record.Exception(() => sut.WithoutMetadata(key!));
@@ -716,7 +716,7 @@ public class ErrorBuilderUnitTests
     public void WithoutMetadata_NoKey_RemovesAllEntries()
     {
         // Act
-        var result = Sut.LimitExceeded(ErrorUri.None(), "Test title")
+        var result = Sut.LimitExceeded(ErrorUri.None, "Test title")
             .WithMetadata("limit", 100)
             .WithMetadata("remaining", 0)
             .WithoutMetadata()
@@ -730,7 +730,7 @@ public class ErrorBuilderUnitTests
     public void WithoutMetadata_NoKeyThenWithMetadata_KeepsOnlyNewEntries()
     {
         // Act
-        var result = Sut.LimitExceeded(ErrorUri.None(), "Test title")
+        var result = Sut.LimitExceeded(ErrorUri.None, "Test title")
             .WithMetadata("limit", 100)
             .WithoutMetadata()
             .WithMetadata("policy", "monthly")
@@ -749,7 +749,7 @@ public class ErrorBuilderUnitTests
     public void Build_LaterChangesToBuilder_DoNotAffectBuiltError()
     {
         // Arrange
-        var sut = Sut.Validation(ErrorUri.None(), "Test title")
+        var sut = Sut.Validation(ErrorUri.None, "Test title")
             .AddErrorDetail("#/first", "First detail")
             .WithMetadata("limit", 100);
 
@@ -772,7 +772,7 @@ public class ErrorBuilderUnitTests
     public void Build_CalledAgainAfterChanges_ReturnsErrorWithAllChanges()
     {
         // Arrange
-        var sut = Sut.Validation(ErrorUri.None(), "Test title").AddErrorDetail("#/first", "First detail");
+        var sut = Sut.Validation(ErrorUri.None, "Test title").AddErrorDetail("#/first", "First detail");
         var first = sut.Build();
 
         // Act
@@ -789,7 +789,7 @@ public class ErrorBuilderUnitTests
     public void Build_CalledTwiceWithoutChanges_ReturnsEqualErrorsSharingCollections()
     {
         // Arrange
-        var sut = Sut.Validation(ErrorUri.None(), "Test title")
+        var sut = Sut.Validation(ErrorUri.None, "Test title")
             .AddErrorDetail("#/first", "First detail")
             .WithMetadata("limit", 100);
 
@@ -808,7 +808,7 @@ public class ErrorBuilderUnitTests
     public void Build_ToBuilderWithoutChanges_ReusesSourceCollections()
     {
         // Arrange
-        var error = Error.Validation(ErrorUri.None(), "Test title")
+        var error = Error.Validation(ErrorUri.None, "Test title")
             .WithErrorDetail("#/first", "First detail")
             .WithMetadata("limit", 100);
 
@@ -824,7 +824,7 @@ public class ErrorBuilderUnitTests
     public void Build_ToBuilderAndChanges_LeavesSourceErrorUnchanged()
     {
         // Arrange
-        var error = Error.Validation(ErrorUri.None(), "Test title")
+        var error = Error.Validation(ErrorUri.None, "Test title")
             .WithErrorDetail("#/first", "First detail")
             .WithMetadata("limit", 100);
 

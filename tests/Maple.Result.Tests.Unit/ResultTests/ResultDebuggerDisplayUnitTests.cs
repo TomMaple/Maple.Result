@@ -46,7 +46,7 @@ public class ResultDebuggerDisplayUnitTests
     {
         // Arrange
         const string Expected = "Error: NotFound \"Missing\"";
-        var sut = Result.FromError(Error.NotFound(ErrorUri.None(), "Missing"));
+        var sut = Result.FromError(Error.NotFound(ErrorUri.None, "Missing"));
 
         // Act
         var result = sut.DebuggerDisplay;
@@ -88,7 +88,7 @@ public class ResultDebuggerDisplayUnitTests
     {
         // Arrange
         const string Expected = "Error: Validation \"Invalid request\" (2 details)";
-        var error = Error.Validation(ErrorUri.None(), "Invalid request")
+        var error = Error.Validation(ErrorUri.None, "Invalid request")
             .WithErrorDetail("/name", "The name is required.")
             .WithErrorDetail("/email", "The email is required.");
 

@@ -26,7 +26,7 @@ namespace Maple.Results.Tests.Unit.Extensions;
 /// </summary>
 public class NullCheckUnitTests
 {
-    private static readonly Error SourceError = Error.Failure(ErrorUri.None(), "0f6b1c1e-3f7d-4f43-9d4e-58b8b1a3c2d1", "Source error");
+    private static readonly Error SourceError = Error.Failure(ErrorUri.None, "0f6b1c1e-3f7d-4f43-9d4e-58b8b1a3c2d1", "Source error");
 
     private static readonly Dictionary<string, MethodInfo> Methods = typeof(Result).Assembly.GetExportedTypes()
         .Where(t => t.Namespace?.StartsWith("Maple.Results.Extensions", StringComparison.Ordinal) == true)

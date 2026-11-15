@@ -617,12 +617,12 @@ public class LinqTaskAsyncExtensionsUnitTests
 
     private static Result<T> GetErrorResult<T>()
     {
-        return Error.Failure(ErrorUri.None(), "6b648e52-bde5-4e23-a233-c5dd4c4d2e73", "Error title 4");
+        return Error.Failure(ErrorUri.None, "6b648e52-bde5-4e23-a233-c5dd4c4d2e73", "Error title 4");
     }
 
     private static Task<Result<T>> GetErrorResultTask<T>()
     {
-        Result<T> result = Error.Failure(ErrorUri.None(), "7e5de15a-8851-4d75-8308-ec18351d7b70", "Error title 4");
+        Result<T> result = Error.Failure(ErrorUri.None, "7e5de15a-8851-4d75-8308-ec18351d7b70", "Error title 4");
         return Task.FromResult(result);
     }
 

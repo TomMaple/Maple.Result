@@ -20,7 +20,7 @@ public class ErrorMetadataKeyCaseUnitTests
 {
     private static Sut CreateSut()
     {
-        return Sut.NotFound(ErrorUri.None(), "Missing")
+        return Sut.NotFound(ErrorUri.None, "Missing")
             .WithMetadata("RetryAfter", 30);
     }
 
@@ -41,7 +41,7 @@ public class ErrorMetadataKeyCaseUnitTests
     public void WithMetadataTuples_KeysDifferingOnlyInCaseInOneCall_ThrowsArgumentException()
     {
         // Arrange
-        var sut = Sut.NotFound(ErrorUri.None(), "Missing");
+        var sut = Sut.NotFound(ErrorUri.None, "Missing");
 
         // Act
         var exception = Record.Exception(() => sut.WithMetadata(("Limit", 100), ("limit", 200)));

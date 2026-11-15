@@ -3665,12 +3665,12 @@ public class MatchTaskAsyncExtensionsUnitTests
 
     private static Result GetErrorResult()
     {
-        return Error.Failure(ErrorUri.None(), "50f1c1fb-560e-4bb3-84da-034072df7ca2", "Error title 6");
+        return Error.Failure(ErrorUri.None, "50f1c1fb-560e-4bb3-84da-034072df7ca2", "Error title 6");
     }
 
     private static Result<T> GetErrorResult<T>()
     {
-        return Error.Failure(ErrorUri.None(), "3d7a81ec-801d-45f4-b4b0-8d58e93b1d89", "Error title 7");
+        return Error.Failure(ErrorUri.None, "3d7a81ec-801d-45f4-b4b0-8d58e93b1d89", "Error title 7");
     }
 
     #endregion

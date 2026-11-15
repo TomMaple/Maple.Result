@@ -570,7 +570,7 @@ public class LinqExtensionsUnitTests
 
     private static Result<T> GetErrorResult<T>()
     {
-        return Error.Failure(ErrorUri.None(), "6b648e52-bde5-4e23-a233-c5dd4c4d2e73", "Error title 4");
+        return Error.Failure(ErrorUri.None, "6b648e52-bde5-4e23-a233-c5dd4c4d2e73", "Error title 4");
     }
 
     #endregion

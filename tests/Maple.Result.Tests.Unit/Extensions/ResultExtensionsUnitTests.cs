@@ -102,7 +102,7 @@ public class ResultExtensionsUnitTests
 
     private static Error GetError()
     {
-        return Error.Failure(ErrorUri.None(), "4b3612e7-d22a-45f2-9a5c-4a8c14d39141", "Error title 1");
+        return Error.Failure(ErrorUri.None, "4b3612e7-d22a-45f2-9a5c-4a8c14d39141", "Error title 1");
     }
 
     #endregion

@@ -9,6 +9,7 @@
  */
 
 using System;
+using System.Reflection;
 
 namespace Maple.Results.Tests.Unit.ErrorUriTests;
 
@@ -17,13 +18,35 @@ public class ErrorUriUnitTests
     #region None
 
     [Fact]
-    public void None_Always_ReturnsErrorUriWithAboutBlank()
+    public void None_Always_IsErrorUriWithAboutBlank()
     {
         // Act
-        var result = ErrorUri.None();
+        var result = ErrorUri.None;
 
         // Assert
         result.Value.ShouldBe("about:blank");
+    }
+
+    // A fixed, well-known value is a static property, like CancellationToken.None and Guid.Empty.
+    [Fact]
+    public void None_Member_IsAStaticReadOnlyProperty()
+    {
+        // Act
+        var property = typeof(ErrorUri).GetProperty(nameof(ErrorUri.None), BindingFlags.Public | BindingFlags.Static);
+
+        // Assert
+        property.ShouldNotBeNull().CanWrite.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void None_ReadTwice_IsEqual()
+    {
+        // Act
+        var first = ErrorUri.None;
+        var second = ErrorUri.None;
+
+        // Assert
+        first.ShouldBe(second);
     }
 
     #endregion
@@ -68,7 +91,7 @@ public class ErrorUriUnitTests
     {
         // Arrange
         var first = default(ErrorUri);
-        var second = ErrorUri.None();
+        var second = ErrorUri.None;
 
         // Act & Assert
         first.Equals(second).ShouldBeTrue();
@@ -80,7 +103,7 @@ public class ErrorUriUnitTests
     {
         // Arrange
         var first = default(ErrorUri);
-        var second = ErrorUri.None();
+        var second = ErrorUri.None;
 
         // Act & Assert
         first.GetHashCode().ShouldBe(second.GetHashCode());
@@ -90,7 +113,7 @@ public class ErrorUriUnitTests
     public void Equals_ErrorUrisWithDifferentValues_AreNotEqual()
     {
         // Arrange
-        var first = ErrorUri.None();
+        var first = ErrorUri.None;
         var second = ErrorUri.Locator("https://example.com");
 
         // Act & Assert
