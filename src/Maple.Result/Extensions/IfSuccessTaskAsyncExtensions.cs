@@ -61,7 +61,6 @@ public static class IfSuccessTaskAsyncExtensions
             if (result.IsSuccess())
             {
                 var successTask = ifSuccessAction();
-
                 await Guard.EnsureNotNullTask(successTask, nameof(ifSuccessAction)).ConfigureAwait(continueOnCapturedContext);
             }
 
@@ -313,7 +312,6 @@ public static class IfSuccessTaskAsyncExtensions
             if (result.IsSuccess())
             {
                 var successTask = ifSuccessAction(result.Value);
-
                 await Guard.EnsureNotNullTask(successTask, nameof(ifSuccessAction)).ConfigureAwait(continueOnCapturedContext);
             }
 
@@ -596,7 +594,6 @@ public static class IfSuccessTaskAsyncExtensions
             if (result.IsSuccess())
             {
                 var successTask = ifSuccessAction();
-
                 await Guard.EnsureNotNullTask(successTask, nameof(ifSuccessAction)).ConfigureAwait(continueOnCapturedContext);
             }
 
@@ -903,7 +900,6 @@ public static class IfSuccessTaskAsyncExtensions
             if (result.IsSuccess())
             {
                 var successTask = ifSuccessAction(result.Value);
-
                 await Guard.EnsureNotNullTask(successTask, nameof(ifSuccessAction)).ConfigureAwait(continueOnCapturedContext);
             }
 

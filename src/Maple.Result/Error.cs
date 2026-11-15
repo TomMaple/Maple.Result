@@ -299,6 +299,7 @@ public sealed record Error
         }
 
         value = default;
+
         return false;
     }
 

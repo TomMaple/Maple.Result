@@ -90,6 +90,7 @@ public static class MatchValueTaskAsyncExtensions
             }
 
             await ifErrorAction(result.Error).ConfigureAwait(continueOnCapturedContext);
+
             return result;
         }
     }
@@ -155,6 +156,7 @@ public static class MatchValueTaskAsyncExtensions
                 return await ifSuccessFunction().ConfigureAwait(continueOnCapturedContext);
 
             await ifErrorAction(result.Error).ConfigureAwait(continueOnCapturedContext);
+
             return result.Error;
         }
     }
@@ -192,6 +194,7 @@ public static class MatchValueTaskAsyncExtensions
             }
 
             await ifErrorAction(result.Error).ConfigureAwait(continueOnCapturedContext);
+
             return result;
         }
     }
@@ -253,6 +256,7 @@ public static class MatchValueTaskAsyncExtensions
             }
 
             await ifErrorAction(result.Error).ConfigureAwait(continueOnCapturedContext);
+
             return result.Error;
         }
     }
@@ -353,6 +357,7 @@ public static class MatchValueTaskAsyncExtensions
                 return await ifSuccessFunction(result.Value).ConfigureAwait(continueOnCapturedContext);
 
             await ifErrorAction(result.Error).ConfigureAwait(continueOnCapturedContext);
+
             return result.Error;
         }
     }
@@ -393,6 +398,7 @@ public static class MatchValueTaskAsyncExtensions
             }
 
             await ifErrorAction(result.Error).ConfigureAwait(continueOnCapturedContext);
+
             return result.Error;
         }
     }
@@ -460,6 +466,7 @@ public static class MatchValueTaskAsyncExtensions
             }
 
             await ifErrorAction(result.Error).ConfigureAwait(continueOnCapturedContext);
+
             return result.Error;
         }
     }
@@ -626,6 +633,7 @@ public static class MatchValueTaskAsyncExtensions
             }
 
             await ifErrorAction(result.Error).ConfigureAwait(continueOnCapturedContext);
+
             return result;
         }
     }
@@ -747,6 +755,7 @@ public static class MatchValueTaskAsyncExtensions
                 return await ifSuccessFunction().ConfigureAwait(continueOnCapturedContext);
 
             await ifErrorAction(result.Error).ConfigureAwait(continueOnCapturedContext);
+
             return result.Error;
         }
     }
@@ -822,6 +831,7 @@ public static class MatchValueTaskAsyncExtensions
             }
 
             await ifErrorAction(result.Error).ConfigureAwait(continueOnCapturedContext);
+
             return result;
         }
     }
@@ -941,6 +951,7 @@ public static class MatchValueTaskAsyncExtensions
             }
 
             await ifErrorAction(result.Error).ConfigureAwait(continueOnCapturedContext);
+
             return result.Error;
         }
     }
@@ -1137,6 +1148,7 @@ public static class MatchValueTaskAsyncExtensions
                 return await ifSuccessFunction(result.Value).ConfigureAwait(continueOnCapturedContext);
 
             await ifErrorAction(result.Error).ConfigureAwait(continueOnCapturedContext);
+
             return result.Error;
         }
     }
@@ -1217,6 +1229,7 @@ public static class MatchValueTaskAsyncExtensions
             }
 
             await ifErrorAction(result.Error).ConfigureAwait(continueOnCapturedContext);
+
             return result.Error;
         }
     }
@@ -1346,6 +1359,7 @@ public static class MatchValueTaskAsyncExtensions
             }
 
             await ifErrorAction(result.Error).ConfigureAwait(continueOnCapturedContext);
+
             return result.Error;
         }
     }

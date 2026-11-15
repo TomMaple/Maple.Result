@@ -217,6 +217,7 @@ public sealed class ErrorBuilder
         ValidateCategory(category);
 
         _category = category;
+
         return this;
     }
 
@@ -243,6 +244,7 @@ public sealed class ErrorBuilder
         ArgumentException.ThrowIfNullOrWhiteSpace(title);
 
         _title = title;
+
         return this;
     }
 
@@ -318,6 +320,7 @@ public sealed class ErrorBuilder
         }
 
         _instanceUri = instanceUri;
+
         return this;
     }
 
@@ -336,6 +339,7 @@ public sealed class ErrorBuilder
         ArgumentNullException.ThrowIfNull(errorDetail);
 
         GetPendingErrorDetails().Add(errorDetail);
+
         return this;
     }
 
@@ -391,6 +395,7 @@ public sealed class ErrorBuilder
         MetadataKeyValidator.Validate(key);
 
         GetPendingMetadata()[key] = value;
+
         return this;
     }
 

@@ -175,6 +175,7 @@ public sealed class SynchronizationContextUnitTests : IDisposable
             var result = await query;
 
             result.Value.ShouldBe(3);
+
             return (context, holder.Value);
         });
 

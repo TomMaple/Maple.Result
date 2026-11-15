@@ -97,6 +97,7 @@ public static class MatchExtensions
         }
 
         ifErrorAction(result.Error);
+
         return result;
     }
 
@@ -173,6 +174,7 @@ public static class MatchExtensions
             return ifSuccessFunction();
 
         ifErrorAction(result.Error);
+
         return result.Error;
     }
 
@@ -225,6 +227,7 @@ public static class MatchExtensions
         }
 
         ifErrorAction(result.Error);
+
         return result;
     }
 
@@ -299,6 +302,7 @@ public static class MatchExtensions
         }
 
         ifErrorAction(result.Error);
+
         return result.Error;
     }
 
@@ -422,6 +426,7 @@ public static class MatchExtensions
             return ifSuccessFunction(result.Value);
 
         ifErrorAction(result.Error);
+
         return result.Error;
     }
 
@@ -476,6 +481,7 @@ public static class MatchExtensions
         }
 
         ifErrorAction(result.Error);
+
         return result.Error;
     }
 
@@ -554,6 +560,7 @@ public static class MatchExtensions
         }
 
         ifErrorAction(result.Error);
+
         return result.Error;
     }
 

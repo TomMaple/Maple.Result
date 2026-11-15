@@ -70,7 +70,6 @@ public static class IfErrorTaskAsyncExtensions
             if (!result.IsSuccess())
             {
                 var errorTask = ifErrorAction(result.Error);
-
                 await Guard.EnsureNotNullTask(errorTask, nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
             }
 
@@ -191,7 +190,6 @@ public static class IfErrorTaskAsyncExtensions
             if (!result.IsSuccess())
             {
                 var errorTask = ifErrorAction(result.Error);
-
                 await Guard.EnsureNotNullTask(errorTask, nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
             }
 

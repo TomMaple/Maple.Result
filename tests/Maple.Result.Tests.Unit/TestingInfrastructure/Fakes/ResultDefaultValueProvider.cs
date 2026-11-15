@@ -57,6 +57,7 @@ internal sealed class ResultDefaultValueProvider : LookupOrFallbackDefaultValueP
     {
         var valueType = type.GetGenericArguments()[0];
         var fromResult = typeof(Task).GetMethod(nameof(Task.FromResult))!.MakeGenericMethod(valueType);
+
         return fromResult.Invoke(null, [GetDefaultValue(valueType, mock)])!;
     }
 }
