@@ -46,6 +46,18 @@ public interface IOperationResult
     /// </value>
     [MemberNotNullWhen(true, nameof(Error))]
     public bool IsError { get; }
+
+    /// <summary>
+    ///     Gets the <see cref="Error" /> of a failed result.
+    /// </summary>
+    /// <remarks>
+    ///     For the early return in one statement: <c>if (result.TryGetError(out var error)) return error;</c>.
+    /// </remarks>
+    /// <param name="error">
+    ///     When this method returns, the <see cref="Error" /> if the result is failed; otherwise, <see langword="null" />.
+    /// </param>
+    /// <returns><see langword="true" /> if the result is failed; otherwise, <see langword="false" />.</returns>
+    public bool TryGetError([NotNullWhen(true)] out Error? error);
 }
 
 /// <summary>
