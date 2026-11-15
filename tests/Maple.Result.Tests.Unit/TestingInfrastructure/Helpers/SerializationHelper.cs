@@ -10,7 +10,7 @@
 
 using System.Text.Json;
 
-namespace Maple.Result.Tests.Unit.Helpers;
+namespace Maple.Result.Tests.Unit.TestingInfrastructure.Helpers;
 
 internal static class SerializationHelper
 {

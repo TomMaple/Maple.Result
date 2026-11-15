@@ -13,7 +13,7 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Maple.Result.Tests.Unit.Helpers;
+namespace Maple.Result.Tests.Unit.TestingInfrastructure.Fakes;
 
 /// <summary>
 ///     A synchronization context that runs every posted callback on the thread that called <see cref="Run" />,

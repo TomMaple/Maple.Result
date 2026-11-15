@@ -8,7 +8,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using Maple.Result.Tests.Unit.Helpers;
+using Maple.Result.Tests.Unit.TestingInfrastructure.Helpers;
 using System;
 using Sut = Maple.Result.Result;
 

@@ -11,7 +11,7 @@
 using Maple.Result.Validators;
 using System;
 
-namespace Maple.Result.Tests.Unit;
+namespace Maple.Result.Tests.Unit.Validators;
 
 public class MetadataKeyValidatorUnitTests
 {
