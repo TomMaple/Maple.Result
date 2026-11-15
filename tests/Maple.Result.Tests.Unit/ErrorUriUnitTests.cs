@@ -142,6 +142,16 @@ public class ErrorUriUnitTests
     }
 
     [Fact]
+    public void Locator_NullLocator_ThrowsArgumentNullExceptionNamingTheParameter()
+    {
+        // Act
+        var exception = Record.Exception(() => ErrorUri.Locator(null!));
+
+        // Assert
+        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("uriLocator");
+    }
+
+    [Fact]
     public void Locator_EmptyValue_ThrowsException()
     {
         // Act
@@ -255,6 +265,16 @@ public class ErrorUriUnitTests
 
         // Assert
         result.Value.ShouldBe(tagValue);
+    }
+
+    [Fact]
+    public void Tag_NullTag_ThrowsArgumentNullExceptionNamingTheParameter()
+    {
+        // Act
+        var exception = Record.Exception(() => ErrorUri.Tag(null!));
+
+        // Assert
+        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("uriTag");
     }
 
     [Fact]
