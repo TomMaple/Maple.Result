@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Result](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.cs#L47" target="_blank">Result.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.cs#L56" target="_blank">Result.cs</a>
 
 Represents the outcome of an operation that can either succeed or fail with an [Error](../Error/Error.md).
 
@@ -20,7 +20,7 @@ Implements [IOperationResult](../IOperationResult/IOperationResult.md)
 > 
 > For operations that return a value, consider using the generic [Result&lt;T&gt;](../ResultT/ResultT.md) record.
 
-If the operation is successful, the [IsSuccess()](Result_IsSuccess.md) method will return `true`; otherwise, it will return `false`, and the [Error](Result_Error.md) property will contain details about the failure.
+If the operation is successful, the [IsSuccess](Result_IsSuccess.md) property is `true`; otherwise, it is `false` (and [IsError](Result_IsError.md) is `true`), and the [Error](Result_Error.md) property will contain details about the failure.
 
 The record is immutable and has no public constructor. Create it with [Result.Success()](Result_Success.md), [Result.FromError(Error)](Result_FromError.md) or the [Implicit(Error to Result)](Result_implicit_Error_to_Result.md) operator.
 
@@ -51,13 +51,14 @@ public Result DeleteUser(int userId)
 | Name | Description |
 | ---- | ----------- |
 | [Error](Result_Error.md) | Gets the error details if the result represents a failure. |
+| [IsError](Result_IsError.md) | Gets a value indicating whether the result represents a failed operation. |
+| [IsSuccess](Result_IsSuccess.md) | Gets a value indicating whether the result represents a successful operation. |
 
 ## Methods
 | Name | Description |
 | ---- | ----------- |
 | [FromError(Error)](Result_FromError.md) | Creates a new failure [Result](Result.md) from the specified [Error](../Error/Error.md). |
 | [FromValue&lt;T&gt;(T)](Result_FromValue.md) | Creates a new successful [Result&lt;T&gt;](../ResultT/ResultT.md) containing the specified value. |
-| [IsSuccess()](Result_IsSuccess.md) | Returns an indicator whether the result represents a successful operation. |
 | [Success()](Result_Success.md) | Creates a new instance of successful [Result](Result.md). |
 
 ## Operators

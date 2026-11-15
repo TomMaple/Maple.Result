@@ -91,7 +91,7 @@ public static class LinqExtensions
         ArgumentNullException.ThrowIfNull(result);
         ArgumentNullException.ThrowIfNull(selector);
 
-        if (!result.IsSuccess())
+        if (result.IsError)
             return result.Error;
 
         var returnedError = selector(result.Value);

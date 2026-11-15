@@ -55,7 +55,7 @@ public static class MatchExtensions
         ArgumentNullException.ThrowIfNull(ifSuccessAction);
         ArgumentNullException.ThrowIfNull(ifErrorAction);
 
-        if (result.IsSuccess())
+        if (result.IsSuccess)
             ifSuccessAction();
         else
             ifErrorAction(result.Error);
@@ -90,7 +90,7 @@ public static class MatchExtensions
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
         ArgumentNullException.ThrowIfNull(ifErrorAction);
 
-        if (result.IsSuccess())
+        if (result.IsSuccess)
         {
             var successResult = ifSuccessFunction();
             return Guard.EnsureNotNullReturned(successResult, nameof(ifSuccessFunction));
@@ -130,7 +130,7 @@ public static class MatchExtensions
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
         ArgumentNullException.ThrowIfNull(ifErrorFunction);
 
-        if (result.IsSuccess())
+        if (result.IsSuccess)
         {
             var successResult = ifSuccessFunction();
             return Guard.EnsureNotNullReturned(successResult, nameof(ifSuccessFunction));
@@ -170,7 +170,7 @@ public static class MatchExtensions
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
         ArgumentNullException.ThrowIfNull(ifErrorAction);
 
-        if (result.IsSuccess())
+        if (result.IsSuccess)
             return ifSuccessFunction();
 
         ifErrorAction(result.Error);
@@ -218,7 +218,7 @@ public static class MatchExtensions
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
         ArgumentNullException.ThrowIfNull(ifErrorAction);
 
-        if (result.IsSuccess())
+        if (result.IsSuccess)
         {
             var returnedError = ifSuccessFunction();
             var error = Guard.EnsureNotNullReturned(returnedError, nameof(ifSuccessFunction));
@@ -260,7 +260,7 @@ public static class MatchExtensions
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
         ArgumentNullException.ThrowIfNull(ifErrorFunction);
 
-        return result.IsSuccess()
+        return result.IsSuccess
             ? ifSuccessFunction()
             : ifErrorFunction(result.Error);
     }
@@ -295,7 +295,7 @@ public static class MatchExtensions
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
         ArgumentNullException.ThrowIfNull(ifErrorAction);
 
-        if (result.IsSuccess())
+        if (result.IsSuccess)
         {
             var successResult = ifSuccessFunction();
             return Guard.EnsureNotNullReturned(successResult, nameof(ifSuccessFunction));
@@ -338,7 +338,7 @@ public static class MatchExtensions
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
         ArgumentNullException.ThrowIfNull(ifErrorFunction);
 
-        if (result.IsSuccess())
+        if (result.IsSuccess)
         {
             var successResult = ifSuccessFunction();
             return Guard.EnsureNotNullReturned(successResult, nameof(ifSuccessFunction));
@@ -383,7 +383,7 @@ public static class MatchExtensions
         ArgumentNullException.ThrowIfNull(ifSuccessAction);
         ArgumentNullException.ThrowIfNull(ifErrorAction);
 
-        if (result.IsSuccess())
+        if (result.IsSuccess)
             ifSuccessAction(result.Value);
         else
             ifErrorAction(result.Error);
@@ -422,7 +422,7 @@ public static class MatchExtensions
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
         ArgumentNullException.ThrowIfNull(ifErrorAction);
 
-        if (result.IsSuccess())
+        if (result.IsSuccess)
             return ifSuccessFunction(result.Value);
 
         ifErrorAction(result.Error);
@@ -472,7 +472,7 @@ public static class MatchExtensions
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
         ArgumentNullException.ThrowIfNull(ifErrorAction);
 
-        if (result.IsSuccess())
+        if (result.IsSuccess)
         {
             var returnedError = ifSuccessFunction(result.Value);
             var error = Guard.EnsureNotNullReturned(returnedError, nameof(ifSuccessFunction));
@@ -516,7 +516,7 @@ public static class MatchExtensions
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
         ArgumentNullException.ThrowIfNull(ifErrorFunction);
 
-        return result.IsSuccess()
+        return result.IsSuccess
             ? ifSuccessFunction(result.Value)
             : ifErrorFunction(result.Error);
     }
@@ -553,7 +553,7 @@ public static class MatchExtensions
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
         ArgumentNullException.ThrowIfNull(ifErrorAction);
 
-        if (result.IsSuccess())
+        if (result.IsSuccess)
         {
             var successResult = ifSuccessFunction(result.Value);
             return Guard.EnsureNotNullReturned(successResult, nameof(ifSuccessFunction));
@@ -598,7 +598,7 @@ public static class MatchExtensions
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
         ArgumentNullException.ThrowIfNull(ifErrorFunction);
 
-        if (result.IsSuccess())
+        if (result.IsSuccess)
         {
             var successResult = ifSuccessFunction(result.Value);
             return Guard.EnsureNotNullReturned(successResult, nameof(ifSuccessFunction));

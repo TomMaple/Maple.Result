@@ -49,7 +49,7 @@ public static class IfSuccessExtensions
         ArgumentNullException.ThrowIfNull(result);
         ArgumentNullException.ThrowIfNull(ifSuccessAction);
 
-        if (result.IsSuccess())
+        if (result.IsSuccess)
             ifSuccessAction();
 
         return result;
@@ -81,7 +81,7 @@ public static class IfSuccessExtensions
         ArgumentNullException.ThrowIfNull(result);
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
 
-        if (result.IsSuccess())
+        if (result.IsSuccess)
         {
             var successResult = ifSuccessFunction();
             return Guard.EnsureNotNullReturned(successResult, nameof(ifSuccessFunction));
@@ -122,7 +122,7 @@ public static class IfSuccessExtensions
         ArgumentNullException.ThrowIfNull(result);
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
 
-        if (result.IsSuccess())
+        if (result.IsSuccess)
         {
             var returnedError = ifSuccessFunction();
             var error = Guard.EnsureNotNullReturned(returnedError, nameof(ifSuccessFunction));
@@ -159,7 +159,7 @@ public static class IfSuccessExtensions
         ArgumentNullException.ThrowIfNull(result);
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
 
-        if (result.IsSuccess())
+        if (result.IsSuccess)
             return ifSuccessFunction();
 
         return result.Error;
@@ -192,7 +192,7 @@ public static class IfSuccessExtensions
         ArgumentNullException.ThrowIfNull(result);
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
 
-        if (result.IsSuccess())
+        if (result.IsSuccess)
         {
             var successResult = ifSuccessFunction();
             return Guard.EnsureNotNullReturned(successResult, nameof(ifSuccessFunction));
@@ -228,7 +228,7 @@ public static class IfSuccessExtensions
         ArgumentNullException.ThrowIfNull(result);
         ArgumentNullException.ThrowIfNull(ifSuccessAction);
 
-        if (result.IsSuccess())
+        if (result.IsSuccess)
             ifSuccessAction(result.Value);
 
         return result;
@@ -260,7 +260,7 @@ public static class IfSuccessExtensions
         ArgumentNullException.ThrowIfNull(result);
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
 
-        if (result.IsSuccess())
+        if (result.IsSuccess)
         {
             var successResult = ifSuccessFunction(result.Value);
             return Guard.EnsureNotNullReturned(successResult, nameof(ifSuccessFunction));
@@ -302,7 +302,7 @@ public static class IfSuccessExtensions
         ArgumentNullException.ThrowIfNull(result);
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
 
-        if (result.IsSuccess())
+        if (result.IsSuccess)
         {
             var returnedError = ifSuccessFunction(result.Value);
             var error = Guard.EnsureNotNullReturned(returnedError, nameof(ifSuccessFunction));
@@ -345,7 +345,7 @@ public static class IfSuccessExtensions
         ArgumentNullException.ThrowIfNull(result);
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
 
-        if (result.IsSuccess())
+        if (result.IsSuccess)
             return ifSuccessFunction(result.Value);
 
         return result.Error;
@@ -384,7 +384,7 @@ public static class IfSuccessExtensions
         ArgumentNullException.ThrowIfNull(result);
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
 
-        if (result.IsSuccess())
+        if (result.IsSuccess)
         {
             var successResult = ifSuccessFunction(result.Value);
             return Guard.EnsureNotNullReturned(successResult, nameof(ifSuccessFunction));

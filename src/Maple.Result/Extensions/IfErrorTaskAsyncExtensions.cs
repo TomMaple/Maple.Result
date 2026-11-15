@@ -67,7 +67,7 @@ public static class IfErrorTaskAsyncExtensions
 
         static async Task<TResult> Core(TResult result, Func<Error, Task> ifErrorAction, bool continueOnCapturedContext)
         {
-            if (!result.IsSuccess())
+            if (result.IsError)
             {
                 var errorTask = ifErrorAction(result.Error);
                 await Guard.EnsureNotNullTask(errorTask, nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
@@ -123,7 +123,7 @@ public static class IfErrorTaskAsyncExtensions
 
         static async Task<TResult> Core(TResult result, Func<Error, Task<TResult>> ifErrorFunction, bool continueOnCapturedContext)
         {
-            if (result.IsSuccess())
+            if (result.IsSuccess)
                 return result;
 
             var errorTask = ifErrorFunction(result.Error);
@@ -187,7 +187,7 @@ public static class IfErrorTaskAsyncExtensions
         {
             var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
 
-            if (!result.IsSuccess())
+            if (result.IsError)
             {
                 var errorTask = ifErrorAction(result.Error);
                 await Guard.EnsureNotNullTask(errorTask, nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
@@ -254,7 +254,7 @@ public static class IfErrorTaskAsyncExtensions
         {
             var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
 
-            if (result.IsSuccess())
+            if (result.IsSuccess)
                 return result;
 
             var errorTask = ifErrorFunction(result.Error);

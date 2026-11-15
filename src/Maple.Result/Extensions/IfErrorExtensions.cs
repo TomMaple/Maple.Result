@@ -51,7 +51,7 @@ public static class IfErrorExtensions
         ArgumentNullException.ThrowIfNull(result);
         ArgumentNullException.ThrowIfNull(ifErrorAction);
 
-        if (!result.IsSuccess())
+        if (result.IsError)
             ifErrorAction(result.Error);
 
         return result;
@@ -81,7 +81,7 @@ public static class IfErrorExtensions
         ArgumentNullException.ThrowIfNull(result);
         ArgumentNullException.ThrowIfNull(ifErrorFunction);
 
-        if (result.IsSuccess())
+        if (result.IsSuccess)
             return result;
 
         var errorResult = ifErrorFunction(result.Error);

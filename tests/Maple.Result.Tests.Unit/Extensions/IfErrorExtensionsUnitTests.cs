@@ -100,7 +100,7 @@ public class IfErrorExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeSameAs(sut);
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
     }
 
     [Fact]
@@ -130,7 +130,7 @@ public class IfErrorExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeSameAs(sut);
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBe(sut.Error);
     }
 
@@ -259,7 +259,7 @@ public class IfErrorExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBe(funcError);
     }
 
@@ -347,7 +347,7 @@ public class IfErrorExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeSameAs(sut);
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBe(InitialValue);
     }
 
@@ -378,7 +378,7 @@ public class IfErrorExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeSameAs(sut);
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBe(sut.Error);
     }
 
@@ -514,7 +514,7 @@ public class IfErrorExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBe(funcError);
     }
 

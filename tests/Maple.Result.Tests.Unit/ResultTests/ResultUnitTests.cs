@@ -58,7 +58,7 @@ public class ResultUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldNotBeNull();
 
         result.Error.Category.ShouldBe(ExpectedCategory);
@@ -110,7 +110,7 @@ public class ResultUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldNotBeNull();
         result.Value.Text.ShouldBe(ExpectedText);
         result.Value.Number.ShouldBe(ExpectedNumber);
@@ -185,7 +185,7 @@ public class ResultUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldNotBeNull();
 
         result.Error.Category.ShouldBe(ExpectedCategory);
@@ -227,7 +227,7 @@ public class ResultUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Error.ShouldBeNull();
     }
 
@@ -250,7 +250,7 @@ public class ResultUnitTests
     public void Serialize_AllPropertiesAndMicrosoftSerializer_ReturnsSerializedValueWithAllProperties()
     {
         // Arrange
-        const string ExpectedText = """{"Error":{"Category":3,"TypeUri":"tag:test.com,2024:Test","Title":"Test title","Detail":"Test description.","DetailTemplated":{"TemplateId":"messageId","Params":{"key1":"value1","key2":"value2"}},"InstanceUri":"http://test.com/instance/1013","ErrorDetails":[{"PropertyPointer":"#/property1","Detail":"Property 1 test detail","DetailTemplated":{"TemplateId":"message-property-id","Params":{"pk1":"pv1","pk2":"pv2"}}}],"Metadata":{}}}""";
+        const string ExpectedText = """{"Error":{"Category":3,"TypeUri":"tag:test.com,2024:Test","Title":"Test title","Detail":"Test description.","DetailTemplated":{"TemplateId":"messageId","Params":{"key1":"value1","key2":"value2"}},"InstanceUri":"http://test.com/instance/1013","ErrorDetails":[{"PropertyPointer":"#/property1","Detail":"Property 1 test detail","DetailTemplated":{"TemplateId":"message-property-id","Params":{"pk1":"pv1","pk2":"pv2"}}}],"Metadata":{}},"IsSuccess":false,"IsError":true}""";
 
         var error = Error.NotFound(
             ErrorUri.Tag("tag:test.com,2024:Test"),
@@ -275,7 +275,7 @@ public class ResultUnitTests
     public void Serialize_AllPropertiesAndNewtonsoftSerializer_ReturnsSerializedValueWithAllProperties()
     {
         // Arrange
-        const string ExpectedText = """{"Error":{"Category":3,"TypeUri":"tag:test.com,2024:Test","Title":"Test title","Detail":"Test description.","DetailTemplated":{"TemplateId":"messageId","Params":{"key1":"value1","key2":"value2"}},"InstanceUri":"http://test.com/instance/1013","ErrorDetails":[{"PropertyPointer":"#/property1","Detail":"Property 1 test detail","DetailTemplated":{"TemplateId":"message-property-id","Params":{"pk1":"pv1","pk2":"pv2"}}}],"Metadata":{}}}""";
+        const string ExpectedText = """{"Error":{"Category":3,"TypeUri":"tag:test.com,2024:Test","Title":"Test title","Detail":"Test description.","DetailTemplated":{"TemplateId":"messageId","Params":{"key1":"value1","key2":"value2"}},"InstanceUri":"http://test.com/instance/1013","ErrorDetails":[{"PropertyPointer":"#/property1","Detail":"Property 1 test detail","DetailTemplated":{"TemplateId":"message-property-id","Params":{"pk1":"pv1","pk2":"pv2"}}}],"Metadata":{}},"IsSuccess":false,"IsError":true}""";
 
         var error = Error.NotFound(
             ErrorUri.Tag("tag:test.com,2024:Test"),
@@ -298,7 +298,199 @@ public class ResultUnitTests
 
     #endregion
 
-    #region Result<T>, IsSuccess()
+    #region Result, IsSuccess and IsError
+
+    [Fact]
+    public void IsSuccess_Success_ReturnsTrue()
+    {
+        // Arrange
+        var sut = Sut.Success();
+
+        // Act
+        var result = sut.IsSuccess;
+
+        // Assert
+        result.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void IsSuccess_Failure_ReturnsFalse()
+    {
+        // Arrange
+        var sut = Sut.FromError(Error.NotFound(ErrorUri.Tag("tag:test.com,2024:Test"), "Test title"));
+
+        // Act
+        var result = sut.IsSuccess;
+
+        // Assert
+        result.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void IsError_Success_ReturnsFalse()
+    {
+        // Arrange
+        var sut = Sut.Success();
+
+        // Act
+        var result = sut.IsError;
+
+        // Assert
+        result.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void IsError_Failure_ReturnsTrue()
+    {
+        // Arrange
+        var sut = Sut.FromError(Error.NotFound(ErrorUri.Tag("tag:test.com,2024:Test"), "Test title"));
+
+        // Act
+        var result = sut.IsError;
+
+        // Assert
+        result.ShouldBeTrue();
+    }
+
+    // Compile-time check as well: without [MemberNotNullWhen(true, nameof(Error))] on IsError,
+    // reading Error.Title in the if body would be a nullable warning (an error in CI).
+    [Fact]
+    public void IsError_FailureInIfStatement_ErrorIsNotNull()
+    {
+        // Arrange
+        const string ExpectedTitle = "Test title";
+        var sut = Sut.FromError(Error.NotFound(ErrorUri.Tag("tag:test.com,2024:Test"), "Test title"));
+        string? result = null;
+
+        // Act
+        if (sut.IsError)
+            result = sut.Error.Title;
+
+        // Assert
+        result.ShouldBe(ExpectedTitle);
+    }
+
+    // Compile-time check as well: without [MemberNotNullWhen(false, nameof(Error))] on IsSuccess,
+    // reading Error.Title in the if body would be a nullable warning (an error in CI).
+    [Fact]
+    public void IsSuccess_FailureInNegatedIfStatement_ErrorIsNotNull()
+    {
+        // Arrange
+        const string ExpectedTitle = "Test title";
+        var sut = Sut.FromError(Error.NotFound(ErrorUri.Tag("tag:test.com,2024:Test"), "Test title"));
+        string? result = null;
+
+        // Act
+        if (!sut.IsSuccess)
+            result = sut.Error.Title;
+
+        // Assert
+        result.ShouldBe(ExpectedTitle);
+    }
+
+    [Fact]
+    public void PropertyPattern_Success_MatchesIsSuccess()
+    {
+        // Arrange
+        var sut = Sut.Success();
+
+        // Act
+        var result = sut is { IsSuccess: true, IsError: false };
+
+        // Assert
+        result.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void PropertyPattern_Failure_MatchesIsErrorAndError()
+    {
+        // Arrange
+        var error = Error.NotFound(ErrorUri.Tag("tag:test.com,2024:Test"), "Test title");
+        var sut = Sut.FromError(error);
+
+        // Act
+        var result = sut is { IsError: true, Error: var matchedError } && matchedError == error;
+
+        // Assert
+        result.ShouldBeTrue();
+    }
+
+    #endregion
+
+    #region IOperationResult, IsSuccess and IsError
+
+    [Fact]
+    public void IsSuccess_ResultSuccessAsInterface_ReturnsTrue()
+    {
+        // Arrange
+        IOperationResult sut = Sut.Success();
+
+        // Act
+        var result = sut.IsSuccess;
+
+        // Assert
+        result.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void IsError_ResultFailureAsInterface_ReturnsTrue()
+    {
+        // Arrange
+        IOperationResult sut = Sut.FromError(Error.NotFound(ErrorUri.Tag("tag:test.com,2024:Test"), "Test title"));
+
+        // Act
+        var result = sut.IsError;
+
+        // Assert
+        result.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void IsSuccess_ResultTSuccessAsInterface_ReturnsTrue()
+    {
+        // Arrange
+        IOperationResult sut = Result.FromValue(1);
+
+        // Act
+        var result = sut.IsSuccess;
+
+        // Assert
+        result.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void IsError_ResultTFailureAsInterface_ReturnsTrue()
+    {
+        // Arrange
+        IOperationResult sut = Result<int>.FromError(Error.NotFound(ErrorUri.Tag("tag:test.com,2024:Test"), "Test title"));
+
+        // Act
+        var result = sut.IsError;
+
+        // Assert
+        result.ShouldBeTrue();
+    }
+
+    // Compile-time check as well: the attribute on the interface member makes Error non-null in the if body.
+    [Fact]
+    public void IsError_InterfaceFailureInIfStatement_ErrorIsNotNull()
+    {
+        // Arrange
+        const string ExpectedTitle = "Test title";
+        IOperationResult sut = Sut.FromError(Error.NotFound(ErrorUri.Tag("tag:test.com,2024:Test"), "Test title"));
+        string? result = null;
+
+        // Act
+        if (sut.IsError)
+            result = sut.Error.Title;
+
+        // Assert
+        result.ShouldBe(ExpectedTitle);
+    }
+
+    #endregion
+
+    #region Result<T>, IsSuccess and IsError
 
     [Fact]
     public void IsSuccess_ValueTypeValueEqualToDefault_ReturnsTrue()
@@ -307,11 +499,134 @@ public class ResultUnitTests
         var sut = Result.FromValue(0);
 
         // Act
-        var result = sut.IsSuccess();
+        var result = sut.IsSuccess;
 
         // Assert
         result.ShouldBeTrue();
         sut.Value.ShouldBe(0);
+    }
+
+    [Fact]
+    public void IsSuccess_ResultTFailure_ReturnsFalse()
+    {
+        // Arrange
+        var sut = Result<int>.FromError(Error.NotFound(ErrorUri.Tag("tag:test.com,2024:Test"), "Test title"));
+
+        // Act
+        var result = sut.IsSuccess;
+
+        // Assert
+        result.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void IsError_ResultTSuccess_ReturnsFalse()
+    {
+        // Arrange
+        var sut = Result.FromValue("value");
+
+        // Act
+        var result = sut.IsError;
+
+        // Assert
+        result.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void IsError_ResultTSuccessWithNullValue_ReturnsFalse()
+    {
+        // Arrange
+        var sut = Result.FromValue<string?>(null);
+
+        // Act
+        var result = sut.IsError;
+
+        // Assert
+        result.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void IsError_ResultTFailure_ReturnsTrue()
+    {
+        // Arrange
+        var sut = Result<int>.FromError(Error.NotFound(ErrorUri.Tag("tag:test.com,2024:Test"), "Test title"));
+
+        // Act
+        var result = sut.IsError;
+
+        // Assert
+        result.ShouldBeTrue();
+    }
+
+    // Compile-time check as well: without [MemberNotNullWhen(true, nameof(Error))] on IsError,
+    // reading Error.Title in the if body would be a nullable warning (an error in CI).
+    [Fact]
+    public void IsError_ResultTFailureInIfStatement_ErrorIsNotNull()
+    {
+        // Arrange
+        const string ExpectedTitle = "Test title";
+        var sut = Result<string>.FromError(Error.NotFound(ErrorUri.Tag("tag:test.com,2024:Test"), "Test title"));
+        string? result = null;
+
+        // Act
+        if (sut.IsError)
+            result = sut.Error.Title;
+
+        // Assert
+        result.ShouldBe(ExpectedTitle);
+    }
+
+    // Compile-time check as well: without [MemberNotNullWhen(false, nameof(Value))] on IsError,
+    // reading Value.Length after the early return would be a nullable warning (an error in CI).
+    [Fact]
+    public void IsError_ResultTSuccessAfterEarlyReturn_ValueIsNotNull()
+    {
+        // Arrange
+        const int ExpectedLength = 5;
+        var sut = Result.FromValue("value");
+
+        // Act
+        var result = GetLength(sut);
+
+        // Assert
+        result.ShouldBe(ExpectedLength);
+
+        static int GetLength(Result<string> result)
+        {
+            if (result.IsError)
+                return -1;
+
+            return result.Value.Length;
+        }
+    }
+
+    [Fact]
+    public void PropertyPattern_ResultTSuccess_MatchesIsSuccessAndValue()
+    {
+        // Arrange
+        const string ExpectedValue = "value";
+        var sut = Result.FromValue("value");
+        string? result = null;
+
+        // Act
+        if (sut is { IsSuccess: true, Value: var value })
+            result = value;
+
+        // Assert
+        result.ShouldBe(ExpectedValue);
+    }
+
+    [Fact]
+    public void PropertyPattern_ResultTFailure_DoesNotMatchIsSuccess()
+    {
+        // Arrange
+        var sut = Result<string>.FromError(Error.NotFound(ErrorUri.Tag("tag:test.com,2024:Test"), "Test title"));
+
+        // Act
+        var result = sut is { IsSuccess: true };
+
+        // Assert
+        result.ShouldBeFalse();
     }
 
     #endregion
@@ -336,7 +651,7 @@ public class ResultUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldNotBeNull();
         result.Value.Text.ShouldBe(ExpectedText);
         result.Value.Number.ShouldBe(ExpectedNumber);
@@ -382,7 +697,7 @@ public class ResultUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldNotBeNull();
 
         result.Error.Category.ShouldBe(ExpectedCategory);
@@ -434,7 +749,7 @@ public class ResultUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldNotBeNull();
         result.Value.Text.ShouldBe(ExpectedText);
         result.Value.Number.ShouldBe(ExpectedNumber);
@@ -509,7 +824,7 @@ public class ResultUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldNotBeNull();
 
         result.Error.Category.ShouldBe(ExpectedCategory);
@@ -547,7 +862,7 @@ public class ResultUnitTests
     public void Serialize_SuccessWithReferenceTypeValueAndMicrosoftSerializer_ReturnsSerializedValueWithAllProperties()
     {
         // Arrange
-        const string ExpectedText = """{"Value":{"Text":"Test text","Number":137},"Error":null}""";
+        const string ExpectedText = """{"Value":{"Text":"Test text","Number":137},"Error":null,"IsSuccess":true,"IsError":false}""";
 
         var value = new TestClass
         {
@@ -568,7 +883,7 @@ public class ResultUnitTests
     public void Serialize_SuccessWithReferenceTypeValueAndNewtonsoftSerializer_ReturnsSerializedValueWithAllProperties()
     {
         // Arrange
-        const string ExpectedText = """{"Value":{"Text":"Test text","Number":137},"Error":null}""";
+        const string ExpectedText = """{"Value":{"Text":"Test text","Number":137},"Error":null,"IsSuccess":true,"IsError":false}""";
 
         var value = new TestClass
         {
@@ -589,7 +904,7 @@ public class ResultUnitTests
     public void Serialize_SuccessWithValueTypeValueAndMicrosoftSerializer_ReturnsSerializedValueWithAllProperties()
     {
         // Arrange
-        const string ExpectedText = """{"Value":128,"Error":null}""";
+        const string ExpectedText = """{"Value":128,"Error":null,"IsSuccess":true,"IsError":false}""";
 
         const int Value = 128;
 
@@ -606,7 +921,7 @@ public class ResultUnitTests
     public void Serialize_SuccessWithValueTypeValueAndNewtonsoftSerializer_ReturnsSerializedValueWithAllProperties()
     {
         // Arrange
-        const string ExpectedText = """{"Value":128,"Error":null}""";
+        const string ExpectedText = """{"Value":128,"Error":null,"IsSuccess":true,"IsError":false}""";
 
         const int Value = 128;
 
@@ -623,7 +938,7 @@ public class ResultUnitTests
     public void Serialize_ReferenceTypeAndErrorAllPropertiesAndMicrosoftSerializer_ReturnsSerializedValueWithAllProperties()
     {
         // Arrange
-        const string ExpectedText = """{"Value":null,"Error":{"Category":3,"TypeUri":"tag:test.com,2024:Test","Title":"Test title","Detail":"Test description.","DetailTemplated":{"TemplateId":"messageId","Params":{"key1":"value1","key2":"value2"}},"InstanceUri":"http://test.com/instance/1013","ErrorDetails":[{"PropertyPointer":"#/property1","Detail":"Property 1 test detail","DetailTemplated":{"TemplateId":"message-property-id","Params":{"pk1":"pv1","pk2":"pv2"}}}],"Metadata":{}}}""";
+        const string ExpectedText = """{"Value":null,"Error":{"Category":3,"TypeUri":"tag:test.com,2024:Test","Title":"Test title","Detail":"Test description.","DetailTemplated":{"TemplateId":"messageId","Params":{"key1":"value1","key2":"value2"}},"InstanceUri":"http://test.com/instance/1013","ErrorDetails":[{"PropertyPointer":"#/property1","Detail":"Property 1 test detail","DetailTemplated":{"TemplateId":"message-property-id","Params":{"pk1":"pv1","pk2":"pv2"}}}],"Metadata":{}},"IsSuccess":false,"IsError":true}""";
 
         var error = Error.NotFound(
             ErrorUri.Tag("tag:test.com,2024:Test"),
@@ -648,7 +963,7 @@ public class ResultUnitTests
     public void Serialize_ReferenceTypeAndErrorAllPropertiesAndNewtonsoftSerializer_ReturnsSerializedValueWithAllProperties()
     {
         // Arrange
-        const string ExpectedText = """{"Value":null,"Error":{"Category":3,"TypeUri":"tag:test.com,2024:Test","Title":"Test title","Detail":"Test description.","DetailTemplated":{"TemplateId":"messageId","Params":{"key1":"value1","key2":"value2"}},"InstanceUri":"http://test.com/instance/1013","ErrorDetails":[{"PropertyPointer":"#/property1","Detail":"Property 1 test detail","DetailTemplated":{"TemplateId":"message-property-id","Params":{"pk1":"pv1","pk2":"pv2"}}}],"Metadata":{}}}""";
+        const string ExpectedText = """{"Value":null,"Error":{"Category":3,"TypeUri":"tag:test.com,2024:Test","Title":"Test title","Detail":"Test description.","DetailTemplated":{"TemplateId":"messageId","Params":{"key1":"value1","key2":"value2"}},"InstanceUri":"http://test.com/instance/1013","ErrorDetails":[{"PropertyPointer":"#/property1","Detail":"Property 1 test detail","DetailTemplated":{"TemplateId":"message-property-id","Params":{"pk1":"pv1","pk2":"pv2"}}}],"Metadata":{}},"IsSuccess":false,"IsError":true}""";
 
         var error = Error.NotFound(
             ErrorUri.Tag("tag:test.com,2024:Test"),
@@ -673,7 +988,7 @@ public class ResultUnitTests
     public void Serialize_ValueTypeAndErrorAllPropertiesAndMicrosoftSerializer_ReturnsSerializedValueWithAllProperties()
     {
         // Arrange
-        const string ExpectedText = """{"Value":0,"Error":{"Category":3,"TypeUri":"tag:test.com,2024:Test","Title":"Test title","Detail":"Test description.","DetailTemplated":{"TemplateId":"messageId","Params":{"key1":"value1","key2":"value2"}},"InstanceUri":"http://test.com/instance/1013","ErrorDetails":[{"PropertyPointer":"#/property1","Detail":"Property 1 test detail","DetailTemplated":{"TemplateId":"message-property-id","Params":{"pk1":"pv1","pk2":"pv2"}}}],"Metadata":{}}}""";
+        const string ExpectedText = """{"Value":0,"Error":{"Category":3,"TypeUri":"tag:test.com,2024:Test","Title":"Test title","Detail":"Test description.","DetailTemplated":{"TemplateId":"messageId","Params":{"key1":"value1","key2":"value2"}},"InstanceUri":"http://test.com/instance/1013","ErrorDetails":[{"PropertyPointer":"#/property1","Detail":"Property 1 test detail","DetailTemplated":{"TemplateId":"message-property-id","Params":{"pk1":"pv1","pk2":"pv2"}}}],"Metadata":{}},"IsSuccess":false,"IsError":true}""";
 
         var error = Error.NotFound(
             ErrorUri.Tag("tag:test.com,2024:Test"),
@@ -698,7 +1013,7 @@ public class ResultUnitTests
     public void Serialize_ValueTypeAndErrorAllPropertiesAndNewtonsoftSerializer_ReturnsSerializedValueWithAllProperties()
     {
         // Arrange
-        const string ExpectedText = """{"Value":0,"Error":{"Category":3,"TypeUri":"tag:test.com,2024:Test","Title":"Test title","Detail":"Test description.","DetailTemplated":{"TemplateId":"messageId","Params":{"key1":"value1","key2":"value2"}},"InstanceUri":"http://test.com/instance/1013","ErrorDetails":[{"PropertyPointer":"#/property1","Detail":"Property 1 test detail","DetailTemplated":{"TemplateId":"message-property-id","Params":{"pk1":"pv1","pk2":"pv2"}}}],"Metadata":{}}}""";
+        const string ExpectedText = """{"Value":0,"Error":{"Category":3,"TypeUri":"tag:test.com,2024:Test","Title":"Test title","Detail":"Test description.","DetailTemplated":{"TemplateId":"messageId","Params":{"key1":"value1","key2":"value2"}},"InstanceUri":"http://test.com/instance/1013","ErrorDetails":[{"PropertyPointer":"#/property1","Detail":"Property 1 test detail","DetailTemplated":{"TemplateId":"message-property-id","Params":{"pk1":"pv1","pk2":"pv2"}}}],"Metadata":{}},"IsSuccess":false,"IsError":true}""";
 
         var error = Error.NotFound(
             ErrorUri.Tag("tag:test.com,2024:Test"),
@@ -734,7 +1049,7 @@ public class ResultUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBe(error);
         result.Value.ShouldBe(0);
     }
@@ -750,7 +1065,7 @@ public class ResultUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBe(error);
         result.Value.ShouldBe(Guid.Empty);
     }
@@ -797,7 +1112,7 @@ public class ResultUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBeNull();
         result.Error.ShouldBeNull();
     }
@@ -810,7 +1125,7 @@ public class ResultUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBeNull();
         result.Error.ShouldBeNull();
     }
@@ -823,7 +1138,7 @@ public class ResultUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBeNull();
         result.Error.ShouldBeNull();
     }
@@ -838,7 +1153,7 @@ public class ResultUnitTests
         Result<string?> result = value;
 
         // Assert
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBeNull();
     }
 
@@ -850,8 +1165,8 @@ public class ResultUnitTests
         var failure = Result<string?>.FromError(Error.NotFound(ErrorUri.Tag("tag:test.com,2024:Test"), "Test title"));
 
         // Assert
-        success.IsSuccess().ShouldBeTrue();
-        failure.IsSuccess().ShouldBeFalse();
+        success.IsSuccess.ShouldBeTrue();
+        failure.IsSuccess.ShouldBeFalse();
         success.ShouldNotBe(failure);
     }
 
@@ -859,7 +1174,7 @@ public class ResultUnitTests
     public void Serialize_NullReferenceTypeValueAndMicrosoftSerializer_WritesNullValue()
     {
         // Arrange
-        const string ExpectedText = """{"Value":null,"Error":null}""";
+        const string ExpectedText = """{"Value":null,"Error":null,"IsSuccess":true,"IsError":false}""";
         var sut = Result.FromValue<string?>(null);
 
         // Act
@@ -873,7 +1188,7 @@ public class ResultUnitTests
     public void Serialize_NullReferenceTypeValueAndNewtonsoftSerializer_WritesNullValue()
     {
         // Arrange
-        const string ExpectedText = """{"Value":null,"Error":null}""";
+        const string ExpectedText = """{"Value":null,"Error":null,"IsSuccess":true,"IsError":false}""";
         var sut = Result.FromValue<string?>(null);
 
         // Act
@@ -887,7 +1202,7 @@ public class ResultUnitTests
     public void Serialize_NullNullableValueTypeValueAndMicrosoftSerializer_WritesNullValue()
     {
         // Arrange
-        const string ExpectedText = """{"Value":null,"Error":null}""";
+        const string ExpectedText = """{"Value":null,"Error":null,"IsSuccess":true,"IsError":false}""";
         var sut = Result.FromValue<int?>(null);
 
         // Act
@@ -901,7 +1216,7 @@ public class ResultUnitTests
     public void Serialize_NullNullableValueTypeValueAndNewtonsoftSerializer_WritesNullValue()
     {
         // Arrange
-        const string ExpectedText = """{"Value":null,"Error":null}""";
+        const string ExpectedText = """{"Value":null,"Error":null,"IsSuccess":true,"IsError":false}""";
         var sut = Result.FromValue<int?>(null);
 
         // Act

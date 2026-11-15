@@ -59,7 +59,7 @@ public class ResultTaskAsyncExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.ShouldBeOfType<Result>();
     }
 
@@ -76,7 +76,7 @@ public class ResultTaskAsyncExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBe(error);
     }
 

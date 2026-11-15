@@ -155,7 +155,7 @@ public class LinqValueTaskAsyncExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeOfType<Result<double>>();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBe(ExpectedFinalValue);
     }
 
@@ -189,7 +189,7 @@ public class LinqValueTaskAsyncExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeOfType<Result<double>>();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(errorResult.Error);
     }
 
@@ -282,7 +282,7 @@ public class LinqValueTaskAsyncExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeOfType<Result<string>>();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBe(ExpectedValue);
     }
 
@@ -314,7 +314,7 @@ public class LinqValueTaskAsyncExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeOfType<Result<string>>();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(errorResult.Error);
     }
 
@@ -340,7 +340,7 @@ public class LinqValueTaskAsyncExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeOfType<Result<string>>();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBe(ExpectedValue);
     }
 
@@ -359,7 +359,7 @@ public class LinqValueTaskAsyncExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeOfType<Result<string>>();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(errorResult.Error);
     }
 
@@ -411,7 +411,7 @@ public class LinqValueTaskAsyncExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBe(ExpectedValue);
     }
 
@@ -496,7 +496,7 @@ public class LinqValueTaskAsyncExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeOfType<Result<string>>();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(errorResult.Error);
     }
 
@@ -581,7 +581,7 @@ public class LinqValueTaskAsyncExtensionsUnitTests
         // Assert
         result.ShouldNotBeNull();
         result.ShouldBeOfType<Result<string>>();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(errorResult.Error);
     }
 
@@ -623,7 +623,7 @@ public class LinqValueTaskAsyncExtensionsUnitTests
                             select a * b);
 
         // Assert
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBe(10);
     }
 
@@ -636,7 +636,7 @@ public class LinqValueTaskAsyncExtensionsUnitTests
                             select a * b);
 
         // Assert
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(MixedError);
     }
 
@@ -671,7 +671,7 @@ public class LinqValueTaskAsyncExtensionsUnitTests
                             select a * b);
 
         // Assert
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBe(10);
     }
 
@@ -684,7 +684,7 @@ public class LinqValueTaskAsyncExtensionsUnitTests
                             select a * b);
 
         // Assert
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(MixedError);
     }
 
@@ -720,7 +720,7 @@ public class LinqValueTaskAsyncExtensionsUnitTests
                             select a + b + c);
 
         // Assert
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBe(6);
     }
 
@@ -763,7 +763,7 @@ public class LinqValueTaskAsyncExtensionsUnitTests
                                select Track(a));
 
         // Assert
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(TrapError);
         passedValue.ShouldBe(5);
 
@@ -782,7 +782,7 @@ public class LinqValueTaskAsyncExtensionsUnitTests
                                select TrapError);
 
         // Assert
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(MixedError);
     }
 
@@ -798,7 +798,7 @@ public class LinqValueTaskAsyncExtensionsUnitTests
                                select Track(a * b));
 
         // Assert
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(TrapError);
         passedValue.ShouldBe(10);
 
@@ -818,7 +818,7 @@ public class LinqValueTaskAsyncExtensionsUnitTests
                                select TrapError);
 
         // Assert
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(MixedError);
     }
 
@@ -831,7 +831,7 @@ public class LinqValueTaskAsyncExtensionsUnitTests
                                select TrapError);
 
         // Assert
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(TrapError);
     }
 
@@ -844,7 +844,7 @@ public class LinqValueTaskAsyncExtensionsUnitTests
                                select TrapError);
 
         // Assert
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(MixedError);
     }
 
@@ -857,7 +857,7 @@ public class LinqValueTaskAsyncExtensionsUnitTests
                                select TrapError);
 
         // Assert
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(TrapError);
     }
 
@@ -954,7 +954,7 @@ public class LinqValueTaskAsyncExtensionsUnitTests
         Result<Task> result = await sut.Select<int, Task>(_ => taskSource.Task);
 
         // Assert
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBeSameAs(taskSource.Task);
         result.Value.IsCompleted.ShouldBeFalse();
     }

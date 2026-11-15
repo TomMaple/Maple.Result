@@ -567,7 +567,7 @@ public class MatchTaskAsyncExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBe(SuccessFunctionValue);
     }
 
@@ -612,7 +612,7 @@ public class MatchTaskAsyncExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(sut.Error);
     }
 
@@ -858,7 +858,7 @@ public class MatchTaskAsyncExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.ShouldBeSameAs(expectedResult);
     }
 
@@ -903,7 +903,7 @@ public class MatchTaskAsyncExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBe(sut.Error);
     }
 
@@ -1008,7 +1008,7 @@ public class MatchTaskAsyncExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.ShouldBeSameAs(expectedResult);
     }
 
@@ -1158,7 +1158,7 @@ public class MatchTaskAsyncExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.ShouldBeSameAs(sut);
     }
 
@@ -1203,7 +1203,7 @@ public class MatchTaskAsyncExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.ShouldBeSameAs(sut);
     }
 
@@ -1305,7 +1305,7 @@ public class MatchTaskAsyncExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBe(ExpectedValue);
     }
 
@@ -1350,7 +1350,7 @@ public class MatchTaskAsyncExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBe(sut.Error);
     }
 
@@ -1611,7 +1611,7 @@ public class MatchTaskAsyncExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.ShouldBe(expectedResult);
         result.Value.ShouldBe(ExpectedValue);
     }
@@ -1658,7 +1658,7 @@ public class MatchTaskAsyncExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBe(sut.Error);
     }
 
@@ -1767,7 +1767,7 @@ public class MatchTaskAsyncExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBe(ExpectedValue);
     }
 
@@ -1816,7 +1816,7 @@ public class MatchTaskAsyncExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBe(ExpectedValue);
     }
 
@@ -2377,7 +2377,7 @@ public class MatchTaskAsyncExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBe(SuccessFunctionValue);
     }
 
@@ -2424,7 +2424,7 @@ public class MatchTaskAsyncExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(errorResult.Error);
     }
 
@@ -2671,7 +2671,7 @@ public class MatchTaskAsyncExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.ShouldBeSameAs(expectedResult);
     }
 
@@ -2718,7 +2718,7 @@ public class MatchTaskAsyncExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBe(errorResult.Error);
     }
 
@@ -2823,7 +2823,7 @@ public class MatchTaskAsyncExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.ShouldBeSameAs(expectedResult);
     }
 
@@ -2977,7 +2977,7 @@ public class MatchTaskAsyncExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.ShouldBeSameAs(initialResult);
     }
 
@@ -3024,7 +3024,7 @@ public class MatchTaskAsyncExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.ShouldBeSameAs(errorResult);
     }
 
@@ -3129,7 +3129,7 @@ public class MatchTaskAsyncExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBe(ExpectedValue);
     }
 
@@ -3176,7 +3176,7 @@ public class MatchTaskAsyncExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBe(errorResult.Error);
     }
 
@@ -3444,7 +3444,7 @@ public class MatchTaskAsyncExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.ShouldBe(expectedResult);
         result.Value.ShouldBe(ExpectedValue);
     }
@@ -3493,7 +3493,7 @@ public class MatchTaskAsyncExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBe(errorResult.Error);
     }
 
@@ -3605,7 +3605,7 @@ public class MatchTaskAsyncExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBe(ExpectedValue);
     }
 
@@ -3655,7 +3655,7 @@ public class MatchTaskAsyncExtensionsUnitTests
 
         // Assert
         result.ShouldNotBeNull();
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBe(ExpectedValue);
     }
 
@@ -3694,7 +3694,7 @@ public class MatchTaskAsyncExtensionsUnitTests
         });
 
         // Assert
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(TrapError);
         actionCalled.ShouldBeFalse();
     }
@@ -3748,7 +3748,7 @@ public class MatchTaskAsyncExtensionsUnitTests
         Result<Error> result = await sut.MatchAsync<Error>(() => Task.FromResult(TrapError), _ => Task.CompletedTask);
 
         // Assert
-        result.IsSuccess().ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBeSameAs(TrapError);
     }
 
@@ -3767,7 +3767,7 @@ public class MatchTaskAsyncExtensionsUnitTests
         }, _ => Task.CompletedTask);
 
         // Assert
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(TrapError);
         passedValue.ShouldBe(5);
     }
@@ -3787,7 +3787,7 @@ public class MatchTaskAsyncExtensionsUnitTests
         });
 
         // Assert
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(sut.Error);
         passedError.ShouldBeSameAs(sut.Error);
     }
@@ -3802,7 +3802,7 @@ public class MatchTaskAsyncExtensionsUnitTests
         Result result = await sut.MatchAsync(() => Task.FromResult(TrapError), _ => Task.CompletedTask);
 
         // Assert
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(TrapError);
     }
 
@@ -3842,7 +3842,7 @@ public class MatchTaskAsyncExtensionsUnitTests
         }, _ => Task.CompletedTask);
 
         // Assert
-        result.IsSuccess().ShouldBeFalse();
+        result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBeSameAs(TrapError);
         passedValue.ShouldBe(5);
     }
