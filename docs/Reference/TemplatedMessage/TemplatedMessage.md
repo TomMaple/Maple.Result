@@ -28,7 +28,7 @@ var error = Error.NotFound(
 ## Remarks
 The [TemplatedMessage](TemplatedMessage.md) record is used by the [Error](../Error/Error.md) and [ErrorDetail](../ErrorDetail/ErrorDetail.md) records to store the data required for generating **localized** error messages.
 
-The record is immutable: its properties are get-only, and `with` expressions cannot change them. The [TemplateId](TemplatedMessage_TemplateId.md) must not be `null`, empty or white-space only. The parameters are copied into one read-only dictionary ([Params](TemplatedMessage_Params.md)) when the instance is created; their names must be unique and not `null`.
+The record is immutable: its properties are get-only, and `with` expressions cannot change them. The [TemplateId](TemplatedMessage_TemplateId.md) must not be `null`, empty or white-space only. The parameters are copied into one read-only dictionary ([Params](TemplatedMessage_Params.md)) when the instance is created; their names must be unique and not `null`. The `Params` of another message cannot change, so passing them to a new message shares them instead of copying them.
 
 It is not a positional record and has no `Deconstruct` method; use a property pattern instead, e.g., `message is { TemplateId: "errors.email.required", Params: var parameters }`.
 

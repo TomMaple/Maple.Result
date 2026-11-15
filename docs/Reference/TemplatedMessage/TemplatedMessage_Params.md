@@ -30,7 +30,7 @@ var error = Error.NotFound(
 ## Remarks
 This is an optional property.
 
-It is a read-only dictionary built from the parameters passed to the [constructor](TemplatedMessage_constructors.md), with keys compared ordinally (case-sensitive). It is `null` when `null` was passed as key-value pairs (or no parameters at all), and empty when an empty collection was passed. Later changes to the source are not reflected, and the dictionary cannot be modified, also through a cast. Values can be `null`.
+It is a read-only dictionary built from the parameters passed to the [constructor](TemplatedMessage_constructors.md), with keys compared ordinally (case-sensitive). It is `null` when the message has no parameters (`null`, an empty collection or no parameters at all were passed), so it is never empty. Later changes to the source are not reflected, and the dictionary cannot be modified, also through a cast. Values can be `null`.
 
 > [!NOTE]
 > An instance is usually created by the factory methods of the [Error](../Error/Error.md) record (the `detailTemplateId` and `detailNamedValues` parameters, e.g., [NotFound](../Error/Error_NotFound.md)), by [Error.WithErrorDetail](../Error/Error_WithErrorDetail.md), or by the [ErrorBuilder](../ErrorBuilder/ErrorBuilder.md) methods [WithDetailTemplated](../ErrorBuilder/ErrorBuilder_WithDetailTemplated.md) and [AddErrorDetail](../ErrorBuilder/ErrorBuilder_AddErrorDetail.md).

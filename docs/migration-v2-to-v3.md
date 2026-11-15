@@ -203,6 +203,8 @@ Existing calls still compile. With nullable reference types enabled, passing a `
 
 `TemplatedMessage` now copies `Params` into its own read-only dictionary with an ordinal (case-sensitive) comparer, so changing the source dictionary later no longer changes the message.
 
+`Params` is `null` whenever a message has no parameters: an empty dictionary, an empty collection (`[]`) or no parameters at all. In 2.x an empty dictionary was kept, so a message with an empty dictionary did not equal the same message without parameters; now they are equal. Code that told an empty `Params` apart from `null` only needs the `null` check.
+
 ### `TemplatedMessage` constructors
 `TemplatedMessage` is no longer a positional record. It has two constructors:
 * `TemplatedMessage(string templateId, IEnumerable<KeyValuePair<string, object?>>? parameters = null)`: passing a dictionary still compiles, and lists of key-value pairs now work too;
