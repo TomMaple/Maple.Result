@@ -19,8 +19,8 @@ namespace Maple.Result.Validators;
 /// <remarks>
 ///     <para>
 ///         Metadata entries correspond to the <i>RFC 9457</i> extension members, which share the top-level object with the standard members.
-///         A key that matches a standard member name would produce a duplicate or ambiguous member once the metadata is flattened into
-///         a problem details response, so such keys are rejected.
+///         A key that matches a top-level member name of the format (<see cref="ProblemDetailsMembers" />) would produce a duplicate
+///         or ambiguous member once the metadata is flattened into a problem details response, so such keys are rejected.
 ///     </para>
 ///     <para>
 ///         The comparison ignores case: clients often deserialize JSON case-insensitively,
@@ -35,7 +35,13 @@ internal static class MetadataKeyValidator
 {
     private static readonly FrozenSet<string> ReservedKeys = new[]
     {
-        "type", "title", "status", "detail", "instance", "errors", "detailTemplated"
+        ProblemDetailsMembers.Type,
+        ProblemDetailsMembers.Title,
+        ProblemDetailsMembers.Status,
+        ProblemDetailsMembers.Detail,
+        ProblemDetailsMembers.Instance,
+        ProblemDetailsMembers.Errors,
+        ProblemDetailsMembers.DetailTemplated
     }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
