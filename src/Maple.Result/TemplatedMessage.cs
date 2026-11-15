@@ -24,7 +24,7 @@ namespace Maple.Result;
 ///     <para>The purpose of this structure is to provide a way to generate client-side localized messages.</para>
 ///     <para>
 ///         The record is immutable: its properties are get-only, and the parameters are copied into a read-only dictionary when the instance is created,
-///         so later changes to the source are not reflected.
+///         so later changes to the source are not reflected. The <see cref="Params" /> of another message cannot change, so they are shared, not copied.
 ///     </para>
 /// </remarks>
 public sealed record TemplatedMessage
@@ -204,6 +204,10 @@ public sealed record TemplatedMessage
 
         if (parameters is null)
             return new Validated(templateId, null);
+
+        // The Params of another message (or the Metadata of an error) never change, so they are shared instead of copied.
+        if (parameters is ReadOnlyCopy shared)
+            return new Validated(templateId, shared.Count == 0 ? null : shared);
 
         // No dictionary for an empty collection; the size is known up front for most collections.
         var isCountKnown = parameters.TryGetNonEnumeratedCount(out var count);
