@@ -1,6 +1,7 @@
 # Builds, tests and packs the library on pushes to main and on pull requests. Nothing is published from here:
 # releases go through the "Draft release" and "Publish" workflows (see docs/conventions.md, "Releasing").
-# The job id "build" is a required status check: keep the name, and never add a "paths" filter.
+# The job id "build" is a required status check: keep the name, and never add a "paths" filter. On pull requests
+# that change no code (e.g. only docs/), "build" is skipped, which counts as passed.
 # For more information, see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
 name: CI
@@ -21,7 +22,41 @@ env:
   REPORTGENERATOR_VERSION: 5.6.0
 
 jobs:
+  # Tells whether the pull request changes code or workflows (.github/scripts/changes.py). Pushes and schedules always
+  # run everything. A skipped job counts as passed for a required check; the jobs below run when this one fails.
+  changes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
+      workflows: ${{ steps.filter.outputs.workflows }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
+        sparse-checkout: .github/scripts
+
+    - name: Classify the changed files
+      id: filter
+      run: |
+        if [ "$EVENT_NAME" = "pull_request" ]; then
+          gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/files" --jq '.[].filename' |
+            python3 -I .github/scripts/changes.py | tee -a "$GITHUB_OUTPUT"
+        else
+          python3 -I .github/scripts/changes.py --all | tee -a "$GITHUB_OUTPUT"
+        fi
+      env:
+        EVENT_NAME: ${{ github.event_name }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+        GH_TOKEN: ${{ github.token }}
+
   build:
+    needs: changes
+    if: ${{ !cancelled() && needs.changes.outputs.code != 'false' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
