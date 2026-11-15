@@ -176,15 +176,18 @@ public sealed record Result : IOperationResult
 /// <inheritdoc cref="IOperationResult" />
 public sealed record Result<T> : IOperationResult
 {
+    private readonly T _value;
+
     #region constructors
 
     private Result(T value)
     {
-        Value = value;
+        _value = value;
     }
 
     private Result(Error error)
     {
+        _value = default!;
         Error = error
                 ?? throw new ArgumentNullException(nameof(error), "Error cannot be null!");
     }
@@ -192,15 +195,34 @@ public sealed record Result<T> : IOperationResult
     #endregion
 
     /// <summary>
-    ///     Returns the value of type <typeparamref name="T" /> if the operation was successful;
-    ///     otherwise, returns the default value of <typeparamref name="T" />.
+    ///     Gets the value of a successful result.
     /// </summary>
     /// <remarks>
-    ///     A successful <see cref="Result{T}" /> carries a value, which may itself be <see langword="null" /> when <typeparamref name="T" /> is nullable
-    ///     (a nullable reference type or <see cref="Nullable{T}" />). A <see langword="null" /> (or default) here therefore does not by itself indicate
-    ///     failure—use <see cref="IsSuccess" /> to distinguish a successful value from a failure.
+    ///     <para>
+    ///         Check <see cref="IsSuccess" /> or <see cref="IsError" /> before reading the value, or use <see cref="GetValueOrDefault" />.
+    ///         A failed result has no value, so reading it throws instead of returning the default value of <typeparamref name="T" />
+    ///         (which, for a value type, would look like a valid value, e.g., <c>0</c> for a <see cref="Result{T}" /> of <see cref="int" />).
+    ///     </para>
+    ///     <para>
+    ///         The value of a successful result may be <see langword="null" /> when <typeparamref name="T" /> is nullable
+    ///         (a nullable reference type or <see cref="Nullable{T}" />); its type follows <typeparamref name="T" />.
+    ///     </para>
     /// </remarks>
-    public T? Value { get; }
+    /// <exception cref="InvalidOperationException">If the result is failed; the message names the <see cref="Error" />.</exception>
+    public T Value
+    {
+        get
+        {
+            if (Error is not null)
+            {
+                throw new InvalidOperationException(
+                    $"The result has no value, because the operation failed with the error ‘{Error.Title}’ (type ‘{Error.TypeUri}’). " +
+                    $"Check {nameof(IsSuccess)} or {nameof(IsError)} before reading {nameof(Value)}, or use {nameof(GetValueOrDefault)}.");
+            }
+
+            return _value;
+        }
+    }
 
     /// <summary>
     ///     Returns an <see cref="Error" /> object if the operation failed; otherwise, returns <see langword="null" />.
@@ -211,32 +233,42 @@ public sealed record Result<T> : IOperationResult
     ///     Gets a value indicating whether the operation was successful.
     /// </summary>
     /// <remarks>
-    ///     The <see cref="MemberNotNullWhenAttribute" /> on <see cref="Value" /> reflects the common case where a successful result carries a non-null value.
-    ///     When <typeparamref name="T" /> is nullable (a nullable reference type or <see cref="Nullable{T}" />) a successful result may legitimately carry
-    ///     a <see langword="null" /> value, so the flow-analysis hint is a best effort rather than a guarantee for those types;
-    ///     access <see cref="Value" /> accordingly.
+    ///     When it is <see langword="true" />, <see cref="Value" /> can be read; when it is <see langword="false" />, <see cref="Error" /> is not
+    ///     <see langword="null" />.
     /// </remarks>
     /// <value>
     ///     <see langword="true" /> if the operation was successful; otherwise, <see langword="false" />.
     /// </value>
     [MemberNotNullWhen(false, nameof(Error))]
-    [MemberNotNullWhen(true, nameof(Value))]
     public bool IsSuccess => Error is null;
 
     /// <summary>
     ///     Gets a value indicating whether the operation failed.
     /// </summary>
     /// <remarks>
-    ///     The opposite of <see cref="IsSuccess" />, for the early return <c>if (result.IsError) return result.Error;</c>.
-    ///     After it, <see cref="Value" /> is treated as not <see langword="null" />, with the same limits for a nullable <typeparamref name="T" />
-    ///     as after <see cref="IsSuccess" />.
+    ///     The opposite of <see cref="IsSuccess" />, for the early return <c>if (result.IsError) return result.Error;</c>,
+    ///     after which <see cref="Value" /> can be read.
     /// </remarks>
     /// <value>
     ///     <see langword="true" /> if the operation failed and <see cref="Error" /> is not <see langword="null" />; otherwise, <see langword="false" />.
     /// </value>
     [MemberNotNullWhen(true, nameof(Error))]
-    [MemberNotNullWhen(false, nameof(Value))]
     public bool IsError => Error is not null;
+
+    /// <summary>
+    ///     Returns the value of a successful result, or the <paramref name="fallback" /> value for a failed one.
+    /// </summary>
+    /// <remarks>
+    ///     It never throws. A successful result returns its own value, even when it is <see langword="null" />.
+    /// </remarks>
+    /// <param name="fallback">The value to return when the result is failed.</param>
+    /// <returns>The <see cref="Value" /> if the result is successful; otherwise, <paramref name="fallback" />.</returns>
+    public T GetValueOrDefault(T fallback)
+    {
+        return Error is null
+            ? _value
+            : fallback;
+    }
 
     #region implicit operators
 
@@ -299,7 +331,7 @@ public sealed record Result<T> : IOperationResult
     private bool PrintMembers(StringBuilder builder)
     {
         if (Error is null)
-            builder.Append("Value = ").Append(Value);
+            builder.Append("Value = ").Append(_value);
         else
             builder.Append("Error = ").Append(Error);
 
