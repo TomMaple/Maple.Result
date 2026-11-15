@@ -157,7 +157,7 @@ public sealed record TemplatedMessage
         return other is not null
                && EqualityContract == other.EqualityContract
                && TemplateId == other.TemplateId
-               && DictionaryHelper.Equal(Params, other.Params);
+               && DictionaryHelper.Equal(ParamsCopy, other.ParamsCopy);
     }
 
     /// <summary>
@@ -172,8 +172,8 @@ public sealed record TemplatedMessage
         hashCode.Add(EqualityContract);
         hashCode.Add(TemplateId);
 
-        if (Params is not null)
-            hashCode.Add(DictionaryHelper.GetHashCode(Params));
+        if (ParamsCopy is not null)
+            hashCode.Add(DictionaryHelper.GetHashCode(ParamsCopy));
 
         return hashCode.ToHashCode();
     }
@@ -189,8 +189,8 @@ public sealed record TemplatedMessage
         builder.Append("TemplateId = ").Append(TemplateId);
         builder.Append(", Params = ");
 
-        if (Params is not null)
-            DictionaryHelper.Append(builder, Params);
+        if (ParamsCopy is not null)
+            DictionaryHelper.Append(builder, ParamsCopy);
 
         return true;
     }
