@@ -32,7 +32,7 @@ public static class ResultExtensions
     {
         ArgumentNullException.ThrowIfNull(result);
 
-        return result.IsSuccess()
+        return result.IsSuccess
             ? Result.Success()
             : Result.FromError(result.Error);
     }

@@ -55,7 +55,7 @@ public static class ResultTaskAsyncExtensions
         {
             var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
 
-            return result.IsSuccess()
+            return result.IsSuccess
                 ? Result.Success()
                 : Result.FromError(result.Error);
         }

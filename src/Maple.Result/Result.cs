@@ -17,7 +17,7 @@ namespace Maple.Result;
 ///     Defines the contract for an operation result, providing information about success or failure and any associated error details.
 /// </summary>
 /// <remarks>
-///     Use the <see cref="IsSuccess" /> method to determine whether the operation completed successfully,
+///     Use the <see cref="IsSuccess" /> or <see cref="IsError" /> property to determine whether the operation completed successfully,
 ///     and access the <see cref="Error" /> property for error information if the operation failed.
 /// </remarks>
 public interface IOperationResult
@@ -28,13 +28,22 @@ public interface IOperationResult
     public Error? Error { get; }
 
     /// <summary>
-    ///     Returns an indicator of whether the operation was successful.
+    ///     Gets a value indicating whether the operation was successful.
     /// </summary>
-    /// <returns>
+    /// <value>
     ///     <see langword="true" /> if the operation was successful; otherwise, <see langword="false" />.
-    /// </returns>
+    /// </value>
     [MemberNotNullWhen(false, nameof(Error))]
-    public bool IsSuccess();
+    public bool IsSuccess { get; }
+
+    /// <summary>
+    ///     Gets a value indicating whether the operation failed.
+    /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the operation failed and <see cref="Error" /> is not <see langword="null" />; otherwise, <see langword="false" />.
+    /// </value>
+    [MemberNotNullWhen(true, nameof(Error))]
+    public bool IsError { get; }
 }
 
 /// <summary>
@@ -65,16 +74,22 @@ public sealed record Result : IOperationResult
     public Error? Error { get; }
 
     /// <summary>
-    ///     Returns an indicator of whether the operation was successful.
+    ///     Gets a value indicating whether the operation was successful.
     /// </summary>
-    /// <returns>
+    /// <value>
     ///     <see langword="true" /> if the operation was successful; otherwise, <see langword="false" />.
-    /// </returns>
+    /// </value>
     [MemberNotNullWhen(false, nameof(Error))]
-    public bool IsSuccess()
-    {
-        return Error is null;
-    }
+    public bool IsSuccess => Error is null;
+
+    /// <summary>
+    ///     Gets a value indicating whether the operation failed.
+    /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the operation failed and <see cref="Error" /> is not <see langword="null" />; otherwise, <see langword="false" />.
+    /// </value>
+    [MemberNotNullWhen(true, nameof(Error))]
+    public bool IsError => Error is not null;
 
     /// <summary>
     ///     Returns a successful <see cref="Result" /> instance.
@@ -174,7 +189,7 @@ public sealed record Result<T> : IOperationResult
     public Error? Error { get; }
 
     /// <summary>
-    ///     Returns an indicator of whether the operation was successful.
+    ///     Gets a value indicating whether the operation was successful.
     /// </summary>
     /// <remarks>
     ///     The <see cref="MemberNotNullWhenAttribute" /> on <see cref="Value" /> reflects the common case where a successful result carries a non-null value.
@@ -182,15 +197,27 @@ public sealed record Result<T> : IOperationResult
     ///     a <see langword="null" /> value, so the flow-analysis hint is a best effort rather than a guarantee for those types;
     ///     access <see cref="Value" /> accordingly.
     /// </remarks>
-    /// <returns>
+    /// <value>
     ///     <see langword="true" /> if the operation was successful; otherwise, <see langword="false" />.
-    /// </returns>
+    /// </value>
     [MemberNotNullWhen(false, nameof(Error))]
     [MemberNotNullWhen(true, nameof(Value))]
-    public bool IsSuccess()
-    {
-        return Error is null;
-    }
+    public bool IsSuccess => Error is null;
+
+    /// <summary>
+    ///     Gets a value indicating whether the operation failed.
+    /// </summary>
+    /// <remarks>
+    ///     The opposite of <see cref="IsSuccess" />, for the early return <c>if (result.IsError) return result.Error;</c>.
+    ///     After it, <see cref="Value" /> is treated as not <see langword="null" />, with the same limits for a nullable <typeparamref name="T" />
+    ///     as after <see cref="IsSuccess" />.
+    /// </remarks>
+    /// <value>
+    ///     <see langword="true" /> if the operation failed and <see cref="Error" /> is not <see langword="null" />; otherwise, <see langword="false" />.
+    /// </value>
+    [MemberNotNullWhen(true, nameof(Error))]
+    [MemberNotNullWhen(false, nameof(Value))]
+    public bool IsError => Error is not null;
 
     #region implicit operators
 

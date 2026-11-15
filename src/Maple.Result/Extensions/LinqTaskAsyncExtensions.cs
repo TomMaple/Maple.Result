@@ -115,7 +115,7 @@ public static class LinqTaskAsyncExtensions
         {
             var resultValue = await Guard.EnsureNotNullAwaited(result, nameof(result), ResultConfiguration.ContinueOnCapturedContext);
 
-            if (!resultValue.IsSuccess())
+            if (!resultValue.IsSuccess)
                 return resultValue.Error;
 
             var returnedError = selector(resultValue.Value);
@@ -283,7 +283,7 @@ public static class LinqTaskAsyncExtensions
 
         static async Task<Result<TNext>> Core(Result<T> result, Func<T, Task<Result<TMiddle>>> collectionSelector, Func<T, TMiddle, TNext> resultSelector)
         {
-            if (!result.IsSuccess())
+            if (!result.IsSuccess)
                 return result.Error;
 
             var collectionTask = collectionSelector(result.Value);
@@ -348,7 +348,7 @@ public static class LinqTaskAsyncExtensions
         {
             var resultValue = await Guard.EnsureNotNullAwaited(result, nameof(result), ResultConfiguration.ContinueOnCapturedContext);
 
-            if (!resultValue.IsSuccess())
+            if (!resultValue.IsSuccess)
                 return resultValue.Error;
 
             var collectionTask = collectionSelector(resultValue.Value);
@@ -470,7 +470,7 @@ public static class LinqTaskAsyncExtensions
 
         static async Task<Result> Core(Result<T> result, Func<T, Task<Result<TMiddle>>> collectionSelector, Func<T, TMiddle, Error> resultSelector)
         {
-            if (!result.IsSuccess())
+            if (!result.IsSuccess)
                 return result.Error;
 
             var collectionTask = collectionSelector(result.Value);
