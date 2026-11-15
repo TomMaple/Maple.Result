@@ -21,9 +21,9 @@ This is a mandatory property. It is never `null`.
 > [!NOTE]
 > A default [ErrorUri](ErrorUri.md) instance—`default(ErrorUri)`, an uninitialized field, or an element of a newly allocated array—has no underlying value. In that case this property returns `about:blank`, the value that *RFC 9457* defines for an unspecified problem type. This keeps the mandatory [TypeUri](../Error/Error_TypeUri.md) of an [Error](../Error/Error.md) from ever being `null`.
 >
-> A default instance is therefore equal to the one returned by [None()](ErrorUri_None.md); see [Equals(ErrorUri)](ErrorUri_Equals.md).
+> A default instance is therefore equal to [None](ErrorUri_None.md); see [Equals(ErrorUri)](ErrorUri_Equals.md).
 
-The value is always valid: an [ErrorUri](ErrorUri.md) can only be created through the [Locator(String)](ErrorUri_Locator.md), [Tag(String)](ErrorUri_Tag.md) or [None()](ErrorUri_None.md) method, which validate it.
+The value is always valid: an [ErrorUri](ErrorUri.md) can only be created through the [None](ErrorUri_None.md) property or the factory methods ([Locator(String)](ErrorUri_Locator.md), [Tag(String)](ErrorUri_Tag.md), [Urn(String)](ErrorUri_Urn.md), [Relative(String)](ErrorUri_Relative.md), [Other(String)](ErrorUri_Other.md), [Parse(String)](ErrorUri_Parse.md) and [TryParse(String, ErrorUri)](ErrorUri_TryParse.md)), which validate it.
 
 ## See Also
 * [Error](../Error/Error.md)

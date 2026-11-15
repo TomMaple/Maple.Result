@@ -34,13 +34,14 @@ var error = Error.LimitExceeded(
 ```
 
 ```csharp
-// Use ErrorUri.None() when the problem type is not specified (it resolves to about:blank).
-var error = Error.Failure(ErrorUri.None(), "The operation could not be completed.");
+// Use ErrorUri.None when the problem type is not specified (it resolves to about:blank).
+var error = Error.Failure(ErrorUri.None, "The operation could not be completed.");
 ```
 
 ## Properties
 | Name | Description |
 | ---- | ----------- |
+| [None](ErrorUri_None.md) | Gets the no-value [ErrorUri](ErrorUri.md): `about:blank`. |
 | [Value](ErrorUri_Value.md) | Gets the validated value of the <i>URI</i> used by the [Error](../Error/Error.md) record properties. |
 
 ## Methods
@@ -49,7 +50,6 @@ var error = Error.Failure(ErrorUri.None(), "The operation could not be completed
 | [Equals(ErrorUri)](ErrorUri_Equals.md) | Determines whether the specified [ErrorUri](ErrorUri.md) is equal to the current one, comparing the [Value](ErrorUri_Value.md) property. |
 | [GetHashCode()](ErrorUri_GetHashCode.md) | Returns a hash code that is consistent with [Equals(ErrorUri)](ErrorUri_Equals.md). |
 | [Locator(String)](ErrorUri_Locator.md) | Creates a new instance of the [ErrorUri](ErrorUri.md) record with a *URI Locator* value. |
-| [None()](ErrorUri_None.md) |  Creates a new instance of the [ErrorUri](ErrorUri.md) record with the `about:blank` value. |
 | [Other(String)](ErrorUri_Other.md) | Creates a new instance of the [ErrorUri](ErrorUri.md) record with an absolute *URI* whose scheme has no factory method of its own (e.g., `mailto:`). |
 | [Parse(String)](ErrorUri_Parse.md) | Creates a new instance of the [ErrorUri](ErrorUri.md) record of the kind that the value has (e.g., a *URI Tag* for `tag:…`). |
 | [Relative(String)](ErrorUri_Relative.md) | Creates a new instance of the [ErrorUri](ErrorUri.md) record with a relative *URI* reference with the full path. |
@@ -61,9 +61,9 @@ var error = Error.Failure(ErrorUri.None(), "The operation could not be completed
 ## Remarks
 [ErrorUri](ErrorUri.md) has no public constructor: create it with one of the factory methods, which validate the value, or, when the kind is not known in advance (e.g., a *URI* read from another service), with [Parse(String)](ErrorUri_Parse.md) or [TryParse(String, ErrorUri)](ErrorUri_TryParse.md), which detect the kind and apply the same validation. An [ErrorUri](ErrorUri.md) therefore always holds a valid *URI* reference.
 
-| Factory method | Value | Typical use |
+| Property or factory method | Value | Typical use |
 | -------------- | ----- | ----------- |
-| [None()](ErrorUri_None.md) | `about:blank` | A type with no additional semantics beyond the HTTP status code; not allowed as an instance. |
+| [None](ErrorUri_None.md) | `about:blank` | A type with no additional semantics beyond the HTTP status code; not allowed as an instance. |
 | [Locator(String)](ErrorUri_Locator.md) | An absolute `http` or `https` *URI* | A type whose documentation can be dereferenced; an instance with details of the occurrence. |
 | [Tag(String)](ErrorUri_Tag.md) | A `tag:` *URI* (*RFC 4151*) | A unique, non-dereferenceable type. |
 | [Urn(String)](ErrorUri_Urn.md) | A `urn:` *URI* (*RFC 8141*) | A persistent, non-dereferenceable type or instance. |
@@ -71,10 +71,10 @@ var error = Error.Failure(ErrorUri.None(), "The operation could not be completed
 | [Other(String)](ErrorUri_Other.md) | An absolute *URI* with any other scheme (e.g., `mailto:`) | A type or instance read from another service; prefer the factories above to create an error. |
 
 > [!NOTE]
-> A default [ErrorUri](ErrorUri.md) instance is equivalent to the one returned by [None()](ErrorUri_None.md): its [Value](ErrorUri_Value.md) is `about:blank` and it compares equal to `ErrorUri.None()`.
+> A default [ErrorUri](ErrorUri.md) instance is equivalent to [None](ErrorUri_None.md): its [Value](ErrorUri_Value.md) is `about:blank` and it compares equal to `ErrorUri.None`.
 
 > [!IMPORTANT]
-> `about:blank` has a meaning only as a type (*RFC 9457*, section 4.2.1). Passing [None()](ErrorUri_None.md) or a default [ErrorUri](ErrorUri.md) as the instance of an error throws an [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception); pass `null` when there is no instance.
+> `about:blank` has a meaning only as a type (*RFC 9457*, section 4.2.1). Passing [None](ErrorUri_None.md) or a default [ErrorUri](ErrorUri.md) as the instance of an error throws an [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception); pass `null` when there is no instance.
 
 ## See Also
 * [Error](../Error/Error.md)

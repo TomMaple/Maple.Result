@@ -317,7 +317,7 @@ Although, mapping to HTTP responses is not part of this library and can be done 
 
 ### Type URI
 It is a mandatory URI that identifies the type of the problem. It can be:
-* `about:blank` (`ErrorUri.None()`) — the type is not specified,
+* `about:blank` (`ErrorUri.None`) — the type is not specified,
 * *URI Locator* (`ErrorUri.Locator(…)`) — dereferencing it SHOULD provide human-readable documentation for the problem type (use an absolute rather than a relative value) (e.g., `https://exampleapp.com/docs/errors/signup/validation/email-required`),
 * *URI Tag* (`ErrorUri.Tag(…)`) — it is not dereferenceable and uniquely represents the type of the problem (e.g., `tag:exampleapp.com,2026:errors.user.signup.validation.emailRequired`),
 * *URN* (`ErrorUri.Urn(…)`) — a persistent, non-dereferenceable name of the type of the problem (e.g., `urn:exampleapp:errors:signup:email-required`),
@@ -332,7 +332,7 @@ It is an optional URI that identifies the specific occurrence of the problem. It
 * *URN* (`ErrorUri.Urn(…)`) — e.g., `urn:uuid:6e8bc430-9c3a-11d9-9669-0800200c9a66`,
 * relative reference (`ErrorUri.Relative(…)`) — a full path resolved against the base URI of the response (e.g., `/account/12345/msgs/abc`, as in RFC 9457).
 
-`about:blank` (`ErrorUri.None()`) is not allowed as an instance; pass `null` when there is no instance.
+`about:blank` (`ErrorUri.None`) is not allowed as an instance; pass `null` when there is no instance.
 
 ### Support for multiple error details / validation errors
 ```csharp
@@ -554,7 +554,7 @@ Check:
   // after
   var copy = error.ToBuilder().WithTitle("New title").Build();
   ```
-* **Public constructors removed:** `new Result()`, `new Result<T>()`, `new Error()` and `new ErrorUri(string)`. Use `Result.Success()`, `Result.FromError()`, `Result<T>.FromValue()`, `Result<T>.FromError()` (or the implicit conversions), the `Error` factory methods or `ErrorBuilder`, and `ErrorUri.None()`, `Locator()`, `Tag()`, `Urn()` or `Relative()`.
+* **Public constructors removed:** `new Result()`, `new Result<T>()`, `new Error()` and `new ErrorUri(string)`. Use `Result.Success()`, `Result.FromError()`, `Result<T>.FromValue()`, `Result<T>.FromError()` (or the implicit conversions), the `Error` factory methods or `ErrorBuilder`, and `ErrorUri.None`, `Locator()`, `Tag()`, `Urn()` or `Relative()`.
 * **`TryGetMetadata<T>()` is strict.** It returns `true` only when the stored value is a `T`; there is no conversion (a stored `int` is no longer read as `long`), and a `null` value returns `false`.
 * **Nullable values.** Metadata values and the named values of templated messages (`TemplatedMessage.Params`, `detailNamedValues`, `namedValues`) are `object?`.
 * **More checks.** The title of an error must not be `null`, empty or white-space only; the category must be a defined `ErrorCategory` value; `TemplatedMessage.TemplateId` must not be blank; `ErrorDetail.Detail` must not be `null`.

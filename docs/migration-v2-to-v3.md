@@ -21,6 +21,7 @@ Version 3.0 makes `Result`, `Result<T>` and `Error` **immutable** and **always v
   * [`continueOnCapturedContext` is `bool?`](#continueoncapturedcontext-is-bool)
   * [`IResult` renamed to `IOperationResult`](#iresult-renamed-to-ioperationresult)
   * [`IsSuccess` is a property; new `IsError`](#issuccess-is-a-property-new-iserror)
+  * [`ErrorUri.None()` is a property](#errorurinone-is-a-property)
   * [`Result<T>.Value` throws on a failed result](#resulttvalue-throws-on-a-failed-result)
   * [`IfSuccess` and `Match` with an `Error` or a task](#ifsuccess-and-match-with-an-error-or-a-task)
   * [`IfError` and `Match` with an error action that returns a task](#iferror-and-match-with-an-error-action-that-returns-a-task)
@@ -46,6 +47,7 @@ Version 3.0 makes `Result`, `Result<T>` and `Error` **immutable** and **always v
 13. Upgrade the `Maple.Result.Extensions.*` packages together with `Maple.Result` (see [Extension packages](#extension-packages)).
 14. Replace `result.IsSuccess()` with `result.IsSuccess`, and `!result.IsSuccess()` with `result.IsError` (see [`IsSuccess` is a property; new `IsError`](#issuccess-is-a-property-new-iserror)).
 15. Make sure `Result<T>.Value` is read only on a successful result, or use `TryGetValue(out var value)`; and do not write a failed `Result<T>` with the default serializers (see [`Result<T>.Value` throws on a failed result](#resulttvalue-throws-on-a-failed-result)).
+16. Replace `ErrorUri.None()` with `ErrorUri.None` (see [`ErrorUri.None()` is a property](#errorurinone-is-a-property)).
 
 ## Breaking changes
 ### Namespace renamed to `Maple.Results`
@@ -95,7 +97,7 @@ The types can only be created through their factory methods, which always produc
 | `new Result<T> { Value = value }` | `Result<T>.FromValue(value)`, `Result.FromValue(value)` or the implicit conversion from `T` |
 | `new Result<T> { Error = error }` | `Result<T>.FromError(error)` or the implicit conversion from `Error` |
 | `new Error()` / `new Error { … }` | `Error.Validation(...)`, `Error.NotFound(...)`, … or `ErrorBuilder` |
-| `new ErrorUri("…")` | `ErrorUri.Tag("…")`, `ErrorUri.Locator("…")`, `ErrorUri.Urn("…")`, `ErrorUri.Relative("/…")` or `ErrorUri.None()` |
+| `new ErrorUri("…")` | `ErrorUri.Tag("…")`, `ErrorUri.Locator("…")`, `ErrorUri.Urn("…")`, `ErrorUri.Relative("/…")` or `ErrorUri.None` |
 
 `ErrorDetail` and `TemplatedMessage` keep their public constructors.
 
@@ -176,7 +178,7 @@ public static Error FromDto(ErrorDto dto) =>
         .Build();
 
 private static ErrorUri ToErrorUri(string value) =>
-    value == "about:blank" ? ErrorUri.None()
+    value == "about:blank" ? ErrorUri.None
     : value.StartsWith("tag:", StringComparison.Ordinal) ? ErrorUri.Tag(value)
     : value.StartsWith("urn:", StringComparison.OrdinalIgnoreCase) ? ErrorUri.Urn(value)
     : value.StartsWith('/') ? ErrorUri.Relative(value)
@@ -211,7 +213,7 @@ These values were accepted in 2.x and now throw:
 | Named values without a template id, e.g., `WithErrorDetail("#/name", "Too short.", null, ("min", 3))` (2.x **silently dropped** them) | `ArgumentException` |
 | A `null` `TemplatedMessage.TemplateId` | `ArgumentNullException` |
 | A `null` `ErrorDetail.Detail` | `ArgumentNullException` |
-| `about:blank` as an instance *URI*, e.g., `instanceUri: ErrorUri.None()` (factory methods, `ErrorBuilder.WithInstanceUri`); pass `null` instead | `ArgumentException` |
+| `about:blank` as an instance *URI*, e.g., `instanceUri: ErrorUri.None` (factory methods, `ErrorBuilder.WithInstanceUri`); pass `null` instead | `ArgumentException` |
 | An `ErrorUri.Tag` or `ErrorUri.Locator` value with white space (including a trailing new line), invalid percent-encoding (e.g., `%zz`), or, for locators, characters that need escaping (e.g., a space) or literal non-ASCII characters; 2.x accepted them and stored the value as passed | `UriFormatException` |
 
 In return, every `Error` you receive has a non-blank title, a defined category, a non-`null` type *URI* and no meaningless `about:blank` instance *URI*.
@@ -288,6 +290,17 @@ void Log(Maple.Result.IResult result) { … }
 
 // 3.0
 void Log(IOperationResult result) { … }
+```
+
+### `ErrorUri.None()` is a property
+`ErrorUri.None()` is now a static property, `ErrorUri.None`, like `CancellationToken.None` and `Guid.Empty`: it is a fixed value (`about:blank`, equal to `default(ErrorUri)`). Calls with parentheses no longer compile (CS1955: *Non-invocable member cannot be used like a method*); drop the parentheses.
+
+```csharp
+// before
+var error = Error.NotFound(ErrorUri.None(), "The account has not been found.");
+
+// after
+var error = Error.NotFound(ErrorUri.None, "The account has not been found.");
 ```
 
 ### `IsSuccess` is a property; new `IsError`
@@ -429,8 +442,9 @@ The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an
 | `new Result()` | `Result.Success()` |
 | `new Result<T> { Value = v }` | `Result<T>.FromValue(v)` |
 | `new Result<T> { Error = e }` | `Result<T>.FromError(e)` |
-| `new ErrorUri(s)` | `ErrorUri.Tag(s)` / `ErrorUri.Locator(s)` / `ErrorUri.Urn(s)` / `ErrorUri.Relative(s)` / `ErrorUri.None()` |
+| `new ErrorUri(s)` | `ErrorUri.Tag(s)` / `ErrorUri.Locator(s)` / `ErrorUri.Urn(s)` / `ErrorUri.Relative(s)` / `ErrorUri.None` |
 | `instanceUri: ErrorUri.None()` / `WithInstanceUri(ErrorUri.None())` | `instanceUri: null` / `WithInstanceUri(null)` |
+| `ErrorUri.None()` | `ErrorUri.None` |
 | `result.IfSuccess(() => SaveAsync())` (a function returning a task) | `await result.IfSuccessAsync(() => SaveAsync())` |
 | `result.IfError(e => LogAsync(e))` (an error action returning a task) | `await result.IfErrorAsync(e => LogAsync(e))` |
 | `result.Match(…, e => LogAsync(e))` (an error action returning a task) | `await result.MatchAsync(…, e => LogAsync(e))` |

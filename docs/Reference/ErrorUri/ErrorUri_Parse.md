@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorUri.cs#L253" target="_blank">ErrorUri.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorUri.cs#L254" target="_blank">ErrorUri.cs</a>
 
 Creates a new instance of the [ErrorUri](ErrorUri.md) record of the kind that the value has, validated by the factory method of that kind.
 
@@ -35,7 +35,7 @@ The kind is detected from the value:
 
 | Value | Factory method |
 | ----- | -------------- |
-| `about:blank` | [None()](ErrorUri_None.md) |
+| `about:blank` | [None](ErrorUri_None.md) |
 | starts with `/` | [Relative(String)](ErrorUri_Relative.md) |
 | scheme `tag` | [Tag(String)](ErrorUri_Tag.md) |
 | scheme `urn` | [Urn(String)](ErrorUri_Urn.md) |
