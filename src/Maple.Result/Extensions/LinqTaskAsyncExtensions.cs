@@ -10,6 +10,8 @@
 
 using Maple.Result.Helpers;
 using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Maple.Result.Extensions;
@@ -472,4 +474,222 @@ public static class LinqTaskAsyncExtensions
             return collectionResult.IfSuccess(y => Guard.EnsureNotNullReturned(resultSelector(result.Value, y), nameof(resultSelector)));
         }
     }
+
+    #region Not supported: selectors returning a task
+
+    // These overloads turn a query whose select returns a task into a compile error (CS0619). Without them, the query binds to the
+    // generic overload, which wraps the task in a successful result without awaiting it (issue #126). They are more specific than the
+    // generic overloads, so they are chosen first; explicit type arguments (method syntax) exclude them and keep the task on purpose.
+    // The Task overloads have a higher priority than the ValueTask ones: an async lambda (possible in method syntax) converts to both,
+    // which would be ambiguous (CS0121).
+
+    private const string SelectorTaskNotAwaitedMessage =
+        "The selector returns a task, which the query does not await. Use IfSuccessAsync, or a from clause whose function returns " +
+        "a Task<Result<T>>, or specify the type arguments (e.g., Select<T, Task>(…)) to keep the task.";
+
+    /// <summary>
+    ///     Not supported: the selector returns a task, which the query does not await; use <c>IfSuccessAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static Task<Result> Select<T>(this Task<Result<T>> result, Func<T, Task> selector)
+    {
+        throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the selector returns a task, which the query does not await; use <c>IfSuccessAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static Task<Result<TNext>> Select<T, TNext>(this Task<Result<T>> result, Func<T, Task<TNext>> selector)
+    {
+        throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the selector returns a task, which the query does not await; use <c>IfSuccessAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
+    public static Task<Result> Select<T>(this Task<Result<T>> result, Func<T, ValueTask> selector)
+    {
+        throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the selector returns a task, which the query does not await; use <c>IfSuccessAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
+    public static Task<Result<TNext>> Select<T, TNext>(this Task<Result<T>> result, Func<T, ValueTask<TNext>> selector)
+    {
+        throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the selector returns a task, which the query does not await; use <c>IfSuccessAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static Task<Result> SelectMany<T, TMiddle>(
+        this Task<Result<T>> result,
+        Func<T, Task<Result<TMiddle>>> collectionSelector,
+        Func<T, TMiddle, Task> resultSelector)
+    {
+        throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the selector returns a task, which the query does not await; use <c>IfSuccessAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static Task<Result<TNext>> SelectMany<T, TMiddle, TNext>(
+        this Task<Result<T>> result,
+        Func<T, Task<Result<TMiddle>>> collectionSelector,
+        Func<T, TMiddle, Task<TNext>> resultSelector)
+    {
+        throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the selector returns a task, which the query does not await; use <c>IfSuccessAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
+    public static Task<Result> SelectMany<T, TMiddle>(
+        this Task<Result<T>> result,
+        Func<T, Task<Result<TMiddle>>> collectionSelector,
+        Func<T, TMiddle, ValueTask> resultSelector)
+    {
+        throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the selector returns a task, which the query does not await; use <c>IfSuccessAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
+    public static Task<Result<TNext>> SelectMany<T, TMiddle, TNext>(
+        this Task<Result<T>> result,
+        Func<T, Task<Result<TMiddle>>> collectionSelector,
+        Func<T, TMiddle, ValueTask<TNext>> resultSelector)
+    {
+        throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the selector returns a task, which the query does not await; use <c>IfSuccessAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static Task<Result> SelectMany<T, TMiddle>(
+        this Task<Result<T>> result,
+        Func<T, Result<TMiddle>> collectionSelector,
+        Func<T, TMiddle, Task> resultSelector)
+    {
+        throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the selector returns a task, which the query does not await; use <c>IfSuccessAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static Task<Result<TNext>> SelectMany<T, TMiddle, TNext>(
+        this Task<Result<T>> result,
+        Func<T, Result<TMiddle>> collectionSelector,
+        Func<T, TMiddle, Task<TNext>> resultSelector)
+    {
+        throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the selector returns a task, which the query does not await; use <c>IfSuccessAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
+    public static Task<Result> SelectMany<T, TMiddle>(
+        this Task<Result<T>> result,
+        Func<T, Result<TMiddle>> collectionSelector,
+        Func<T, TMiddle, ValueTask> resultSelector)
+    {
+        throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the selector returns a task, which the query does not await; use <c>IfSuccessAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
+    public static Task<Result<TNext>> SelectMany<T, TMiddle, TNext>(
+        this Task<Result<T>> result,
+        Func<T, Result<TMiddle>> collectionSelector,
+        Func<T, TMiddle, ValueTask<TNext>> resultSelector)
+    {
+        throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the selector returns a task, which the query does not await; use <c>IfSuccessAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static Task<Result> SelectMany<T, TMiddle>(
+        this Result<T> result,
+        Func<T, Task<Result<TMiddle>>> collectionSelector,
+        Func<T, TMiddle, Task> resultSelector)
+    {
+        throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the selector returns a task, which the query does not await; use <c>IfSuccessAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static Task<Result<TNext>> SelectMany<T, TMiddle, TNext>(
+        this Result<T> result,
+        Func<T, Task<Result<TMiddle>>> collectionSelector,
+        Func<T, TMiddle, Task<TNext>> resultSelector)
+    {
+        throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the selector returns a task, which the query does not await; use <c>IfSuccessAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
+    public static Task<Result> SelectMany<T, TMiddle>(
+        this Result<T> result,
+        Func<T, Task<Result<TMiddle>>> collectionSelector,
+        Func<T, TMiddle, ValueTask> resultSelector)
+    {
+        throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the selector returns a task, which the query does not await; use <c>IfSuccessAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
+    public static Task<Result<TNext>> SelectMany<T, TMiddle, TNext>(
+        this Result<T> result,
+        Func<T, Task<Result<TMiddle>>> collectionSelector,
+        Func<T, TMiddle, ValueTask<TNext>> resultSelector)
+    {
+        throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
+    }
+
+    #endregion
 }

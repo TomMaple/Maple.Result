@@ -9,8 +9,13 @@
  */
 
 using Maple.Result.Extensions;
+using Maple.Result.Tests.Unit.TestingInfrastructure.Helpers;
 using Moq;
 using System;
+using System.ComponentModel;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Maple.Result.Tests.Unit.Extensions;
 
@@ -671,6 +676,82 @@ public class LinqExtensionsUnitTests
         // Assert
         result.IsSuccess().ShouldBeTrue();
         result.Value.ShouldBeSameAs(TrapError);
+    }
+
+    #endregion
+
+    #region LINQ query selecting a task (overload trap, issue #126)
+
+    [Fact]
+    public void Select_SelectorReturningTaskOverloads_AreHiddenCompileErrors()
+    {
+        // Arrange
+        var overloads = typeof(LinqExtensions).GetMethods()
+            .Where(m => m.Name == "Select" && OverloadTrapHelper.IsTrap(m, "The selector returns a task"))
+            .ToArray();
+
+        // Act & Assert
+        overloads.Length.ShouldBe(4);
+        overloads.ShouldAllBe(m => m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
+                                   && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
+    }
+
+    [Fact]
+    public void SelectMany_ResultSelectorReturningTaskOverloads_AreHiddenCompileErrors()
+    {
+        // Arrange
+        var overloads = typeof(LinqExtensions).GetMethods()
+            .Where(m => m.Name == "SelectMany" && OverloadTrapHelper.IsTrap(m, "The selector returns a task"))
+            .ToArray();
+
+        // Act & Assert
+        overloads.Length.ShouldBe(4);
+        overloads.ShouldAllBe(m => m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
+                                   && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
+    }
+
+    [Fact]
+    public void SelectAndSelectMany_Traps_HavePriorityOneForTaskSelectors()
+    {
+        // Arrange
+        var overloads = typeof(LinqExtensions).GetMethods()
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The selector returns a task")
+                        && OverloadTrapHelper.IsTaskFunction(m.GetParameters()[^1].ParameterType))
+            .ToArray();
+
+        // Act & Assert
+        overloads.Length.ShouldBe(4);
+        overloads.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 1);
+    }
+
+    [Fact]
+    public void SelectAndSelectMany_Traps_HaveDefaultPriorityForValueTaskSelectors()
+    {
+        // Arrange
+        var overloads = typeof(LinqExtensions).GetMethods()
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The selector returns a task")
+                        && !OverloadTrapHelper.IsTaskFunction(m.GetParameters()[^1].ParameterType))
+            .ToArray();
+
+        // Act & Assert
+        overloads.Length.ShouldBe(4);
+        overloads.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 0);
+    }
+
+    [Fact]
+    public void Select_SuccessfulResultWithTaskSelectorAndExplicitTypeArguments_ReturnsResultWithTaskNotAwaited()
+    {
+        // Arrange
+        var sut = Result<int>.FromValue(5);
+        var taskSource = new TaskCompletionSource();
+
+        // Act
+        Result<Task> result = sut.Select<int, Task>(_ => taskSource.Task);
+
+        // Assert
+        result.IsSuccess().ShouldBeTrue();
+        result.Value.ShouldBeSameAs(taskSource.Task);
+        result.Value.IsCompleted.ShouldBeFalse();
     }
 
     #endregion

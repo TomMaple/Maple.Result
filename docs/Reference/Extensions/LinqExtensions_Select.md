@@ -14,9 +14,11 @@ Enables the single-clause LINQ query syntax (a `from … select …` query witho
 ## Remarks
 A selector that returns an [Error](../Error/Error.md) makes the query fail: such a query returns a failed [Result](../Result/Result.md) instead of a **successful** `Result<Error>`.
 
+A selector that returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>` is not supported: the query does not await it, so such a query is a compile error. Await the operation with [IfSuccessAsync](IfSuccessTaskAsyncExtensions_IfSuccessAsync.md) instead, or chain it in a `from` clause whose function returns a `Task<Result<T>>`. To keep the task in the result on purpose, call `Select<T, Task>(…)` with explicit type arguments.
+
 
 ## Select&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, TNext&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L49" target="_blank">LinqExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L52" target="_blank">LinqExtensions.cs</a>
 
 Projects the value of a successful [Result&lt;T&gt;](../ResultT/ResultT.md) into a new [Result&lt;TNext&gt;](../ResultT/ResultT.md) by applying the provided selector function; or returns a new [Result&lt;TNext&gt;](../ResultT/ResultT.md) with the same error, otherwise.
 
@@ -60,7 +62,7 @@ var displayNameResult =
 
 
 ## Select&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L86" target="_blank">LinqExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L89" target="_blank">LinqExtensions.cs</a>
 
 Applies the provided `selector` to the value of a successful [Result&lt;T&gt;](../ResultT/ResultT.md) and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) it returns; otherwise, returns a failed [Result](../Result/Result.md) with the original [Error](../Error/Error.md).
 
