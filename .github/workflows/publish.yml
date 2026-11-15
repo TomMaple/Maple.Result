@@ -1,9 +1,11 @@
 # Publishes the NuGet package when a GitHub Release is published.
 # The version comes from the release tag (vX.Y.Z or vX.Y.Z-pre). Releases are drafted by "Draft release".
 #
-# Two jobs: "build" restores, builds, tests and packs with a read-only token; "publish" runs in the "nuget"
-# environment (deployments limited to v* tags), attests the build provenance of the package, pushes it to NuGet and
-# attaches it to the release. Third-party packages never run next to the id-token or the write token.
+# Two jobs:
+#   - "build" (read-only token) restores, builds, tests and packs;
+#   - "publish" runs in the "nuget" environment (deployments limited to v* tags), attests the build provenance of the
+#     package, pushes it to NuGet and attaches it to the release.
+# Third-party packages never run next to the id-token or the write token.
 #
 # NuGet trusted publishing: the policy on nuget.org names this workflow file (publish.yml) and the "nuget"
 # environment. Rename either only together with the policy.

@@ -2,8 +2,10 @@
 # Review and edit the notes in the GitHub UI, then publish the release: that creates the tag and triggers "Publish".
 # No tag is created here, so discarding the draft leaves nothing behind.
 #
-# Two jobs: "build" (read-only token) resolves the version, builds, tests and generates the notes; "draft" (write
-# token) only creates the release. git-cliff and the NuGet packages never run next to the write token.
+# Two jobs:
+#   - "build" (read-only token) resolves the version, builds, tests and generates the notes;
+#   - "draft" (write token) only creates the release.
+# git-cliff and the NuGet packages never run next to the write token.
 
 name: Draft release
 
