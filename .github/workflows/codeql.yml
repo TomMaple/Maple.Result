@@ -1,4 +1,6 @@
 # CodeQL code scanning for the C# library source (tests are not built, so not analysed) and the GitHub Actions workflows.
+# Results in generated code (obj/, e.g. the [GeneratedRegex] source generator output) are removed before upload.
+# The "Analyze (…)" jobs are required status checks: keep the names, and never add a "paths" filter.
 # For more information, see: https://docs.github.com/en/code-security/code-scanning
 
 name: CodeQL
@@ -11,10 +13,15 @@ on:
   schedule:
     - cron: "30 23 * * 3"   # Wednesdays 23:30 UTC
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   analyze:
     name: Analyze (${{ matrix.language }})
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       security-events: write
       packages: read
@@ -28,18 +35,22 @@ jobs:
             build-mode: manual
           - language: actions
             build-mode: none
+    env:
+      SARIF_PATH: ${{ github.workspace }}/../results
     steps:
     - name: Checkout
-      uses: actions/checkout@v7
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
 
     - name: Setup .NET 10
       if: matrix.build-mode == 'manual'
-      uses: actions/setup-dotnet@v6
+      uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
       with:
         dotnet-version: 10.0.x
 
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v4
+      uses: github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
       with:
         languages: ${{ matrix.language }}
         build-mode: ${{ matrix.build-mode }}
@@ -50,6 +61,19 @@ jobs:
       run: dotnet build src/Maple.Result/Maple.Result.csproj --configuration Release
 
     - name: Perform CodeQL analysis
-      uses: github/codeql-action/analyze@v4
+      uses: github/codeql-action/analyze@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
       with:
+        category: "/language:${{ matrix.language }}"
+        output: ${{ env.SARIF_PATH }}
+        upload: failure-only
+
+    - name: Remove results in generated code
+      run: python3 -I .github/scripts/filter_sarif.py "${SARIF_PATH}/${LANGUAGE}.sarif"
+      env:
+        LANGUAGE: ${{ matrix.language }}
+
+    - name: Upload results
+      uses: github/codeql-action/upload-sarif@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+      with:
+        sarif_file: ${{ env.SARIF_PATH }}/${{ matrix.language }}.sarif
         category: "/language:${{ matrix.language }}"
