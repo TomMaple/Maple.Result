@@ -84,7 +84,9 @@ are marked breaking. Preview the notes locally with `git cliff --unreleased --st
 
 ## C#
 1. Source code
-	* [Guidelines](https://learn.microsoft.com/en-us/dotnet/standard/design-guidelines/)
+	* [Framework design guidelines](https://learn.microsoft.com/en-us/dotnet/standard/design-guidelines/) (public API) and
+	  [C# coding conventions](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/coding-style/coding-conventions)
+	  (code style); where they differ from the rules below or from `.editorconfig`, the rules here win.
 	* Indent character: *space*.
 	* Constant naming style: *PascalCase*.
 	* Formatting: `.editorconfig`; lines up to 160 characters.
