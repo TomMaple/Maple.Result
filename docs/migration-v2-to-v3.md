@@ -20,6 +20,7 @@ Version 3.0 makes `Result`, `Result<T>` and `Error` **immutable** and **always v
   * [`continueOnCapturedContext` is `bool?`](#continueoncapturedcontext-is-bool)
   * [`IResult` renamed to `IOperationResult`](#iresult-renamed-to-ioperationresult)
   * [`IsSuccess` is a property; new `IsError`](#issuccess-is-a-property-new-iserror)
+  * [`Result<T>.Value` throws on a failed result](#resulttvalue-throws-on-a-failed-result)
   * [`IfSuccess` and `Match` with an `Error` or a task](#ifsuccess-and-match-with-an-error-or-a-task)
   * [`IfError` and `Match` with an error action that returns a task](#iferror-and-match-with-an-error-action-that-returns-a-task)
   * [LINQ queries that select a task](#linq-queries-that-select-a-task)
@@ -42,6 +43,7 @@ Version 3.0 makes `Result`, `Result<T>` and `Error` **immutable** and **always v
 11. Make sure the functions passed to the extension methods never return `null` where a result, an `Error` or a task is expected (see [Null results and null arguments of the extension methods](#null-results-and-null-arguments-of-the-extension-methods)).
 12. Upgrade the `Maple.Result.Extensions.*` packages together with `Maple.Result` (see [Extension packages](#extension-packages)).
 13. Replace `result.IsSuccess()` with `result.IsSuccess`, and `!result.IsSuccess()` with `result.IsError` (see [`IsSuccess` is a property; new `IsError`](#issuccess-is-a-property-new-iserror)).
+14. Make sure `Result<T>.Value` is read only on a successful result, or use `GetValueOrDefault(fallback)`; and do not write a failed `Result<T>` with the default serializers (see [`Result<T>.Value` throws on a failed result](#resulttvalue-throws-on-a-failed-result)).
 
 ## Breaking changes
 
@@ -133,7 +135,7 @@ In 2.x, `Result`, `Result<T>`, `Error` and `ErrorUri` could be read from JSON by
 * the built-in `ResultJsonConverter` and the `[JsonConverter]` attribute on `Result<T>` are gone,
 * the types have no public constructors or setters.
 
-Writing the types as JSON still works with the default settings. **Reading them is not supported**: for `Result`, `Result<T>` and `Error`, *System.Text.Json* throws a `NotSupportedException` and *Newtonsoft.Json* throws a `JsonSerializationException`.
+Writing the types as JSON still works with the default settings, except for a failed `Result<T>` (see [`Result<T>.Value` throws on a failed result](#resulttvalue-throws-on-a-failed-result)). **Reading them is not supported**: for `Result`, `Result<T>` and `Error`, *System.Text.Json* throws a `NotSupportedException` and *Newtonsoft.Json* throws a `JsonSerializationException`.
 
 > [!WARNING]
 > `ErrorUri` is a struct, so both serializers can create it without a constructor: an `ErrorUri` that is a member of your own type is silently read as `about:blank`. Do not deserialize it without a dedicated converter; store the *URI* as a `string` in your DTOs instead.
@@ -164,16 +166,15 @@ private static ErrorUri ToErrorUri(string value) =>
 > `Maple.Json.ObjectAsPrimitiveConverter`, which the 2.x documentation suggested for reading metadata values, is no longer relevant to `Maple.Result`.
 
 ### Changed JSON output
-The JSON written by the default serializers changed in three ways:
+The JSON written by the default serializers changed in three ways, and a failed `Result<T>` can no longer be written without a converter:
 
 | | 2.x | 3.0 |
 | --- | --- | --- |
-| Failed `Result<int>` | `{"Error":{…}}` | `{"Value":0,"Error":{…}}` |
-| Failed `Result<string>` | `{"Error":{…}}` | `{"Value":null,"Error":{…}}` |
+| Failed `Result<T>` | `{"Error":{…}}` | throws (`Value` throws on a failed result) |
 | `Error` | no `Metadata` member | always has `"Metadata":{…}` (`{}` when empty) |
 | `Result` and `Result<T>` | no `IsSuccess` member | always has `"IsSuccess":…,"IsError":…`, e.g., `{"Value":128,"Error":null,"IsSuccess":true,"IsError":false}` |
 
-A failed `Result<T>` now always writes `Value` with the default value of `T`. Clients must use `Error` (not `Value`) to tell a failure from a success. Update any snapshot tests or contract tests that compare the JSON.
+Writing a failed `Result<T>` needs a dedicated converter, or a DTO of your own; see [`Result<T>.Value` throws on a failed result](#resulttvalue-throws-on-a-failed-result). Update any snapshot tests or contract tests that compare the JSON.
 
 ### Stricter validation
 These values were accepted in 2.x and now throw:
@@ -234,6 +235,7 @@ The named values of the factory methods (`detailNamedValues`), `WithErrorDetail`
 
 ### Other behaviour changes
 * **`Result.Success()`** returns the same, shared instance on every call. It is immutable, so this is safe; only code that relied on reference inequality of two successful results is affected.
+* **`ToString()`** of `Result` and `Result<T>` prints only the `Value` of a successful result or the `Error` of a failed one (e.g., `Result { Value = 42 }`, `Result { Error = Error { … } }`); 2.x printed every property, including the default `Value` of a failed result.
 * **`ToString()`** of `Error` and `TemplatedMessage` now prints the contents of `ErrorDetails`, `Metadata` and `Params` (instead of their type names), and `ErrorUri.ToString()` returns just the *URI* (instead of `ErrorUri { Value = … }`). Update tests or log parsers that depend on the old text.
 * **`GetHashCode()`** of an `Error` never changes, because the error cannot change. An `Error` can be used safely as a dictionary key or in a `HashSet<T>`.
 * **`ErrorDetails`** is a read-only collection; casting it to `IList<ErrorDetail>` and modifying it throws a `NotSupportedException`.
@@ -278,9 +280,32 @@ if (result.IsError)
     return result.Error;
 ```
 
-Both properties keep the nullable annotations: `Error` is not `null` after `IsError` is `true` or `IsSuccess` is `false`, and the `Value` of a `Result<T>` is treated as not `null` in the other case. As properties, they can be used in property patterns, e.g., `result is { IsSuccess: true, Value: var value }`.
+Both properties keep the nullable annotations: `Error` is not `null` after `IsError` is `true` or `IsSuccess` is `false`. As properties, they can be used in property patterns, e.g., `result is { IsSuccess: true, Value: var value }`.
 
 The default serializers write public properties, so the JSON written without a converter now contains both of them (see [Changed JSON output](#changed-json-output)).
+
+### `Result<T>.Value` throws on a failed result
+Reading the `Value` of a failed `Result<T>` now throws an `InvalidOperationException` (the message names the error), instead of returning the default value of `T`. A forgotten check used to read as a valid value (e.g., `0` for a `Result<int>`); now it fails where the value is read.
+
+```csharp
+// before: 0 on a failed result
+var count = result.Value;
+
+// after
+if (result.IsError)
+    return result.Error;
+
+var count = result.Value;
+
+// or, when a fallback is fine
+var count = result.GetValueOrDefault(0);
+```
+
+The type of `Value` is `T` instead of `T?`, and `IsSuccess` and `IsError` no longer carry a hint about `Value`: its nullability follows `T` (`string` for a `Result<string>`, `string?` for a `Result<string?>`), so the compiler no longer hides a `null` value of a nullable `T`.
+
+Consequences:
+* the default serializers read every public property, so **writing a failed `Result<T>` without a converter throws** (*System.Text.Json*: `InvalidOperationException`; *Newtonsoft.Json*: `JsonSerializationException`); a successful one is still written;
+* `ToString()` prints only the value of a successful result or the error of a failed one (see [Other behaviour changes](#other-behaviour-changes)).
 
 ### `IfSuccess` and `Match` with an `Error` or a task
 Two kinds of calls compiled in 2.x but did not do what they looked like:
@@ -360,6 +385,7 @@ The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an
 * **`Error.WithErrorDetail()`** and **`Error.ToBuilder()`** — see above.
 * **`ErrorCategory.LimitExceeded`** — see above.
 * **`ProblemDetailsMembers`** — the member names of the problem details object (`type`, `title`, `status`, …), shared by the packages that write and read problem details. See [Problem Details Format](problem-details.md).
+* **`Result<T>.GetValueOrDefault(fallback)`** — the value of a successful result, or the fallback for a failed one, without an exception. See [GetValueOrDefault](Reference/ResultT/ResultT_GetValueOrDefault.md).
 * **`ErrorUri.Other()`** — an absolute *URI* whose scheme has no factory method of its own (e.g., `mailto:`), for type and instance URIs read from other services; `Parse` and `TryParse` fall back to it. See [Other](Reference/ErrorUri/ErrorUri_Other.md).
 * **`ErrorUri.Parse()`**, **`ErrorUri.TryParse()`** and **`IParsable<ErrorUri>`** — create an `ErrorUri` when the kind is not known in advance: the kind is detected from the value (`about:blank`, `/…`, `tag:`, `urn:`, `http:`/`https:`) and validated as by its factory method. See [Parse](Reference/ErrorUri/ErrorUri_Parse.md).
 * **`ErrorUri.Urn()`** and **`ErrorUri.Relative()`** — `urn:` types and instances (*RFC 8141*), and relative references with the full path (e.g., the *RFC 9457* example `/account/12345/msgs/abc`). See [ErrorUri](Reference/ErrorUri/ErrorUri.md).
@@ -390,6 +416,7 @@ The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an
 | `IResult` (`Maple.Result`) | `IOperationResult` |
 | `result.IsSuccess()` | `result.IsSuccess` |
 | `!result.IsSuccess()` | `result.IsError` |
+| `result.Value` relied on as the default value of a failed result | `result.GetValueOrDefault(default)` or a check of `result.IsSuccess` |
 | `WithErrorDetail(…, messageId: …, namedValues: …)` (named arguments) | `WithErrorDetail(…, detailTemplateId: …, detailNamedValues: …)` |
 | `var (id, parameters) = templatedMessage;` | `templatedMessage is { TemplateId: var id, Params: var parameters }` |
 | `JsonSerializer.Deserialize<Result<T>>(…)` / `Deserialize<Error>(…)` | your own DTO, or the planned converter packages |

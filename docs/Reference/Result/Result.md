@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Result](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.cs#L56" target="_blank">Result.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.cs#L57" target="_blank">Result.cs</a>
 
 Represents the outcome of an operation that can either succeed or fail with an [Error](../Error/Error.md).
 
@@ -25,6 +25,10 @@ If the operation is successful, the [IsSuccess](Result_IsSuccess.md) property is
 The record is immutable and has no public constructor. Create it with [Result.Success()](Result_Success.md), [Result.FromError(Error)](Result_FromError.md) or the [Implicit(Error to Result)](Result_implicit_Error_to_Result.md) operator.
 
 The default serializers can write a [Result](Result.md) as JSON; reading it back requires a dedicated converter.
+
+`ToString()` writes the [Error](Result_Error.md) of a failed result (e.g., `Result { Error = Error { … } }`) and no members for a successful one (`Result { }`).
+
+`ToString()` writes the [Error](Result_Error.md) of a failed result (e.g., `Result { Error = Error { … } }`) and no members for a successful one (`Result { }`).
 
 ## Examples
 ```csharp
