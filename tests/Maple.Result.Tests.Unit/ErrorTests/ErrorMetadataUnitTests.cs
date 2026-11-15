@@ -46,14 +46,18 @@ public class ErrorMetadataUnitTests
         sut.Metadata["limit"].ShouldBe(100);
     }
 
+    // Lookups are ordinal; keys that differ only in case cannot coexist (ErrorMetadataKeyCaseUnitTests).
     [Fact]
-    public void Metadata_Keys_AreCaseSensitive()
+    public void Metadata_KeyInDifferentCase_IsNotFound()
     {
+        // Arrange
+        var sut = CreateError().WithMetadata("limit", 100);
+
         // Act
-        var sut = CreateError().WithMetadata("limit", 100).WithMetadata("Limit", 200);
+        var result = sut.Metadata.ContainsKey("Limit");
 
         // Assert
-        sut.Metadata.Count.ShouldBe(2);
+        result.ShouldBeFalse();
     }
 
     [Fact]
