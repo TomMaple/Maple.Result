@@ -32,18 +32,20 @@ public class ErrorUriParseUnitTests
         { "https://example.com/probs/out-of-credit", ErrorUri.Locator("https://example.com/probs/out-of-credit") },
         { "http://example.com/x", ErrorUri.Locator("http://example.com/x") },
         { "HTTPS://example.com/x", ErrorUri.Locator("HTTPS://example.com/x") },
+        // Any other scheme falls back to ErrorUri.Other (RFC 9457 allows any URI reference).
+        { "mailto:support@example.com", ErrorUri.Other("mailto:support@example.com") },
+        { "ftp://example.com/x", ErrorUri.Other("ftp://example.com/x") },
+        { "file:///x", ErrorUri.Other("file:///x") },
+        { "MAILTO:support@example.com", ErrorUri.Other("MAILTO:support@example.com") },
     };
 
-    /// <summary>Values whose scheme (or form) is not one of the kinds of an error URI.</summary>
+    /// <summary>Values that are neither one of the supported kinds nor an absolute URI with another scheme.</summary>
     public static readonly TheoryData<string> UnknownKinds =
     [
         "about:BLANK",              // the "blank" token is case-sensitive
         "about:blank#x",            // a fragment
         "about:blank?x",            // a query
         "about:srcdoc",             // another about token
-        "mailto:support@example.com",
-        "ftp://example.com/x",
-        "file:///x",
         "out-of-credit",            // a relative path (RFC 9457 allows it; the factories do not)
         "../probs/x",
         "",
@@ -58,6 +60,7 @@ public class ErrorUriParseUnitTests
         "urn:x",
         "https://exa mple.com/x",
         "//example.com/x",
+        "mailto:a b",
     ];
 
     /// <summary>Values of a known kind that its factory rejects, and the beginning of the factory's message.</summary>
@@ -67,6 +70,7 @@ public class ErrorUriParseUnitTests
         { "urn:x", "The URN is not valid." },
         { "https://exa mple.com/x", "The URI locator is not valid." },
         { "//example.com/x", "The relative URI reference is not valid." },
+        { "mailto:a b", "The URI is not a valid absolute URI." },
     };
 
     /// <summary>Error URIs of every kind, for the round-trip through their value.</summary>
@@ -78,6 +82,7 @@ public class ErrorUriParseUnitTests
         ErrorUri.Tag("tag:example.com,2026:errors:out-of-credit"),
         ErrorUri.Urn("urn:example:errors:out-of-credit"),
         ErrorUri.Locator("https://example.com/probs/out-of-credit"),
+        ErrorUri.Other("mailto:support@example.com"),
     ];
 
     #endregion
@@ -205,7 +210,8 @@ public class ErrorUriParseUnitTests
     [InlineData("tag:example.com:x")]
     [InlineData("urn:x")]
     [InlineData("//example.com/x")]
-    [InlineData("mailto:support@example.com")]
+    [InlineData("mailto:a b")]
+    [InlineData("out-of-credit")]
     public void TryParse_RejectedValue_AllocatesNothing(string value)
     {
         // Act
