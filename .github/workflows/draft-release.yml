@@ -73,9 +73,11 @@ jobs:
         fi
         PRERELEASE=false
         [[ "$VERSION" == *-* ]] && PRERELEASE=true
-        echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
-        echo "previous=${PREVIOUS}" >> "$GITHUB_OUTPUT"
-        echo "prerelease=${PRERELEASE}" >> "$GITHUB_OUTPUT"
+        {
+          echo "version=${VERSION}"
+          echo "previous=${PREVIOUS}"
+          echo "prerelease=${PRERELEASE}"
+        } >> "$GITHUB_OUTPUT"
         echo "Version: ${VERSION} (previous: ${PREVIOUS}, pre-release: ${PRERELEASE})"
       env:
         INPUT_VERSION: ${{ inputs.version }}
