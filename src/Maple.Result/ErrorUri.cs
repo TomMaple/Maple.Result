@@ -54,7 +54,7 @@ namespace Maple.Result;
 ///     For <i>URI Tag</i> specification, see also: <seealso href="https://datatracker.ietf.org/doc/html/rfc4151" />.<br />
 ///     For <i>URN</i> specification, see also: <seealso href="https://datatracker.ietf.org/doc/html/rfc8141" />.
 /// </remarks>
-public readonly record struct ErrorUri
+public readonly record struct ErrorUri : IParsable<ErrorUri>
 {
     private const string NoneValue = "about:blank";
 
@@ -264,6 +264,25 @@ public readonly record struct ErrorUri
 
         result = kind == Kind.None ? None() : new ErrorUri(value);
         return true;
+    }
+
+    /// <inheritdoc cref="Parse(string)" />
+    /// <param name="s">The <i>URI</i>; see <see cref="Parse(string)" />.</param>
+    /// <param name="provider">Not used: an error <i>URI</i> does not depend on the culture.</param>
+    static ErrorUri IParsable<ErrorUri>.Parse(string s, IFormatProvider? provider)
+    {
+        return Parse(s);
+    }
+
+    /// <inheritdoc cref="TryParse(string, out ErrorUri)" />
+    /// <param name="s">The <i>URI</i>; see <see cref="Parse(string)" />.</param>
+    /// <param name="provider">Not used: an error <i>URI</i> does not depend on the culture.</param>
+    /// <param name="result">
+    ///     The <see cref="ErrorUri" /> with the specified value, if it is valid; otherwise, the default <see cref="ErrorUri" />.
+    /// </param>
+    static bool IParsable<ErrorUri>.TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, out ErrorUri result)
+    {
+        return TryParse(s, out result);
     }
 
     #endregion
