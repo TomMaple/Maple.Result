@@ -8,10 +8,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using Maple.Result.Validators;
+using Maple.Results.Validators;
 using System;
 
-namespace Maple.Result.Tests.Unit.Validators;
+namespace Maple.Results.Tests.Unit.Validators;
 
 public class MetadataKeyValidatorUnitTests
 {

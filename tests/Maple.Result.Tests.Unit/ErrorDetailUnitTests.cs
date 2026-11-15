@@ -10,7 +10,7 @@
 
 using System;
 
-namespace Maple.Result.Tests.Unit;
+namespace Maple.Results.Tests.Unit;
 
 public class ErrorDetailUnitTests
 {

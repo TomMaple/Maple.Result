@@ -8,11 +8,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using Maple.Result.Tests.Unit.TestingInfrastructure.Helpers;
+using Maple.Results.Tests.Unit.TestingInfrastructure.Helpers;
 using System;
 using System.Collections.Generic;
 
-namespace Maple.Result.Tests.Unit.TemplatedMessageTests;
+namespace Maple.Results.Tests.Unit.TemplatedMessageTests;
 
 public class TemplatedMessageAllocationUnitTests
 {

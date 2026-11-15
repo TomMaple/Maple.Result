@@ -9,9 +9,9 @@
  */
 
 using System.Collections.Generic;
-using Sut = Maple.Result.TemplatedMessage;
+using Sut = Maple.Results.TemplatedMessage;
 
-namespace Maple.Result.Tests.Unit.TemplatedMessageTests;
+namespace Maple.Results.Tests.Unit.TemplatedMessageTests;
 
 public class TemplatedMessageEqualityUnitTests
 {

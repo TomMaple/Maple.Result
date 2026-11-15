@@ -8,7 +8,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-namespace Maple.Result.Tests.Unit.TestingInfrastructure.Fixtures;
+namespace Maple.Results.Tests.Unit.TestingInfrastructure.Fixtures;
 
 /// <summary>
 ///     The collection of the tests that change the global <see cref="ResultConfiguration" />.

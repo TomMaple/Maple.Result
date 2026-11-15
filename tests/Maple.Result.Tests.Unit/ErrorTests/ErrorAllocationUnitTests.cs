@@ -8,10 +8,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using Maple.Result.Tests.Unit.TestingInfrastructure.Helpers;
-using Sut = Maple.Result.Error;
+using Maple.Results.Tests.Unit.TestingInfrastructure.Helpers;
+using Sut = Maple.Results.Error;
 
-namespace Maple.Result.Tests.Unit.ErrorTests;
+namespace Maple.Results.Tests.Unit.ErrorTests;
 
 public class ErrorAllocationUnitTests
 {

@@ -8,11 +8,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using Maple.Result.Extensions;
+using Maple.Results.Extensions;
 using System;
 using System.Threading.Tasks;
 
-namespace Maple.Result.Tests.Unit.Extensions;
+namespace Maple.Results.Tests.Unit.Extensions;
 
 public class ResultTaskAsyncExtensionsUnitTests
 {

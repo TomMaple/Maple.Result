@@ -8,13 +8,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using Maple.Result.Extensions.ValueTasks;
-using Maple.Result.Tests.Unit.TestingInfrastructure.Fakes;
+using Maple.Results.Extensions.ValueTasks;
+using Maple.Results.Tests.Unit.TestingInfrastructure.Fakes;
 using Moq;
 using System;
 using System.Threading.Tasks;
 
-namespace Maple.Result.Tests.Unit.Extensions.ValueTasks;
+namespace Maple.Results.Tests.Unit.Extensions.ValueTasks;
 
 public class IfErrorValueTaskAsyncExtensionsUnitTests
 {

@@ -8,14 +8,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using Maple.Result.Extensions;
-using Maple.Result.Tests.Unit.TestingInfrastructure.Fakes;
-using Maple.Result.Tests.Unit.TestingInfrastructure.Fixtures;
+using Maple.Results.Extensions;
+using Maple.Results.Tests.Unit.TestingInfrastructure.Fakes;
+using Maple.Results.Tests.Unit.TestingInfrastructure.Fixtures;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Maple.Result.Tests.Unit.Extensions;
+namespace Maple.Results.Tests.Unit.Extensions;
 
 /// <summary>
 ///     Verifies on which context the delegates passed to the <see cref="Task" />-based extension methods run.

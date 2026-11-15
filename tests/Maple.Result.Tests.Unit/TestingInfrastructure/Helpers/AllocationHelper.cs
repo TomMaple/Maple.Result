@@ -10,7 +10,7 @@
 
 using System;
 
-namespace Maple.Result.Tests.Unit.TestingInfrastructure.Helpers;
+namespace Maple.Results.Tests.Unit.TestingInfrastructure.Helpers;
 
 /// <summary>
 ///     Measures the memory that code allocates.

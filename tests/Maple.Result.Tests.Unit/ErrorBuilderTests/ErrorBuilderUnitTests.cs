@@ -10,9 +10,9 @@
 
 using System;
 using System.Collections.Generic;
-using Sut = Maple.Result.ErrorBuilder;
+using Sut = Maple.Results.ErrorBuilder;
 
-namespace Maple.Result.Tests.Unit.ErrorBuilderTests;
+namespace Maple.Results.Tests.Unit.ErrorBuilderTests;
 
 public class ErrorBuilderUnitTests
 {

@@ -11,7 +11,7 @@
 using System.Diagnostics;
 using System.Reflection;
 
-namespace Maple.Result.Tests.Unit.ResultTests;
+namespace Maple.Results.Tests.Unit.ResultTests;
 
 public class ResultDebuggerDisplayUnitTests
 {

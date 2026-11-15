@@ -13,7 +13,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Maple.Result.Tests.Unit.TemplatedMessageTests;
+namespace Maple.Results.Tests.Unit.TemplatedMessageTests;
 
 public class TemplatedMessageUnitTests
 {

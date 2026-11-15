@@ -8,7 +8,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-namespace Maple.Result.Tests.Unit.ResultTests;
+namespace Maple.Results.Tests.Unit.ResultTests;
 
 // Some tests also check the nullable annotations at compile time: they read the out values without `!`,
 // so a missing or wrong annotation is a nullable warning (an error in CI).
