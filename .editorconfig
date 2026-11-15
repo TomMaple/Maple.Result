@@ -30,10 +30,12 @@ max_line_length = 160
 dotnet_sort_system_directives_first = false
 
 #
-# Blank lines: no consecutive empty lines
+# Blank lines: no consecutive empty lines; an empty line after a statement that spans several lines
+# (enforced by Rider / ReSharper only; Roslyn has no such rule)
 #
 dotnet_diagnostic.IDE2000.severity = warning
 dotnet_style_allow_multiple_blank_lines_experimental = false
+resharper_blank_lines_after_multiline_statements = 1
 resharper_keep_blank_lines_in_code = 1
 resharper_keep_blank_lines_in_declarations = 1
 

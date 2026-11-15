@@ -192,6 +192,7 @@ public static class LinqValueTaskAsyncExtensions
             {
                 var collectionResult = await ReturnValueGuard.NotNullResult(
                     collectionSelector(x), nameof(collectionSelector), ResultConfiguration.ContinueOnCapturedContext);
+
                 return collectionResult.IfSuccess(y => resultSelector(x, y));
             }).ConfigureAwait(ResultConfiguration.ContinueOnCapturedContext);
         }
@@ -306,6 +307,7 @@ public static class LinqValueTaskAsyncExtensions
 
             var collectionResult = await ReturnValueGuard.NotNullResult(
                 collectionSelector(result.Value), nameof(collectionSelector), ResultConfiguration.ContinueOnCapturedContext);
+
             return collectionResult.IfSuccess(y => resultSelector(result.Value, y));
         }
     }
@@ -374,6 +376,7 @@ public static class LinqValueTaskAsyncExtensions
 
             var collectionResult = await ReturnValueGuard.NotNullResult(
                 collectionSelector(resultValue.Value), nameof(collectionSelector), ResultConfiguration.ContinueOnCapturedContext);
+
             return collectionResult.IfSuccess(y => ReturnValueGuard.NotNull(resultSelector(resultValue.Value, y), nameof(resultSelector)));
         }
     }
@@ -493,6 +496,7 @@ public static class LinqValueTaskAsyncExtensions
 
             var collectionResult = await ReturnValueGuard.NotNullResult(
                 collectionSelector(result.Value), nameof(collectionSelector), ResultConfiguration.ContinueOnCapturedContext);
+
             return collectionResult.IfSuccess(y => ReturnValueGuard.NotNull(resultSelector(result.Value, y), nameof(resultSelector)));
         }
     }

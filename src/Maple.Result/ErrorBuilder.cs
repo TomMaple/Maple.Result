@@ -501,6 +501,7 @@ public sealed class ErrorBuilder
             _builtErrorDetails = _pendingErrorDetails.Count == 0
                 ? Error.EmptyErrorDetails
                 : new ReadOnlyCollection<ErrorDetail>(_pendingErrorDetails.ToArray());
+
             _pendingErrorDetails = null;
         }
 
@@ -509,6 +510,7 @@ public sealed class ErrorBuilder
             _builtMetadata = _pendingMetadata.Count == 0
                 ? Error.EmptyMetadata
                 : new ReadOnlyDictionary<string, object?>(new Dictionary<string, object?>(_pendingMetadata, StringComparer.Ordinal));
+
             _pendingMetadata = null;
         }
 
