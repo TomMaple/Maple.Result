@@ -297,6 +297,10 @@ if (result.IsError)
 
 var count = result.Value;
 
+// or, in one statement
+if (!result.TryGetValue(out var count, out var error))
+    return error;
+
 // or, when a fallback is fine
 var count = result.GetValueOrDefault(0);
 ```
@@ -385,6 +389,7 @@ The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an
 * **`Error.WithErrorDetail()`** and **`Error.ToBuilder()`** — see above.
 * **`ErrorCategory.LimitExceeded`** — see above.
 * **`ProblemDetailsMembers`** — the member names of the problem details object (`type`, `title`, `status`, …), shared by the packages that write and read problem details. See [Problem Details Format](problem-details.md).
+* **`TryGetValue` and `TryGetError`** — `if (!GetUser(id).TryGetValue(out var user, out var error)) return error;` reads the value of a `Result<T>` without an exception and gives the early return in one statement; `TryGetError(out var error)` on `Result` and `Result<T>` does the same for the error. See [TryGetValue](Reference/ResultT/ResultT_TryGetValue.md) and [TryGetError](Reference/Result/Result_TryGetError.md).
 * **`Result<T>.GetValueOrDefault(fallback)`** — the value of a successful result, or the fallback for a failed one, without an exception. See [GetValueOrDefault](Reference/ResultT/ResultT_GetValueOrDefault.md).
 * **`ErrorUri.Other()`** — an absolute *URI* whose scheme has no factory method of its own (e.g., `mailto:`), for type and instance URIs read from other services; `Parse` and `TryParse` fall back to it. See [Other](Reference/ErrorUri/ErrorUri_Other.md).
 * **`ErrorUri.Parse()`**, **`ErrorUri.TryParse()`** and **`IParsable<ErrorUri>`** — create an `ErrorUri` when the kind is not known in advance: the kind is detected from the value (`about:blank`, `/…`, `tag:`, `urn:`, `http:`/`https:`) and validated as by its factory method. See [Parse](Reference/ErrorUri/ErrorUri_Parse.md).

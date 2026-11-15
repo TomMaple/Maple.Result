@@ -164,6 +164,7 @@
     <File Path="docs/Reference/Result/Result_IsError.md" />
     <File Path="docs/Reference/Result/Result_IsSuccess.md" />
     <File Path="docs/Reference/Result/Result_Success.md" />
+    <File Path="docs/Reference/Result/Result_TryGetError.md" />
   </Folder>
   <Folder Name="/docs/Reference/ResultConfiguration/">
     <File Path="docs/Reference/ResultConfiguration/ResultConfiguration.md" />
@@ -179,6 +180,8 @@
     <File Path="docs/Reference/ResultT/ResultT_implicit_T_to_ResultT.md" />
     <File Path="docs/Reference/ResultT/ResultT_IsError.md" />
     <File Path="docs/Reference/ResultT/ResultT_IsSuccess.md" />
+    <File Path="docs/Reference/ResultT/ResultT_TryGetError.md" />
+    <File Path="docs/Reference/ResultT/ResultT_TryGetValue.md" />
     <File Path="docs/Reference/ResultT/ResultT_Value.md" />
   </Folder>
   <Folder Name="/docs/Reference/TemplatedMessage/">

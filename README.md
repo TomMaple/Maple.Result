@@ -208,7 +208,7 @@ var result = userResult.ToResult();
 to convert `Result<T>` to `Result` if you need to return a non-generic result without a value.
 
 > [!NOTE]
-> A successful `Result<T>` normally carries a non-null value. When `T` is nullable—a nullable reference type or `Nullable<T>` (e.g., `Result<string?>` or `Result<int?>`)—a `null` is a valid successful value. Always use `IsSuccess` (or `IsError`) to distinguish success from failure rather than checking the value against `null`: reading the `Value` of a failed result throws an `InvalidOperationException`, and `GetValueOrDefault(fallback)` reads it without an exception.
+> A successful `Result<T>` normally carries a non-null value. When `T` is nullable—a nullable reference type or `Nullable<T>` (e.g., `Result<string?>` or `Result<int?>`)—a `null` is a valid successful value. Always use `IsSuccess` (or `IsError`) to distinguish success from failure rather than checking the value against `null`: reading the `Value` of a failed result throws an `InvalidOperationException`, and `TryGetValue(out var value)` and `GetValueOrDefault(fallback)` read it without an exception.
 
 ### Example
 ```csharp
@@ -443,6 +443,7 @@ See more: [Error](https://github.com/TomMaple/Maple.Result/blob/main/docs/Refere
 ## Controlling the execution flow
 You can use:
 * the `IsSuccess` and `IsError` properties of the `Result` (e.g., the early return `if (result.IsError) return result.Error;`),
+* the `TryGetValue` and `TryGetError` methods (e.g., `if (!GetUser(id).TryGetValue(out var user, out var error)) return error;`),
 * extension methods:
   * `IfSuccess()`, `IfSuccessAsync()`,
   * `IfError()`, `IfErrorAsync()`,

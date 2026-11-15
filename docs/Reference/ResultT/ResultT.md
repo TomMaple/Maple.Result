@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Result](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.cs#L195" target="_blank">Result.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.cs#L211" target="_blank">Result.cs</a>
 
 Represents the outcome of an operation that can either succeed or fail with an [Error](../Error/Error.md).
 
@@ -23,7 +23,7 @@ Implements [IOperationResult](../IOperationResult/IOperationResult.md)
 If the operation is successful, the [IsSuccess](ResultT_IsSuccess.md) property is `true` and the [Value](ResultT_Value.md) property will hold the returned value. If the operation has failed, the [IsSuccess](ResultT_IsSuccess.md) property is `false` (and [IsError](ResultT_IsError.md) is `true`), and the [Error](ResultT_Error.md) property will contain details about the failure.
 
 > [!CAUTION]
-> Check [IsSuccess](ResultT_IsSuccess.md) or [IsError](ResultT_IsError.md) before reading the [Value](ResultT_Value.md) property: on a failed result it throws an `InvalidOperationException`. Use [GetValueOrDefault(T)](ResultT_GetValueOrDefault.md) to read the value without an exception.
+> Check [IsSuccess](ResultT_IsSuccess.md) or [IsError](ResultT_IsError.md) before reading the [Value](ResultT_Value.md) property: on a failed result it throws an `InvalidOperationException`. Use [TryGetValue](ResultT_TryGetValue.md) or [GetValueOrDefault(T)](ResultT_GetValueOrDefault.md) to read the value without an exception.
 
 The record is immutable and has no public constructor. Create it with [Result&lt;T&gt;.FromValue(T)](ResultT_FromValue.md), [Result&lt;T&gt;.FromError(Error)](ResultT_FromError.md), or the [Implicit(Error to Result&lt;T&gt;)](ResultT_implicit_Error_to_ResultT.md) or [Implicit(T to Result&lt;T&gt;)](ResultT_implicit_T_to_ResultT.md) operator. A result is successful exactly when it has no [Error](ResultT_Error.md); a successful result of a nullable `T` can carry a `null` value.
 
@@ -103,6 +103,9 @@ Reading a [Result&lt;T&gt;](ResultT.md) back requires a dedicated converter, bec
 | [FromError(Error)](ResultT_FromError.md) | Creates a new failure [Result&lt;T&gt;](ResultT.md) from the specified [Error](../Error/Error.md). |
 | [FromValue(T)](ResultT_FromValue.md) | Creates a new successful [Result&lt;T&gt;](ResultT.md) containing the specified value. |
 | [GetValueOrDefault(T)](ResultT_GetValueOrDefault.md) | Returns the value of a successful result, or the specified fallback value for a failed one. |
+| [TryGetError(Error)](ResultT_TryGetError.md) | Gets the error of a failed result. |
+| [TryGetValue(T)](ResultT_TryGetValue.md#trygetvaluet) | Gets the value of a successful result. |
+| [TryGetValue(T, Error)](ResultT_TryGetValue.md#trygetvaluet-error) | Gets the value of a successful result, or the error of a failed one. |
 
 ## Operators
 | Name | Description |
