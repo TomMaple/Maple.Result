@@ -95,7 +95,9 @@ public sealed record Result : IOperationResult
     /// <exception cref="ArgumentNullException">If the <paramref name="error" /> is <see langword="null" />.</exception>
     public static implicit operator Result(Error error)
     {
-        return new Result(error ?? throw new ArgumentNullException(nameof(error), "Error cannot be null!"));
+        ArgumentNullException.ThrowIfNull(error);
+
+        return new Result(error);
     }
 
     #endregion
@@ -108,7 +110,9 @@ public sealed record Result : IOperationResult
     /// <exception cref="ArgumentNullException">If the <paramref name="error" /> is <see langword="null" />.</exception>
     public static Result FromError(Error error)
     {
-        return new Result(error ?? throw new ArgumentNullException(nameof(error), "Error cannot be null!"));
+        ArgumentNullException.ThrowIfNull(error);
+
+        return new Result(error);
     }
 
     /// <summary>
