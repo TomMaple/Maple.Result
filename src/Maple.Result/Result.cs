@@ -10,6 +10,7 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 
 namespace Maple.Result;
 
@@ -143,6 +144,24 @@ public sealed record Result : IOperationResult
     }
 
     #endregion
+
+    #region string representation
+
+    /// <summary>
+    ///     Appends the members of the result to the <see cref="ToString" /> output: the <see cref="Error" /> of a failed result,
+    ///     and nothing for a successful one.
+    /// </summary>
+    private bool PrintMembers(StringBuilder builder)
+    {
+        if (Error is null)
+            return false;
+
+        builder.Append("Error = ").Append(Error);
+
+        return true;
+    }
+
+    #endregion
 }
 
 /// <summary>
@@ -267,6 +286,24 @@ public sealed record Result<T> : IOperationResult
     public static Result<T> FromError(Error error)
     {
         return new Result<T>(error);
+    }
+
+    #endregion
+
+    #region string representation
+
+    /// <summary>
+    ///     Appends the members of the result to the <see cref="ToString" /> output: the <see cref="Value" /> of a successful result,
+    ///     or the <see cref="Error" /> of a failed one.
+    /// </summary>
+    private bool PrintMembers(StringBuilder builder)
+    {
+        if (Error is null)
+            builder.Append("Value = ").Append(Value);
+        else
+            builder.Append("Error = ").Append(Error);
+
+        return true;
     }
 
     #endregion
