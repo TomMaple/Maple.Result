@@ -38,20 +38,10 @@ internal static partial class UriTagValidator
         RegexOptions.CultureInvariant)]
     private static partial Regex TagPattern();
 
+    // The pattern is the full RFC 4151 grammar, including the "tag:" scheme, so the value is not parsed with System.Uri as well.
     internal static void Validate(string uriTag)
     {
-        Uri uri;
-
-        try
-        {
-            uri = new Uri(uriTag);
-        }
-        catch (Exception ex) when (ex is not ArgumentNullException)
-        {
-            throw new UriFormatException(Message, ex);
-        }
-
-        if (uri.Scheme != "tag" || !TagPattern().IsMatch(uriTag))
+        if (!TagPattern().IsMatch(uriTag))
             throw new UriFormatException(Message);
     }
 }
