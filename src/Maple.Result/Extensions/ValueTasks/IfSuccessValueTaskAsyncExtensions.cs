@@ -140,7 +140,11 @@ public static class IfSuccessValueTaskAsyncExtensions
         static async ValueTask<Result> Core(Result result, Func<ValueTask<Error>> ifSuccessFunction, bool continueOnCapturedContext)
         {
             if (result.IsSuccess())
-                return Result.FromError(await Guard.EnsureNotNullResult(ifSuccessFunction(), nameof(ifSuccessFunction), continueOnCapturedContext));
+            {
+                var error = await Guard.EnsureNotNullResult(ifSuccessFunction(), nameof(ifSuccessFunction), continueOnCapturedContext);
+
+                return Result.FromError(error);
+            }
 
             return result;
         }
@@ -563,7 +567,11 @@ public static class IfSuccessValueTaskAsyncExtensions
             var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
 
             if (result.IsSuccess())
-                return Result.FromError(await Guard.EnsureNotNullResult(ifSuccessFunction(), nameof(ifSuccessFunction), continueOnCapturedContext));
+            {
+                var error = await Guard.EnsureNotNullResult(ifSuccessFunction(), nameof(ifSuccessFunction), continueOnCapturedContext);
+
+                return Result.FromError(error);
+            }
 
             return result;
         }

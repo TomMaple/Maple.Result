@@ -175,7 +175,11 @@ public static class MatchValueTaskAsyncExtensions
             bool continueOnCapturedContext)
         {
             if (result.IsSuccess())
-                return Result.FromError(await Guard.EnsureNotNullResult(ifSuccessFunction(), nameof(ifSuccessFunction), continueOnCapturedContext));
+            {
+                var error = await Guard.EnsureNotNullResult(ifSuccessFunction(), nameof(ifSuccessFunction), continueOnCapturedContext);
+
+                return Result.FromError(error);
+            }
 
             await ifErrorAction(result.Error).ConfigureAwait(continueOnCapturedContext);
             return result;
@@ -772,7 +776,11 @@ public static class MatchValueTaskAsyncExtensions
             var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
 
             if (result.IsSuccess())
-                return Result.FromError(await Guard.EnsureNotNullResult(ifSuccessFunction(), nameof(ifSuccessFunction), continueOnCapturedContext));
+            {
+                var error = await Guard.EnsureNotNullResult(ifSuccessFunction(), nameof(ifSuccessFunction), continueOnCapturedContext);
+
+                return Result.FromError(error);
+            }
 
             await ifErrorAction(result.Error).ConfigureAwait(continueOnCapturedContext);
             return result;
