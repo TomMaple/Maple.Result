@@ -41,9 +41,17 @@ internal static partial class UriUrnValidator
         RegexOptions.CultureInvariant)]
     private static partial Regex UrnPattern();
 
+    /// <summary>
+    ///     Whether the value matches the <i>RFC 8141</i> grammar.
+    /// </summary>
+    internal static bool IsValid(string urn)
+    {
+        return UrnPattern().IsMatch(urn);
+    }
+
     internal static void Validate(string urn)
     {
-        if (!UrnPattern().IsMatch(urn))
+        if (!IsValid(urn))
             throw new UriFormatException(Message);
     }
 }

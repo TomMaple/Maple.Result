@@ -36,9 +36,17 @@ internal static partial class UriRelativeValidator
         RegexOptions.CultureInvariant)]
     private static partial Regex RelativePattern();
 
+    /// <summary>
+    ///     Whether the value is a relative reference with an absolute path (<i>RFC 3986</i>).
+    /// </summary>
+    internal static bool IsValid(string relativeReference)
+    {
+        return RelativePattern().IsMatch(relativeReference);
+    }
+
     internal static void Validate(string relativeReference)
     {
-        if (!RelativePattern().IsMatch(relativeReference))
+        if (!IsValid(relativeReference))
             throw new UriFormatException(Message);
     }
 }

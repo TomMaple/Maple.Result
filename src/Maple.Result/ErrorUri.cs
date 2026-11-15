@@ -10,6 +10,7 @@
 
 using Maple.Result.Validators;
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Maple.Result;
 
@@ -53,9 +54,13 @@ namespace Maple.Result;
 ///     For <i>URI Tag</i> specification, see also: <seealso href="https://datatracker.ietf.org/doc/html/rfc4151" />.<br />
 ///     For <i>URN</i> specification, see also: <seealso href="https://datatracker.ietf.org/doc/html/rfc8141" />.
 /// </remarks>
-public readonly record struct ErrorUri
+public readonly record struct ErrorUri : IParsable<ErrorUri>
 {
     private const string NoneValue = "about:blank";
+
+    private const string UnknownKindMessage =
+        "The error URI is not valid. Expected ‘about:blank’, a relative reference starting with ‘/’, " +
+        "or a ‘tag:’, ‘urn:’, ‘http:’ or ‘https:’ URI.";
 
     private readonly string? _value;
 
@@ -185,6 +190,106 @@ public readonly record struct ErrorUri
         return new ErrorUri(relativeReference);
     }
 
+    #region parsing
+
+    /// <summary>
+    ///     Returns a new instance of the <see cref="ErrorUri" /> of the kind that the <paramref name="value" /> has, validated by the factory method of that
+    ///     kind.
+    /// </summary>
+    /// <param name="value">
+    ///     The <i>URI</i>: <c>about:blank</c>, a relative reference starting with <c>/</c>, or a <c>tag:</c>, <c>urn:</c>, <c>http:</c> or
+    ///     <c>https:</c> <i>URI</i>.
+    /// </param>
+    /// <returns>A new instance of the <see cref="ErrorUri" /> with the specified value.</returns>
+    /// <remarks>
+    ///     <para>
+    ///         The kind is detected from the value: <c>about:blank</c> returns <see cref="None" />; a value starting with <c>/</c> is passed to
+    ///         <see cref="Relative" />; the scheme <c>tag</c> to <see cref="Tag" />, <c>urn</c> to <see cref="Urn" />, and <c>http</c> or
+    ///         <c>https</c> to <see cref="Locator" />. Any other value is rejected.
+    ///     </para>
+    ///     <para>
+    ///         Schemes are case-insensitive (<i>RFC 3986</i>, section 3.1), so <c>TAG:…</c> is a <i>URI Tag</i>; the value is stored as passed.
+    ///         <c>about:blank</c> is the exception: its scheme may have any case, the <c>blank</c> token must be lowercase, and the result always has
+    ///         the value <c>about:blank</c>. <c>ErrorUri.Parse(uri.Value)</c> returns an <see cref="ErrorUri" /> equal to <c>uri</c>.
+    ///     </para>
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">If the <paramref name="value" /> is <see langword="null" />.</exception>
+    /// <exception cref="UriFormatException">
+    ///     If the <paramref name="value" /> is not of a known kind, or not valid for its kind (with the message of the factory method of that kind).
+    /// </exception>
+    public static ErrorUri Parse(string value)
+    {
+        ArgumentNullException.ThrowIfNull(value);
+
+        return DetectKind(value) switch
+        {
+            Kind.None => None(),
+            Kind.Relative => Relative(value),
+            Kind.Tag => Tag(value),
+            Kind.Urn => Urn(value),
+            Kind.Locator => Locator(value),
+            _ => throw new UriFormatException(UnknownKindMessage)
+        };
+    }
+
+    /// <summary>
+    ///     Tries to create an <see cref="ErrorUri" /> of the kind that the <paramref name="value" /> has, with the rules of <see cref="Parse" />.
+    /// </summary>
+    /// <param name="value">The <i>URI</i>; see <see cref="Parse" />.</param>
+    /// <param name="result">
+    ///     The <see cref="ErrorUri" /> with the specified value, if it is valid; otherwise, the default <see cref="ErrorUri" />.
+    /// </param>
+    /// <returns><see langword="true" /> if the <paramref name="value" /> is a valid error <i>URI</i>; otherwise, <see langword="false" />.</returns>
+    /// <remarks>This method never throws, and a rejected value is checked without throwing an exception internally.</remarks>
+    public static bool TryParse([NotNullWhen(true)] string? value, out ErrorUri result)
+    {
+        result = default;
+
+        if (value is null)
+            return false;
+
+        var kind = DetectKind(value);
+        var isValid = kind switch
+        {
+            Kind.None => true,
+            Kind.Relative => UriRelativeValidator.IsValid(value),
+            Kind.Tag => UriTagValidator.IsValid(value),
+            Kind.Urn => UriUrnValidator.IsValid(value),
+            Kind.Locator => UriLocatorValidator.IsValid(value),
+            _ => false
+        };
+
+        if (!isValid)
+            return false;
+
+        result = kind == Kind.None
+            ? None()
+            : new ErrorUri(value);
+
+        return true;
+    }
+
+    /// <inheritdoc cref="Parse(string)" />
+    /// <param name="s">The <i>URI</i>; see <see cref="Parse(string)" />.</param>
+    /// <param name="provider">Not used: an error <i>URI</i> does not depend on the culture.</param>
+    static ErrorUri IParsable<ErrorUri>.Parse(string s, IFormatProvider? provider)
+    {
+        return Parse(s);
+    }
+
+    /// <inheritdoc cref="TryParse(string, out ErrorUri)" />
+    /// <param name="s">The <i>URI</i>; see <see cref="Parse(string)" />.</param>
+    /// <param name="provider">Not used: an error <i>URI</i> does not depend on the culture.</param>
+    /// <param name="result">
+    ///     The <see cref="ErrorUri" /> with the specified value, if it is valid; otherwise, the default <see cref="ErrorUri" />.
+    /// </param>
+    static bool IParsable<ErrorUri>.TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, out ErrorUri result)
+    {
+        return TryParse(s, out result);
+    }
+
+    #endregion
+
     /// <summary>
     ///     Returns the <i>URI</i> <see cref="Value" />.
     /// </summary>
@@ -216,6 +321,56 @@ public readonly record struct ErrorUri
     public override int GetHashCode()
     {
         return Value.GetHashCode();
+    }
+
+    #endregion
+
+    #region helper methods
+
+    /// <summary>
+    ///     Detects the kind of an error <i>URI</i> from its value, without validating it.
+    /// </summary>
+    private static Kind DetectKind(string value)
+    {
+        var span = value.AsSpan();
+
+        // "about:blank" with the scheme in any case; the "blank" token is case-sensitive.
+        if (span.Length == NoneValue.Length
+            && span[..6].Equals("about:", StringComparison.OrdinalIgnoreCase)
+            && span[6..].SequenceEqual("blank"))
+        {
+            return Kind.None;
+        }
+
+        if (span.StartsWith('/'))
+            return Kind.Relative;
+
+        var colon = span.IndexOf(':');
+        if (colon <= 0)
+            return Kind.Unknown;
+
+        var scheme = span[..colon];
+
+        if (scheme.Equals("tag", StringComparison.OrdinalIgnoreCase))
+            return Kind.Tag;
+
+        if (scheme.Equals("urn", StringComparison.OrdinalIgnoreCase))
+            return Kind.Urn;
+
+        if (scheme.Equals("http", StringComparison.OrdinalIgnoreCase) || scheme.Equals("https", StringComparison.OrdinalIgnoreCase))
+            return Kind.Locator;
+
+        return Kind.Unknown;
+    }
+
+    private enum Kind
+    {
+        Unknown,
+        None,
+        Relative,
+        Tag,
+        Urn,
+        Locator
     }
 
     #endregion

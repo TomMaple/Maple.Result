@@ -26,23 +26,19 @@ internal static partial class UriLocatorValidator
         RegexOptions.CultureInvariant)]
     private static partial Regex RawUriPattern();
 
+    /// <summary>
+    ///     Whether the value is a valid absolute <c>http</c> or <c>https</c> <i>URI</i>, stored as passed.
+    /// </summary>
+    internal static bool IsValid(string uriLocator)
+    {
+        return Uri.TryCreate(uriLocator, UriKind.Absolute, out var uri)
+               && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps)
+               && RawUriPattern().IsMatch(uriLocator);
+    }
+
     internal static void Validate(string uriLocator)
     {
-        Uri uri;
-
-        try
-        {
-            uri = new Uri(uriLocator);
-        }
-        catch (Exception ex) when (ex is not ArgumentNullException)
-        {
-            throw new UriFormatException(Message, ex);
-        }
-
-        if (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps)
-            throw new UriFormatException(Message);
-
-        if (!RawUriPattern().IsMatch(uriLocator))
+        if (!IsValid(uriLocator))
             throw new UriFormatException(Message);
     }
 }
