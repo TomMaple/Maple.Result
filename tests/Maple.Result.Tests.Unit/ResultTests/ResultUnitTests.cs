@@ -1067,7 +1067,7 @@ public class ResultUnitTests
     {
         // Arrange
         const string ExpectedMessage = "The result has no value, because the operation failed with the error ‘Test title’ "
-            + "(type ‘tag:test.com,2024:Test’). Check IsSuccess or IsError before reading Value, or use GetValueOrDefault.";
+            + "(type ‘tag:test.com,2024:Test’). Check IsSuccess or IsError before reading Value, or use TryGetValue.";
 
         var sut = Result<int>.FromError(Error.NotFound(ErrorUri.Tag("tag:test.com,2024:Test"), "Test title"));
 
@@ -1107,62 +1107,6 @@ public class ResultUnitTests
 
         // Assert
         result.ShouldBe(ExpectedLength);
-    }
-
-    #endregion
-
-    #region Result<T>, GetValueOrDefault
-
-    [Fact]
-    public void GetValueOrDefault_Success_ReturnsTheValue()
-    {
-        // Arrange
-        var sut = Result.FromValue(42);
-
-        // Act
-        var result = sut.GetValueOrDefault(-1);
-
-        // Assert
-        result.ShouldBe(42);
-    }
-
-    [Fact]
-    public void GetValueOrDefault_ValueTypeFailure_ReturnsTheFallback()
-    {
-        // Arrange
-        var sut = Result<int>.FromError(Error.NotFound(ErrorUri.Tag("tag:test.com,2024:Test"), "Test title"));
-
-        // Act
-        var result = sut.GetValueOrDefault(-1);
-
-        // Assert
-        result.ShouldBe(-1);
-    }
-
-    [Fact]
-    public void GetValueOrDefault_ReferenceTypeFailure_ReturnsTheFallback()
-    {
-        // Arrange
-        var sut = Result<string>.FromError(Error.NotFound(ErrorUri.Tag("tag:test.com,2024:Test"), "Test title"));
-
-        // Act
-        var result = sut.GetValueOrDefault("fallback");
-
-        // Assert
-        result.ShouldBe("fallback");
-    }
-
-    [Fact]
-    public void GetValueOrDefault_SuccessWithNullValue_ReturnsNullNotTheFallback()
-    {
-        // Arrange
-        var sut = Result.FromValue<string?>(null);
-
-        // Act
-        var result = sut.GetValueOrDefault("fallback");
-
-        // Assert
-        result.ShouldBeNull();
     }
 
     #endregion

@@ -46,6 +46,18 @@ public interface IOperationResult
     /// </value>
     [MemberNotNullWhen(true, nameof(Error))]
     public bool IsError { get; }
+
+    /// <summary>
+    ///     Gets the <see cref="Error" /> of a failed result.
+    /// </summary>
+    /// <remarks>
+    ///     For the early return in one statement: <c>if (result.TryGetError(out var error)) return error;</c>.
+    /// </remarks>
+    /// <param name="error">
+    ///     When this method returns, the <see cref="Error" /> if the result is failed; otherwise, <see langword="null" />.
+    /// </param>
+    /// <returns><see langword="true" /> if the result is failed; otherwise, <see langword="false" />.</returns>
+    public bool TryGetError([NotNullWhen(true)] out Error? error);
 }
 
 /// <summary>
@@ -93,6 +105,22 @@ public sealed record Result : IOperationResult
     /// </value>
     [MemberNotNullWhen(true, nameof(Error))]
     public bool IsError => Error is not null;
+
+    /// <summary>
+    ///     Gets the <see cref="Error" /> of a failed result.
+    /// </summary>
+    /// <remarks>
+    ///     For the early return in one statement: <c>if (result.TryGetError(out var error)) return error;</c>.
+    /// </remarks>
+    /// <param name="error">
+    ///     When this method returns, the <see cref="Error" /> if the result is failed; otherwise, <see langword="null" />.
+    /// </param>
+    /// <returns><see langword="true" /> if the result is failed; otherwise, <see langword="false" />.</returns>
+    public bool TryGetError([NotNullWhen(true)] out Error? error)
+    {
+        error = Error;
+        return error is not null;
+    }
 
     /// <summary>
     ///     Returns a successful <see cref="Result" /> instance.
@@ -217,7 +245,8 @@ public sealed record Result<T> : IOperationResult
     /// </summary>
     /// <remarks>
     ///     <para>
-    ///         Check <see cref="IsSuccess" /> or <see cref="IsError" /> before reading the value, or use <see cref="GetValueOrDefault" />.
+    ///         Check <see cref="IsSuccess" /> or <see cref="IsError" /> before reading the value, or use
+    ///         <see cref="TryGetValue(out T, out Error)" />.
     ///         A failed result has no value, so reading it throws instead of returning the default value of <typeparamref name="T" />
     ///         (which, for a value type, would look like a valid value, e.g., <c>0</c> for a <see cref="Result{T}" /> of <see cref="int" />).
     ///     </para>
@@ -235,7 +264,7 @@ public sealed record Result<T> : IOperationResult
             {
                 throw new InvalidOperationException(
                     $"The result has no value, because the operation failed with the error ‘{Error.Title}’ (type ‘{Error.TypeUri}’). " +
-                    $"Check {nameof(IsSuccess)} or {nameof(IsError)} before reading {nameof(Value)}, or use {nameof(GetValueOrDefault)}.");
+                    $"Check {nameof(IsSuccess)} or {nameof(IsError)} before reading {nameof(Value)}, or use {nameof(TryGetValue)}.");
             }
 
             return _value;
@@ -274,18 +303,59 @@ public sealed record Result<T> : IOperationResult
     public bool IsError => Error is not null;
 
     /// <summary>
-    ///     Returns the value of a successful result, or the <paramref name="fallback" /> value for a failed one.
+    ///     Gets the value of a successful result.
     /// </summary>
     /// <remarks>
-    ///     It never throws. A successful result returns its own value, even when it is <see langword="null" />.
+    ///     It never throws. Use it when the error is not needed (e.g., to fall back to another value); after it returns
+    ///     <see langword="false" />, <see cref="Error" /> is not <see langword="null" />.
     /// </remarks>
-    /// <param name="fallback">The value to return when the result is failed.</param>
-    /// <returns>The <see cref="Value" /> if the result is successful; otherwise, <paramref name="fallback" />.</returns>
-    public T GetValueOrDefault(T fallback)
+    /// <param name="value">
+    ///     When this method returns, the <see cref="Value" /> if the result is successful; otherwise, the default value of <typeparamref name="T" />.
+    /// </param>
+    /// <returns><see langword="true" /> if the result is successful; otherwise, <see langword="false" />.</returns>
+    [MemberNotNullWhen(false, nameof(Error))]
+    public bool TryGetValue([MaybeNullWhen(false)] out T value)
     {
-        return Error is null
-            ? _value
-            : fallback;
+        value = _value;
+        return Error is null;
+    }
+
+    /// <summary>
+    ///     Gets the value of a successful result, or the <see cref="Error" /> of a failed one.
+    /// </summary>
+    /// <remarks>
+    ///     It never throws, and it works on an expression, with no variable for the result:
+    ///     <c>if (!GetUser(id).TryGetValue(out var user, out var error)) return error;</c>.
+    /// </remarks>
+    /// <param name="value">
+    ///     When this method returns, the <see cref="Value" /> if the result is successful; otherwise, the default value of <typeparamref name="T" />.
+    /// </param>
+    /// <param name="error">
+    ///     When this method returns, <see langword="null" /> if the result is successful; otherwise, the <see cref="Error" />.
+    /// </param>
+    /// <returns><see langword="true" /> if the result is successful; otherwise, <see langword="false" />.</returns>
+    public bool TryGetValue([MaybeNullWhen(false)] out T value, [NotNullWhen(false)] out Error? error)
+    {
+        value = _value;
+        error = Error;
+
+        return error is null;
+    }
+
+    /// <summary>
+    ///     Gets the <see cref="Error" /> of a failed result.
+    /// </summary>
+    /// <remarks>
+    ///     For the early return in one statement: <c>if (result.TryGetError(out var error)) return error;</c>.
+    /// </remarks>
+    /// <param name="error">
+    ///     When this method returns, the <see cref="Error" /> if the result is failed; otherwise, <see langword="null" />.
+    /// </param>
+    /// <returns><see langword="true" /> if the result is failed; otherwise, <see langword="false" />.</returns>
+    public bool TryGetError([NotNullWhen(true)] out Error? error)
+    {
+        error = Error;
+        return error is not null;
     }
 
     #region implicit operators

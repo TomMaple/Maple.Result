@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Result](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.cs#L230" target="_blank">Result.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.cs#L259" target="_blank">Result.cs</a>
 
 Gets the value of a successful operation.
 
@@ -22,7 +22,7 @@ The result is failed, so it has no value. The message names the title and the ty
 
 ## Remarks
 > [!CAUTION]
-> Check [IsSuccess](ResultT_IsSuccess.md) or [IsError](ResultT_IsError.md) before reading this property, or use [GetValueOrDefault(T)](ResultT_GetValueOrDefault.md), which never throws.
+> Check [IsSuccess](ResultT_IsSuccess.md) or [IsError](ResultT_IsError.md) before reading this property, or use [TryGetValue](ResultT_TryGetValue.md), which never throws.
 
 A failed result has no value. Reading it throws instead of returning the default value of `T`, which for a value type would look like a valid value (e.g., `0` for a `Result<int>`), so a forgotten check fails at the point where the value is used.
 
@@ -37,6 +37,6 @@ Console.WriteLine(result.Value.Name);
 ```
 
 ## See Also
-* [GetValueOrDefault(T)](ResultT_GetValueOrDefault.md)
+* [TryGetValue](ResultT_TryGetValue.md)
 * [IsSuccess](ResultT_IsSuccess.md)
 * [Error](../Error/Error.md)

@@ -208,7 +208,7 @@ var result = userResult.ToResult();
 to convert `Result<T>` to `Result` if you need to return a non-generic result without a value.
 
 > [!NOTE]
-> A successful `Result<T>` normally carries a non-null value. When `T` is nullable—a nullable reference type or `Nullable<T>` (e.g., `Result<string?>` or `Result<int?>`)—a `null` is a valid successful value. Always use `IsSuccess` (or `IsError`) to distinguish success from failure rather than checking the value against `null`: reading the `Value` of a failed result throws an `InvalidOperationException`, and `GetValueOrDefault(fallback)` reads it without an exception.
+> A successful `Result<T>` normally carries a non-null value. When `T` is nullable—a nullable reference type or `Nullable<T>` (e.g., `Result<string?>` or `Result<int?>`)—a `null` is a valid successful value. Always use `IsSuccess` (or `IsError`) to distinguish success from failure rather than checking the value against `null`: reading the `Value` of a failed result throws an `InvalidOperationException`, and `TryGetValue(out var value)` reads it without an exception.
 
 ### Example
 ```csharp
@@ -443,6 +443,7 @@ See more: [Error](https://github.com/TomMaple/Maple.Result/blob/main/docs/Refere
 ## Controlling the execution flow
 You can use:
 * the `IsSuccess` and `IsError` properties of the `Result` (e.g., the early return `if (result.IsError) return result.Error;`),
+* the `TryGetValue` and `TryGetError` methods (e.g., `if (!GetUser(id).TryGetValue(out var user, out var error)) return error;`),
 * extension methods:
   * `IfSuccess()`, `IfSuccessAsync()`,
   * `IfError()`, `IfErrorAsync()`,
@@ -552,7 +553,7 @@ Check:
 * **`TryGetMetadata<T>()` is strict.** It returns `true` only when the stored value is a `T`; there is no conversion (a stored `int` is no longer read as `long`), and a `null` value returns `false`.
 * **Nullable values.** Metadata values and the named values of templated messages (`TemplatedMessage.Params`, `detailNamedValues`, `namedValues`) are `object?`.
 * **More checks.** The title of an error must not be `null`, empty or white-space only; the category must be a defined `ErrorCategory` value; `TemplatedMessage.TemplateId` must not be blank; `ErrorDetail.Detail` must not be `null`.
-* **`Result<T>.Value` throws on a failed result** (an `InvalidOperationException` that names the error) instead of returning the default value of `T`; its type is `T`. Use `GetValueOrDefault(fallback)` to read it without an exception. Without a converter, the default serializers can no longer write a failed `Result<T>`.
+* **`Result<T>.Value` throws on a failed result** (an `InvalidOperationException` that names the error) instead of returning the default value of `T`; its type is `T`. Use `TryGetValue(out var value)` to read it without an exception. Without a converter, the default serializers can no longer write a failed `Result<T>`.
 * `Result.Success()` returns the same, shared instance on every call.
 * **`IsSuccess` is a property, and `IsError` is new.** Replace `result.IsSuccess()` with `result.IsSuccess`, and `!result.IsSuccess()` with `result.IsError`. The JSON written without a converter now contains both properties.
 * **`continueOnCapturedContext` is `bool?`.** The parameter of the asynchronous extension methods is now `bool? continueOnCapturedContext = null`; `null` uses the new global `ResultConfiguration.ContinueOnCapturedContext` (`false` by default, so the behaviour is unchanged). Source-compatible; recompile code that calls the methods.
