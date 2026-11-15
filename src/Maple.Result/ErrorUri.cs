@@ -110,6 +110,7 @@ public readonly record struct ErrorUri
     /// <exception cref="UriFormatException">If the <paramref name="uriLocator" /> is not a valid <i>URI Locator</i>.</exception>
     public static ErrorUri Locator(string uriLocator)
     {
+        ArgumentNullException.ThrowIfNull(uriLocator);
         UriLocatorValidator.Validate(uriLocator);
 
         return new ErrorUri(uriLocator);
@@ -131,6 +132,7 @@ public readonly record struct ErrorUri
     /// <exception cref="UriFormatException">If the <paramref name="uriTag" /> is not a valid <i>URI Tag</i>.</exception>
     public static ErrorUri Tag(string uriTag)
     {
+        ArgumentNullException.ThrowIfNull(uriTag);
         UriTagValidator.Validate(uriTag);
 
         return new ErrorUri(uriTag);
