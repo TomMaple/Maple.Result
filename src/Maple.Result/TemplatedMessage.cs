@@ -107,7 +107,6 @@ public sealed record TemplatedMessage
         string templateIdParameterName, string parametersParameterName)
     {
         var validated = Validate(templateId, parameters, templateIdParameterName, parametersParameterName);
-
         return new TemplatedMessage(validated);
     }
 
@@ -136,7 +135,6 @@ public sealed record TemplatedMessage
         if (templateId is not null)
         {
             var validated = Validate(templateId, parameters, templateIdParameterName, parametersParameterName);
-
             return new TemplatedMessage(validated);
         }
 

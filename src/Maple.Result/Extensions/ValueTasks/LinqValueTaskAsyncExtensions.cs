@@ -76,7 +76,6 @@ public static class LinqValueTaskAsyncExtensions
         static async ValueTask<Result<TNext>> Core(ValueTask<Result<T>> result, Func<T, TNext> selector)
         {
             var resultValue = await Guard.EnsureNotNullAwaited(result, nameof(result), ResultConfiguration.ContinueOnCapturedContext);
-
             return resultValue.IfSuccess(selector);
         }
     }
@@ -245,7 +244,6 @@ public static class LinqValueTaskAsyncExtensions
             Func<T, TMiddle, TNext> resultSelector)
         {
             var resultValue = await Guard.EnsureNotNullAwaited(result, nameof(result), ResultConfiguration.ContinueOnCapturedContext);
-
             return resultValue.SelectMany(collectionSelector, resultSelector);
         }
     }
@@ -374,7 +372,6 @@ public static class LinqValueTaskAsyncExtensions
             return collectionResult.IfSuccess(y =>
             {
                 var selected = resultSelector(resultValue.Value, y);
-
                 return Guard.EnsureNotNullReturned(selected, nameof(resultSelector));
             });
         }
@@ -431,7 +428,6 @@ public static class LinqValueTaskAsyncExtensions
         static async ValueTask<Result> Core(ValueTask<Result<T>> result, Func<T, Result<TMiddle>> collectionSelector, Func<T, TMiddle, Error> resultSelector)
         {
             var resultValue = await Guard.EnsureNotNullAwaited(result, nameof(result), ResultConfiguration.ContinueOnCapturedContext);
-
             return resultValue.SelectMany(collectionSelector, resultSelector);
         }
     }
@@ -497,7 +493,6 @@ public static class LinqValueTaskAsyncExtensions
             return collectionResult.IfSuccess(y =>
             {
                 var selected = resultSelector(result.Value, y);
-
                 return Guard.EnsureNotNullReturned(selected, nameof(resultSelector));
             });
         }

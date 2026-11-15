@@ -207,7 +207,6 @@ public static class LinqExtensions
             return collectionResult.IfSuccess(y =>
             {
                 var selected = resultSelector(x, y);
-
                 return Guard.EnsureNotNullReturned(selected, nameof(resultSelector));
             });
         });

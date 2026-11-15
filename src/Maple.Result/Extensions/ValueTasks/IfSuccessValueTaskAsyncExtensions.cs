@@ -92,7 +92,6 @@ public static class IfSuccessValueTaskAsyncExtensions
             if (result.IsSuccess())
             {
                 var successTask = ifSuccessFunction();
-
                 return await Guard.EnsureNotNullResult(successTask, nameof(ifSuccessFunction), continueOnCapturedContext);
             }
 
@@ -205,7 +204,6 @@ public static class IfSuccessValueTaskAsyncExtensions
             if (result.IsSuccess())
             {
                 var successTask = ifSuccessFunction();
-
                 return await Guard.EnsureNotNullResult(successTask, nameof(ifSuccessFunction), continueOnCapturedContext);
             }
 
@@ -283,7 +281,6 @@ public static class IfSuccessValueTaskAsyncExtensions
             if (result.IsSuccess())
             {
                 var successTask = ifSuccessFunction(result.Value);
-
                 return await Guard.EnsureNotNullResult(successTask, nameof(ifSuccessFunction), continueOnCapturedContext);
             }
 
@@ -423,7 +420,6 @@ public static class IfSuccessValueTaskAsyncExtensions
             if (result.IsSuccess())
             {
                 var successTask = ifSuccessFunction(result.Value);
-
                 return await Guard.EnsureNotNullResult(successTask, nameof(ifSuccessFunction), continueOnCapturedContext);
             }
 
@@ -534,7 +530,6 @@ public static class IfSuccessValueTaskAsyncExtensions
             if (result.IsSuccess())
             {
                 var successTask = ifSuccessFunction();
-
                 return await Guard.EnsureNotNullResult(successTask, nameof(ifSuccessFunction), continueOnCapturedContext);
             }
 
@@ -710,7 +705,6 @@ public static class IfSuccessValueTaskAsyncExtensions
             if (result.IsSuccess())
             {
                 var successTask = ifSuccessFunction();
-
                 return await Guard.EnsureNotNullResult(successTask, nameof(ifSuccessFunction), continueOnCapturedContext);
             }
 
@@ -831,7 +825,6 @@ public static class IfSuccessValueTaskAsyncExtensions
             if (result.IsSuccess())
             {
                 var successTask = ifSuccessFunction(result.Value);
-
                 return await Guard.EnsureNotNullResult(successTask, nameof(ifSuccessFunction), continueOnCapturedContext);
             }
 
@@ -1025,7 +1018,6 @@ public static class IfSuccessValueTaskAsyncExtensions
             if (result.IsSuccess())
             {
                 var successTask = ifSuccessFunction(result.Value);
-
                 return await Guard.EnsureNotNullResult(successTask, nameof(ifSuccessFunction), continueOnCapturedContext);
             }
 

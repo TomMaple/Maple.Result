@@ -84,7 +84,6 @@ public static class IfSuccessExtensions
         if (result.IsSuccess())
         {
             var successResult = ifSuccessFunction();
-
             return Guard.EnsureNotNullReturned(successResult, nameof(ifSuccessFunction));
         }
 
@@ -196,7 +195,6 @@ public static class IfSuccessExtensions
         if (result.IsSuccess())
         {
             var successResult = ifSuccessFunction();
-
             return Guard.EnsureNotNullReturned(successResult, nameof(ifSuccessFunction));
         }
 
@@ -265,7 +263,6 @@ public static class IfSuccessExtensions
         if (result.IsSuccess())
         {
             var successResult = ifSuccessFunction(result.Value);
-
             return Guard.EnsureNotNullReturned(successResult, nameof(ifSuccessFunction));
         }
 
@@ -390,7 +387,6 @@ public static class IfSuccessExtensions
         if (result.IsSuccess())
         {
             var successResult = ifSuccessFunction(result.Value);
-
             return Guard.EnsureNotNullReturned(successResult, nameof(ifSuccessFunction));
         }
 

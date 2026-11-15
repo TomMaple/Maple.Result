@@ -96,7 +96,6 @@ public sealed record Result : IOperationResult
     public static implicit operator Result(Error error)
     {
         ArgumentNullException.ThrowIfNull(error);
-
         return new Result(error);
     }
 
@@ -111,7 +110,6 @@ public sealed record Result : IOperationResult
     public static Result FromError(Error error)
     {
         ArgumentNullException.ThrowIfNull(error);
-
         return new Result(error);
     }
 

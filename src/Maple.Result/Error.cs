@@ -513,7 +513,6 @@ public sealed record Error
         ErrorUri? instanceUri, string? detailTemplateId, ReadOnlySpan<(string Key, object? Value)> detailNamedValues)
     {
         var detailTemplated = TemplatedMessage.CreateOptional(detailTemplateId, detailNamedValues, nameof(detailTemplateId), nameof(detailNamedValues));
-
         return Create(category, typeUri, title, detail, instanceUri, detailTemplated);
     }
 
@@ -545,7 +544,6 @@ public sealed record Error
         ErrorUri? instanceUri, string? detailTemplateId, IEnumerable<KeyValuePair<string, object?>>? detailNamedValues)
     {
         var detailTemplated = TemplatedMessage.CreateOptional(detailTemplateId, detailNamedValues, nameof(detailTemplateId), nameof(detailNamedValues));
-
         return Create(category, typeUri, title, detail, instanceUri, detailTemplated);
     }
 
