@@ -24,6 +24,16 @@ Examples of unacceptable behavior include:
 * Publishing others' private information, such as a physical or email address, without their explicit permission
 * Other conduct which could reasonably be considered inappropriate in a professional setting
 
+## Additional Prohibited Conduct
+
+In addition to the behavior listed above, the following is prohibited in all community spaces:
+
+* Promoting, glorifying, justifying or denying terrorism, genocide, war crimes or crimes against humanity, including through symbols, slogans, imagery or propaganda.
+* Praising or expressing support for persons or organizations responsible for such acts, in particular organizations designated as terrorist organizations and persons indicted or convicted by an international court (e.g. the International Criminal Court).
+* Calls for violence against any group or individual.
+
+This project is about software. Its community spaces are not a place to discuss these topics, and such content will be removed.
+
 ## Enforcement Responsibilities
 
 Community leaders are responsible for clarifying and enforcing our standards of acceptable behavior and will take appropriate and fair corrective action in response to any behavior that they deem inappropriate, threatening, offensive, or harmful.
@@ -70,7 +80,7 @@ Community leaders will follow these Community Impact Guidelines in determining t
 
 ## Attribution
 
-This Code of Conduct is adapted from the [Contributor Covenant][homepage], version 2.1, available at [https://www.contributor-covenant.org/version/2/1/code_of_conduct.html][v2.1].
+This Code of Conduct is adapted from the [Contributor Covenant][homepage], version 2.1, available at [https://www.contributor-covenant.org/version/2/1/code_of_conduct.html][v2.1]. It has been modified from the original: the *Additional Prohibited Conduct* section was added, and the contact for reports was filled in.
 
 Community Impact Guidelines were inspired by [Mozilla's code of conduct enforcement ladder][Mozilla CoC].
 
