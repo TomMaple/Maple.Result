@@ -190,6 +190,39 @@ public readonly record struct ErrorUri : IParsable<ErrorUri>
         return new ErrorUri(relativeReference);
     }
 
+    /// <summary>
+    ///     Returns a new instance of the <see cref="ErrorUri" /> with an absolute <i>URI</i> whose scheme has no factory method of its own
+    ///     (e.g., <c>mailto:</c>, <c>ftp:</c> or a custom scheme).
+    /// </summary>
+    /// <param name="uri">
+    ///     The absolute <i>URI</i> (<i>RFC 3986</i>, section 3), e.g., <c>mailto:support@example.com</c>; non-ASCII characters must be
+    ///     percent-encoded.
+    /// </param>
+    /// <returns>A new instance of the <see cref="ErrorUri" /> with the specified <i>URI</i>.</returns>
+    /// <remarks>
+    ///     <para>
+    ///         <i>RFC 9457</i> allows any <i>URI</i> reference as the type and the instance of a problem, and requires consumers to use the type
+    ///         as its identifier. This method keeps the values that other services write with other schemes; to create an error, prefer
+    ///         <see cref="Locator" />, <see cref="Tag" />, <see cref="Urn" /> or <see cref="Relative" />.
+    ///     </para>
+    ///     <para>
+    ///         The schemes <c>about</c>, <c>tag</c>, <c>urn</c>, <c>http</c> and <c>https</c> (in any case) are rejected: use their factory
+    ///         methods, or <see cref="Parse" /> when the kind is not known. The value is stored as passed: white space, characters that
+    ///         would need escaping, invalid percent-encoding and a second <c>#</c> are rejected.
+    ///     </para>
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">If the <paramref name="uri" /> is <see langword="null" />.</exception>
+    /// <exception cref="UriFormatException">
+    ///     If the <paramref name="uri" /> is not a valid absolute <i>URI</i>, or its scheme has a factory method of its own.
+    /// </exception>
+    public static ErrorUri Other(string uri)
+    {
+        ArgumentNullException.ThrowIfNull(uri);
+        UriOtherValidator.Validate(uri);
+
+        return new ErrorUri(uri);
+    }
+
     #region parsing
 
     /// <summary>
