@@ -497,11 +497,13 @@ public sealed class ErrorBuilder
     /// </remarks>
     public Error Build()
     {
+        // The pending collections are wrapped, not copied: the builder drops its references to them right away, so the built error is the only
+        // owner and nothing can change them. A later change on the builder copies the built collection again (copy-on-write).
         if (_pendingErrorDetails is not null)
         {
             _builtErrorDetails = _pendingErrorDetails.Count == 0
                 ? Error.EmptyErrorDetails
-                : new ReadOnlyCollection<ErrorDetail>(_pendingErrorDetails.ToArray());
+                : new ReadOnlyCollection<ErrorDetail>(_pendingErrorDetails);
 
             _pendingErrorDetails = null;
         }
@@ -510,7 +512,7 @@ public sealed class ErrorBuilder
         {
             _builtMetadata = _pendingMetadata.Count == 0
                 ? Error.EmptyMetadata
-                : new ImmutableStringDictionary(new Dictionary<string, object?>(_pendingMetadata, StringComparer.Ordinal));
+                : new ImmutableStringDictionary(_pendingMetadata);
 
             _pendingMetadata = null;
         }
@@ -522,7 +524,14 @@ public sealed class ErrorBuilder
 
     private List<ErrorDetail> GetPendingErrorDetails()
     {
-        return _pendingErrorDetails ??= [.. _builtErrorDetails];
+        if (_pendingErrorDetails is null)
+        {
+            // Room for one more detail, so that adding a single detail to an existing error fills the list exactly.
+            _pendingErrorDetails = new List<ErrorDetail>(_builtErrorDetails.Count + 1);
+            _pendingErrorDetails.AddRange(_builtErrorDetails);
+        }
+
+        return _pendingErrorDetails;
     }
 
     private Dictionary<string, object?> GetPendingMetadata()
