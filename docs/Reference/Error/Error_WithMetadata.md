@@ -17,6 +17,8 @@ These methods **do not modify** the current instance; they return a new [Error](
 
 Keys are compared ordinally (case-sensitive), and a key that differs only in case from an existing key is rejected; values can be `null`. See [Metadata](Error_Metadata.md#keys) for the rules for keys.
 
+A key that already exists is never an error: its value is replaced, so code that handles an error created elsewhere can set an entry without checking first. A key in a different case is an error; see [Adding metadata to an error created elsewhere](Error_Metadata.md#adding-metadata-to-an-error-created-elsewhere).
+
 
 ## WithMetadata(String, Object)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L322" target="_blank">Error.cs</a>

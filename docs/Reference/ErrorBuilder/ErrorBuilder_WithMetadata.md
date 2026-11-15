@@ -15,6 +15,8 @@ Adds or replaces entries of the [Metadata](../Error/Error_Metadata.md) of the er
 ## Remarks
 Keys are compared ordinally (case-sensitive); a repeated key replaces the value, and a key that differs only in case from an existing key is rejected. All keys are checked before any entry is applied, so the builder is unchanged when a call throws. Values can be `null`. See [Metadata](../Error/Error_Metadata.md#keys) for the rules for keys.
 
+A key that already exists is never an error: its value is replaced. When the builder comes from an error created elsewhere ([Error.ToBuilder](../Error/Error_ToBuilder.md)), its keys may differ in case from the ones to add; see [Adding metadata to an error created elsewhere](../Error/Error_Metadata.md#adding-metadata-to-an-error-created-elsewhere).
+
 
 ## WithMetadata(String, Object)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L394" target="_blank">ErrorBuilder.cs</a>

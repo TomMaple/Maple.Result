@@ -26,7 +26,7 @@ The library does **not** define any well-known keys; they are defined by the pac
 
 ### Keys
 * Keys are compared ordinally (case-sensitive): [TryGetMetadata&lt;T&gt;](Error_TryGetMetadata.md), [WithoutMetadata(String)](Error_WithoutMetadata.md#withoutmetadatastring) and the dictionary find a key only in the case it was added in.
-* **Keys that differ only in case (enforced):** an error cannot hold two keys that differ only in case (e.g., `RetryAfter` and `retryAfter`): they would be the same member of a problem details object, because clients often read JSON case-insensitively and naming policies change the case. [WithMetadata](Error_WithMetadata.md) and [ErrorBuilder.WithMetadata](../ErrorBuilder/ErrorBuilder_WithMetadata.md) throw an [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception) naming both keys. The same key replaces the value; to change the case of a key, remove it first.
+* **Keys that differ only in case (enforced):** an error cannot hold two keys that differ only in case (e.g., `RetryAfter` and `retryAfter`): they would be the same member of a problem details object, because clients often read JSON case-insensitively and naming policies change the case. [WithMetadata](Error_WithMetadata.md) and [ErrorBuilder.WithMetadata](../ErrorBuilder/ErrorBuilder_WithMetadata.md) throw an [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception) naming both keys. The same key replaces the value; to change the case of a key, remove it first. See [Adding metadata to an error created elsewhere](#adding-metadata-to-an-error-created-elsewhere).
 * **Reserved (enforced):** keys must not match the top-level members of the [problem details format](../../problem-details.md) ([ProblemDetailsMembers](../ProblemDetailsMembers.md)): `type`, `title`, `status`, `detail`, `instance`, `errors` and `detailTemplated`. The check **ignores case** (e.g., `Title` is also rejected), because clients often read JSON case-insensitively and serializer naming policies can change the case of a key. [WithMetadata(String, Object)](Error_WithMetadata.md) and [ErrorBuilder.WithMetadata](../ErrorBuilder/ErrorBuilder_WithMetadata.md) throw an [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception) for such a key, so no `Error` instance can hold one.
 * **Recommended (not enforced):** keys should start with a letter, consist of ASCII letters, digits and `_`, and be at least 3 characters long ([RFC 9457, section 4](https://datatracker.ietf.org/doc/html/rfc9457#section-4)). The RFC states these as recommendations (*SHOULD*), and many APIs use other names (e.g., `id` or `trace-id`), so they are not checked.
 
@@ -39,6 +39,21 @@ The dictionary is read-only and cannot be modified, also through a cast (modifyi
 * use an [ErrorBuilder](../ErrorBuilder/ErrorBuilder.md) to change several entries at once.
 
 The order of the entries is not defined.
+
+### Adding metadata to an error created elsewhere
+Code that receives an error from another layer (e.g., a middleware that adds a trace identifier, or a retry policy that updates a delay) does not know which keys the error already has.
+
+* **A key that already exists is never an error.** [WithMetadata](Error_WithMetadata.md) replaces its value, so an entry can be set or updated without checking first.
+* **A key in a different case is rejected.** If the other layer added `TraceId` and this code adds `traceId`, the call throws an [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception). It happens while a failure is being handled, so the exception takes the place of the original error.
+
+Define each key once (e.g., as a constant shared by the layers). When the spelling used by the other layer cannot be known, look the key up without regard to case and reuse it:
+
+```csharp
+const string TraceIdKey = "traceId";
+
+var existingKey = error.Metadata.Keys.FirstOrDefault(key => string.Equals(key, TraceIdKey, StringComparison.OrdinalIgnoreCase));
+var enriched = error.WithMetadata(existingKey ?? TraceIdKey, traceId);
+```
 
 > [!NOTE]
 > This dictionary participates in the value-based equality of [Error](Error.md): it is compared **by content**, independent of the order of the entries. See [Equals(Error)](Error_Equals.md).
