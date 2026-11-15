@@ -10,6 +10,11 @@
     <!-- Marks the assembly as trimmable and turns on the trim, AOT and single-file analyzers. -->
     <IsAotCompatible>true</IsAotCompatible>
 
+    <!-- Compares the public API with the last release on nuget.org when packing (ApiCompat). Set the baseline to
+         each new release; intentional breaks go into CompatibilitySuppressions.xml (see docs/conventions.md). -->
+    <EnablePackageValidation>true</EnablePackageValidation>
+    <PackageValidationBaselineVersion>2.8.12</PackageValidationBaselineVersion>
+
     <PackageId>Maple.Result</PackageId>
     <Title>Maple.Result — Result pattern with RFC 9457 errors</Title>
     <Description>An abstraction which contains the value or the error of the operation. It can be mapped to the HTTP response if needed.</Description>
