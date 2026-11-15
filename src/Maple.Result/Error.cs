@@ -182,7 +182,7 @@ public sealed record Error
     ///     <para>
     ///         Keys are compared ordinally (case-sensitive). They should start with a letter, consist of letters, digits and <c>_</c>,
     ///         and be at least 3 characters long (<i>RFC 9457</i>, section 4); this is a recommendation and is not enforced.
-    ///         Keys must not match the standard members (case-insensitively):
+    ///         Keys must not match the top-level members of the problem details format (<see cref="ProblemDetailsMembers" />, case-insensitively):
     ///         <c>type</c>, <c>title</c>, <c>status</c>, <c>detail</c>, <c>instance</c>, <c>errors</c> and <c>detailTemplated</c>;
     ///         <see cref="WithMetadata(string, object?)" /> and <see cref="ErrorBuilder.WithMetadata(string, object?)" /> reject them.
     ///     </para>
