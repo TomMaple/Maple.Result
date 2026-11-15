@@ -387,12 +387,14 @@ public sealed class ErrorBuilder
     /// <returns>The current <see cref="ErrorBuilder" /> instance.</returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="key" /> is <see langword="null" />.</exception>
     /// <exception cref="ArgumentException">
-    ///     If the <paramref name="key" /> is empty, whitespace-only or matches (case-insensitively) a standard problem details member: <c>type</c>,
-    ///     <c>title</c>, <c>status</c>, <c>detail</c>, <c>instance</c>, <c>errors</c> or <c>detailTemplated</c>.
+    ///     If the <paramref name="key" /> is empty, whitespace-only, matches (case-insensitively) a standard problem details member: <c>type</c>,
+    ///     <c>title</c>, <c>status</c>, <c>detail</c>, <c>instance</c>, <c>errors</c> or <c>detailTemplated</c>, or differs only in case from an
+    ///     existing key (the same key replaces the value).
     /// </exception>
     public ErrorBuilder WithMetadata(string key, object? value)
     {
         MetadataKeyValidator.Validate(key);
+        MetadataKeyValidator.ValidateCase(key, CurrentMetadata, nameof(key));
 
         GetPendingMetadata()[key] = value;
 
@@ -412,7 +414,8 @@ public sealed class ErrorBuilder
     /// </exception>
     /// <exception cref="ArgumentException">
     ///     If any key is empty, whitespace-only or matches (case-insensitively) a standard problem details member: <c>type</c>, <c>title</c>, <c>status</c>,
-    ///     <c>detail</c>, <c>instance</c>, <c>errors</c> or <c>detailTemplated</c>.
+    ///     <c>detail</c>, <c>instance</c>, <c>errors</c> or <c>detailTemplated</c>; or if a key differs only in case from an existing key or from another
+    ///     key of the same call (the same key replaces the value).
     /// </exception>
     [OverloadResolutionPriority(1)]
     public ErrorBuilder WithMetadata(IEnumerable<KeyValuePair<string, object?>> metadata)
@@ -422,6 +425,16 @@ public sealed class ErrorBuilder
         var entries = metadata.ToArray();
         foreach (var pair in entries)
             MetadataKeyValidator.Validate(pair.Key);
+
+        var current = CurrentMetadata;
+        for (var i = 0; i < entries.Length; i++)
+        {
+            var key = entries[i].Key;
+            MetadataKeyValidator.ValidateCase(key, current, nameof(metadata));
+
+            for (var j = 0; j < i; j++)
+                MetadataKeyValidator.ValidateCase(entries[j].Key, key, nameof(metadata));
+        }
 
         if (entries.Length == 0)
             return this;
@@ -448,12 +461,23 @@ public sealed class ErrorBuilder
     /// <exception cref="ArgumentNullException">If any key is <see langword="null" />.</exception>
     /// <exception cref="ArgumentException">
     ///     If any key is empty, whitespace-only or matches (case-insensitively) a standard problem details member: <c>type</c>, <c>title</c>, <c>status</c>,
-    ///     <c>detail</c>, <c>instance</c>, <c>errors</c> or <c>detailTemplated</c>.
+    ///     <c>detail</c>, <c>instance</c>, <c>errors</c> or <c>detailTemplated</c>; or if a key differs only in case from an existing key or from another
+    ///     key of the same call (the same key replaces the value).
     /// </exception>
     public ErrorBuilder WithMetadata(params ReadOnlySpan<(string Key, object? Value)> metadata)
     {
         foreach (var (key, _) in metadata)
             MetadataKeyValidator.Validate(key);
+
+        var current = CurrentMetadata;
+        for (var i = 0; i < metadata.Length; i++)
+        {
+            var key = metadata[i].Key;
+            MetadataKeyValidator.ValidateCase(key, current, nameof(metadata));
+
+            for (var j = 0; j < i; j++)
+                MetadataKeyValidator.ValidateCase(metadata[j].Key, key, nameof(metadata));
+        }
 
         if (metadata.IsEmpty)
             return this;
@@ -530,6 +554,11 @@ public sealed class ErrorBuilder
     }
 
     #region helper methods
+
+    /// <summary>
+    ///     The current metadata entries: the pending dictionary if there is one, otherwise the entries of the built one (no copy).
+    /// </summary>
+    private Dictionary<string, object?> CurrentMetadata => _pendingMetadata ?? _builtMetadata.Items;
 
     private List<ErrorDetail> GetPendingErrorDetails()
     {
