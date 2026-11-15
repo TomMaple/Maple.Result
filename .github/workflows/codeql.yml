@@ -1,4 +1,4 @@
-# CodeQL code scanning for the C# source.
+# CodeQL code scanning for the C# library source (tests are not built, so not analysed) and the GitHub Actions workflows.
 # For more information, see: https://docs.github.com/en/code-security/code-scanning
 
 name: CodeQL
@@ -13,7 +13,7 @@ on:
 
 jobs:
   analyze:
-    name: Analyze (C#)
+    name: Analyze (${{ matrix.language }})
     runs-on: ubuntu-latest
     permissions:
       security-events: write
@@ -26,11 +26,14 @@ jobs:
         include:
           - language: csharp
             build-mode: manual
+          - language: actions
+            build-mode: none
     steps:
     - name: Checkout
       uses: actions/checkout@v7
 
     - name: Setup .NET 10
+      if: matrix.build-mode == 'manual'
       uses: actions/setup-dotnet@v6
       with:
         dotnet-version: 10.0.x
@@ -43,9 +46,8 @@ jobs:
         queries: security-and-quality
 
     - name: Build
-      run: |
-        dotnet restore
-        dotnet build --no-restore --configuration Release
+      if: matrix.build-mode == 'manual'
+      run: dotnet build src/Maple.Result/Maple.Result.csproj --configuration Release
 
     - name: Perform CodeQL analysis
       uses: github/codeql-action/analyze@v4
