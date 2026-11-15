@@ -245,7 +245,8 @@ public sealed record Result<T> : IOperationResult
     /// </summary>
     /// <remarks>
     ///     <para>
-    ///         Check <see cref="IsSuccess" /> or <see cref="IsError" /> before reading the value, or use <see cref="GetValueOrDefault" />.
+    ///         Check <see cref="IsSuccess" /> or <see cref="IsError" /> before reading the value, or use <see cref="TryGetValue(out T, out Error)" />
+    ///         (or <see cref="GetValueOrDefault" /> when a fallback value is fine).
     ///         A failed result has no value, so reading it throws instead of returning the default value of <typeparamref name="T" />
     ///         (which, for a value type, would look like a valid value, e.g., <c>0</c> for a <see cref="Result{T}" /> of <see cref="int" />).
     ///     </para>
@@ -263,7 +264,7 @@ public sealed record Result<T> : IOperationResult
             {
                 throw new InvalidOperationException(
                     $"The result has no value, because the operation failed with the error ‘{Error.Title}’ (type ‘{Error.TypeUri}’). " +
-                    $"Check {nameof(IsSuccess)} or {nameof(IsError)} before reading {nameof(Value)}, or use {nameof(GetValueOrDefault)}.");
+                    $"Check {nameof(IsSuccess)} or {nameof(IsError)} before reading {nameof(Value)}, or use {nameof(TryGetValue)}.");
             }
 
             return _value;
