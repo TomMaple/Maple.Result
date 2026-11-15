@@ -73,7 +73,7 @@ are marked breaking. Preview the notes locally with `git cliff --unreleased --st
 		* before a `return`, unless the block has only two one-line statements;
 		* before the other control-flow statements (`throw`, `break`, `continue`, `goto`, `yield return`, `yield break`),
 		  unless the statement directly follows the line that opens it (e.g., the body of an `if` without braces, or the
-		  first statement after `{`);
+		  first statement after `{`); not in a `switch` section (no empty line before its `break`);
 		* after a statement that spans several lines (Rider applies it, `.editorconfig`).
 	* Conditional expressions (`?:`) go one operand per line, with `?` and `:` at the start of the line (Rider applies it,
 	  `.editorconfig`).
