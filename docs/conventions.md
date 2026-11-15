@@ -75,6 +75,10 @@ Version:
 * Pre-release: enter e.g. `3.0.0-rc.1`. The draft is marked as a pre-release automatically. The notes of the final
   `3.0.0` then list only the commits after `v3.0.0-rc.1`; merge the notes of the release candidates when editing it.
 
+If *Publish* fails, fix the cause and use **Re-run failed jobs**: it reuses the package of the first build, and the
+`publish` job skips whatever is already on NuGet or attached to the release. *Re-run all jobs* builds a new package,
+so it fails once the version is on NuGet, rather than attach a package that differs from the published one.
+
 Never create, move or delete a `v*` tag by hand: the `release-tags` ruleset protects them, and *Publish release*
 creates them.
 
