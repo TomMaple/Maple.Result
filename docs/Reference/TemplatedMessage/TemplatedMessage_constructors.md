@@ -42,7 +42,7 @@ The `templateId` or a parameter name is `null`.
 
 [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception)
 
-The `templateId` is empty, consists only of white-space characters or starts or ends with white space, or a parameter name is empty, starts or ends with white space, or is repeated.
+The `templateId` is empty, consists only of white-space characters or starts or ends with white space, or a parameter name is empty, starts or ends with white space, is repeated, or differs only in case from another name (e.g., `Min` and `min`).
 
 ### Remarks
 `null` and an empty collection expression (`[]`) as the second argument bind to this constructor.
@@ -78,7 +78,7 @@ The `templateId` or a parameter name is `null`.
 
 [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception)
 
-The `templateId` is empty, consists only of white-space characters or starts or ends with white space, or a parameter name is empty, starts or ends with white space, or is repeated.
+The `templateId` is empty, consists only of white-space characters or starts or ends with white space, or a parameter name is empty, starts or ends with white space, is repeated, or differs only in case from another name (e.g., `Min` and `min`).
 
 ### Examples
 ```csharp

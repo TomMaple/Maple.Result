@@ -133,7 +133,7 @@ where the parameters are:
 | `propertyPointer` | `string` | JSON Pointer to the input data. | no | `/firstName` |
 | `detail` | `string` | A human-readable explanation of this error detail. | yes | `Minimum 5 characters are required.` |
 | `detailTemplateId` | `string` | A message template ID. | no | `errors.signup.validation.firstName.minLength` |
-| `detailNamedValues` | `(string, object?)[]` | The named values for the message template; names must be unique, and values require `detailTemplateId`. | no | `("minLength", 5)` |
+| `detailNamedValues` | `(string, object?)[]` | The named values for the message template; names must be unique and must not differ only in case (e.g., `Min` and `min`), and values require `detailTemplateId`. | no | `("minLength", 5)` |
 
 To add a single detail to an existing error, use `error.WithErrorDetail(…)`, which returns a copy.
 
