@@ -35,6 +35,10 @@ var error = Error.Validation(ErrorUri.Tag("tag:test.com,2024:SignupErrors-Invali
 | [DetailTemplated](ErrorDetail_DetailTemplated.md) | Gets a templated explanation of the specific problem detail. |
 | [PropertyPointer](ErrorDetail_PropertyPointer.md) | Gets a JSON Pointer which identifies invalid value in the input data. |
 
+## Methods
+| Name | Description |
+| ---- | ----------- |
+| [Pointer(Object[])](ErrorDetail_Pointer.md) | Builds a JSON Pointer from names and array indexes, escaping the names. |
 
 ## See Also
 * [Error](../Error/Error.md)

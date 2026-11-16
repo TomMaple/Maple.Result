@@ -10,6 +10,8 @@
 
 using Maple.Results.Validators;
 using System;
+using System.Globalization;
+using System.Text;
 
 namespace Maple.Results;
 
@@ -26,7 +28,8 @@ namespace Maple.Results;
 ///     </para>
 ///     <para>
 ///         A name taken from the input has to be escaped: <c>~</c> as <c>~0</c> first, then <c>/</c> as <c>~1</c>. Otherwise, a name with a
-///         <c>~</c> makes the constructor throw, and a name with a <c>/</c> gives a wrong pointer.
+///         <c>~</c> makes the constructor throw, and a name with a <c>/</c> gives a wrong pointer. <see cref="Pointer" /> builds an escaped pointer:
+///         <c>ErrorDetail.Pointer("items", 0, name)</c>.
 ///     </para>
 ///     <para>
 ///         For more details about JSON Pointers, see: <seealso href="https://datatracker.ietf.org/doc/html/rfc6901"/>.
@@ -63,6 +66,60 @@ public sealed record ErrorDetail(string? PropertyPointer, string Detail, Templat
     ///     The message template with the human-readable explanation.
     /// </summary>
     public TemplatedMessage? DetailTemplated { get; } = DetailTemplated;
+
+    /// <summary>
+    ///     Builds a JSON Pointer (<i>RFC 6901</i>) in the string form from names and array indexes, escaping the names, e.g., for the
+    ///     <see cref="PropertyPointer" />.
+    /// </summary>
+    /// <remarks>
+    ///     <para>
+    ///         A <see cref="string" /> segment is a name: <c>~</c> is written as <c>~0</c> first, then <c>/</c> as <c>~1</c>. An empty name is a
+    ///         valid segment. An <see cref="int" /> or a <see cref="long" /> segment is an array index and must not be negative.
+    ///     </para>
+    ///     <para>
+    ///         The result is always accepted by the constructor of <see cref="ErrorDetail" />. Without segments, it is the empty pointer, which
+    ///         points to the whole input.
+    ///     </para>
+    /// </remarks>
+    /// <param name="segments">The names (<see cref="string" />) and the indexes (<see cref="int" /> or <see cref="long" />), in order.</param>
+    /// <returns>The pointer, e.g., <c>/items/0/name</c>; empty when there are no segments.</returns>
+    /// <exception cref="ArgumentNullException">If a segment is <see langword="null" />.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">If an index is negative.</exception>
+    /// <exception cref="ArgumentException">If a segment is not a <see cref="string" />, an <see cref="int" /> or a <see cref="long" />.</exception>
+    public static string Pointer(params ReadOnlySpan<object> segments)
+    {
+        var builder = new StringBuilder();
+
+        foreach (var segment in segments)
+        {
+            builder.Append('/');
+
+            switch (segment)
+            {
+                case null:
+                    throw new ArgumentNullException(nameof(segments), "A segment of a JSON Pointer must not be null.");
+                case string name:
+                    var escapedName = name
+                        .Replace("~", "~0", StringComparison.Ordinal)
+                        .Replace("/", "~1", StringComparison.Ordinal);
+                    builder.Append(escapedName);
+                    break;
+                case int index when index >= 0:
+                    builder.Append(index.ToString(CultureInfo.InvariantCulture));
+                    break;
+                case long index when index >= 0:
+                    builder.Append(index.ToString(CultureInfo.InvariantCulture));
+                    break;
+                case int or long:
+                    throw new ArgumentOutOfRangeException(nameof(segments), segment, "The index in a JSON Pointer must not be negative.");
+                default:
+                    throw new ArgumentException(
+                        $"A segment of a JSON Pointer must be a string, an int or a long, not ‘{segment.GetType()}’.", nameof(segments));
+            }
+        }
+
+        return builder.ToString();
+    }
 
     private static string ValidateDetail(string detail, string parameterName)
     {

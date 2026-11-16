@@ -89,6 +89,8 @@ The `pointer` is a JSON Pointer ([RFC 6901](https://datatracker.ietf.org/doc/htm
 
 The pointer is written as it was given: `/email` and `#/email` are not turned into one form. Whether the pointer leads to anything in the input is not checked.
 
+To build a pointer from names and indexes, use `ErrorDetail.Pointer("items", 0, name)`: it escapes the names (`~` as `~0` first, then `/` as `~1`), so a name taken from the input cannot make the constructor throw or give a wrong pointer.
+
 ### What the pointer points to
 RFC 9457 leaves the `errors` member to the problem type (its example scopes the pointer to "the request's content"), so this format defines it: the pointer addresses **the input that was validated, as the client sent it**, whatever the transport. JSON Pointer is used as a path syntax (names and indexes separated by `/`); the input does not have to be a JSON body.
 
