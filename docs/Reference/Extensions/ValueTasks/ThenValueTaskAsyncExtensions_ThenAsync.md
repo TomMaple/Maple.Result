@@ -494,7 +494,7 @@ The task object representing the asynchronous operation: a failed [Result](../..
 
 ### Exceptions
 #### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
-The `resultTask` or `ifSuccessFunction` parameter is `null`.
+The `ifSuccessFunction` parameter is `null`.
 
 #### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
 The asynchronous operation represented by `resultTask` returns `null`, or the `ifSuccessFunction` function returns a value task with a `null` result.
@@ -693,7 +693,7 @@ The task object representing the asynchronous operation: a failed [Result](../..
 
 ### Exceptions
 #### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
-The `resultTask` or `ifSuccessFunction` parameter is `null`.
+The `ifSuccessFunction` parameter is `null`.
 
 #### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
 The asynchronous operation represented by `resultTask` returns `null`, or the `ifSuccessFunction` function returns a value task with a `null` result.
