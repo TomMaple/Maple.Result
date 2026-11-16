@@ -612,9 +612,14 @@ public sealed partial record Result
 
     // These overloads turn a call with a function that returns a task into a compile error (CS0619). Without them, an async lambda
     // converts to Action (async void: its exceptions escape Try), and a lambda returning a task binds to Try<T> with T = Task (a result
-    // holding a task that is never awaited). A Task<T> converts to Task, so the Func<Task> overloads also cover functions returning
+    // holding a task that is never awaited). A Task<T> converts to Task, so the Func<Task> overloads also cover most functions returning
     // Task<T>; their priority makes them win over Try(Action) and Try<T>(Func<T>). A lambda that always throws converts to any delegate
     // type, so it binds to these overloads too: pass the work as a method that can complete, or use TryAsync.
+    //
+    // Both mapper families need a trap for each shape. An async lambda with a block body that returns a value does not convert to
+    // Func<Task>, and a ValueTask<T> does not convert to ValueTask: the untyped family catches both with Func<ValueTask<TTaskResult>>,
+    // and the typed family, whose calls have two type parameters, needs Func<Task<TTaskResult>> and Func<ValueTask<TTaskResult>> of its
+    // own (#191).
 
     private const string FunctionReturnsTaskMessage =
         "The function returns a task, which Try does not await (an async lambda would also become async void). Use TryAsync.";
@@ -668,6 +673,29 @@ public sealed partial record Result
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(FunctionReturnsTaskMessage, error: true)]
     public static Result Try<TException>(Func<ValueTask> function, Func<TException, Error> mapException)
+        where TException : Exception
+    {
+        throw new NotSupportedException(FunctionReturnsTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the function returns a task, which <c>Try</c> does not await; use <c>TryAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(FunctionReturnsTaskMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static Result Try<TTaskResult, TException>(Func<Task<TTaskResult>> function, Func<TException, Error> mapException)
+        where TException : Exception
+    {
+        throw new NotSupportedException(FunctionReturnsTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the function returns a task, which <c>Try</c> does not await; use <c>TryAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(FunctionReturnsTaskMessage, error: true)]
+    public static Result Try<TTaskResult, TException>(Func<ValueTask<TTaskResult>> function, Func<TException, Error> mapException)
         where TException : Exception
     {
         throw new NotSupportedException(FunctionReturnsTaskMessage);
