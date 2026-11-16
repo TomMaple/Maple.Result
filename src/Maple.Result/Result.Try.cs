@@ -582,6 +582,930 @@ public sealed partial record Result
 
     #endregion
 
+    #region Try (flattening)
+
+    /// <summary>
+    ///     Runs the <paramref name="function" /> and returns the <see cref="Result" /> it returns, or a failed one with the <see cref="Error" /> that
+    ///     the <paramref name="mapException" /> function creates from the exception the function throws.
+    /// </summary>
+    /// <remarks>
+    ///     <para>
+    ///         The result is flattened: a <see cref="Result" />, a <see cref="Result{T}" /> or an <see cref="Error" /> returned by the function is
+    ///         not wrapped in a <see cref="Result{T}" />, and an <see cref="Error" /> gives a failed result, as in <c>IfSuccess</c>. Pass the type
+    ///         argument explicitly to keep the nested result (e.g., <c>Result.Try&lt;Result&lt;int&gt;&gt;(…)</c>).
+    ///     </para>
+    ///     <para>
+    ///         An <see cref="OperationCanceledException" /> is not mapped but rethrown: cancellation is not a failure.
+    ///     </para>
+    ///     <para>
+    ///         A function that returns <see langword="null" /> throws an <see cref="InvalidOperationException" />; it is not mapped.
+    ///     </para>
+    /// </remarks>
+    /// <param name="function">The function to run. Must not be <see langword="null" />, nor return <see langword="null" />.</param>
+    /// <param name="mapException">
+    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
+    ///     <see langword="null" />.
+    /// </param>
+    /// <returns>The <see cref="Result" /> returned by the <paramref name="function" />, as it is; or a failed one with the mapped error.</returns>
+    /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
+    /// <exception cref="InvalidOperationException">If the <paramref name="function" /> or the <paramref name="mapException" /> function returns <see langword="null" />.</exception>
+    public static Result Try(Func<Result> function, Func<Exception, Error> mapException)
+    {
+        return Try<Exception>(function, mapException);
+    }
+
+    /// <summary>
+    ///     Runs the <paramref name="function" /> and returns the <see cref="Result" /> it returns, or a failed one with the <see cref="Error" /> that
+    ///     the <paramref name="mapException" /> function creates from the exception the function throws.
+    /// </summary>
+    /// <remarks>
+    ///     <para>
+    ///         The result is flattened: a <see cref="Result" />, a <see cref="Result{T}" /> or an <see cref="Error" /> returned by the function is
+    ///         not wrapped in a <see cref="Result{T}" />, and an <see cref="Error" /> gives a failed result, as in <c>IfSuccess</c>. Pass the type
+    ///         argument explicitly to keep the nested result (e.g., <c>Result.Try&lt;Result&lt;int&gt;&gt;(…)</c>).
+    ///     </para>
+    ///     <para>
+    ///         Other exceptions propagate. An <see cref="OperationCanceledException" /> is rethrown, unless <typeparamref name="TException" /> is <see cref="OperationCanceledException" /> or a type derived from it.
+    ///     </para>
+    ///     <para>
+    ///         A function that returns <see langword="null" /> throws an <see cref="InvalidOperationException" />; it is not mapped.
+    ///     </para>
+    /// </remarks>
+    /// <typeparam name="TException">The type of the exceptions to map; other exceptions propagate.</typeparam>
+    /// <param name="function">The function to run. Must not be <see langword="null" />, nor return <see langword="null" />.</param>
+    /// <param name="mapException">
+    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
+    ///     <see langword="null" />.
+    /// </param>
+    /// <returns>The <see cref="Result" /> returned by the <paramref name="function" />, as it is; or a failed one with the mapped error.</returns>
+    /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
+    /// <exception cref="InvalidOperationException">If the <paramref name="function" /> or the <paramref name="mapException" /> function returns <see langword="null" />.</exception>
+    public static Result Try<TException>(Func<Result> function, Func<TException, Error> mapException)
+        where TException : Exception
+    {
+        ArgumentNullException.ThrowIfNull(function);
+        ArgumentNullException.ThrowIfNull(mapException);
+
+        Result result;
+        try
+        {
+            result = function();
+        }
+        catch (TException exception) when (IsMapped(exception))
+        {
+            var error = MapException(mapException, exception);
+            return FromError(error);
+        }
+
+        // Outside the try block: a null result is a bug of the caller, not an exception to map.
+        return Guard.EnsureNotNullReturned(result, nameof(function));
+    }
+
+    /// <summary>
+    ///     Runs the <paramref name="function" /> and returns the <see cref="Result{T}" /> it returns, or a failed one with the <see cref="Error" />
+    ///     that the <paramref name="mapException" /> function creates from the exception the function throws.
+    /// </summary>
+    /// <remarks>
+    ///     <para>
+    ///         The result is flattened: a <see cref="Result" />, a <see cref="Result{T}" /> or an <see cref="Error" /> returned by the function is
+    ///         not wrapped in a <see cref="Result{T}" />, and an <see cref="Error" /> gives a failed result, as in <c>IfSuccess</c>. Pass the type
+    ///         argument explicitly to keep the nested result (e.g., <c>Result.Try&lt;Result&lt;int&gt;&gt;(…)</c>).
+    ///     </para>
+    ///     <para>
+    ///         An <see cref="OperationCanceledException" /> is not mapped but rethrown: cancellation is not a failure.
+    ///     </para>
+    ///     <para>
+    ///         A function that returns <see langword="null" /> throws an <see cref="InvalidOperationException" />; it is not mapped.
+    ///     </para>
+    /// </remarks>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <param name="function">The function to run. Must not be <see langword="null" />, nor return <see langword="null" />.</param>
+    /// <param name="mapException">
+    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
+    ///     <see langword="null" />.
+    /// </param>
+    /// <returns>The <see cref="Result{T}" /> returned by the <paramref name="function" />, as it is; or a failed one with the mapped error.</returns>
+    /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
+    /// <exception cref="InvalidOperationException">If the <paramref name="function" /> or the <paramref name="mapException" /> function returns <see langword="null" />.</exception>
+    public static Result<T> Try<T>(Func<Result<T>> function, Func<Exception, Error> mapException)
+    {
+        return Try<T, Exception>(function, mapException);
+    }
+
+    /// <summary>
+    ///     Runs the <paramref name="function" /> and returns the <see cref="Result{T}" /> it returns, or a failed one with the <see cref="Error" />
+    ///     that the <paramref name="mapException" /> function creates from the exception the function throws.
+    /// </summary>
+    /// <remarks>
+    ///     <para>
+    ///         The result is flattened: a <see cref="Result" />, a <see cref="Result{T}" /> or an <see cref="Error" /> returned by the function is
+    ///         not wrapped in a <see cref="Result{T}" />, and an <see cref="Error" /> gives a failed result, as in <c>IfSuccess</c>. Pass the type
+    ///         argument explicitly to keep the nested result (e.g., <c>Result.Try&lt;Result&lt;int&gt;&gt;(…)</c>).
+    ///     </para>
+    ///     <para>
+    ///         Other exceptions propagate. An <see cref="OperationCanceledException" /> is rethrown, unless <typeparamref name="TException" /> is <see cref="OperationCanceledException" /> or a type derived from it.
+    ///     </para>
+    ///     <para>
+    ///         A function that returns <see langword="null" /> throws an <see cref="InvalidOperationException" />; it is not mapped.
+    ///     </para>
+    /// </remarks>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <typeparam name="TException">The type of the exceptions to map; other exceptions propagate.</typeparam>
+    /// <param name="function">The function to run. Must not be <see langword="null" />, nor return <see langword="null" />.</param>
+    /// <param name="mapException">
+    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
+    ///     <see langword="null" />.
+    /// </param>
+    /// <returns>The <see cref="Result{T}" /> returned by the <paramref name="function" />, as it is; or a failed one with the mapped error.</returns>
+    /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
+    /// <exception cref="InvalidOperationException">If the <paramref name="function" /> or the <paramref name="mapException" /> function returns <see langword="null" />.</exception>
+    public static Result<T> Try<T, TException>(Func<Result<T>> function, Func<TException, Error> mapException)
+        where TException : Exception
+    {
+        ArgumentNullException.ThrowIfNull(function);
+        ArgumentNullException.ThrowIfNull(mapException);
+
+        Result<T> result;
+        try
+        {
+            result = function();
+        }
+        catch (TException exception) when (IsMapped(exception))
+        {
+            var error = MapException(mapException, exception);
+            return Result<T>.FromError(error);
+        }
+
+        // Outside the try block: a null result is a bug of the caller, not an exception to map.
+        return Guard.EnsureNotNullReturned(result, nameof(function));
+    }
+
+    /// <summary>
+    ///     Runs the <paramref name="function" /> and returns a failed <see cref="Result" /> with the <see cref="Error" /> it returns, or with the
+    ///     error that the <paramref name="mapException" /> function creates from the exception the function throws.
+    /// </summary>
+    /// <remarks>
+    ///     <para>
+    ///         The result is flattened: a <see cref="Result" />, a <see cref="Result{T}" /> or an <see cref="Error" /> returned by the function is
+    ///         not wrapped in a <see cref="Result{T}" />, and an <see cref="Error" /> gives a failed result, as in <c>IfSuccess</c>. Pass the type
+    ///         argument explicitly to keep the nested result (e.g., <c>Result.Try&lt;Result&lt;int&gt;&gt;(…)</c>).
+    ///     </para>
+    ///     <para>
+    ///         An <see cref="OperationCanceledException" /> is not mapped but rethrown: cancellation is not a failure.
+    ///     </para>
+    ///     <para>
+    ///         A function that returns <see langword="null" /> throws an <see cref="InvalidOperationException" />; it is not mapped.
+    ///     </para>
+    /// </remarks>
+    /// <param name="function">The function to run. Must not be <see langword="null" />, nor return <see langword="null" />.</param>
+    /// <param name="mapException">
+    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
+    ///     <see langword="null" />.
+    /// </param>
+    /// <returns>A failed <see cref="Result" /> with the <see cref="Error" /> returned by the <paramref name="function" />, or with the mapped error.</returns>
+    /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
+    /// <exception cref="InvalidOperationException">If the <paramref name="function" /> or the <paramref name="mapException" /> function returns <see langword="null" />.</exception>
+    public static Result Try(Func<Error> function, Func<Exception, Error> mapException)
+    {
+        return Try<Exception>(function, mapException);
+    }
+
+    /// <summary>
+    ///     Runs the <paramref name="function" /> and returns a failed <see cref="Result" /> with the <see cref="Error" /> it returns, or with the
+    ///     error that the <paramref name="mapException" /> function creates from the exception the function throws.
+    /// </summary>
+    /// <remarks>
+    ///     <para>
+    ///         The result is flattened: a <see cref="Result" />, a <see cref="Result{T}" /> or an <see cref="Error" /> returned by the function is
+    ///         not wrapped in a <see cref="Result{T}" />, and an <see cref="Error" /> gives a failed result, as in <c>IfSuccess</c>. Pass the type
+    ///         argument explicitly to keep the nested result (e.g., <c>Result.Try&lt;Result&lt;int&gt;&gt;(…)</c>).
+    ///     </para>
+    ///     <para>
+    ///         Other exceptions propagate. An <see cref="OperationCanceledException" /> is rethrown, unless <typeparamref name="TException" /> is <see cref="OperationCanceledException" /> or a type derived from it.
+    ///     </para>
+    ///     <para>
+    ///         A function that returns <see langword="null" /> throws an <see cref="InvalidOperationException" />; it is not mapped.
+    ///     </para>
+    /// </remarks>
+    /// <typeparam name="TException">The type of the exceptions to map; other exceptions propagate.</typeparam>
+    /// <param name="function">The function to run. Must not be <see langword="null" />, nor return <see langword="null" />.</param>
+    /// <param name="mapException">
+    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
+    ///     <see langword="null" />.
+    /// </param>
+    /// <returns>A failed <see cref="Result" /> with the <see cref="Error" /> returned by the <paramref name="function" />, or with the mapped error.</returns>
+    /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
+    /// <exception cref="InvalidOperationException">If the <paramref name="function" /> or the <paramref name="mapException" /> function returns <see langword="null" />.</exception>
+    public static Result Try<TException>(Func<Error> function, Func<TException, Error> mapException)
+        where TException : Exception
+    {
+        ArgumentNullException.ThrowIfNull(function);
+        ArgumentNullException.ThrowIfNull(mapException);
+
+        Error returnedError;
+        try
+        {
+            returnedError = function();
+        }
+        catch (TException exception) when (IsMapped(exception))
+        {
+            var error = MapException(mapException, exception);
+            return FromError(error);
+        }
+
+        // Outside the try block: a null result is a bug of the caller, not an exception to map.
+        var notNullError = Guard.EnsureNotNullReturned(returnedError, nameof(function));
+
+        return FromError(notNullError);
+    }
+
+    #endregion
+
+    #region TryAsync (Task, flattening)
+
+    /// <summary>
+    ///     Runs the asynchronous <paramref name="function" /> and returns the <see cref="Result" /> it returns, or a failed one with the <see
+    ///     cref="Error" /> that the <paramref name="mapException" /> function creates from the exception the function throws.
+    /// </summary>
+    /// <remarks>
+    ///     <para>
+    ///         The result is flattened: a <see cref="Result" />, a <see cref="Result{T}" /> or an <see cref="Error" /> returned by the function is
+    ///         not wrapped in a <see cref="Result{T}" />, and an <see cref="Error" /> gives a failed result. Pass the type argument explicitly to keep
+    ///         the nested result.
+    ///     </para>
+    ///     <para>
+    ///         An <see cref="OperationCanceledException" /> is not mapped but rethrown: cancellation is not a failure. An exception is mapped whether the function throws before returning its task or the task faults.
+    ///     </para>
+    ///     <para>
+    ///         A function that returns a <see langword="null" /> task or a <see langword="null" /> result throws an <see cref="InvalidOperationException" />; it is not mapped. The arguments are checked
+    ///         when the method is called.
+    ///     </para>
+    /// </remarks>
+    /// <param name="function">The asynchronous function to run. Must not be <see langword="null" />, nor return a <see langword="null" /> task; its result must not be <see langword="null" />.</param>
+    /// <param name="mapException">
+    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
+    ///     <see langword="null" />.
+    /// </param>
+    /// <param name="continueOnCapturedContext">
+    ///     <see langword="true" /> to run the continuations, including the <paramref name="mapException" /> function when it runs after an
+    ///     <c>await</c>, on the captured context; <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
+    ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
+    /// </param>
+    /// <returns>A task with the <see cref="Result" /> returned by the <paramref name="function" />, as it is; or a failed one with the mapped error.</returns>
+    /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
+    /// <exception cref="InvalidOperationException">
+    ///     If the <paramref name="function" /> returns a <see langword="null" /> task or a <see langword="null" /> result, or the <paramref name="mapException" /> function returns
+    ///     <see langword="null" />.
+    /// </exception>
+    [OverloadResolutionPriority(1)]
+    public static Task<Result> TryAsync(Func<Task<Result>> function, Func<Exception, Error> mapException, bool? continueOnCapturedContext = null)
+    {
+        return TryAsync<Exception>(function, mapException, continueOnCapturedContext);
+    }
+
+    /// <summary>
+    ///     Runs the asynchronous <paramref name="function" /> and returns the <see cref="Result" /> it returns, or a failed one with the <see
+    ///     cref="Error" /> that the <paramref name="mapException" /> function creates from the exception the function throws.
+    /// </summary>
+    /// <remarks>
+    ///     <para>
+    ///         The result is flattened: a <see cref="Result" />, a <see cref="Result{T}" /> or an <see cref="Error" /> returned by the function is
+    ///         not wrapped in a <see cref="Result{T}" />, and an <see cref="Error" /> gives a failed result. Pass the type argument explicitly to keep
+    ///         the nested result.
+    ///     </para>
+    ///     <para>
+    ///         Other exceptions propagate. An <see cref="OperationCanceledException" /> is rethrown, unless <typeparamref name="TException" /> is <see cref="OperationCanceledException" /> or a type derived from it. An exception is mapped whether the function throws before returning its task or the task faults.
+    ///     </para>
+    ///     <para>
+    ///         A function that returns a <see langword="null" /> task or a <see langword="null" /> result throws an <see cref="InvalidOperationException" />; it is not mapped. The arguments are checked
+    ///         when the method is called.
+    ///     </para>
+    /// </remarks>
+    /// <typeparam name="TException">The type of the exceptions to map; other exceptions propagate.</typeparam>
+    /// <param name="function">The asynchronous function to run. Must not be <see langword="null" />, nor return a <see langword="null" /> task; its result must not be <see langword="null" />.</param>
+    /// <param name="mapException">
+    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
+    ///     <see langword="null" />.
+    /// </param>
+    /// <param name="continueOnCapturedContext">
+    ///     <see langword="true" /> to run the continuations, including the <paramref name="mapException" /> function when it runs after an
+    ///     <c>await</c>, on the captured context; <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
+    ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
+    /// </param>
+    /// <returns>A task with the <see cref="Result" /> returned by the <paramref name="function" />, as it is; or a failed one with the mapped error.</returns>
+    /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
+    /// <exception cref="InvalidOperationException">
+    ///     If the <paramref name="function" /> returns a <see langword="null" /> task or a <see langword="null" /> result, or the <paramref name="mapException" /> function returns
+    ///     <see langword="null" />.
+    /// </exception>
+    [OverloadResolutionPriority(1)]
+    public static Task<Result> TryAsync<TException>(
+        Func<Task<Result>> function,
+        Func<TException, Error> mapException,
+        bool? continueOnCapturedContext = null
+    )
+        where TException : Exception
+    {
+        ArgumentNullException.ThrowIfNull(function);
+        ArgumentNullException.ThrowIfNull(mapException);
+
+        return Core(function, mapException, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+
+        static async Task<Result> Core(Func<Task<Result>> function, Func<TException, Error> mapException, bool continueOnCapturedContext)
+        {
+            Task<Result> task;
+            try
+            {
+                task = function();
+            }
+            catch (TException exception) when (IsMapped(exception))
+            {
+                var error = MapException(mapException, exception);
+                return FromError(error);
+            }
+
+            // Outside the try blocks: a null task or a null result is a bug of the caller, not an exception to map.
+            var notNullTask = Guard.EnsureNotNullTask(task, nameof(function));
+            Result result;
+            try
+            {
+                result = await notNullTask.ConfigureAwait(continueOnCapturedContext);
+            }
+            catch (TException exception) when (IsMapped(exception))
+            {
+                var error = MapException(mapException, exception);
+                return FromError(error);
+            }
+
+            return Guard.EnsureNotNullReturned(result, nameof(function));
+        }
+    }
+
+    /// <summary>
+    ///     Runs the asynchronous <paramref name="function" /> and returns the <see cref="Result{T}" /> it returns, or a failed one with the <see
+    ///     cref="Error" /> that the <paramref name="mapException" /> function creates from the exception the function throws.
+    /// </summary>
+    /// <remarks>
+    ///     <para>
+    ///         The result is flattened: a <see cref="Result" />, a <see cref="Result{T}" /> or an <see cref="Error" /> returned by the function is
+    ///         not wrapped in a <see cref="Result{T}" />, and an <see cref="Error" /> gives a failed result. Pass the type argument explicitly to keep
+    ///         the nested result.
+    ///     </para>
+    ///     <para>
+    ///         An <see cref="OperationCanceledException" /> is not mapped but rethrown: cancellation is not a failure. An exception is mapped whether the function throws before returning its task or the task faults.
+    ///     </para>
+    ///     <para>
+    ///         A function that returns a <see langword="null" /> task or a <see langword="null" /> result throws an <see cref="InvalidOperationException" />; it is not mapped. The arguments are checked
+    ///         when the method is called.
+    ///     </para>
+    /// </remarks>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <param name="function">The asynchronous function to run. Must not be <see langword="null" />, nor return a <see langword="null" /> task; its result must not be <see langword="null" />.</param>
+    /// <param name="mapException">
+    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
+    ///     <see langword="null" />.
+    /// </param>
+    /// <param name="continueOnCapturedContext">
+    ///     <see langword="true" /> to run the continuations, including the <paramref name="mapException" /> function when it runs after an
+    ///     <c>await</c>, on the captured context; <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
+    ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
+    /// </param>
+    /// <returns>A task with the <see cref="Result{T}" /> returned by the <paramref name="function" />, as it is; or a failed one with the mapped error.</returns>
+    /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
+    /// <exception cref="InvalidOperationException">
+    ///     If the <paramref name="function" /> returns a <see langword="null" /> task or a <see langword="null" /> result, or the <paramref name="mapException" /> function returns
+    ///     <see langword="null" />.
+    /// </exception>
+    [OverloadResolutionPriority(1)]
+    public static Task<Result<T>> TryAsync<T>(Func<Task<Result<T>>> function, Func<Exception, Error> mapException, bool? continueOnCapturedContext = null)
+    {
+        return TryAsync<T, Exception>(function, mapException, continueOnCapturedContext);
+    }
+
+    /// <summary>
+    ///     Runs the asynchronous <paramref name="function" /> and returns the <see cref="Result{T}" /> it returns, or a failed one with the <see
+    ///     cref="Error" /> that the <paramref name="mapException" /> function creates from the exception the function throws.
+    /// </summary>
+    /// <remarks>
+    ///     <para>
+    ///         The result is flattened: a <see cref="Result" />, a <see cref="Result{T}" /> or an <see cref="Error" /> returned by the function is
+    ///         not wrapped in a <see cref="Result{T}" />, and an <see cref="Error" /> gives a failed result. Pass the type argument explicitly to keep
+    ///         the nested result.
+    ///     </para>
+    ///     <para>
+    ///         Other exceptions propagate. An <see cref="OperationCanceledException" /> is rethrown, unless <typeparamref name="TException" /> is <see cref="OperationCanceledException" /> or a type derived from it. An exception is mapped whether the function throws before returning its task or the task faults.
+    ///     </para>
+    ///     <para>
+    ///         A function that returns a <see langword="null" /> task or a <see langword="null" /> result throws an <see cref="InvalidOperationException" />; it is not mapped. The arguments are checked
+    ///         when the method is called.
+    ///     </para>
+    /// </remarks>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <typeparam name="TException">The type of the exceptions to map; other exceptions propagate.</typeparam>
+    /// <param name="function">The asynchronous function to run. Must not be <see langword="null" />, nor return a <see langword="null" /> task; its result must not be <see langword="null" />.</param>
+    /// <param name="mapException">
+    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
+    ///     <see langword="null" />.
+    /// </param>
+    /// <param name="continueOnCapturedContext">
+    ///     <see langword="true" /> to run the continuations, including the <paramref name="mapException" /> function when it runs after an
+    ///     <c>await</c>, on the captured context; <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
+    ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
+    /// </param>
+    /// <returns>A task with the <see cref="Result{T}" /> returned by the <paramref name="function" />, as it is; or a failed one with the mapped error.</returns>
+    /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
+    /// <exception cref="InvalidOperationException">
+    ///     If the <paramref name="function" /> returns a <see langword="null" /> task or a <see langword="null" /> result, or the <paramref name="mapException" /> function returns
+    ///     <see langword="null" />.
+    /// </exception>
+    [OverloadResolutionPriority(1)]
+    public static Task<Result<T>> TryAsync<T, TException>(
+        Func<Task<Result<T>>> function,
+        Func<TException, Error> mapException,
+        bool? continueOnCapturedContext = null
+    )
+        where TException : Exception
+    {
+        ArgumentNullException.ThrowIfNull(function);
+        ArgumentNullException.ThrowIfNull(mapException);
+
+        return Core(function, mapException, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+
+        static async Task<Result<T>> Core(Func<Task<Result<T>>> function, Func<TException, Error> mapException, bool continueOnCapturedContext)
+        {
+            Task<Result<T>> task;
+            try
+            {
+                task = function();
+            }
+            catch (TException exception) when (IsMapped(exception))
+            {
+                var error = MapException(mapException, exception);
+                return Result<T>.FromError(error);
+            }
+
+            // Outside the try blocks: a null task or a null result is a bug of the caller, not an exception to map.
+            var notNullTask = Guard.EnsureNotNullTask(task, nameof(function));
+            Result<T> result;
+            try
+            {
+                result = await notNullTask.ConfigureAwait(continueOnCapturedContext);
+            }
+            catch (TException exception) when (IsMapped(exception))
+            {
+                var error = MapException(mapException, exception);
+                return Result<T>.FromError(error);
+            }
+
+            return Guard.EnsureNotNullReturned(result, nameof(function));
+        }
+    }
+
+    /// <summary>
+    ///     Runs the asynchronous <paramref name="function" /> and returns a failed <see cref="Result" /> with the <see cref="Error" /> it returns, or
+    ///     with the error that the <paramref name="mapException" /> function creates from the exception the function throws.
+    /// </summary>
+    /// <remarks>
+    ///     <para>
+    ///         The result is flattened: a <see cref="Result" />, a <see cref="Result{T}" /> or an <see cref="Error" /> returned by the function is
+    ///         not wrapped in a <see cref="Result{T}" />, and an <see cref="Error" /> gives a failed result. Pass the type argument explicitly to keep
+    ///         the nested result.
+    ///     </para>
+    ///     <para>
+    ///         An <see cref="OperationCanceledException" /> is not mapped but rethrown: cancellation is not a failure. An exception is mapped whether the function throws before returning its task or the task faults.
+    ///     </para>
+    ///     <para>
+    ///         A function that returns a <see langword="null" /> task or a <see langword="null" /> error throws an <see cref="InvalidOperationException" />; it is not mapped. The arguments are checked
+    ///         when the method is called.
+    ///     </para>
+    /// </remarks>
+    /// <param name="function">The asynchronous function to run. Must not be <see langword="null" />, nor return a <see langword="null" /> task; its result must not be <see langword="null" />.</param>
+    /// <param name="mapException">
+    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
+    ///     <see langword="null" />.
+    /// </param>
+    /// <param name="continueOnCapturedContext">
+    ///     <see langword="true" /> to run the continuations, including the <paramref name="mapException" /> function when it runs after an
+    ///     <c>await</c>, on the captured context; <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
+    ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
+    /// </param>
+    /// <returns>A task with a failed <see cref="Result" /> with the <see cref="Error" /> returned by the <paramref name="function" />, or with the mapped error.</returns>
+    /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
+    /// <exception cref="InvalidOperationException">
+    ///     If the <paramref name="function" /> returns a <see langword="null" /> task or a <see langword="null" /> error, or the <paramref name="mapException" /> function returns
+    ///     <see langword="null" />.
+    /// </exception>
+    [OverloadResolutionPriority(1)]
+    public static Task<Result> TryAsync(Func<Task<Error>> function, Func<Exception, Error> mapException, bool? continueOnCapturedContext = null)
+    {
+        return TryAsync<Exception>(function, mapException, continueOnCapturedContext);
+    }
+
+    /// <summary>
+    ///     Runs the asynchronous <paramref name="function" /> and returns a failed <see cref="Result" /> with the <see cref="Error" /> it returns, or
+    ///     with the error that the <paramref name="mapException" /> function creates from the exception the function throws.
+    /// </summary>
+    /// <remarks>
+    ///     <para>
+    ///         The result is flattened: a <see cref="Result" />, a <see cref="Result{T}" /> or an <see cref="Error" /> returned by the function is
+    ///         not wrapped in a <see cref="Result{T}" />, and an <see cref="Error" /> gives a failed result. Pass the type argument explicitly to keep
+    ///         the nested result.
+    ///     </para>
+    ///     <para>
+    ///         Other exceptions propagate. An <see cref="OperationCanceledException" /> is rethrown, unless <typeparamref name="TException" /> is <see cref="OperationCanceledException" /> or a type derived from it. An exception is mapped whether the function throws before returning its task or the task faults.
+    ///     </para>
+    ///     <para>
+    ///         A function that returns a <see langword="null" /> task or a <see langword="null" /> error throws an <see cref="InvalidOperationException" />; it is not mapped. The arguments are checked
+    ///         when the method is called.
+    ///     </para>
+    /// </remarks>
+    /// <typeparam name="TException">The type of the exceptions to map; other exceptions propagate.</typeparam>
+    /// <param name="function">The asynchronous function to run. Must not be <see langword="null" />, nor return a <see langword="null" /> task; its result must not be <see langword="null" />.</param>
+    /// <param name="mapException">
+    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
+    ///     <see langword="null" />.
+    /// </param>
+    /// <param name="continueOnCapturedContext">
+    ///     <see langword="true" /> to run the continuations, including the <paramref name="mapException" /> function when it runs after an
+    ///     <c>await</c>, on the captured context; <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
+    ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
+    /// </param>
+    /// <returns>A task with a failed <see cref="Result" /> with the <see cref="Error" /> returned by the <paramref name="function" />, or with the mapped error.</returns>
+    /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
+    /// <exception cref="InvalidOperationException">
+    ///     If the <paramref name="function" /> returns a <see langword="null" /> task or a <see langword="null" /> error, or the <paramref name="mapException" /> function returns
+    ///     <see langword="null" />.
+    /// </exception>
+    [OverloadResolutionPriority(1)]
+    public static Task<Result> TryAsync<TException>(
+        Func<Task<Error>> function,
+        Func<TException, Error> mapException,
+        bool? continueOnCapturedContext = null
+    )
+        where TException : Exception
+    {
+        ArgumentNullException.ThrowIfNull(function);
+        ArgumentNullException.ThrowIfNull(mapException);
+
+        return Core(function, mapException, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+
+        static async Task<Result> Core(Func<Task<Error>> function, Func<TException, Error> mapException, bool continueOnCapturedContext)
+        {
+            Task<Error> task;
+            try
+            {
+                task = function();
+            }
+            catch (TException exception) when (IsMapped(exception))
+            {
+                var error = MapException(mapException, exception);
+                return FromError(error);
+            }
+
+            // Outside the try blocks: a null task or a null result is a bug of the caller, not an exception to map.
+            var notNullTask = Guard.EnsureNotNullTask(task, nameof(function));
+            Error returnedError;
+            try
+            {
+                returnedError = await notNullTask.ConfigureAwait(continueOnCapturedContext);
+            }
+            catch (TException exception) when (IsMapped(exception))
+            {
+                var error = MapException(mapException, exception);
+                return FromError(error);
+            }
+
+            var notNullError = Guard.EnsureNotNullReturned(returnedError, nameof(function));
+
+            return FromError(notNullError);
+        }
+    }
+
+    #endregion
+
+    #region TryAsync (ValueTask, flattening)
+
+    /// <summary>
+    ///     Runs the asynchronous <paramref name="function" /> and returns the <see cref="Result" /> it returns, or a failed one with the <see
+    ///     cref="Error" /> that the <paramref name="mapException" /> function creates from the exception the function throws.
+    /// </summary>
+    /// <remarks>
+    ///     <para>
+    ///         The result is flattened: a <see cref="Result" />, a <see cref="Result{T}" /> or an <see cref="Error" /> returned by the function is
+    ///         not wrapped in a <see cref="Result{T}" />, and an <see cref="Error" /> gives a failed result. Pass the type argument explicitly to keep
+    ///         the nested result.
+    ///     </para>
+    ///     <para>
+    ///         An <see cref="OperationCanceledException" /> is not mapped but rethrown: cancellation is not a failure. An exception is mapped whether the function throws before returning its task or the task faults.
+    ///     </para>
+    ///     <para>
+    ///         A function that returns a <see langword="null" /> result throws an <see cref="InvalidOperationException" />; it is not mapped. The arguments are checked
+    ///         when the method is called.
+    ///     </para>
+    /// </remarks>
+    /// <param name="function">The asynchronous function to run. Must not be <see langword="null" />; its result must not be <see langword="null" />.</param>
+    /// <param name="mapException">
+    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
+    ///     <see langword="null" />.
+    /// </param>
+    /// <param name="continueOnCapturedContext">
+    ///     <see langword="true" /> to run the continuations, including the <paramref name="mapException" /> function when it runs after an
+    ///     <c>await</c>, on the captured context; <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
+    ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
+    /// </param>
+    /// <returns>A task with the <see cref="Result" /> returned by the <paramref name="function" />, as it is; or a failed one with the mapped error.</returns>
+    /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
+    /// <exception cref="InvalidOperationException">
+    ///     If the <paramref name="function" /> returns a <see langword="null" /> result, or the <paramref name="mapException" /> function returns
+    ///     <see langword="null" />.
+    /// </exception>
+    public static ValueTask<Result> TryAsync(Func<ValueTask<Result>> function, Func<Exception, Error> mapException, bool? continueOnCapturedContext = null)
+    {
+        return TryAsync<Exception>(function, mapException, continueOnCapturedContext);
+    }
+
+    /// <summary>
+    ///     Runs the asynchronous <paramref name="function" /> and returns the <see cref="Result" /> it returns, or a failed one with the <see
+    ///     cref="Error" /> that the <paramref name="mapException" /> function creates from the exception the function throws.
+    /// </summary>
+    /// <remarks>
+    ///     <para>
+    ///         The result is flattened: a <see cref="Result" />, a <see cref="Result{T}" /> or an <see cref="Error" /> returned by the function is
+    ///         not wrapped in a <see cref="Result{T}" />, and an <see cref="Error" /> gives a failed result. Pass the type argument explicitly to keep
+    ///         the nested result.
+    ///     </para>
+    ///     <para>
+    ///         Other exceptions propagate. An <see cref="OperationCanceledException" /> is rethrown, unless <typeparamref name="TException" /> is <see cref="OperationCanceledException" /> or a type derived from it. An exception is mapped whether the function throws before returning its task or the task faults.
+    ///     </para>
+    ///     <para>
+    ///         A function that returns a <see langword="null" /> result throws an <see cref="InvalidOperationException" />; it is not mapped. The arguments are checked
+    ///         when the method is called.
+    ///     </para>
+    /// </remarks>
+    /// <typeparam name="TException">The type of the exceptions to map; other exceptions propagate.</typeparam>
+    /// <param name="function">The asynchronous function to run. Must not be <see langword="null" />; its result must not be <see langword="null" />.</param>
+    /// <param name="mapException">
+    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
+    ///     <see langword="null" />.
+    /// </param>
+    /// <param name="continueOnCapturedContext">
+    ///     <see langword="true" /> to run the continuations, including the <paramref name="mapException" /> function when it runs after an
+    ///     <c>await</c>, on the captured context; <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
+    ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
+    /// </param>
+    /// <returns>A task with the <see cref="Result" /> returned by the <paramref name="function" />, as it is; or a failed one with the mapped error.</returns>
+    /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
+    /// <exception cref="InvalidOperationException">
+    ///     If the <paramref name="function" /> returns a <see langword="null" /> result, or the <paramref name="mapException" /> function returns
+    ///     <see langword="null" />.
+    /// </exception>
+    public static ValueTask<Result> TryAsync<TException>(
+        Func<ValueTask<Result>> function,
+        Func<TException, Error> mapException,
+        bool? continueOnCapturedContext = null
+    )
+        where TException : Exception
+    {
+        ArgumentNullException.ThrowIfNull(function);
+        ArgumentNullException.ThrowIfNull(mapException);
+
+        return Core(function, mapException, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+
+        static async ValueTask<Result> Core(Func<ValueTask<Result>> function, Func<TException, Error> mapException, bool continueOnCapturedContext)
+        {
+            Result result;
+            try
+            {
+                var task = function();
+                result = await task.ConfigureAwait(continueOnCapturedContext);
+            }
+            catch (TException exception) when (IsMapped(exception))
+            {
+                var error = MapException(mapException, exception);
+                return FromError(error);
+            }
+
+            // Outside the try block: a null result is a bug of the caller, not an exception to map.
+            return Guard.EnsureNotNullReturned(result, nameof(function));
+        }
+    }
+
+    /// <summary>
+    ///     Runs the asynchronous <paramref name="function" /> and returns the <see cref="Result{T}" /> it returns, or a failed one with the <see
+    ///     cref="Error" /> that the <paramref name="mapException" /> function creates from the exception the function throws.
+    /// </summary>
+    /// <remarks>
+    ///     <para>
+    ///         The result is flattened: a <see cref="Result" />, a <see cref="Result{T}" /> or an <see cref="Error" /> returned by the function is
+    ///         not wrapped in a <see cref="Result{T}" />, and an <see cref="Error" /> gives a failed result. Pass the type argument explicitly to keep
+    ///         the nested result.
+    ///     </para>
+    ///     <para>
+    ///         An <see cref="OperationCanceledException" /> is not mapped but rethrown: cancellation is not a failure. An exception is mapped whether the function throws before returning its task or the task faults.
+    ///     </para>
+    ///     <para>
+    ///         A function that returns a <see langword="null" /> result throws an <see cref="InvalidOperationException" />; it is not mapped. The arguments are checked
+    ///         when the method is called.
+    ///     </para>
+    /// </remarks>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <param name="function">The asynchronous function to run. Must not be <see langword="null" />; its result must not be <see langword="null" />.</param>
+    /// <param name="mapException">
+    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
+    ///     <see langword="null" />.
+    /// </param>
+    /// <param name="continueOnCapturedContext">
+    ///     <see langword="true" /> to run the continuations, including the <paramref name="mapException" /> function when it runs after an
+    ///     <c>await</c>, on the captured context; <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
+    ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
+    /// </param>
+    /// <returns>A task with the <see cref="Result{T}" /> returned by the <paramref name="function" />, as it is; or a failed one with the mapped error.</returns>
+    /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
+    /// <exception cref="InvalidOperationException">
+    ///     If the <paramref name="function" /> returns a <see langword="null" /> result, or the <paramref name="mapException" /> function returns
+    ///     <see langword="null" />.
+    /// </exception>
+    public static ValueTask<Result<T>> TryAsync<T>(Func<ValueTask<Result<T>>> function, Func<Exception, Error> mapException, bool? continueOnCapturedContext = null)
+    {
+        return TryAsync<T, Exception>(function, mapException, continueOnCapturedContext);
+    }
+
+    /// <summary>
+    ///     Runs the asynchronous <paramref name="function" /> and returns the <see cref="Result{T}" /> it returns, or a failed one with the <see
+    ///     cref="Error" /> that the <paramref name="mapException" /> function creates from the exception the function throws.
+    /// </summary>
+    /// <remarks>
+    ///     <para>
+    ///         The result is flattened: a <see cref="Result" />, a <see cref="Result{T}" /> or an <see cref="Error" /> returned by the function is
+    ///         not wrapped in a <see cref="Result{T}" />, and an <see cref="Error" /> gives a failed result. Pass the type argument explicitly to keep
+    ///         the nested result.
+    ///     </para>
+    ///     <para>
+    ///         Other exceptions propagate. An <see cref="OperationCanceledException" /> is rethrown, unless <typeparamref name="TException" /> is <see cref="OperationCanceledException" /> or a type derived from it. An exception is mapped whether the function throws before returning its task or the task faults.
+    ///     </para>
+    ///     <para>
+    ///         A function that returns a <see langword="null" /> result throws an <see cref="InvalidOperationException" />; it is not mapped. The arguments are checked
+    ///         when the method is called.
+    ///     </para>
+    /// </remarks>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <typeparam name="TException">The type of the exceptions to map; other exceptions propagate.</typeparam>
+    /// <param name="function">The asynchronous function to run. Must not be <see langword="null" />; its result must not be <see langword="null" />.</param>
+    /// <param name="mapException">
+    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
+    ///     <see langword="null" />.
+    /// </param>
+    /// <param name="continueOnCapturedContext">
+    ///     <see langword="true" /> to run the continuations, including the <paramref name="mapException" /> function when it runs after an
+    ///     <c>await</c>, on the captured context; <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
+    ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
+    /// </param>
+    /// <returns>A task with the <see cref="Result{T}" /> returned by the <paramref name="function" />, as it is; or a failed one with the mapped error.</returns>
+    /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
+    /// <exception cref="InvalidOperationException">
+    ///     If the <paramref name="function" /> returns a <see langword="null" /> result, or the <paramref name="mapException" /> function returns
+    ///     <see langword="null" />.
+    /// </exception>
+    public static ValueTask<Result<T>> TryAsync<T, TException>(
+        Func<ValueTask<Result<T>>> function,
+        Func<TException, Error> mapException,
+        bool? continueOnCapturedContext = null
+    )
+        where TException : Exception
+    {
+        ArgumentNullException.ThrowIfNull(function);
+        ArgumentNullException.ThrowIfNull(mapException);
+
+        return Core(function, mapException, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+
+        static async ValueTask<Result<T>> Core(Func<ValueTask<Result<T>>> function, Func<TException, Error> mapException, bool continueOnCapturedContext)
+        {
+            Result<T> result;
+            try
+            {
+                var task = function();
+                result = await task.ConfigureAwait(continueOnCapturedContext);
+            }
+            catch (TException exception) when (IsMapped(exception))
+            {
+                var error = MapException(mapException, exception);
+                return Result<T>.FromError(error);
+            }
+
+            // Outside the try block: a null result is a bug of the caller, not an exception to map.
+            return Guard.EnsureNotNullReturned(result, nameof(function));
+        }
+    }
+
+    /// <summary>
+    ///     Runs the asynchronous <paramref name="function" /> and returns a failed <see cref="Result" /> with the <see cref="Error" /> it returns, or
+    ///     with the error that the <paramref name="mapException" /> function creates from the exception the function throws.
+    /// </summary>
+    /// <remarks>
+    ///     <para>
+    ///         The result is flattened: a <see cref="Result" />, a <see cref="Result{T}" /> or an <see cref="Error" /> returned by the function is
+    ///         not wrapped in a <see cref="Result{T}" />, and an <see cref="Error" /> gives a failed result. Pass the type argument explicitly to keep
+    ///         the nested result.
+    ///     </para>
+    ///     <para>
+    ///         An <see cref="OperationCanceledException" /> is not mapped but rethrown: cancellation is not a failure. An exception is mapped whether the function throws before returning its task or the task faults.
+    ///     </para>
+    ///     <para>
+    ///         A function that returns a <see langword="null" /> error throws an <see cref="InvalidOperationException" />; it is not mapped. The arguments are checked
+    ///         when the method is called.
+    ///     </para>
+    /// </remarks>
+    /// <param name="function">The asynchronous function to run. Must not be <see langword="null" />; its result must not be <see langword="null" />.</param>
+    /// <param name="mapException">
+    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
+    ///     <see langword="null" />.
+    /// </param>
+    /// <param name="continueOnCapturedContext">
+    ///     <see langword="true" /> to run the continuations, including the <paramref name="mapException" /> function when it runs after an
+    ///     <c>await</c>, on the captured context; <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
+    ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
+    /// </param>
+    /// <returns>A task with a failed <see cref="Result" /> with the <see cref="Error" /> returned by the <paramref name="function" />, or with the mapped error.</returns>
+    /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
+    /// <exception cref="InvalidOperationException">
+    ///     If the <paramref name="function" /> returns a <see langword="null" /> error, or the <paramref name="mapException" /> function returns
+    ///     <see langword="null" />.
+    /// </exception>
+    public static ValueTask<Result> TryAsync(Func<ValueTask<Error>> function, Func<Exception, Error> mapException, bool? continueOnCapturedContext = null)
+    {
+        return TryAsync<Exception>(function, mapException, continueOnCapturedContext);
+    }
+
+    /// <summary>
+    ///     Runs the asynchronous <paramref name="function" /> and returns a failed <see cref="Result" /> with the <see cref="Error" /> it returns, or
+    ///     with the error that the <paramref name="mapException" /> function creates from the exception the function throws.
+    /// </summary>
+    /// <remarks>
+    ///     <para>
+    ///         The result is flattened: a <see cref="Result" />, a <see cref="Result{T}" /> or an <see cref="Error" /> returned by the function is
+    ///         not wrapped in a <see cref="Result{T}" />, and an <see cref="Error" /> gives a failed result. Pass the type argument explicitly to keep
+    ///         the nested result.
+    ///     </para>
+    ///     <para>
+    ///         Other exceptions propagate. An <see cref="OperationCanceledException" /> is rethrown, unless <typeparamref name="TException" /> is <see cref="OperationCanceledException" /> or a type derived from it. An exception is mapped whether the function throws before returning its task or the task faults.
+    ///     </para>
+    ///     <para>
+    ///         A function that returns a <see langword="null" /> error throws an <see cref="InvalidOperationException" />; it is not mapped. The arguments are checked
+    ///         when the method is called.
+    ///     </para>
+    /// </remarks>
+    /// <typeparam name="TException">The type of the exceptions to map; other exceptions propagate.</typeparam>
+    /// <param name="function">The asynchronous function to run. Must not be <see langword="null" />; its result must not be <see langword="null" />.</param>
+    /// <param name="mapException">
+    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
+    ///     <see langword="null" />.
+    /// </param>
+    /// <param name="continueOnCapturedContext">
+    ///     <see langword="true" /> to run the continuations, including the <paramref name="mapException" /> function when it runs after an
+    ///     <c>await</c>, on the captured context; <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
+    ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
+    /// </param>
+    /// <returns>A task with a failed <see cref="Result" /> with the <see cref="Error" /> returned by the <paramref name="function" />, or with the mapped error.</returns>
+    /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
+    /// <exception cref="InvalidOperationException">
+    ///     If the <paramref name="function" /> returns a <see langword="null" /> error, or the <paramref name="mapException" /> function returns
+    ///     <see langword="null" />.
+    /// </exception>
+    public static ValueTask<Result> TryAsync<TException>(
+        Func<ValueTask<Error>> function,
+        Func<TException, Error> mapException,
+        bool? continueOnCapturedContext = null
+    )
+        where TException : Exception
+    {
+        ArgumentNullException.ThrowIfNull(function);
+        ArgumentNullException.ThrowIfNull(mapException);
+
+        return Core(function, mapException, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+
+        static async ValueTask<Result> Core(Func<ValueTask<Error>> function, Func<TException, Error> mapException, bool continueOnCapturedContext)
+        {
+            Error returnedError;
+            try
+            {
+                var task = function();
+                returnedError = await task.ConfigureAwait(continueOnCapturedContext);
+            }
+            catch (TException exception) when (IsMapped(exception))
+            {
+                var error = MapException(mapException, exception);
+                return FromError(error);
+            }
+
+            // Outside the try block: a null result is a bug of the caller, not an exception to map.
+            var notNullError = Guard.EnsureNotNullReturned(returnedError, nameof(function));
+
+            return FromError(notNullError);
+        }
+    }
+
+    #endregion
+
     #region helper methods
 
     /// <summary>
