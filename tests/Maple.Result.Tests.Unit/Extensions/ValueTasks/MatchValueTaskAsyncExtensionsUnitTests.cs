@@ -10,8 +10,12 @@
 
 using Maple.Results.Extensions.ValueTasks;
 using Maple.Results.Tests.Unit.TestingInfrastructure.Fakes;
+using Maple.Results.Tests.Unit.TestingInfrastructure.Helpers;
 using Moq;
 using System;
+using System.ComponentModel;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Maple.Results.Tests.Unit.Extensions.ValueTasks;
@@ -3673,6 +3677,573 @@ public class MatchValueTaskAsyncExtensionsUnitTests
         // Assert
         result.Error.ShouldBeSameAs(error);
         passedError.ShouldBeSameAs(error);
+    }
+
+    #endregion
+
+    #region ValueTask results with synchronous delegates (issue #214)
+
+    private static readonly Error SyncTestError = Error.Failure(ErrorUri.None, "Synchronous delegate test error");
+    private static readonly Error SyncOtherError = Error.Conflict(ErrorUri.None, "Synchronous delegate other error");
+
+    [Fact]
+    public async Task MatchAsync_SuccessfulResultTaskWithActionAndErrorAction_RunsSuccessDelegate()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.Success());
+        var successCalled = false;
+        Error? received = null;
+
+        // Act
+        var result = await sut.MatchAsync(() => { successCalled = true; }, error => { received = error; });
+
+        // Assert
+        successCalled.ShouldBeTrue();
+        received.ShouldBeNull();
+        result.IsSuccess.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task MatchAsync_FailedResultTaskWithActionAndErrorAction_RunsErrorDelegate()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.FromError(SyncTestError));
+        var successCalled = false;
+        Error? received = null;
+
+        // Act
+        var result = await sut.MatchAsync(() => { successCalled = true; }, error => { received = error; });
+
+        // Assert
+        successCalled.ShouldBeFalse();
+        received.ShouldBeSameAs(SyncTestError);
+        result.Error.ShouldBeSameAs(SyncTestError);
+    }
+
+    [Fact]
+    public async Task MatchAsync_SuccessfulResultTaskWithResultFunctionAndErrorAction_RunsSuccessDelegate()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.Success());
+        var successCalled = false;
+        Error? received = null;
+
+        // Act
+        var result = await sut.MatchAsync(() => { successCalled = true; return Result.FromError(SyncOtherError); }, error => { received = error; });
+
+        // Assert
+        successCalled.ShouldBeTrue();
+        result.Error.ShouldBeSameAs(SyncOtherError);
+    }
+
+    [Fact]
+    public async Task MatchAsync_FailedResultTaskWithResultFunctionAndErrorAction_RunsErrorDelegate()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.FromError(SyncTestError));
+        var successCalled = false;
+        Error? received = null;
+
+        // Act
+        var result = await sut.MatchAsync(() => { successCalled = true; return Result.FromError(SyncOtherError); }, error => { received = error; });
+
+        // Assert
+        successCalled.ShouldBeFalse();
+        received.ShouldBeSameAs(SyncTestError);
+        result.Error.ShouldBeSameAs(SyncTestError);
+    }
+
+    [Fact]
+    public async Task MatchAsync_SuccessfulResultTaskWithResultFunctionAndErrorResultFunction_RunsSuccessDelegate()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.Success());
+        var successCalled = false;
+        Error? received = null;
+
+        // Act
+        var result = await sut.MatchAsync(() => { successCalled = true; return Result.FromError(SyncOtherError); }, error => { received = error; return Result.Success(); });
+
+        // Assert
+        successCalled.ShouldBeTrue();
+        received.ShouldBeNull();
+        result.Error.ShouldBeSameAs(SyncOtherError);
+    }
+
+    [Fact]
+    public async Task MatchAsync_FailedResultTaskWithResultFunctionAndErrorResultFunction_RunsErrorDelegate()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.FromError(SyncTestError));
+        var successCalled = false;
+        Error? received = null;
+
+        // Act
+        var result = await sut.MatchAsync(() => { successCalled = true; return Result.FromError(SyncOtherError); }, error => { received = error; return Result.Success(); });
+
+        // Assert
+        successCalled.ShouldBeFalse();
+        received.ShouldBeSameAs(SyncTestError);
+        result.IsSuccess.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task MatchAsync_SuccessfulResultTaskWithValueFunctionAndErrorAction_RunsSuccessDelegate()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.Success());
+        var successCalled = false;
+        Error? received = null;
+
+        // Act
+        var result = await sut.MatchAsync(() => { successCalled = true; return 7; }, error => { received = error; });
+
+        // Assert
+        successCalled.ShouldBeTrue();
+        result.Value.ShouldBe(7);
+    }
+
+    [Fact]
+    public async Task MatchAsync_FailedResultTaskWithValueFunctionAndErrorAction_RunsErrorDelegate()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.FromError(SyncTestError));
+        var successCalled = false;
+        Error? received = null;
+
+        // Act
+        var result = await sut.MatchAsync(() => { successCalled = true; return 7; }, error => { received = error; });
+
+        // Assert
+        successCalled.ShouldBeFalse();
+        received.ShouldBeSameAs(SyncTestError);
+        result.Error.ShouldBeSameAs(SyncTestError);
+    }
+
+    [Fact]
+    public async Task MatchAsync_SuccessfulResultTaskWithErrorFunctionAndErrorAction_RunsSuccessDelegate()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.Success());
+        var successCalled = false;
+        Error? received = null;
+
+        // Act
+        var result = await sut.MatchAsync(() => { successCalled = true; return SyncOtherError; }, error => { received = error; });
+
+        // Assert
+        successCalled.ShouldBeTrue();
+        result.Error.ShouldBeSameAs(SyncOtherError);
+    }
+
+    [Fact]
+    public async Task MatchAsync_FailedResultTaskWithErrorFunctionAndErrorAction_RunsErrorDelegate()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.FromError(SyncTestError));
+        var successCalled = false;
+        Error? received = null;
+
+        // Act
+        var result = await sut.MatchAsync(() => { successCalled = true; return SyncOtherError; }, error => { received = error; });
+
+        // Assert
+        successCalled.ShouldBeFalse();
+        received.ShouldBeSameAs(SyncTestError);
+        result.Error.ShouldBeSameAs(SyncTestError);
+    }
+
+    [Fact]
+    public async Task MatchAsync_SuccessfulResultTaskWithValueFunctionAndErrorValueFunction_RunsSuccessDelegate()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.Success());
+        var successCalled = false;
+        Error? received = null;
+
+        // Act
+        var result = await sut.MatchAsync(() => { successCalled = true; return 7; }, error => { received = error; return -1; });
+
+        // Assert
+        successCalled.ShouldBeTrue();
+        result.ShouldBe(7);
+    }
+
+    [Fact]
+    public async Task MatchAsync_FailedResultTaskWithValueFunctionAndErrorValueFunction_RunsErrorDelegate()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.FromError(SyncTestError));
+        var successCalled = false;
+        Error? received = null;
+
+        // Act
+        var result = await sut.MatchAsync(() => { successCalled = true; return 7; }, error => { received = error; return -1; });
+
+        // Assert
+        successCalled.ShouldBeFalse();
+        received.ShouldBeSameAs(SyncTestError);
+        result.ShouldBe(-1);
+    }
+
+    [Fact]
+    public async Task MatchAsync_SuccessfulResultOfTTaskWithResultOfTFunctionAndErrorAction_RunsSuccessDelegate()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.Success());
+        var successCalled = false;
+        Error? received = null;
+
+        // Act
+        var result = await sut.MatchAsync(() => { successCalled = true; return Result.FromValue(7); }, error => { received = error; });
+
+        // Assert
+        successCalled.ShouldBeTrue();
+        result.Value.ShouldBe(7);
+    }
+
+    [Fact]
+    public async Task MatchAsync_FailedResultOfTTaskWithResultOfTFunctionAndErrorAction_RunsErrorDelegate()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.FromError(SyncTestError));
+        var successCalled = false;
+        Error? received = null;
+
+        // Act
+        var result = await sut.MatchAsync(() => { successCalled = true; return Result.FromValue(7); }, error => { received = error; });
+
+        // Assert
+        successCalled.ShouldBeFalse();
+        received.ShouldBeSameAs(SyncTestError);
+        result.Error.ShouldBeSameAs(SyncTestError);
+    }
+
+    [Fact]
+    public async Task MatchAsync_SuccessfulResultOfTTaskWithResultOfTFunctionAndErrorResultOfTFunction_RunsSuccessDelegate()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.Success());
+        var successCalled = false;
+        Error? received = null;
+
+        // Act
+        var result = await sut.MatchAsync(() => { successCalled = true; return Result.FromValue(7); }, error => { received = error; return Result.FromValue(-1); });
+
+        // Assert
+        successCalled.ShouldBeTrue();
+        result.Value.ShouldBe(7);
+    }
+
+    [Fact]
+    public async Task MatchAsync_FailedResultOfTTaskWithResultOfTFunctionAndErrorResultOfTFunction_RunsErrorDelegate()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.FromError(SyncTestError));
+        var successCalled = false;
+        Error? received = null;
+
+        // Act
+        var result = await sut.MatchAsync(() => { successCalled = true; return Result.FromValue(7); }, error => { received = error; return Result.FromValue(-1); });
+
+        // Assert
+        successCalled.ShouldBeFalse();
+        received.ShouldBeSameAs(SyncTestError);
+        result.Value.ShouldBe(-1);
+    }
+
+    [Fact]
+    public async Task MatchAsync_SuccessfulResultOfTTaskWithActionAndErrorAction_RunsSuccessDelegate()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.FromValue(5));
+        var successCalled = false;
+        Error? received = null;
+
+        // Act
+        var result = await sut.MatchAsync(value => { successCalled = value == 5; }, error => { received = error; });
+
+        // Assert
+        successCalled.ShouldBeTrue();
+        result.Value.ShouldBe(5);
+    }
+
+    [Fact]
+    public async Task MatchAsync_FailedResultOfTTaskWithActionAndErrorAction_RunsErrorDelegate()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result<int>.FromError(SyncTestError));
+        var successCalled = false;
+        Error? received = null;
+
+        // Act
+        var result = await sut.MatchAsync(value => { successCalled = value == 5; }, error => { received = error; });
+
+        // Assert
+        successCalled.ShouldBeFalse();
+        received.ShouldBeSameAs(SyncTestError);
+        result.Error.ShouldBeSameAs(SyncTestError);
+    }
+
+    [Fact]
+    public async Task MatchAsync_SuccessfulResultOfTTaskWithValueFunctionAndErrorAction_RunsSuccessDelegate()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.FromValue(5));
+        var successCalled = false;
+        Error? received = null;
+
+        // Act
+        var result = await sut.MatchAsync(value => { successCalled = true; return value.ToString(); }, error => { received = error; });
+
+        // Assert
+        successCalled.ShouldBeTrue();
+        result.Value.ShouldBe("5");
+    }
+
+    [Fact]
+    public async Task MatchAsync_FailedResultOfTTaskWithValueFunctionAndErrorAction_RunsErrorDelegate()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result<int>.FromError(SyncTestError));
+        var successCalled = false;
+        Error? received = null;
+
+        // Act
+        var result = await sut.MatchAsync(value => { successCalled = true; return value.ToString(); }, error => { received = error; });
+
+        // Assert
+        successCalled.ShouldBeFalse();
+        received.ShouldBeSameAs(SyncTestError);
+        result.Error.ShouldBeSameAs(SyncTestError);
+    }
+
+    [Fact]
+    public async Task MatchAsync_SuccessfulResultOfTTaskWithErrorFunctionAndErrorAction_RunsSuccessDelegate()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.FromValue(5));
+        var successCalled = false;
+        Error? received = null;
+
+        // Act
+        var result = await sut.MatchAsync(_ => { successCalled = true; return SyncOtherError; }, error => { received = error; });
+
+        // Assert
+        successCalled.ShouldBeTrue();
+        result.Error.ShouldBeSameAs(SyncOtherError);
+    }
+
+    [Fact]
+    public async Task MatchAsync_FailedResultOfTTaskWithErrorFunctionAndErrorAction_RunsErrorDelegate()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result<int>.FromError(SyncTestError));
+        var successCalled = false;
+        Error? received = null;
+
+        // Act
+        var result = await sut.MatchAsync(_ => { successCalled = true; return SyncOtherError; }, error => { received = error; });
+
+        // Assert
+        successCalled.ShouldBeFalse();
+        received.ShouldBeSameAs(SyncTestError);
+        result.Error.ShouldBeSameAs(SyncTestError);
+    }
+
+    [Fact]
+    public async Task MatchAsync_SuccessfulResultOfTTaskWithValueFunctionAndErrorValueFunction_RunsSuccessDelegate()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.FromValue(5));
+        var successCalled = false;
+        Error? received = null;
+
+        // Act
+        var result = await sut.MatchAsync(value => { successCalled = true; return value.ToString(); }, error => { received = error; return "none"; });
+
+        // Assert
+        successCalled.ShouldBeTrue();
+        result.ShouldBe("5");
+    }
+
+    [Fact]
+    public async Task MatchAsync_FailedResultOfTTaskWithValueFunctionAndErrorValueFunction_RunsErrorDelegate()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result<int>.FromError(SyncTestError));
+        var successCalled = false;
+        Error? received = null;
+
+        // Act
+        var result = await sut.MatchAsync(value => { successCalled = true; return value.ToString(); }, error => { received = error; return "none"; });
+
+        // Assert
+        successCalled.ShouldBeFalse();
+        received.ShouldBeSameAs(SyncTestError);
+        result.ShouldBe("none");
+    }
+
+    [Fact]
+    public async Task MatchAsync_SuccessfulResultOfTTaskWithResultFunctionAndErrorAction_RunsSuccessDelegate()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.FromValue(5));
+        var successCalled = false;
+        Error? received = null;
+
+        // Act
+        var result = await sut.MatchAsync(value => { successCalled = true; return Result.FromValue(value.ToString()); }, error => { received = error; });
+
+        // Assert
+        successCalled.ShouldBeTrue();
+        result.Value.ShouldBe("5");
+    }
+
+    [Fact]
+    public async Task MatchAsync_FailedResultOfTTaskWithResultFunctionAndErrorAction_RunsErrorDelegate()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result<int>.FromError(SyncTestError));
+        var successCalled = false;
+        Error? received = null;
+
+        // Act
+        var result = await sut.MatchAsync(value => { successCalled = true; return Result.FromValue(value.ToString()); }, error => { received = error; });
+
+        // Assert
+        successCalled.ShouldBeFalse();
+        received.ShouldBeSameAs(SyncTestError);
+        result.Error.ShouldBeSameAs(SyncTestError);
+    }
+
+    [Fact]
+    public async Task MatchAsync_SuccessfulResultOfTTaskWithResultFunctionAndErrorResultFunction_RunsSuccessDelegate()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.FromValue(5));
+        var successCalled = false;
+        Error? received = null;
+
+        // Act
+        var result = await sut.MatchAsync(value => { successCalled = true; return Result.FromValue(value.ToString()); }, error => { received = error; return Result.FromValue("none"); });
+
+        // Assert
+        successCalled.ShouldBeTrue();
+        result.Value.ShouldBe("5");
+    }
+
+    [Fact]
+    public async Task MatchAsync_FailedResultOfTTaskWithResultFunctionAndErrorResultFunction_RunsErrorDelegate()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result<int>.FromError(SyncTestError));
+        var successCalled = false;
+        Error? received = null;
+
+        // Act
+        var result = await sut.MatchAsync(value => { successCalled = true; return Result.FromValue(value.ToString()); }, error => { received = error; return Result.FromValue("none"); });
+
+        // Assert
+        successCalled.ShouldBeFalse();
+        received.ShouldBeSameAs(SyncTestError);
+        result.Value.ShouldBe("none");
+    }
+
+    [Fact]
+    public async Task MatchAsync_IncompleteTaskWithSynchronousDelegate_RunsDelegateAfterCompletion()
+    {
+        // Arrange
+        var source = new TaskCompletionSource<Result<int>>();
+        var called = false;
+        var sut = new ValueTask<Result<int>>(source.Task);
+
+        // Act
+        var task = sut.MatchAsync(_ => { called = true; }, _ => { });
+        var calledBeforeCompletion = called;
+        source.SetResult(Result.FromValue(5));
+        await task;
+
+        // Assert
+        calledBeforeCompletion.ShouldBeFalse();
+        called.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void MatchAsync_AsyncSuccessAndSyncErrorDelegateOverloads_AreHiddenCompileErrors()
+    {
+        // Act
+        var traps = typeof(MatchValueTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The success delegate returns a task, but the error delegate is synchronous"))
+            .ToList();
+
+        // Assert
+        traps.Count.ShouldBe(8);
+        traps.ShouldAllBe(m => m.Name == "MatchAsync"
+                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
+                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
+    }
+
+    [Fact]
+    public void MatchAsync_SyncSuccessAndAsyncErrorDelegateOverloads_AreHiddenCompileErrors()
+    {
+        // Act
+        var traps = typeof(MatchValueTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The error delegate returns a task, but the success delegate is synchronous"))
+            .ToList();
+
+        // Assert
+        traps.Count.ShouldBe(27);
+        traps.ShouldAllBe(m => m.Name == "MatchAsync"
+                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
+                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
+    }
+
+    [Fact]
+    public void MatchAsync_DelegatesReturningTaskOverloads_AreHiddenCompileErrors()
+    {
+        // Act
+        var traps = typeof(MatchValueTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The delegates return a Task, which the ValueTask-based MatchAsync does not await"))
+            .ToList();
+
+        // Assert
+        traps.Count.ShouldBe(14);
+        traps.ShouldAllBe(m => m.Name == "MatchAsync"
+                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
+                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
+    }
+
+    [Fact]
+    public void MatchAsync_OverloadsWithValueTaskDelegatesOnValueTaskResults_HavePriorityOne()
+    {
+        // Act
+        var priorities = typeof(MatchValueTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(m => m.GetParameters()[0].ParameterType is { IsGenericType: true } receiver && receiver.GetGenericTypeDefinition() == typeof(ValueTask<>)
+                        && OverloadTrapHelper.IsValueTaskFunction(m.GetParameters()[1].ParameterType))
+            .Select(OverloadTrapHelper.Priority)
+            .ToList();
+
+        // Assert
+        priorities.Count.ShouldBe(18);
+        priorities.ShouldAllBe(p => p == 1);
+    }
+
+    [Fact]
+    public void MatchAsync_SynchronousOverloadsOnValueTaskResults_HavePriorityZero()
+    {
+        // Act
+        var priorities = typeof(MatchValueTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is null
+                        && m.GetParameters()[0].ParameterType is { IsGenericType: true } receiver && receiver.GetGenericTypeDefinition() == typeof(ValueTask<>)
+                        && !OverloadTrapHelper.IsTaskFunction(m.GetParameters()[1].ParameterType)
+                        && !OverloadTrapHelper.IsValueTaskFunction(m.GetParameters()[1].ParameterType))
+            .Select(OverloadTrapHelper.Priority)
+            .ToList();
+
+        // Assert
+        priorities.Count.ShouldBe(14);
+        priorities.ShouldAllBe(p => p == 0);
     }
 
     #endregion

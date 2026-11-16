@@ -1694,4 +1694,338 @@ public class ThenValueTaskAsyncExtensionsUnitTests
     }
 
     #endregion
+
+    #region ValueTask results with synchronous delegates (issue #214)
+
+    private static readonly Error SyncTestError = Error.Failure(ErrorUri.None, "Synchronous delegate test error");
+    private static readonly Error SyncOtherError = Error.Conflict(ErrorUri.None, "Synchronous delegate other error");
+
+    private static int ThrowingFunction(int value)
+    {
+        throw new FormatException("Synchronous delegate test exception.");
+    }
+
+    [Fact]
+    public async Task ThenAsync_SuccessfulResultTaskWithSyncValueFunction_ReturnsResultWithValue()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.Success());
+
+        // Act
+        var result = await sut.ThenAsync(() => 7);
+
+        // Assert
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldBe(7);
+    }
+
+    [Fact]
+    public async Task ThenAsync_FailedResultTaskWithSyncValueFunction_ReturnsOriginalErrorAndDoesNotCallFunction()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.FromError(SyncTestError));
+        var called = false;
+
+        // Act
+        var result = await sut.ThenAsync(() => { called = true; return 7; });
+
+        // Assert
+        result.Error.ShouldBeSameAs(SyncTestError);
+        called.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task ThenAsync_SuccessfulResultTaskWithSyncResultFunction_ReturnsFunctionResult()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.Success());
+
+        // Act
+        var result = await sut.ThenAsync(() => Result.FromError(SyncOtherError));
+
+        // Assert
+        result.Error.ShouldBeSameAs(SyncOtherError);
+    }
+
+    [Fact]
+    public async Task ThenAsync_FailedResultTaskWithSyncResultFunction_ReturnsOriginalError()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.FromError(SyncTestError));
+
+        // Act
+        var result = await sut.ThenAsync(() => Result.Success());
+
+        // Assert
+        result.Error.ShouldBeSameAs(SyncTestError);
+    }
+
+    [Fact]
+    public async Task ThenAsync_SuccessfulResultTaskWithSyncResultOfTFunction_ReturnsFunctionResult()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.Success());
+
+        // Act
+        var result = await sut.ThenAsync(() => Result.FromValue("next"));
+
+        // Assert
+        result.Value.ShouldBe("next");
+    }
+
+    [Fact]
+    public async Task ThenAsync_FailedResultTaskWithSyncResultOfTFunction_ReturnsOriginalError()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.FromError(SyncTestError));
+
+        // Act
+        var result = await sut.ThenAsync(() => Result.FromValue("next"));
+
+        // Assert
+        result.Error.ShouldBeSameAs(SyncTestError);
+    }
+
+    [Fact]
+    public async Task ThenAsync_SuccessfulResultTaskWithSyncErrorFunction_ReturnsFailedResultWithFunctionError()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.Success());
+
+        // Act
+        var result = await sut.ThenAsync(() => SyncOtherError);
+
+        // Assert
+        result.Error.ShouldBeSameAs(SyncOtherError);
+    }
+
+    [Fact]
+    public async Task ThenAsync_FailedResultTaskWithSyncErrorFunction_ReturnsOriginalError()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.FromError(SyncTestError));
+
+        // Act
+        var result = await sut.ThenAsync(() => SyncOtherError);
+
+        // Assert
+        result.Error.ShouldBeSameAs(SyncTestError);
+    }
+
+    [Fact]
+    public async Task ThenAsync_SuccessfulResultOfTTaskWithSyncValueFunction_ReturnsResultWithFunctionValue()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.FromValue(5));
+
+        // Act
+        var result = await sut.ThenAsync(value => value * 2);
+
+        // Assert
+        result.Value.ShouldBe(10);
+    }
+
+    [Fact]
+    public async Task ThenAsync_FailedResultOfTTaskWithSyncValueFunction_ReturnsOriginalErrorAndDoesNotCallFunction()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result<int>.FromError(SyncTestError));
+        var called = false;
+
+        // Act
+        var result = await sut.ThenAsync(value => { called = true; return value * 2; });
+
+        // Assert
+        result.Error.ShouldBeSameAs(SyncTestError);
+        called.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task ThenAsync_SuccessfulResultOfTTaskWithSyncResultFunction_ReturnsFunctionResult()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.FromValue(5));
+
+        // Act
+        var result = await sut.ThenAsync(_ => Result.FromError(SyncOtherError));
+
+        // Assert
+        result.Error.ShouldBeSameAs(SyncOtherError);
+    }
+
+    [Fact]
+    public async Task ThenAsync_FailedResultOfTTaskWithSyncResultFunction_ReturnsOriginalError()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result<int>.FromError(SyncTestError));
+
+        // Act
+        var result = await sut.ThenAsync(_ => Result.Success());
+
+        // Assert
+        result.Error.ShouldBeSameAs(SyncTestError);
+    }
+
+    [Fact]
+    public async Task ThenAsync_SuccessfulResultOfTTaskWithSyncResultOfTFunction_ReturnsFunctionResult()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.FromValue(5));
+
+        // Act
+        var result = await sut.ThenAsync(value => Result.FromValue(value.ToString()));
+
+        // Assert
+        result.Value.ShouldBe("5");
+    }
+
+    [Fact]
+    public async Task ThenAsync_FailedResultOfTTaskWithSyncResultOfTFunction_ReturnsOriginalError()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result<int>.FromError(SyncTestError));
+
+        // Act
+        var result = await sut.ThenAsync(value => Result.FromValue(value.ToString()));
+
+        // Assert
+        result.Error.ShouldBeSameAs(SyncTestError);
+    }
+
+    [Fact]
+    public async Task ThenAsync_SuccessfulResultOfTTaskWithSyncErrorFunction_ReturnsFailedResultWithFunctionError()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.FromValue(5));
+
+        // Act
+        var result = await sut.ThenAsync(_ => SyncOtherError);
+
+        // Assert
+        result.Error.ShouldBeSameAs(SyncOtherError);
+    }
+
+    [Fact]
+    public async Task ThenAsync_FailedResultOfTTaskWithSyncErrorFunction_ReturnsOriginalError()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result<int>.FromError(SyncTestError));
+
+        // Act
+        var result = await sut.ThenAsync(_ => SyncOtherError);
+
+        // Assert
+        result.Error.ShouldBeSameAs(SyncTestError);
+    }
+
+    [Fact]
+    public async Task ThenAsync_SuccessfulResultOfTTaskWithSyncFunctionReturningNullResult_ThrowsInvalidOperationException()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.FromValue(5));
+
+        // Act
+        var exception = await Record.ExceptionAsync(async () => await sut.ThenAsync(_ => (Result<string>)null!));
+
+        // Assert
+        exception.ShouldBeOfType<InvalidOperationException>();
+    }
+
+    [Fact]
+    public async Task ThenAsync_SyncFunctionThrows_FaultsReturnedTaskInsteadOfThrowingFromCall()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.FromValue(5));
+
+        // Act
+        var call = Record.Exception(() => { _ = sut.ThenAsync(ThrowingFunction); });
+        var awaited = await Record.ExceptionAsync(async () => await sut.ThenAsync(ThrowingFunction));
+
+        // Assert
+        call.ShouldBeNull();
+        awaited.ShouldBeOfType<FormatException>();
+    }
+
+    [Fact]
+    public async Task ThenAsync_IncompleteTaskWithSynchronousDelegate_RunsDelegateAfterCompletion()
+    {
+        // Arrange
+        var source = new TaskCompletionSource<Result<int>>();
+        var called = false;
+        var sut = new ValueTask<Result<int>>(source.Task);
+
+        // Act
+        var task = sut.ThenAsync(value => { called = true; return value; });
+        var calledBeforeCompletion = called;
+        source.SetResult(Result.FromValue(5));
+        await task;
+
+        // Assert
+        calledBeforeCompletion.ShouldBeFalse();
+        called.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void ThenAsync_SyncActionOverloads_AreHiddenCompileErrors()
+    {
+        // Act
+        var traps = typeof(ThenValueTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The action returns nothing. ThenAsync needs"))
+            .ToList();
+
+        // Assert
+        traps.Count.ShouldBe(2);
+        traps.ShouldAllBe(m => m.Name == "ThenAsync"
+                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
+                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
+    }
+
+    [Fact]
+    public void ThenAsync_FunctionReturningTaskOverloads_AreHiddenCompileErrors()
+    {
+        // Act
+        var traps = typeof(ThenValueTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a Task, which the ValueTask-based ThenAsync does not await"))
+            .ToList();
+
+        // Assert
+        traps.Count.ShouldBe(4);
+        traps.ShouldAllBe(m => m.Name == "ThenAsync"
+                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
+                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
+    }
+
+    [Fact]
+    public void ThenAsync_OverloadsWithValueTaskDelegatesOnValueTaskResults_HavePriorityOne()
+    {
+        // Act
+        var priorities = typeof(ThenValueTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(m => m.GetParameters()[0].ParameterType is { IsGenericType: true } receiver && receiver.GetGenericTypeDefinition() == typeof(ValueTask<>)
+                        && OverloadTrapHelper.IsValueTaskFunction(m.GetParameters()[1].ParameterType))
+            .Select(OverloadTrapHelper.Priority)
+            .ToList();
+
+        // Assert
+        priorities.Count.ShouldBe(10);
+        priorities.ShouldAllBe(p => p == 1);
+    }
+
+    [Fact]
+    public void ThenAsync_SynchronousOverloadsOnValueTaskResults_HavePriorityZero()
+    {
+        // Act
+        var priorities = typeof(ThenValueTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is null
+                        && m.GetParameters()[0].ParameterType is { IsGenericType: true } receiver && receiver.GetGenericTypeDefinition() == typeof(ValueTask<>)
+                        && !OverloadTrapHelper.IsTaskFunction(m.GetParameters()[1].ParameterType)
+                        && !OverloadTrapHelper.IsValueTaskFunction(m.GetParameters()[1].ParameterType))
+            .Select(OverloadTrapHelper.Priority)
+            .ToList();
+
+        // Assert
+        priorities.Count.ShouldBe(8);
+        priorities.ShouldAllBe(p => p == 0);
+    }
+
+    #endregion
 }

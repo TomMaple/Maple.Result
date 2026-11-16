@@ -38,6 +38,18 @@ internal static class OverloadTrapHelper
         return returnType == typeof(Task) || (returnType.IsGenericType && returnType.GetGenericTypeDefinition() == typeof(Task<>));
     }
 
+    /// <summary>Whether the parameter is a delegate that returns a <see cref="ValueTask" /> or a <see cref="ValueTask{TResult}" />.</summary>
+    internal static bool IsValueTaskFunction(Type parameterType)
+    {
+        if (!parameterType.IsGenericType)
+            return false;
+
+        var returnType = parameterType.GetGenericArguments()[^1];
+
+        return returnType == typeof(ValueTask)
+               || (returnType.IsGenericType && returnType.GetGenericTypeDefinition() == typeof(ValueTask<>));
+    }
+
     /// <summary>The overload resolution priority of the method; 0 when it has none.</summary>
     internal static int Priority(MethodInfo method)
     {
