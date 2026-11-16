@@ -1,5 +1,20 @@
 # Errors
-Use proper static methods to create an `Error` instance, e.g.
+
+How to create an `Error`: its categories and properties, the type and instance URIs, error details for validation, metadata, the `ErrorBuilder` and localized messages. An `Error` follows [RFC 9457: Problem Details for HTTP APIs](https://datatracker.ietf.org/doc/html/rfc9457); see [Problem details format](../problem-details.md) for how it is written and read as JSON.
+
+## Contents
+* [Creating an error](#creating-an-error)
+* [Error categories](#error-categories)
+* [Error properties](#error-properties)
+* [Type URI](#type-uri)
+* [Instance URI](#instance-uri)
+* [Error details (validation errors)](#error-details-validation-errors)
+* [Metadata](#metadata)
+* [ErrorBuilder](#errorbuilder)
+* [Localization](#localization)
+
+## Creating an error
+Use the static method of the category (e.g., `Error.NotFound(…)`) to create an `Error`, and return it as a failed result:
 ```csharp
 public Result UpdateUser(int userId, UpdateUserModel updateModel)
 {
@@ -7,9 +22,10 @@ public Result UpdateUser(int userId, UpdateUserModel updateModel)
     if (user is null)
     {
         return Error.NotFound(
-                        ErrorUri.Tag("tag:exampleapp.com,2026:errors:account:notfound"),
-                        "Cannot update the account.");
+            ErrorUri.Tag("tag:exampleapp.com,2026:errors:account:notfound"),
+            "Cannot update the account.");
     }
+
     // code to update the user
 }
 ```
@@ -20,19 +36,18 @@ var error = Error.Validation(
         "Invalid data to create a user.",
         "The user cannot be created because of missing or invalid data. Address the validation errors and try again.",
         ErrorUri.Locator("https://exampleapp.com/errors/7894375839"),
-        "errors.signup.validation"
-    )
+        "errors.signup.validation")
     .WithErrorDetail("/email", "Email is required.", "errors.signup.validation.email.required")
-    .WithErrorDetail("/firstName", "At least 3 characters are required.", "errors.signup.validation.email.minLength", ("minLength", 3));
+    .WithErrorDetail("/firstName", "At least 3 characters are required.", "errors.signup.validation.firstName.minLength", ("minLength", 3));
 ```
 
-## Error Categories
-The error categories are based on the HTTP status codes—that’s why those have been included in the table.
+`Error` is immutable: the `With…()` methods return a copy. To assemble an error step by step, use an [ErrorBuilder](#errorbuilder).
 
-Although, mapping to HTTP responses is not part of this library and can be done differently.
+## Error categories
+The error categories are based on the HTTP status codes—that’s why those have been included in the table. Mapping to HTTP responses is not part of this library, though, and can be done differently.
 
 > [!NOTE]
-> The status codes in the table are the **default** mapping of the `Maple.Result.Extensions.*` packages, which can be customized in both directions (category → status code and status code → category); see the [problem details format](https://github.com/TomMaple/Maple.Result/blob/main/docs/problem-details.md#category-and-status).
+> The status codes in the table are the **default** mapping of the `Maple.Result.Extensions.*` packages, which can be customized in both directions (category → status code and status code → category); see the [problem details format](../problem-details.md#category-and-status).
 
 | Category | Description | Solution | Example error | Corresponding HTTP status code |
 | -------- | ----------- | -------- | ------------- | ------------------------------ |
@@ -48,6 +63,8 @@ Although, mapping to HTTP responses is not part of this library and can be done 
 | **Unauthenticated** | The authentication is either missing or invalid. | Log in. | User is not logged in. | `401` (Unauthorized) |
 | **Validation** | User input data is invalid. | Update the data and try again. | Email is required. | `400` (Bad Request) |
 
+See more: [ErrorCategory](../Reference/ErrorCategory.md)
+
 ## Error properties
 | Property | Type | Description | Required | Example |
 | -------- | ---- | ----------- | -------- | ------- |
@@ -60,6 +77,8 @@ Although, mapping to HTTP responses is not part of this library and can be done 
 | `ErrorDetails` | `IReadOnlyList<ErrorDetail>` | The collection of additional error details. | No | `[{ "propertyPointer": "/email", "detail": "Invalid format", "detailTemplated": { "templateId": "errors.signup.email.invalidFormat" }}]` |
 | `Metadata` | `IReadOnlyDictionary<string, object?>` | Additional, machine-readable members of the problem (RFC 9457 *extension members*). | No | `{ "limit": 100, "resetAt": "2026-12-01T00:00:00Z" }` |
 
+See more: [Error](../Reference/Error/Error.md)
+
 ## Type URI
 It is a mandatory URI that identifies the type of the problem. It can be:
 * `about:blank` (`ErrorUri.None`) — the type is not specified,
@@ -70,6 +89,8 @@ It is a mandatory URI that identifies the type of the problem. It can be:
 
 When the kind is not known in advance (e.g., a type URI read from another service), `ErrorUri.Parse(…)` and `ErrorUri.TryParse(…)` detect it from the value and apply the same validation. A URI with any other scheme (e.g., `mailto:`, which RFC 9457 allows) becomes `ErrorUri.Other(…)`.
 
+See more: [ErrorUri](../Reference/ErrorUri/ErrorUri.md)
+
 ## Instance URI
 It is an optional URI that identifies the specific occurrence of the problem. It can be:
 * *URI Locator* (`ErrorUri.Locator(…)`) — dereferencing it SHOULD provide the problem details object or information about the problem occurrence in other formats (e.g., `https://exampleapp/api/errors/982384293852/details`),
@@ -79,7 +100,8 @@ It is an optional URI that identifies the specific occurrence of the problem. It
 
 `about:blank` (`ErrorUri.None`) is not allowed as an instance; pass `null` when there is no instance.
 
-## Support for multiple error details / validation errors
+## Error details (validation errors)
+An error can carry several error details, e.g., one per invalid field of a form. Add them with an `ErrorBuilder`:
 ```csharp
 var builder = ErrorBuilder.Validation(
     ErrorUri.Tag("tag:exampleapp.com,2026:errors:signup:form"),
@@ -104,18 +126,20 @@ else if (userInput.email.Length < 8)
 var error = builder.Build();
 ```
 
-To add a single detail to an existing error, use `error.WithErrorDetail(...)`, which returns a copy.
-
-The `propertyPointer` is a JSON Pointer. For a name taken from the input (a dictionary key, a form field), build it with `ErrorDetail.Pointer("items", 0, name)`: it escapes `~` and `/` in the names, so the pointer is always valid.
-
 where the parameters are:
 
 | Parameter | Type | Description | Required | Example |
 | --------- | ---- | ----------- | -------- | ------- |
 | `propertyPointer` | `string` | JSON Pointer to the input data. | no | `/firstName` |
-| `detail` | `string` | A human-readable explanation of this error detail. | yes | `Mininum 5 characters are required.` |
+| `detail` | `string` | A human-readable explanation of this error detail. | yes | `Minimum 5 characters are required.` |
 | `detailTemplateId` | `string` | A message template ID. | no | `errors.signup.validation.firstName.minLength` |
 | `detailNamedValues` | `(string, object?)[]` | The named values for the message template; names must be unique, and values require `detailTemplateId`. | no | `("minLength", 5)` |
+
+To add a single detail to an existing error, use `error.WithErrorDetail(…)`, which returns a copy.
+
+The `propertyPointer` is a JSON Pointer. For a name taken from the input (a dictionary key, a form field), build it with `ErrorDetail.Pointer("items", 0, name)`: it escapes `~` and `/` in the names, so the pointer is always valid.
+
+See more: [ErrorDetail](../Reference/ErrorDetail/ErrorDetail.md)
 
 ## Metadata
 `Metadata` holds machine-readable, response-level values—the *extension members* of [RFC 9457](https://datatracker.ietf.org/doc/html/rfc9457#section-3.2)—that a client can read instead of parsing the `Detail` text. The library does not define any well-known keys.
@@ -136,11 +160,11 @@ if (error.TryGetMetadata<int>("limit", out var limit))
 ```
 
 * `WithMetadata()` and `WithoutMetadata()` return a **copy**; the original error is not modified. Several entries can be added in one call: `WithMetadata(("limit", 100), ("remaining", 0))`.
-* Keys must not match the standard members `type`, `title`, `status`, `detail`, `instance`, `errors` and `detailTemplated` (case-insensitive), and two keys of one error must not differ only in case (e.g., `RetryAfter` and `retryAfter`); `WithMetadata()` throws an `ArgumentException` for them. Each entry becomes a top-level member of the problem details object; see the [problem details format](https://github.com/TomMaple/Maple.Result/blob/main/docs/problem-details.md).
+* Keys must not match the standard members `type`, `title`, `status`, `detail`, `instance`, `errors` and `detailTemplated` (case-insensitive), and two keys of one error must not differ only in case (e.g., `RetryAfter` and `retryAfter`); `WithMetadata()` throws an `ArgumentException` for them. Each entry becomes a top-level member of the problem details object; see the [problem details format](../problem-details.md#metadata-extension-members).
 * Keys should start with a letter, use letters, digits and `_`, and be at least 3 characters long (RFC 9457 recommendation, not enforced).
 * Values can be `null`. `TryGetMetadata<T>()` is strict: it returns `true` only when the stored value is a `T` (a stored `int` is not read as `long`), and never for a `null` value.
 
-See more: [Metadata](https://github.com/TomMaple/Maple.Result/blob/main/docs/Reference/Error/Error_Metadata.md)
+See more: [Metadata](../Reference/Error/Error_Metadata.md)
 
 ## ErrorBuilder
 `Error` is immutable. Use an `ErrorBuilder` to assemble an error step by step, and `Build()` to get it:
@@ -161,16 +185,14 @@ var publicError = error.ToBuilder()
     .Build();
 ```
 
-* Create a builder with `new ErrorBuilder(category, typeUri, title)`, a static method per category (e.g., `ErrorBuilder.Validation(...)`), or `error.ToBuilder()`.
+* Create a builder with `new ErrorBuilder(category, typeUri, title)`, a static method per category (e.g., `ErrorBuilder.Validation(…)`), or `error.ToBuilder()`.
 * Every argument is validated when it is passed, so `Build()` never throws. `Build()` takes a snapshot; the builder stays usable.
 * The builder is not thread-safe.
 
-See more: [ErrorBuilder](https://github.com/TomMaple/Maple.Result/blob/main/docs/Reference/ErrorBuilder/ErrorBuilder.md)
+See more: [ErrorBuilder](../Reference/ErrorBuilder/ErrorBuilder.md)
 
-## Support for localization
-The localization can be achieved by generating messages based on the template.
-
-### Example
+## Localization
+An error carries a message template ID and named values next to the message, so a client can generate the message in its own language:
 ```csharp
 var error = Error.Unauthorized(
     ErrorUri.Tag("tag:exampleapp.com,2026:errors:contact:delete:authorization:missing"),
@@ -190,4 +212,4 @@ It uses:
 | Template | `The ‘{requiredPermission}’ permission is required to delete a contact.` | `L’autorisation «{requiredPermission}» est requise pour supprimer un contact.` | `Se requiere el permiso «{requiredPermission}» para eliminar un contacto.` | `删除联系人需要“{requiredPermission}”权限。` |
 | Localized message | `The ‘contact_delete’ permission is required to delete a contact.` | `L’autorisation «contact_delete» est requise pour supprimer un contact.` | `Se requiere el permiso «contact_delete» para eliminar un contacto.` | `删除联系人需要“contact_delete”权限。` |
 
-See more: [Error](https://github.com/TomMaple/Maple.Result/blob/main/docs/Reference/Error/Error.md)
+See more: [TemplatedMessage](../Reference/TemplatedMessage/TemplatedMessage.md)
