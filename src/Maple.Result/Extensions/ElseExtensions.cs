@@ -23,7 +23,7 @@ namespace Maple.Results.Extensions;
 /// </summary>
 /// <remarks>
 ///     A successful result is returned unchanged, and the function is not called. For a side effect that keeps the result unchanged, use
-///     <c>IfError</c>.
+///     <c>Else</c>.
 /// </remarks>
 public static class ElseExtensions
 {
@@ -47,7 +47,7 @@ public static class ElseExtensions
     ///     If any of the <paramref name="result" /> or <paramref name="ifErrorFunction" /> parameters are <see langword="null" />.
     /// </exception>
     /// <exception cref="InvalidOperationException">If <paramref name="ifErrorFunction" /> returns <see langword="null" />.</exception>
-    public static TResult IfError<TResult>([DisallowNull] this TResult result, Func<Error, TResult> ifErrorFunction)
+    public static TResult Else<TResult>([DisallowNull] this TResult result, Func<Error, TResult> ifErrorFunction)
         where TResult : IOperationResult
     {
         ArgumentNullException.ThrowIfNull(result);
@@ -59,6 +59,74 @@ public static class ElseExtensions
         var errorResult = ifErrorFunction(result.Error);
 
         return Guard.EnsureNotNullReturned(errorResult, nameof(ifErrorFunction));
+    }
+
+    #endregion
+
+    #region Not supported: functions returning a task
+
+    // These overloads turn a call with a function that returns a task into a compile error (CS0619): Else does not await it. Without
+    // them, the task would replace the result (the function returns the replacement) and nobody would await it. A Task<T> converts
+    // to Task, so the Task overload also covers functions returning Task<T>. It has a higher priority than the ValueTask ones: an
+    // async lambda converts to both, which would be ambiguous (CS0121).
+
+    private const string ElseTaskNotAwaitedMessage =
+        "The function returns a task, which Else does not await. Use ElseAsync.";
+
+    /// <summary>
+    ///     Not supported: the error action returns a task, which <c>Else</c> does not await; use <c>ElseAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ElseTaskNotAwaitedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static TResult Else<TResult>([DisallowNull] this TResult result, Func<Error, Task> ifErrorFunction)
+        where TResult : IOperationResult
+    {
+        throw new NotSupportedException(ElseTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error action returns a task, which <c>Else</c> does not await; use <c>ElseAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ElseTaskNotAwaitedMessage, error: true)]
+    public static TResult Else<TResult>([DisallowNull] this TResult result, Func<Error, ValueTask> ifErrorFunction)
+        where TResult : IOperationResult
+    {
+        throw new NotSupportedException(ElseTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error action returns a task, which <c>Else</c> does not await; use <c>ElseAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ElseTaskNotAwaitedMessage, error: true)]
+    public static TResult Else<TResult, TTaskResult>([DisallowNull] this TResult result, Func<Error, ValueTask<TTaskResult>> ifErrorFunction)
+        where TResult : IOperationResult
+    {
+        throw new NotSupportedException(ElseTaskNotAwaitedMessage);
+    }
+
+    #endregion
+
+    #region Not supported: actions (#197)
+
+    // A function that returns nothing is a side effect, not a transformation (#197): these overloads turn the call into a compile
+    // error (CS0619) that names the method to use, instead of the conversion errors CS0029 and CS1662.
+
+    private const string ActionMessage =
+        "The action returns nothing. Else needs a function that returns the replacement result (a value, a result or an " +
+        "error); use IfError for a side effect.";
+
+    /// <summary>
+    ///     Not supported: the action returns nothing; use <c>IfError</c> for a side effect.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ActionMessage, error: true)]
+    public static TResult Else<TResult>([DisallowNull] this TResult result, Action<Error> ifErrorFunction)
+        where TResult : IOperationResult
+    {
+        throw new NotSupportedException(ActionMessage);
     }
 
     #endregion

@@ -10,7 +10,9 @@
 
 using Maple.Results.Helpers;
 using System;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Maple.Results.Extensions.ValueTasks;
@@ -21,7 +23,7 @@ namespace Maple.Results.Extensions.ValueTasks;
 /// </summary>
 /// <remarks>
 ///     A successful result is returned unchanged, and the function is not called. For a side effect that keeps the result unchanged, use
-///     <c>IfErrorAsync</c>.
+///     <c>ElseAsync</c>.
 ///     <para>
 ///         These methods are declared in the <c>Maple.Results.Extensions.ValueTasks</c> namespace, separately from their
 ///         <see cref="System.Threading.Tasks.Task" />-based counterparts in <c>Maple.Results.Extensions</c>, because both sets declare the same method names and
@@ -41,8 +43,8 @@ public static class ElseValueTaskAsyncExtensions
     /// <exception cref="InvalidOperationException">
     ///     If <paramref name="ifErrorFunction" /> returns a value task with a <see langword="null" /> result.
     /// </exception>
-    /// <inheritdoc cref="ElseTaskAsyncExtensions.IfErrorAsync{TResult}(TResult, Func{Error, Task{TResult}}, bool?)" />
-    public static ValueTask<TResult> IfErrorAsync<TResult>(
+    /// <inheritdoc cref="ElseTaskAsyncExtensions.ElseAsync{TResult}(TResult, Func{Error, Task{TResult}}, bool?)" />
+    public static ValueTask<TResult> ElseAsync<TResult>(
         [DisallowNull] this TResult result,
         Func<Error, ValueTask<TResult>> ifErrorFunction,
         bool? continueOnCapturedContext = null
@@ -104,7 +106,7 @@ public static class ElseValueTaskAsyncExtensions
     ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />,
     ///     or <paramref name="ifErrorFunction" /> returns a value task with a <see langword="null" /> result.
     /// </exception>
-    public static ValueTask<TResult> IfErrorAsync<TResult>(
+    public static ValueTask<TResult> ElseAsync<TResult>(
         this ValueTask<TResult> resultTask,
         Func<Error, ValueTask<TResult>> ifErrorFunction,
         bool? continueOnCapturedContext = null
@@ -126,6 +128,39 @@ public static class ElseValueTaskAsyncExtensions
 
             return await Guard.EnsureNotNullResult(errorTask, nameof(ifErrorFunction), continueOnCapturedContext);
         }
+    }
+
+    #endregion
+
+    #region Not supported: actions (#197)
+
+    // A function that returns nothing is a side effect, not a transformation (#197): these overloads turn the call into a compile
+    // error (CS0619) that names the method to use, instead of the conversion errors CS0029 and CS1662.
+
+    private const string ActionMessage =
+        "The function returns a task without a value. ElseAsync needs a function whose task returns the replacement " +
+        "result; use IfErrorAsync for a side effect.";
+
+    /// <summary>
+    ///     Not supported: the function returns a task without a value; use <c>IfErrorAsync</c> for a side effect.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ActionMessage, error: true)]
+    public static ValueTask<TResult> ElseAsync<TResult>([DisallowNull] this TResult result, Func<Error, ValueTask> ifErrorFunction, bool? continueOnCapturedContext = null)
+        where TResult : IOperationResult
+    {
+        throw new NotSupportedException(ActionMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the function returns a task without a value; use <c>IfErrorAsync</c> for a side effect.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ActionMessage, error: true)]
+    public static ValueTask<TResult> ElseAsync<TResult>(this ValueTask<TResult> resultTask, Func<Error, ValueTask> ifErrorFunction, bool? continueOnCapturedContext = null)
+        where TResult : IOperationResult
+    {
+        throw new NotSupportedException(ActionMessage);
     }
 
     #endregion

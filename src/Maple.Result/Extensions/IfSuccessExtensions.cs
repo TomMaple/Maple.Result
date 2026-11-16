@@ -17,11 +17,14 @@ using System.Threading.Tasks;
 namespace Maple.Results.Extensions;
 
 /// <summary>
-///     The collection of extension methods for executing actions or functions conditionally based on the success state of a <see cref="Result" /> instance.
+///     The collection of extension methods that run a side effect when a <see cref="Result" /> or <see cref="Result{T}" /> is successful: an action
+///     receives the value (if
+///     any), and the result is returned unchanged.
 /// </summary>
 /// <remarks>
-///     These methods enable fluent chaining of operations that should only be performed if a preceding <see cref="Result" /> indicates success.
-///     They help simplify error handling and reduce boilerplate code when working with <see cref="Result" />-based workflows.
+///     A failed result is returned unchanged, and the action is not called. To transform or chain the result with a function that
+///     returns a value, a <see cref="Result" />, a <see cref="Result{T}" /> or an <see cref="Error" />, use <c>Then</c>; a function that returns
+///     a value is a compile error here (CS0619), so that the value is not discarded by mistake.
 /// </remarks>
 public static class IfSuccessExtensions
 {
@@ -92,14 +95,14 @@ public static class IfSuccessExtensions
 
     #region Not supported: functions returning a task
 
-    // These overloads turn a call with a function that returns a task into a compile error (CS0619). Without them, the call binds to the
-    // generic overload, which wraps the task in a successful result without awaiting it (issue #119). They are more specific than the
-    // generic overloads, so they are chosen first; an explicit type argument excludes them and selects the generic overload on purpose.
-    // The Task overloads have a higher priority than the ValueTask ones: an async lambda converts to both, which would be ambiguous (CS0121).
+    // These overloads turn a call with a function that returns a task into a compile error (CS0619) that points to IfSuccessAsync.
+    // Without them, the value traps below would report the call as a discarded value. They are more specific than the value traps,
+    // so they are chosen first. The Task overloads have a higher priority than the ValueTask ones: an async lambda converts to both,
+    // which would be ambiguous (CS0121).
 
     private const string TaskNotAwaitedMessage =
-        "The function returns a task, which IfSuccess does not await. Use IfSuccessAsync, or specify the type arguments " +
-        "(e.g., IfSuccess<Task>(…) or IfSuccess<T, Task>(…)) to keep the task.";
+        "The function returns a task, which IfSuccess does not await. Use IfSuccessAsync, or discard the task " +
+        "explicitly in a statement lambda (e.g., x => { _ = SaveAsync(x); }).";
 
     /// <summary>
     ///     Not supported: the function returns a task, which <c>IfSuccess</c> does not await; use <c>IfSuccessAsync</c>.
@@ -183,6 +186,38 @@ public static class IfSuccessExtensions
     public static Result IfSuccess<T, TNext>(this Result<T> result, Func<T, ValueTask<TNext>> ifSuccessFunction)
     {
         throw new NotSupportedException(TaskNotAwaitedMessage);
+    }
+
+    #endregion
+
+    #region Not supported: functions returning a value (#197)
+
+    // A function that returns a value is a transformation, not a side effect (#197): these overloads turn the call into a compile
+    // error (CS0619) that names the method to use, instead of discarding the value. A statement lambda (e.g., x => { list.Add(x); })
+    // or a method that returns nothing is a side effect and binds to the action overload.
+
+    private const string ValueDiscardedMessage =
+        "The function returns a value, which IfSuccess discards. Use Then to keep it, or a statement lambda (e.g., x => " +
+        "{ list.Add(x); }) for a side effect.";
+
+    /// <summary>
+    ///     Not supported: the function returns a value, which <c>IfSuccess</c> discards; use <c>Then</c>, or a statement lambda.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ValueDiscardedMessage, error: true)]
+    public static Result IfSuccess<TValue>(this Result result, Func<TValue> ifSuccessAction)
+    {
+        throw new NotSupportedException(ValueDiscardedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the function returns a value, which <c>IfSuccess</c> discards; use <c>Then</c>, or a statement lambda.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ValueDiscardedMessage, error: true)]
+    public static Result<T> IfSuccess<T, TValue>(this Result<T> result, Func<T, TValue> ifSuccessAction)
+    {
+        throw new NotSupportedException(ValueDiscardedMessage);
     }
 
     #endregion

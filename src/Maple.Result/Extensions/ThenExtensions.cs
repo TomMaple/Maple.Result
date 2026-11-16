@@ -23,7 +23,7 @@ namespace Maple.Results.Extensions;
 /// <remarks>
 ///     A failed result is returned unchanged, and the function is not called. A returned <see cref="Result" /> or <see cref="Result{T}" /> is
 ///     flattened, and a returned <see cref="Error" /> gives a failed result. For a side effect that keeps the result unchanged, use
-///     <c>IfSuccess</c>.
+///     <c>Then</c>.
 /// </remarks>
 public static class ThenExtensions
 {
@@ -50,7 +50,7 @@ public static class ThenExtensions
     ///     If any of the <paramref name="result" /> or <paramref name="ifSuccessFunction" /> parameters are <see langword="null" />.
     /// </exception>
     /// <exception cref="InvalidOperationException">If <paramref name="ifSuccessFunction" /> returns <see langword="null" />.</exception>
-    public static Result IfSuccess(this Result result, Func<Result> ifSuccessFunction)
+    public static Result Then(this Result result, Func<Result> ifSuccessFunction)
     {
         ArgumentNullException.ThrowIfNull(result);
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
@@ -70,12 +70,12 @@ public static class ThenExtensions
     /// </summary>
     /// <remarks>
     ///     <para>
-    ///         Use it to turn a successful <see cref="Result" /> into a failure, e.g., <c>result.IfSuccess(() => Error.Conflict(…))</c>.
+    ///         Use it to turn a successful <see cref="Result" /> into a failure, e.g., <c>result.Then(() => Error.Conflict(…))</c>.
     ///         The returned <see cref="Result" /> is always failed.
     ///     </para>
     ///     <para>
-    ///         Without this overload, such a call would bind to <see cref="IfSuccess{T}(Result, Func{T})" /> and return a <b>successful</b>
-    ///         <c>Result&lt;Error&gt;</c>. To get that on purpose, specify the type argument: <c>IfSuccess&lt;Error&gt;(…)</c>.
+    ///         Without this overload, such a call would bind to <see cref="Then{T}(Result, Func{T})" /> and return a <b>successful</b>
+    ///         <c>Result&lt;Error&gt;</c>. To get that on purpose, specify the type argument: <c>Then&lt;Error&gt;(…)</c>.
     ///     </para>
     /// </remarks>
     /// <param name="result">The <see cref="Result" /> to evaluate for success. Must not be <see langword="null" />.</param>
@@ -91,7 +91,7 @@ public static class ThenExtensions
     ///     If any of the <paramref name="result" /> or <paramref name="ifSuccessFunction" /> parameters are <see langword="null" />.
     /// </exception>
     /// <exception cref="InvalidOperationException">If <paramref name="ifSuccessFunction" /> returns <see langword="null" />.</exception>
-    public static Result IfSuccess(this Result result, Func<Error> ifSuccessFunction)
+    public static Result Then(this Result result, Func<Error> ifSuccessFunction)
     {
         ArgumentNullException.ThrowIfNull(result);
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
@@ -128,7 +128,7 @@ public static class ThenExtensions
     /// <exception cref="ArgumentNullException">
     ///     If any of the <paramref name="result" /> or <paramref name="ifSuccessFunction" /> parameters are <see langword="null" />.
     /// </exception>
-    public static Result<T> IfSuccess<T>(this Result result, Func<T> ifSuccessFunction)
+    public static Result<T> Then<T>(this Result result, Func<T> ifSuccessFunction)
     {
         ArgumentNullException.ThrowIfNull(result);
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
@@ -161,7 +161,7 @@ public static class ThenExtensions
     ///     If any of the <paramref name="result" /> or <paramref name="ifSuccessFunction" /> parameters are <see langword="null" />.
     /// </exception>
     /// <exception cref="InvalidOperationException">If <paramref name="ifSuccessFunction" /> returns <see langword="null" />.</exception>
-    public static Result<T> IfSuccess<T>(this Result result, Func<Result<T>> ifSuccessFunction)
+    public static Result<T> Then<T>(this Result result, Func<Result<T>> ifSuccessFunction)
     {
         ArgumentNullException.ThrowIfNull(result);
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
@@ -200,7 +200,7 @@ public static class ThenExtensions
     ///     If any of the <paramref name="result" /> or <paramref name="ifSuccessFunction" /> parameters are <see langword="null" />.
     /// </exception>
     /// <exception cref="InvalidOperationException">If <paramref name="ifSuccessFunction" /> returns <see langword="null" />.</exception>
-    public static Result IfSuccess<T>(this Result<T> result, Func<T, Result> ifSuccessFunction)
+    public static Result Then<T>(this Result<T> result, Func<T, Result> ifSuccessFunction)
     {
         ArgumentNullException.ThrowIfNull(result);
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
@@ -220,12 +220,12 @@ public static class ThenExtensions
     /// </summary>
     /// <remarks>
     ///     <para>
-    ///         Use it to turn a successful <see cref="Result{T}" /> into a failure, e.g., <c>result.IfSuccess(user => Error.Conflict(…))</c>.
+    ///         Use it to turn a successful <see cref="Result{T}" /> into a failure, e.g., <c>result.Then(user => Error.Conflict(…))</c>.
     ///         The returned <see cref="Result" /> is always failed.
     ///     </para>
     ///     <para>
-    ///         Without this overload, such a call would bind to <see cref="IfSuccess{T, TNext}(Result{T}, Func{T, TNext})" /> and return
-    ///         a <b>successful</b> <c>Result&lt;Error&gt;</c>. To get that on purpose, specify the type arguments: <c>IfSuccess&lt;T, Error&gt;(…)</c>.
+    ///         Without this overload, such a call would bind to <see cref="Then{T, TNext}(Result{T}, Func{T, TNext})" /> and return
+    ///         a <b>successful</b> <c>Result&lt;Error&gt;</c>. To get that on purpose, specify the type arguments: <c>Then&lt;T, Error&gt;(…)</c>.
     ///     </para>
     /// </remarks>
     /// <typeparam name="T">The type of the value of the <paramref name="result" />.</typeparam>
@@ -242,7 +242,7 @@ public static class ThenExtensions
     ///     If any of the <paramref name="result" /> or <paramref name="ifSuccessFunction" /> parameters are <see langword="null" />.
     /// </exception>
     /// <exception cref="InvalidOperationException">If <paramref name="ifSuccessFunction" /> returns <see langword="null" />.</exception>
-    public static Result IfSuccess<T>(this Result<T> result, Func<T, Error> ifSuccessFunction)
+    public static Result Then<T>(this Result<T> result, Func<T, Error> ifSuccessFunction)
     {
         ArgumentNullException.ThrowIfNull(result);
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
@@ -285,7 +285,7 @@ public static class ThenExtensions
     /// <exception cref="ArgumentNullException">
     ///     If any of the <paramref name="result" /> or <paramref name="ifSuccessFunction" /> parameters are <see langword="null" />.
     /// </exception>
-    public static Result<TNext> IfSuccess<T, TNext>(this Result<T> result, Func<T, TNext> ifSuccessFunction)
+    public static Result<TNext> Then<T, TNext>(this Result<T> result, Func<T, TNext> ifSuccessFunction)
     {
         ArgumentNullException.ThrowIfNull(result);
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
@@ -324,7 +324,7 @@ public static class ThenExtensions
     ///     If any of the <paramref name="result" /> or <paramref name="ifSuccessFunction" /> parameters are <see langword="null" />.
     /// </exception>
     /// <exception cref="InvalidOperationException">If <paramref name="ifSuccessFunction" /> returns <see langword="null" />.</exception>
-    public static Result<TNext> IfSuccess<T, TNext>(this Result<T> result, Func<T, Result<TNext>> ifSuccessFunction)
+    public static Result<TNext> Then<T, TNext>(this Result<T> result, Func<T, Result<TNext>> ifSuccessFunction)
     {
         ArgumentNullException.ThrowIfNull(result);
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
@@ -336,6 +336,134 @@ public static class ThenExtensions
         }
 
         return result.Error;
+    }
+
+    #endregion
+
+    #region Not supported: functions returning a task
+
+    // These overloads turn a call with a function that returns a task into a compile error (CS0619). Without them, the call binds to the
+    // generic overload, which wraps the task in a successful result without awaiting it (issue #119). They are more specific than the
+    // generic overloads, so they are chosen first; an explicit type argument excludes them and selects the generic overload on purpose.
+    // The Task overloads have a higher priority than the ValueTask ones: an async lambda converts to both, which would be ambiguous (CS0121).
+
+    private const string ThenTaskNotAwaitedMessage =
+        "The function returns a task, which Then does not await. Use ThenAsync, or specify the type arguments (e.g., " +
+        "Then<Task>(…) or Then<T, Task>(…)) to keep the task.";
+
+    /// <summary>
+    ///     Not supported: the function returns a task, which <c>Then</c> does not await; use <c>ThenAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ThenTaskNotAwaitedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static Result Then(this Result result, Func<Task> ifSuccessFunction)
+    {
+        throw new NotSupportedException(ThenTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the function returns a task, which <c>Then</c> does not await; use <c>ThenAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ThenTaskNotAwaitedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static Result Then<TNext>(this Result result, Func<Task<TNext>> ifSuccessFunction)
+    {
+        throw new NotSupportedException(ThenTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the function returns a task, which <c>Then</c> does not await; use <c>ThenAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ThenTaskNotAwaitedMessage, error: true)]
+    public static Result Then(this Result result, Func<ValueTask> ifSuccessFunction)
+    {
+        throw new NotSupportedException(ThenTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the function returns a task, which <c>Then</c> does not await; use <c>ThenAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ThenTaskNotAwaitedMessage, error: true)]
+    public static Result Then<TNext>(this Result result, Func<ValueTask<TNext>> ifSuccessFunction)
+    {
+        throw new NotSupportedException(ThenTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the function returns a task, which <c>Then</c> does not await; use <c>ThenAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ThenTaskNotAwaitedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static Result Then<T>(this Result<T> result, Func<T, Task> ifSuccessFunction)
+    {
+        throw new NotSupportedException(ThenTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the function returns a task, which <c>Then</c> does not await; use <c>ThenAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ThenTaskNotAwaitedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static Result Then<T, TNext>(this Result<T> result, Func<T, Task<TNext>> ifSuccessFunction)
+    {
+        throw new NotSupportedException(ThenTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the function returns a task, which <c>Then</c> does not await; use <c>ThenAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ThenTaskNotAwaitedMessage, error: true)]
+    public static Result Then<T>(this Result<T> result, Func<T, ValueTask> ifSuccessFunction)
+    {
+        throw new NotSupportedException(ThenTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the function returns a task, which <c>Then</c> does not await; use <c>ThenAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ThenTaskNotAwaitedMessage, error: true)]
+    public static Result Then<T, TNext>(this Result<T> result, Func<T, ValueTask<TNext>> ifSuccessFunction)
+    {
+        throw new NotSupportedException(ThenTaskNotAwaitedMessage);
+    }
+
+    #endregion
+
+    #region Not supported: actions (#197)
+
+    // A function that returns nothing is a side effect, not a transformation (#197): these overloads turn the call into a compile
+    // error (CS0619) that names the method to use, instead of the conversion errors CS0029 and CS1662.
+
+    private const string ActionMessage =
+        "The action returns nothing. Then needs a function that returns a value, a result or an error; use IfSuccess " +
+        "for a side effect.";
+
+    /// <summary>
+    ///     Not supported: the action returns nothing; use <c>IfSuccess</c> for a side effect.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ActionMessage, error: true)]
+    public static Result Then(this Result result, Action ifSuccessFunction)
+    {
+        throw new NotSupportedException(ActionMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the action returns nothing; use <c>IfSuccess</c> for a side effect.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ActionMessage, error: true)]
+    public static Result<T> Then<T>(this Result<T> result, Action<T> ifSuccessFunction)
+    {
+        throw new NotSupportedException(ActionMessage);
     }
 
     #endregion

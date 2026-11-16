@@ -10,18 +10,22 @@
 
 using Maple.Results.Helpers;
 using System;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Maple.Results.Extensions;
 
 /// <summary>
-///     The collection of extension methods for executing asynchronous actions or functions conditionally based on the error state of
-///     a <see cref="IOperationResult" /> instance.
+///     The collection of extension methods that run a side effect when an <see cref="IOperationResult" /> is failed: an asynchronous action (a function
+///     that returns a <see cref="Task" />) receives
+///     the <see cref="Error" />, and the result is returned unchanged.
 /// </summary>
 /// <remarks>
-///     These methods enable fluent handling of error scenarios by allowing to specify actions or functions that should be executed only when the result
-///     indicates an error.
+///     A successful result is returned unchanged, and the action is not called. To replace a failed result (e.g., recover with a
+///     value, or return another error), use <c>ElseAsync</c>; a function that returns a value is a compile error here (CS0619), so that a failure
+///     is not turned into a success by mistake.
 /// </remarks>
 public static class IfErrorTaskAsyncExtensions
 {
@@ -141,4 +145,38 @@ public static class IfErrorTaskAsyncExtensions
             return result;
         }
     }
+
+    #region Not supported: functions returning a value (#197)
+
+    // A function that returns a value is a transformation, not a side effect (#197): these overloads turn the call into a compile
+    // error (CS0619) that names the method to use, instead of discarding the value. A statement lambda (e.g., x => { list.Add(x); })
+    // or a method that returns nothing is a side effect and binds to the action overload.
+
+    private const string ValueDiscardedMessage =
+        "The function returns a value in a task, which IfErrorAsync discards. Use ElseAsync to replace the result with " +
+        "it, or an async statement lambda for a side effect.";
+
+    /// <summary>
+    ///     Not supported: the function returns a value in a task, which <c>IfErrorAsync</c> discards; use <c>ElseAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ValueDiscardedMessage, error: true)]
+    public static Task<TResult> IfErrorAsync<TResult, TValue>([DisallowNull] this TResult result, Func<Error, Task<TValue>> ifErrorAction, bool? continueOnCapturedContext = null)
+        where TResult : IOperationResult
+    {
+        throw new NotSupportedException(ValueDiscardedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the function returns a value in a task, which <c>IfErrorAsync</c> discards; use <c>ElseAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ValueDiscardedMessage, error: true)]
+    public static Task<TResult> IfErrorAsync<TResult, TValue>(this Task<TResult> resultTask, Func<Error, Task<TValue>> ifErrorAction, bool? continueOnCapturedContext = null)
+        where TResult : IOperationResult
+    {
+        throw new NotSupportedException(ValueDiscardedMessage);
+    }
+
+    #endregion
 }

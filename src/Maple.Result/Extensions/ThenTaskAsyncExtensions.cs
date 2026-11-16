@@ -10,6 +10,8 @@
 
 using Maple.Results.Helpers;
 using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Maple.Results.Extensions;
@@ -21,7 +23,7 @@ namespace Maple.Results.Extensions;
 /// <remarks>
 ///     A failed result is returned unchanged, and the function is not called. A returned <see cref="Result" /> or <see cref="Result{T}" /> is
 ///     flattened, and a returned <see cref="Error" /> gives a failed result. For a side effect that keeps the result unchanged, use
-///     <c>IfSuccessAsync</c>.
+///     <c>ThenAsync</c>.
 /// </remarks>
 public static class ThenTaskAsyncExtensions
 {
@@ -55,7 +57,7 @@ public static class ThenTaskAsyncExtensions
     /// <exception cref="InvalidOperationException">
     ///     If <paramref name="ifSuccessFunction" /> returns a <see langword="null" /> task or a task with a <see langword="null" /> result.
     /// </exception>
-    public static Task<Result> IfSuccessAsync(this Result result, Func<Task<Result>> ifSuccessFunction, bool? continueOnCapturedContext = null)
+    public static Task<Result> ThenAsync(this Result result, Func<Task<Result>> ifSuccessFunction, bool? continueOnCapturedContext = null)
     {
         ArgumentNullException.ThrowIfNull(result);
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
@@ -80,12 +82,12 @@ public static class ThenTaskAsyncExtensions
     /// </summary>
     /// <remarks>
     ///     <para>
-    ///         Use it to turn a successful result into a failure, e.g., <c>result.IfSuccessAsync(async () => Error.Conflict(…))</c>.
+    ///         Use it to turn a successful result into a failure, e.g., <c>result.ThenAsync(async () => Error.Conflict(…))</c>.
     ///         The returned <see cref="Result" /> is always failed.
     ///     </para>
     ///     <para>
     ///         Without this overload, such a call would return a <b>successful</b> <c>Result&lt;Error&gt;</c>.
-    ///         To get that on purpose, specify the type arguments: <c>IfSuccessAsync&lt;Error&gt;(…)</c>.
+    ///         To get that on purpose, specify the type arguments: <c>ThenAsync&lt;Error&gt;(…)</c>.
     ///     </para>
     /// </remarks>
     /// <param name="result">The <see cref="Result" /> to evaluate for success. Must not be <see langword="null" />.</param>
@@ -108,7 +110,7 @@ public static class ThenTaskAsyncExtensions
     /// <exception cref="InvalidOperationException">
     ///     If <paramref name="ifSuccessFunction" /> returns a <see langword="null" /> task or a task with a <see langword="null" /> result.
     /// </exception>
-    public static Task<Result> IfSuccessAsync(this Result result, Func<Task<Error>> ifSuccessFunction, bool? continueOnCapturedContext = null)
+    public static Task<Result> ThenAsync(this Result result, Func<Task<Error>> ifSuccessFunction, bool? continueOnCapturedContext = null)
     {
         ArgumentNullException.ThrowIfNull(result);
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
@@ -158,7 +160,7 @@ public static class ThenTaskAsyncExtensions
     ///     If any of the <paramref name="result" /> or <paramref name="ifSuccessFunction" /> parameters are <see langword="null" />.
     /// </exception>
     /// <exception cref="InvalidOperationException">If <paramref name="ifSuccessFunction" /> returns a <see langword="null" /> task.</exception>
-    public static Task<Result<T>> IfSuccessAsync<T>(this Result result, Func<Task<T>> ifSuccessFunction, bool? continueOnCapturedContext = null)
+    public static Task<Result<T>> ThenAsync<T>(this Result result, Func<Task<T>> ifSuccessFunction, bool? continueOnCapturedContext = null)
     {
         ArgumentNullException.ThrowIfNull(result);
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
@@ -208,7 +210,7 @@ public static class ThenTaskAsyncExtensions
     /// <exception cref="InvalidOperationException">
     ///     If <paramref name="ifSuccessFunction" /> returns a <see langword="null" /> task or a task with a <see langword="null" /> result.
     /// </exception>
-    public static Task<Result<T>> IfSuccessAsync<T>(this Result result, Func<Task<Result<T>>> ifSuccessFunction, bool? continueOnCapturedContext = null)
+    public static Task<Result<T>> ThenAsync<T>(this Result result, Func<Task<Result<T>>> ifSuccessFunction, bool? continueOnCapturedContext = null)
     {
         ArgumentNullException.ThrowIfNull(result);
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
@@ -263,7 +265,7 @@ public static class ThenTaskAsyncExtensions
     /// <exception cref="InvalidOperationException">
     ///     If <paramref name="ifSuccessFunction" /> returns a <see langword="null" /> task or a task with a <see langword="null" /> result.
     /// </exception>
-    public static Task<Result> IfSuccessAsync<T>(this Result<T> result, Func<T, Task<Result>> ifSuccessFunction, bool? continueOnCapturedContext = null)
+    public static Task<Result> ThenAsync<T>(this Result<T> result, Func<T, Task<Result>> ifSuccessFunction, bool? continueOnCapturedContext = null)
     {
         ArgumentNullException.ThrowIfNull(result);
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
@@ -289,12 +291,12 @@ public static class ThenTaskAsyncExtensions
     /// </summary>
     /// <remarks>
     ///     <para>
-    ///         Use it to turn a successful result into a failure, e.g., <c>result.IfSuccessAsync(async user => Error.Conflict(…))</c>.
+    ///         Use it to turn a successful result into a failure, e.g., <c>result.ThenAsync(async user => Error.Conflict(…))</c>.
     ///         The returned <see cref="Result" /> is always failed.
     ///     </para>
     ///     <para>
     ///         Without this overload, such a call would return a <b>successful</b> <c>Result&lt;Error&gt;</c>.
-    ///         To get that on purpose, specify the type arguments: <c>IfSuccessAsync&lt;T, Error&gt;(…)</c>.
+    ///         To get that on purpose, specify the type arguments: <c>ThenAsync&lt;T, Error&gt;(…)</c>.
     ///     </para>
     /// </remarks>
     /// <typeparam name="T">The type of the value of the <paramref name="result" />.</typeparam>
@@ -319,7 +321,7 @@ public static class ThenTaskAsyncExtensions
     /// <exception cref="InvalidOperationException">
     ///     If <paramref name="ifSuccessFunction" /> returns a <see langword="null" /> task or a task with a <see langword="null" /> result.
     /// </exception>
-    public static Task<Result> IfSuccessAsync<T>(this Result<T> result, Func<T, Task<Error>> ifSuccessFunction, bool? continueOnCapturedContext = null)
+    public static Task<Result> ThenAsync<T>(this Result<T> result, Func<T, Task<Error>> ifSuccessFunction, bool? continueOnCapturedContext = null)
     {
         ArgumentNullException.ThrowIfNull(result);
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
@@ -374,7 +376,7 @@ public static class ThenTaskAsyncExtensions
     ///     If any of the <paramref name="result" /> or <paramref name="ifSuccessFunction" /> parameters are <see langword="null" />.
     /// </exception>
     /// <exception cref="InvalidOperationException">If <paramref name="ifSuccessFunction" /> returns a <see langword="null" /> task.</exception>
-    public static Task<Result<TNext>> IfSuccessAsync<T, TNext>(this Result<T> result,
+    public static Task<Result<TNext>> ThenAsync<T, TNext>(this Result<T> result,
         Func<T, Task<TNext>> ifSuccessFunction, bool? continueOnCapturedContext = null)
     {
         ArgumentNullException.ThrowIfNull(result);
@@ -432,7 +434,7 @@ public static class ThenTaskAsyncExtensions
     /// <exception cref="InvalidOperationException">
     ///     If <paramref name="ifSuccessFunction" /> returns a <see langword="null" /> task or a task with a <see langword="null" /> result.
     /// </exception>
-    public static Task<Result<TNext>> IfSuccessAsync<T, TNext>(this Result<T> result,
+    public static Task<Result<TNext>> ThenAsync<T, TNext>(this Result<T> result,
         Func<T, Task<Result<TNext>>> ifSuccessFunction, bool? continueOnCapturedContext = null)
     {
         ArgumentNullException.ThrowIfNull(result);
@@ -492,7 +494,7 @@ public static class ThenTaskAsyncExtensions
     ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />,
     ///     or <paramref name="ifSuccessFunction" /> returns a <see langword="null" /> task or a task with a <see langword="null" /> result.
     /// </exception>
-    public static Task<Result> IfSuccessAsync(this Task<Result> resultTask, Func<Task<Result>> ifSuccessFunction, bool? continueOnCapturedContext = null)
+    public static Task<Result> ThenAsync(this Task<Result> resultTask, Func<Task<Result>> ifSuccessFunction, bool? continueOnCapturedContext = null)
     {
         ArgumentNullException.ThrowIfNull(resultTask);
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
@@ -519,12 +521,12 @@ public static class ThenTaskAsyncExtensions
     /// </summary>
     /// <remarks>
     ///     <para>
-    ///         Use it to turn a successful result into a failure, e.g., <c>resultTask.IfSuccessAsync(async () => Error.Conflict(…))</c>.
+    ///         Use it to turn a successful result into a failure, e.g., <c>resultTask.ThenAsync(async () => Error.Conflict(…))</c>.
     ///         The returned <see cref="Result" /> is always failed.
     ///     </para>
     ///     <para>
     ///         Without this overload, such a call would return a <b>successful</b> <c>Result&lt;Error&gt;</c>.
-    ///         To get that on purpose, specify the type arguments: <c>IfSuccessAsync&lt;Error&gt;(…)</c>.
+    ///         To get that on purpose, specify the type arguments: <c>ThenAsync&lt;Error&gt;(…)</c>.
     ///     </para>
     /// </remarks>
     /// <param name="resultTask">
@@ -550,7 +552,7 @@ public static class ThenTaskAsyncExtensions
     ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />,
     ///     or <paramref name="ifSuccessFunction" /> returns a <see langword="null" /> task or a task with a <see langword="null" /> result.
     /// </exception>
-    public static Task<Result> IfSuccessAsync(this Task<Result> resultTask, Func<Task<Error>> ifSuccessFunction, bool? continueOnCapturedContext = null)
+    public static Task<Result> ThenAsync(this Task<Result> resultTask, Func<Task<Error>> ifSuccessFunction, bool? continueOnCapturedContext = null)
     {
         ArgumentNullException.ThrowIfNull(resultTask);
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
@@ -612,7 +614,7 @@ public static class ThenTaskAsyncExtensions
     ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />,
     ///     or <paramref name="ifSuccessFunction" /> returns a <see langword="null" /> task.
     /// </exception>
-    public static Task<Result<T>> IfSuccessAsync<T>(this Task<Result> resultTask, Func<Task<T>> ifSuccessFunction, bool? continueOnCapturedContext = null)
+    public static Task<Result<T>> ThenAsync<T>(this Task<Result> resultTask, Func<Task<T>> ifSuccessFunction, bool? continueOnCapturedContext = null)
     {
         ArgumentNullException.ThrowIfNull(resultTask);
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
@@ -672,7 +674,7 @@ public static class ThenTaskAsyncExtensions
     ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />,
     ///     or <paramref name="ifSuccessFunction" /> returns a <see langword="null" /> task or a task with a <see langword="null" /> result.
     /// </exception>
-    public static Task<Result<T>> IfSuccessAsync<T>(this Task<Result> resultTask,
+    public static Task<Result<T>> ThenAsync<T>(this Task<Result> resultTask,
         Func<Task<Result<T>>> ifSuccessFunction,
         bool? continueOnCapturedContext = null)
     {
@@ -739,7 +741,7 @@ public static class ThenTaskAsyncExtensions
     ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />,
     ///     or <paramref name="ifSuccessFunction" /> returns a <see langword="null" /> task or a task with a <see langword="null" /> result.
     /// </exception>
-    public static Task<Result> IfSuccessAsync<T>(this Task<Result<T>> resultTask,
+    public static Task<Result> ThenAsync<T>(this Task<Result<T>> resultTask,
         Func<T, Task<Result>> ifSuccessFunction, bool? continueOnCapturedContext = null)
     {
         ArgumentNullException.ThrowIfNull(resultTask);
@@ -768,12 +770,12 @@ public static class ThenTaskAsyncExtensions
     /// </summary>
     /// <remarks>
     ///     <para>
-    ///         Use it to turn a successful result into a failure, e.g., <c>resultTask.IfSuccessAsync(async user => Error.Conflict(…))</c>.
+    ///         Use it to turn a successful result into a failure, e.g., <c>resultTask.ThenAsync(async user => Error.Conflict(…))</c>.
     ///         The returned <see cref="Result" /> is always failed.
     ///     </para>
     ///     <para>
     ///         Without this overload, such a call would return a <b>successful</b> <c>Result&lt;Error&gt;</c>.
-    ///         To get that on purpose, specify the type arguments: <c>IfSuccessAsync&lt;T, Error&gt;(…)</c>.
+    ///         To get that on purpose, specify the type arguments: <c>ThenAsync&lt;T, Error&gt;(…)</c>.
     ///     </para>
     /// </remarks>
     /// <typeparam name="T">The type of the value of the result of the <paramref name="resultTask" /> operation.</typeparam>
@@ -802,7 +804,7 @@ public static class ThenTaskAsyncExtensions
     ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />,
     ///     or <paramref name="ifSuccessFunction" /> returns a <see langword="null" /> task or a task with a <see langword="null" /> result.
     /// </exception>
-    public static Task<Result> IfSuccessAsync<T>(this Task<Result<T>> resultTask,
+    public static Task<Result> ThenAsync<T>(this Task<Result<T>> resultTask,
         Func<T, Task<Error>> ifSuccessFunction, bool? continueOnCapturedContext = null)
     {
         ArgumentNullException.ThrowIfNull(resultTask);
@@ -871,7 +873,7 @@ public static class ThenTaskAsyncExtensions
     ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />,
     ///     or <paramref name="ifSuccessFunction" /> returns a <see langword="null" /> task.
     /// </exception>
-    public static Task<Result<TNext>> IfSuccessAsync<T, TNext>(this Task<Result<T>> resultTask,
+    public static Task<Result<TNext>> ThenAsync<T, TNext>(this Task<Result<T>> resultTask,
         Func<T, Task<TNext>> ifSuccessFunction, bool? continueOnCapturedContext = null)
     {
         ArgumentNullException.ThrowIfNull(resultTask);
@@ -940,7 +942,7 @@ public static class ThenTaskAsyncExtensions
     ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />,
     ///     or <paramref name="ifSuccessFunction" /> returns a <see langword="null" /> task or a task with a <see langword="null" /> result.
     /// </exception>
-    public static Task<Result<TNext>> IfSuccessAsync<T, TNext>(this Task<Result<T>> resultTask,
+    public static Task<Result<TNext>> ThenAsync<T, TNext>(this Task<Result<T>> resultTask,
         Func<T, Task<Result<TNext>>> ifSuccessFunction, bool? continueOnCapturedContext = null)
     {
         ArgumentNullException.ThrowIfNull(resultTask);
@@ -960,6 +962,57 @@ public static class ThenTaskAsyncExtensions
 
             return result.Error;
         }
+    }
+
+    #endregion
+
+    #region Not supported: actions (#197)
+
+    // A function that returns nothing is a side effect, not a transformation (#197): these overloads turn the call into a compile
+    // error (CS0619) that names the method to use, instead of the conversion errors CS0029 and CS1662.
+
+    private const string ActionMessage =
+        "The function returns a task without a value. ThenAsync needs a function whose task returns a value, a result " +
+        "or an error; use IfSuccessAsync for a side effect.";
+
+    /// <summary>
+    ///     Not supported: the function returns a task without a value; use <c>IfSuccessAsync</c> for a side effect.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ActionMessage, error: true)]
+    public static Task<Result> ThenAsync(this Result result, Func<Task> ifSuccessFunction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(ActionMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the function returns a task without a value; use <c>IfSuccessAsync</c> for a side effect.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ActionMessage, error: true)]
+    public static Task<Result<T>> ThenAsync<T>(this Result<T> result, Func<T, Task> ifSuccessFunction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(ActionMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the function returns a task without a value; use <c>IfSuccessAsync</c> for a side effect.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ActionMessage, error: true)]
+    public static Task<Result> ThenAsync(this Task<Result> resultTask, Func<Task> ifSuccessFunction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(ActionMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the function returns a task without a value; use <c>IfSuccessAsync</c> for a side effect.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ActionMessage, error: true)]
+    public static Task<Result<T>> ThenAsync<T>(this Task<Result<T>> resultTask, Func<T, Task> ifSuccessFunction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(ActionMessage);
     }
 
     #endregion
