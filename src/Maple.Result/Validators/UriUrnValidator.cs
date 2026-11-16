@@ -28,6 +28,8 @@ internal static partial class UriUrnValidator
     //           r-component / q-component = pchar *( pchar / "/" / "?" )
     //           f-component   = fragment = *( pchar / "/" / "?" )
     // The "urn" scheme is case-insensitive.
+    // NonBacktracking: the value can come from another service (ErrorUri.Parse and TryParse), and this engine runs in linear time
+    // whatever the pattern (#189). The source generator does not generate code for this option; it creates the Regex instead.
     [GeneratedRegex(
         "^(?i:urn):" +
         // NID
@@ -38,7 +40,7 @@ internal static partial class UriUrnValidator
         @"(?:\?\+" + PChar + "(?:" + PChar + @"|[/?])*)?" +
         @"(?:\?=" + PChar + "(?:" + PChar + @"|[/?])*)?" +
         "(?:#(?:" + PChar + @"|[/?])*)?\z",
-        RegexOptions.CultureInvariant)]
+        RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
     private static partial Regex UrnPattern();
 
     /// <summary>

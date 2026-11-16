@@ -28,6 +28,8 @@ internal static partial class UriTagValidator
     // The pattern ends with \z, not $, which would also match before a trailing newline.
     // The scheme is case-insensitive (RFC 3986 section 3.1; the "tag:" literal of the ABNF matches any case); the value is stored as passed,
     // and tags are compared character by character (RFC 4151 section 2.4), so "TAG:…" and "tag:…" are different tags.
+    // NonBacktracking: the value can come from another service (ErrorUri.Parse and TryParse), and this engine runs in linear time
+    // whatever the pattern (#189). The source generator does not generate code for this option; it creates the Regex instead.
     [GeneratedRegex(
         "^(?i:tag):" +
         // authorityName = DNSname / emailAddress
@@ -37,7 +39,7 @@ internal static partial class UriTagValidator
         @",[12][0-9]{3}(?:-(?:0[1-9]|1[0-2])(?:-(?:0[1-9]|[12][0-9]|3[01]))?)?" +
         // ":" specific [ "#" fragment ]
         @":(?:[A-Za-z0-9\-._~!$&'()*+,;=:@/?]|%[0-9A-Fa-f]{2})*(?:#(?:[A-Za-z0-9\-._~!$&'()*+,;=:@/?]|%[0-9A-Fa-f]{2})*)?\z",
-        RegexOptions.CultureInvariant)]
+        RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
     private static partial Regex TagPattern();
 
     /// <summary>

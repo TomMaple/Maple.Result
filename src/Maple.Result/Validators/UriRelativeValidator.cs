@@ -27,13 +27,15 @@ internal static partial class UriRelativeValidator
     //           query / fragment = *( pchar / "/" / "?" )
     // Only a path-absolute ("/a/b") is accepted, as RFC 9457 (sections 3.1.1 and 3.1.5) asks relative URIs to include the full path.
     // A network-path reference ("//host/a") names another server, and a relative path ("a/b") depends on the path of the base URI.
+    // NonBacktracking: the value can come from another service (ErrorUri.Parse and TryParse), and this engine runs in linear time
+    // whatever the pattern (#189). The source generator does not generate code for this option; it creates the Regex instead.
     [GeneratedRegex(
         // path-absolute
         "^/(?:" + PChar + "+(?:/" + PChar + "*)*)?" +
         // query and fragment
         @"(?:\?(?:" + PChar + @"|[/?])*)?" +
         "(?:#(?:" + PChar + @"|[/?])*)?\z",
-        RegexOptions.CultureInvariant)]
+        RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
     private static partial Regex RelativePattern();
 
     /// <summary>
