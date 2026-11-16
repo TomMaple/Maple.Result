@@ -40,7 +40,7 @@ Version 3.0 makes `Result`, `Result<T>` and `Error` **immutable** and **always v
 5. Replace `new Result()`, `new Result<T>()`, `new Error()` and `new ErrorUri(...)` with the factory methods.
 6. If you **read** `Result`, `Result<T>` or `Error` from JSON (e.g., Azure Durable Functions, message queues, caches, HTTP clients), see [No JSON deserialization without converters](#no-json-deserialization-without-converters).
 7. If you compare or snapshot the **written** JSON, see [Changed JSON output](#changed-json-output).
-8. Make sure error titles are never `null` or blank and the pointers of error details are JSON Pointers (`/email`, not `Email`), and pass `null` instead of `ErrorUri.None()` as an instance *URI* (see [Stricter validation](#stricter-validation)).
+8. Make sure error titles are never `null` or blank, detail texts are `null` or not blank, metadata keys, template ids and template parameter names do not start or end with white space, and the pointers of error details are JSON Pointers (`/email`, not `Email`), and pass `null` instead of `ErrorUri.None()` as an instance *URI* (see [Stricter validation](#stricter-validation)).
 9. Rename the calls of `IfSuccess`, `IfSuccessAsync`, `IfError` and `IfErrorAsync` that transform or replace the result to `Then`, `ThenAsync`, `Else` and `ElseAsync`; the compiler reports each of them (see [Transforming `IfSuccess` and `IfError` renamed to `Then` and `Else`](#transforming-ifsuccess-and-iferror-renamed-to-then-and-else)).
 10. Fix the calls of `Then`, `Match` and the LINQ queries that no longer compile or that now return a failed result (see [`Then` and `Match` with an `Error` or a task](#then-and-match-with-an-error-or-a-task)).
 11. Replace the error actions of `IfError` and `Match` that return a task with the asynchronous methods (see [`IfError` and `Match` with an error action that returns a task](#iferror-and-match-with-an-error-action-that-returns-a-task)).
@@ -215,6 +215,10 @@ These values were accepted in 2.x and now throw:
 | Named values without a template id, e.g., `WithErrorDetail("/name", "Too short.", null, ("min", 3))` (2.x **silently dropped** them) | `ArgumentException` |
 | A `null` `TemplatedMessage.TemplateId` | `ArgumentNullException` |
 | A `null` `ErrorDetail.Detail` | `ArgumentNullException` |
+| An empty or white-space-only detail text: `ErrorBuilder.WithDetail("")`, `detail: ""` of the factory methods, `new ErrorDetail("/name", " ")` (pass `null` when there is no detail of the error) | `ArgumentException` |
+| An empty, white-space-only or padded template parameter name, e.g., `("", 1)` or `(" min", 1)` | `ArgumentException` |
+| A padded template id, e.g., `" errors.length"` | `ArgumentException` |
+| A padded metadata key, e.g., `" type"` or `"limit "` | `ArgumentException` |
 | An `ErrorDetail.PropertyPointer` that is not a JSON Pointer, e.g., `Email` or `Items[0].Name` (write `/email`, `/items/0/name`; see [What the pointer points to](problem-details.md#what-the-pointer-points-to)) | `ArgumentException` |
 | `about:blank` as an instance *URI*, e.g., `instanceUri: ErrorUri.None` (factory methods, `ErrorBuilder.WithInstanceUri`); pass `null` instead | `ArgumentException` |
 | An `ErrorUri.Tag` or `ErrorUri.Locator` value with white space (including a trailing new line), invalid percent-encoding (e.g., `%zz`), or, for locators, characters that need escaping (e.g., a space) or literal non-ASCII characters; 2.x accepted them and stored the value as passed | `UriFormatException` |
@@ -508,3 +512,4 @@ The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an
 * [Issue #126: LINQ selectors that return a task](https://github.com/TomMaple/Maple.Result/issues/126)
 * [Issue #197: Split `IfSuccess` and `IfError` by intent: `Then` and `Else`](https://github.com/TomMaple/Maple.Result/issues/197)
 * [Issue #198: Validate `ErrorDetail.PropertyPointer` as a JSON Pointer](https://github.com/TomMaple/Maple.Result/issues/198)
+* [Issue #203: Reject empty or whitespace-only detail texts and names padded with white space](https://github.com/TomMaple/Maple.Result/issues/203)

@@ -139,4 +139,33 @@ public class ErrorDetailUnitTests
     }
 
     #endregion
+
+    #region empty texts (issue #203)
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
+    [InlineData("\n")]
+    public void Ctor_EmptyOrWhitespaceDetail_ThrowsArgumentException(string detail)
+    {
+        // Act
+        var exception = Record.Exception(() => new ErrorDetail("/name", detail));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentException>();
+        ((ArgumentException)exception).ParamName.ShouldBe("Detail");
+    }
+
+    [Fact]
+    public void Ctor_DetailWithSurroundingWhiteSpace_StoresItUnchanged()
+    {
+        // Act
+        var sut = new ErrorDetail("/name", " Too short. ");
+
+        // Assert
+        sut.Detail.ShouldBe(" Too short. ");
+    }
+
+    #endregion
 }

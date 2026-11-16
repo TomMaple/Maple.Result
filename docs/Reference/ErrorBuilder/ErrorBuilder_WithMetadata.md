@@ -19,7 +19,7 @@ A key that already exists is never an error: its value is replaced. When the bui
 
 
 ## WithMetadata(String, Object)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L396" target="_blank">ErrorBuilder.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L414" target="_blank">ErrorBuilder.cs</a>
 
 Adds the specified metadata entry, or replaces its value if the key already exists.
 
@@ -46,7 +46,7 @@ The `key` is `null`.
 
 [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception)
 
-The `key` is empty, consists only of white-space characters, is [reserved](../Error/Error_Metadata.md#keys), or differs only in case from an existing key.
+The `key` is empty, consists only of white-space characters, starts or ends with white space, is [reserved](../Error/Error_Metadata.md#keys), or differs only in case from an existing key.
 
 ### Examples
 ```csharp
@@ -60,7 +60,7 @@ var error = ErrorBuilder.LimitExceeded(
 
 
 ## WithMetadata(IEnumerable&lt;KeyValuePair&lt;String, Object&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L423" target="_blank">ErrorBuilder.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L441" target="_blank">ErrorBuilder.cs</a>
 
 Adds the specified metadata entries. Entries with existing keys are replaced; the other existing entries are kept.
 
@@ -85,7 +85,7 @@ The `metadata` sequence or any of its keys is `null`.
 
 [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception)
 
-Any key is empty, consists only of white-space characters, is [reserved](../Error/Error_Metadata.md#keys), or differs only in case from an existing key or from another key of the same call.
+Any key is empty, consists only of white-space characters, starts or ends with white space, is [reserved](../Error/Error_Metadata.md#keys), or differs only in case from an existing key or from another key of the same call.
 
 ### Remarks
 All keys are validated before any entry is applied, so the builder is unchanged when this method throws. The sequence is enumerated once. `null` and an empty collection expression (`[]`) bind to this overload.
@@ -100,7 +100,7 @@ var error = ErrorBuilder.LimitExceeded(
 ```
 
 ## WithMetadata(ReadOnlySpan&lt;(String, Object)&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L469" target="_blank">ErrorBuilder.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L487" target="_blank">ErrorBuilder.cs</a>
 
 Adds the specified metadata entries, given as key-value tuples. Entries with existing keys are replaced; the other existing entries are kept.
 
@@ -124,7 +124,7 @@ Any key is `null`.
 
 [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception)
 
-Any key is empty, consists only of white-space characters, is [reserved](../Error/Error_Metadata.md#keys), or differs only in case from an existing key or from another key of the same call.
+Any key is empty, consists only of white-space characters, starts or ends with white space, is [reserved](../Error/Error_Metadata.md#keys), or differs only in case from an existing key or from another key of the same call.
 
 ### Remarks
 All keys are validated before any entry is applied, so the builder is unchanged when this method throws.

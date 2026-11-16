@@ -18,7 +18,7 @@ It relates to `400` HTTP status code (Bad Request), but can also be used in othe
 
 
 ## Validation(ErrorUri, String, String, ErrorUri, String, (String, Object)[])
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L912" target="_blank">Error.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L923" target="_blank">Error.cs</a>
 
 Creates a new instance of the [Error](Error.md) object of the *Validation* category with specified parameters.
 
@@ -63,7 +63,7 @@ The `title` or a name in `detailNamedValues` is `null`.
 
 [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception)
 
-The `title` or the `detailTemplateId` is empty or consists only of white-space characters, a name in `detailNamedValues` is repeated, `detailNamedValues` are passed without a `detailTemplateId`, or the `instanceUri` is `about:blank`.
+The `title` or the `detail` is empty or consists only of white-space characters, the `detailTemplateId` is empty, consists only of white-space characters or starts or ends with white space, a name in `detailNamedValues` is empty, starts or ends with white space, or is repeated, `detailNamedValues` are passed without a `detailTemplateId`, or the `instanceUri` is `about:blank`.
 
 ### Remarks
 > [!NOTE]
@@ -94,7 +94,7 @@ error = error.WithErrorDetail(
 
 
 ## Validation(ErrorUri, String, String, ErrorUri, String, IEnumerable&lt;KeyValuePair&lt;String, Object&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L928" target="_blank">Error.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L939" target="_blank">Error.cs</a>
 
 Creates a new instance of the [Error](Error.md) object of the *Validation* category with specified parameters.
 
@@ -140,7 +140,7 @@ The `title` or a name in `detailNamedValues` is `null`.
 
 [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception)
 
-The `title` or the `detailTemplateId` is empty or consists only of white-space characters, a name in `detailNamedValues` is repeated, `detailNamedValues` are passed without a `detailTemplateId`, or the `instanceUri` is `about:blank`.
+The `title` or the `detail` is empty or consists only of white-space characters, the `detailTemplateId` is empty, consists only of white-space characters or starts or ends with white space, a name in `detailNamedValues` is empty, starts or ends with white space, or is repeated, `detailNamedValues` are passed without a `detailTemplateId`, or the `instanceUri` is `about:blank`.
 
 ### Remarks
 > [!NOTE]

@@ -255,11 +255,27 @@ public sealed class ErrorBuilder
     /// <param name="detail">The explanation, or <see langword="null" /> to clear it.</param>
     /// <returns>The current <see cref="ErrorBuilder" /> instance.</returns>
     /// <remarks>
-    ///     To add an individual error occurrence (an <see cref="ErrorDetail" />), use <see cref="AddErrorDetail(ErrorDetail)" />.
+    ///     <para>
+    ///         To add an individual error occurrence (an <see cref="ErrorDetail" />), use <see cref="AddErrorDetail(ErrorDetail)" />.
+    ///     </para>
+    ///     <para>
+    ///         An empty or whitespace-only text is rejected: pass <see langword="null" /> when there is no detail. The text is not trimmed. When
+    ///         the text comes from data (e.g., <c>exception.Message</c> in a mapper of <see cref="Result.Try(Action, Func{Exception, Error})" />),
+    ///         pass <see langword="null" /> or a fallback text when it can be empty: inside a mapper, the exception replaces the original one.
+    ///     </para>
     /// </remarks>
+    /// <exception cref="ArgumentException">If the <paramref name="detail" /> is empty or whitespace-only.</exception>
     public ErrorBuilder WithDetail(string? detail)
     {
+        if (detail is not null && string.IsNullOrWhiteSpace(detail))
+        {
+            throw new ArgumentException(
+                "The detail must not be empty or whitespace-only; pass null when there is no detail.",
+                nameof(detail));
+        }
+
         _detail = detail;
+
         return this;
     }
 
@@ -290,7 +306,8 @@ public sealed class ErrorBuilder
     ///     If the <paramref name="templateId" /> or a parameter name is <see langword="null" />.
     /// </exception>
     /// <exception cref="ArgumentException">
-    ///     If the <paramref name="templateId" /> is empty or whitespace-only, or a parameter name is repeated.
+    ///     If the <paramref name="templateId" /> is empty, whitespace-only or starts or ends with white space, or a parameter name is empty,
+    ///     starts or ends with white space, or is repeated.
     /// </exception>
     public ErrorBuilder WithDetailTemplated(string templateId, params ReadOnlySpan<(string Key, object? Value)> namedValues)
     {
@@ -364,8 +381,9 @@ public sealed class ErrorBuilder
     /// </exception>
     /// <exception cref="ArgumentException">
     ///     If the <paramref name="propertyPointer" /> is not a JSON Pointer (e.g., <c>Email</c> or <c>Items[0].Name</c>; the parameter name
-    ///     of the exception is <c>PropertyPointer</c>), the <paramref name="detailTemplateId" /> is empty or whitespace-only, a parameter
-    ///     name is repeated,
+    ///     of the exception is <c>PropertyPointer</c>), the <paramref name="detail" /> is empty or whitespace-only (the parameter name of the
+    ///     exception is <c>Detail</c>), the <paramref name="detailTemplateId" /> is empty, whitespace-only or starts or ends with white space, a
+    ///     parameter name is empty, starts or ends with white space, or is repeated,
     ///     or <paramref name="detailNamedValues" /> are passed without a <paramref name="detailTemplateId" />.
     /// </exception>
     public ErrorBuilder AddErrorDetail(string? propertyPointer, string detail, string? detailTemplateId = null,
@@ -389,9 +407,9 @@ public sealed class ErrorBuilder
     /// <returns>The current <see cref="ErrorBuilder" /> instance.</returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="key" /> is <see langword="null" />.</exception>
     /// <exception cref="ArgumentException">
-    ///     If the <paramref name="key" /> is empty, whitespace-only, matches (case-insensitively) a standard problem details member: <c>type</c>,
-    ///     <c>title</c>, <c>status</c>, <c>detail</c>, <c>instance</c>, <c>errors</c> or <c>detailTemplated</c>, or differs only in case from an
-    ///     existing key (the same key replaces the value).
+    ///     If the <paramref name="key" /> is empty, whitespace-only, starts or ends with white space, matches (case-insensitively) a standard problem
+    ///     details member: <c>type</c>, <c>title</c>, <c>status</c>, <c>detail</c>, <c>instance</c>, <c>errors</c> or <c>detailTemplated</c>, or
+    ///     differs only in case from an existing key (the same key replaces the value).
     /// </exception>
     public ErrorBuilder WithMetadata(string key, object? value)
     {
@@ -415,9 +433,9 @@ public sealed class ErrorBuilder
     ///     If the <paramref name="metadata" /> or any key is <see langword="null" />.
     /// </exception>
     /// <exception cref="ArgumentException">
-    ///     If any key is empty, whitespace-only or matches (case-insensitively) a standard problem details member: <c>type</c>, <c>title</c>, <c>status</c>,
-    ///     <c>detail</c>, <c>instance</c>, <c>errors</c> or <c>detailTemplated</c>; or if a key differs only in case from an existing key or from another
-    ///     key of the same call (the same key replaces the value).
+    ///     If any key is empty, whitespace-only, starts or ends with white space, or matches (case-insensitively) a standard problem details member:
+    ///     <c>type</c>, <c>title</c>, <c>status</c>, <c>detail</c>, <c>instance</c>, <c>errors</c> or <c>detailTemplated</c>; or if a key differs
+    ///     only in case from an existing key or from another key of the same call (the same key replaces the value).
     /// </exception>
     [OverloadResolutionPriority(1)]
     public ErrorBuilder WithMetadata(IEnumerable<KeyValuePair<string, object?>> metadata)
@@ -462,9 +480,9 @@ public sealed class ErrorBuilder
     /// </remarks>
     /// <exception cref="ArgumentNullException">If any key is <see langword="null" />.</exception>
     /// <exception cref="ArgumentException">
-    ///     If any key is empty, whitespace-only or matches (case-insensitively) a standard problem details member: <c>type</c>, <c>title</c>, <c>status</c>,
-    ///     <c>detail</c>, <c>instance</c>, <c>errors</c> or <c>detailTemplated</c>; or if a key differs only in case from an existing key or from another
-    ///     key of the same call (the same key replaces the value).
+    ///     If any key is empty, whitespace-only, starts or ends with white space, or matches (case-insensitively) a standard problem details member:
+    ///     <c>type</c>, <c>title</c>, <c>status</c>, <c>detail</c>, <c>instance</c>, <c>errors</c> or <c>detailTemplated</c>; or if a key differs
+    ///     only in case from an existing key or from another key of the same call (the same key replaces the value).
     /// </exception>
     public ErrorBuilder WithMetadata(params ReadOnlySpan<(string Key, object? Value)> metadata)
     {

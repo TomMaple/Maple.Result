@@ -124,6 +124,7 @@ public sealed record Error
     /// <remarks>
     ///     The “detail” string, if present, ought to focus on helping the client correct the problem, rather than giving debugging information.
     ///     Consumers SHOULD NOT parse the “detail” member for information; extensions are more suitable and less error-prone ways to obtain such information.
+    ///     It is <see langword="null" /> or a text with content, never empty or whitespace-only (a rule of this library, not of <i>RFC 9457</i>).
     /// </remarks>
     public string? Detail { get; }
 
@@ -182,7 +183,8 @@ public sealed record Error
     ///         parsing <see cref="Detail" /> (e.g., a retry delay). The library does not define any well-known keys.
     ///     </para>
     ///     <para>
-    ///         Keys are compared ordinally (case-sensitive). They should start with a letter, consist of letters, digits and <c>_</c>,
+    ///         Keys are compared ordinally (case-sensitive). A key is not empty and does not start or end with white space (white space inside is
+    ///         allowed); this is a rule of this library. Keys should start with a letter, consist of letters, digits and <c>_</c>,
     ///         and be at least 3 characters long (<i>RFC 9457</i>, section 4); this is a recommendation and is not enforced.
     ///         Keys must not match the top-level members of the problem details format (<see cref="ProblemDetailsMembers" />, case-insensitively):
     ///         <c>type</c>, <c>title</c>, <c>status</c>, <c>detail</c>, <c>instance</c>, <c>errors</c> and <c>detailTemplated</c>;
@@ -262,8 +264,9 @@ public sealed record Error
     /// </exception>
     /// <exception cref="ArgumentException">
     ///     If the <paramref name="propertyPointer" /> is not a JSON Pointer (e.g., <c>Email</c> or <c>Items[0].Name</c>; the parameter name
-    ///     of the exception is <c>PropertyPointer</c>), the <paramref name="detailTemplateId" /> is empty or whitespace-only, a parameter
-    ///     name is repeated,
+    ///     of the exception is <c>PropertyPointer</c>), the <paramref name="detail" /> is empty or whitespace-only (the parameter name of the
+    ///     exception is <c>Detail</c>), the <paramref name="detailTemplateId" /> is empty, whitespace-only or starts or ends with white space, a
+    ///     parameter name is empty, starts or ends with white space, or is repeated,
     ///     or <paramref name="detailNamedValues" /> are passed without a <paramref name="detailTemplateId" />.
     /// </exception>
     public Error WithErrorDetail(string? propertyPointer, string detail, string? detailTemplateId = null,
@@ -316,9 +319,9 @@ public sealed record Error
     /// <param name="value">The value of the metadata entry; it may be <see langword="null" />.</param>
     /// <returns>A new instance of the <see cref="Error" /> object; the current instance is not modified.</returns>
     /// <exception cref="ArgumentException">
-    ///     If the <paramref name="key" /> is empty, whitespace-only, matches (case-insensitively) a standard problem details member:
-    ///     <c>type</c>, <c>title</c>, <c>status</c>, <c>detail</c>, <c>instance</c>, <c>errors</c> or <c>detailTemplated</c>, or differs only in case
-    ///     from an existing key (the same key replaces the value).
+    ///     If the <paramref name="key" /> is empty, whitespace-only, starts or ends with white space, matches (case-insensitively) a standard problem
+    ///     details member: <c>type</c>, <c>title</c>, <c>status</c>, <c>detail</c>, <c>instance</c>, <c>errors</c> or <c>detailTemplated</c>, or
+    ///     differs only in case from an existing key (the same key replaces the value).
     /// </exception>
     /// <exception cref="ArgumentNullException">If the <paramref name="key" /> is <see langword="null" />.</exception>
     public Error WithMetadata(string key, object? value)
@@ -335,9 +338,9 @@ public sealed record Error
     /// <param name="metadata">The metadata entries to add or replace; values may be <see langword="null" />.</param>
     /// <returns>A new instance of the <see cref="Error" /> object; the current instance is not modified.</returns>
     /// <exception cref="ArgumentException">
-    ///     If any key is empty, whitespace-only or matches (case-insensitively) a standard problem details member:
-    ///     <c>type</c>, <c>title</c>, <c>status</c>, <c>detail</c>, <c>instance</c>, <c>errors</c> or <c>detailTemplated</c>;
-    ///     or if a key differs only in case from an existing key or from another key of the same call (the same key replaces the value).
+    ///     If any key is empty, whitespace-only, starts or ends with white space, or matches (case-insensitively) a standard problem details member:
+    ///     <c>type</c>, <c>title</c>, <c>status</c>, <c>detail</c>, <c>instance</c>, <c>errors</c> or <c>detailTemplated</c>; or if a key differs
+    ///     only in case from an existing key or from another key of the same call (the same key replaces the value).
     /// </exception>
     /// <exception cref="ArgumentNullException">
     ///     If the <paramref name="metadata" /> or any key is <see langword="null" />.
@@ -360,9 +363,9 @@ public sealed record Error
     /// </param>
     /// <returns>A new instance of the <see cref="Error" /> object; the current instance is not modified.</returns>
     /// <exception cref="ArgumentException">
-    ///     If any key is empty, whitespace-only or matches (case-insensitively) a standard problem details member:
-    ///     <c>type</c>, <c>title</c>, <c>status</c>, <c>detail</c>, <c>instance</c>, <c>errors</c> or <c>detailTemplated</c>;
-    ///     or if a key differs only in case from an existing key or from another key of the same call (the same key replaces the value).
+    ///     If any key is empty, whitespace-only, starts or ends with white space, or matches (case-insensitively) a standard problem details member:
+    ///     <c>type</c>, <c>title</c>, <c>status</c>, <c>detail</c>, <c>instance</c>, <c>errors</c> or <c>detailTemplated</c>; or if a key differs
+    ///     only in case from an existing key or from another key of the same call (the same key replaces the value).
     /// </exception>
     /// <exception cref="ArgumentNullException">If any key is <see langword="null" />.</exception>
     public Error WithMetadata(params ReadOnlySpan<(string Key, object? Value)> metadata)
@@ -521,7 +524,10 @@ public sealed record Error
     /// <param name="category">The category of the error.</param>
     /// <param name="typeUri">A record containing a <i>URI</i> reference that identifies the problem type.</param>
     /// <param name="title">A short, human-readable summary of the problem.</param>
-    /// <param name="detail">A human-readable explanation specific to this occurrence of the problem.</param>
+    /// <param name="detail">
+    ///     A human-readable explanation specific to this occurrence of the problem, or <see langword="null" /> for none; not empty or
+    ///     whitespace-only.
+    /// </param>
     /// <param name="instanceUri">A <i>URI</i> reference that identifies the specific occurrence of the problem.</param>
     /// <param name="detailTemplateId">
     ///     A message template identifier to generate a localized detail message (the human-readable explanation specific to this occurrence of the problem).
@@ -535,7 +541,8 @@ public sealed record Error
     ///     If the <paramref name="title" /> or a parameter name in <paramref name="detailNamedValues" /> is <see langword="null" />.
     /// </exception>
     /// <exception cref="ArgumentException">
-    ///     If the <paramref name="title" /> or the <paramref name="detailTemplateId" /> is empty or whitespace-only, a parameter name is repeated,
+    ///     If the <paramref name="title" /> or the <paramref name="detail" /> is empty or whitespace-only, the <paramref name="detailTemplateId" />
+    ///     is empty, whitespace-only or starts or ends with white space, a parameter name is empty, starts or ends with white space, or is repeated,
     ///     <paramref name="detailNamedValues" /> are passed without a <paramref name="detailTemplateId" />,
     ///     or the <paramref name="instanceUri" /> is <c>about:blank</c>.
     /// </exception>
@@ -552,7 +559,10 @@ public sealed record Error
     /// <param name="category">The category of the error.</param>
     /// <param name="typeUri">A record containing a <i>URI</i> reference that identifies the problem type.</param>
     /// <param name="title">A short, human-readable summary of the problem.</param>
-    /// <param name="detail">A human-readable explanation specific to this occurrence of the problem.</param>
+    /// <param name="detail">
+    ///     A human-readable explanation specific to this occurrence of the problem, or <see langword="null" /> for none; not empty or
+    ///     whitespace-only.
+    /// </param>
     /// <param name="instanceUri">A <i>URI</i> reference that identifies the specific occurrence of the problem.</param>
     /// <param name="detailTemplateId">
     ///     A message template identifier to generate a localized detail message (the human-readable explanation specific to this occurrence of the problem).
@@ -566,7 +576,8 @@ public sealed record Error
     ///     If the <paramref name="title" /> or a parameter name in <paramref name="detailNamedValues" /> is <see langword="null" />.
     /// </exception>
     /// <exception cref="ArgumentException">
-    ///     If the <paramref name="title" /> or the <paramref name="detailTemplateId" /> is empty or whitespace-only, a parameter name is repeated,
+    ///     If the <paramref name="title" /> or the <paramref name="detail" /> is empty or whitespace-only, the <paramref name="detailTemplateId" />
+    ///     is empty, whitespace-only or starts or ends with white space, a parameter name is empty, starts or ends with white space, or is repeated,
     ///     <paramref name="detailNamedValues" /> are passed without a <paramref name="detailTemplateId" />,
     ///     or the <paramref name="instanceUri" /> is <c>about:blank</c>.
     /// </exception>

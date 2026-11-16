@@ -9,6 +9,7 @@
  */
 
 using Maple.Results.Helpers;
+using Maple.Results.Validators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,7 +44,8 @@ public sealed record TemplatedMessage
     ///     If the <paramref name="templateId" /> or a parameter name is <see langword="null" />.
     /// </exception>
     /// <exception cref="ArgumentException">
-    ///     If the <paramref name="templateId" /> is empty or whitespace-only, or a parameter name is repeated.
+    ///     If the <paramref name="templateId" /> is empty, whitespace-only or starts or ends with white space, or a parameter name is empty,
+    ///     starts or ends with white space, or is repeated.
     /// </exception>
     /// <remarks>
     ///     A <see langword="null" /> or an empty collection expression (<c>[]</c>) as the second argument binds to this constructor.
@@ -67,7 +69,8 @@ public sealed record TemplatedMessage
     ///     If the <paramref name="templateId" /> or a parameter name is <see langword="null" />.
     /// </exception>
     /// <exception cref="ArgumentException">
-    ///     If the <paramref name="templateId" /> is empty or whitespace-only, or a parameter name is repeated.
+    ///     If the <paramref name="templateId" /> is empty, whitespace-only or starts or ends with white space, or a parameter name is empty,
+    ///     starts or ends with white space, or is repeated.
     /// </exception>
     public TemplatedMessage(string templateId, params ReadOnlySpan<(string Key, object? Value)> parameters)
         : this(Validate(templateId, parameters, nameof(templateId), nameof(parameters)))
@@ -83,7 +86,7 @@ public sealed record TemplatedMessage
     #endregion
 
     /// <summary>
-    ///     The identifier of the message template (never <see langword="null" />, empty or whitespace-only).
+    ///     The identifier of the message template (never <see langword="null" /> or empty, and without white space at the start or the end).
     /// </summary>
     public string TemplateId { get; }
 
@@ -207,7 +210,7 @@ public sealed record TemplatedMessage
     private static Validated Validate(string templateId, IEnumerable<KeyValuePair<string, object?>>? parameters,
         string templateIdParameterName, string parametersParameterName)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(templateId, templateIdParameterName);
+        ValidateTemplateId(templateId, templateIdParameterName);
 
         if (parameters is null)
             return new Validated(templateId, null);
@@ -244,7 +247,7 @@ public sealed record TemplatedMessage
     private static Validated Validate(string templateId, ReadOnlySpan<(string Key, object? Value)> parameters,
         string templateIdParameterName, string parametersParameterName)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(templateId, templateIdParameterName);
+        ValidateTemplateId(templateId, templateIdParameterName);
 
         if (parameters.IsEmpty)
             return new Validated(templateId, null);
@@ -258,10 +261,29 @@ public sealed record TemplatedMessage
         return new Validated(templateId, copy);
     }
 
+    private static void ValidateTemplateId(string templateId, string parameterName)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(templateId, parameterName);
+
+        if (!NameValidator.IsValid(templateId))
+        {
+            throw new ArgumentException(
+                $"The template identifier ‘{templateId}’ starts or ends with white space. An identifier is not trimmed; remove the white space.",
+                parameterName);
+        }
+    }
+
     private static void Add(Dictionary<string, object?> dictionary, string key, object? value, string parameterName)
     {
         if (key is null)
             throw new ArgumentNullException(parameterName, "A parameter name must not be null.");
+
+        if (!NameValidator.IsValid(key))
+        {
+            throw new ArgumentException(
+                $"The parameter name ‘{key}’ is empty, or starts or ends with white space. A name is not trimmed; remove the white space.",
+                parameterName);
+        }
 
         if (!dictionary.TryAdd(key, value))
             throw new ArgumentException($"The parameter ‘{key}’ is repeated.", parameterName);

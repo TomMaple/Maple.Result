@@ -875,4 +875,209 @@ public class ErrorBuilderUnitTests
     }
 
     #endregion
+
+    #region empty texts and padded names (issue #203)
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
+    [InlineData("\n")]
+    public void WithDetail_EmptyOrWhitespaceText_ThrowsArgumentExceptionAndKeepsDetail(string detail)
+    {
+        // Arrange
+        var sut = Sut.Validation(ErrorUri.None, "Test title").WithDetail("Previous detail.");
+
+        // Act
+        var exception = Record.Exception(() => sut.WithDetail(detail));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentException>();
+        ((ArgumentException)exception).ParamName.ShouldBe("detail");
+        sut.Build().Detail.ShouldBe("Previous detail.");
+    }
+
+    [Fact]
+    public void WithDetail_EmptyText_MessageSaysToPassNull()
+    {
+        // Arrange
+        var sut = Sut.Validation(ErrorUri.None, "Test title");
+
+        // Act
+        var exception = Record.Exception(() => sut.WithDetail(""));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.Message.ShouldContain("pass null");
+    }
+
+    [Fact]
+    public void WithDetail_Null_ClearsDetail()
+    {
+        // Act
+        var result = Sut.Validation(ErrorUri.None, "Test title").WithDetail("Detail.").WithDetail(null).Build();
+
+        // Assert
+        result.Detail.ShouldBeNull();
+    }
+
+    [Fact]
+    public void WithDetail_TextWithSurroundingWhiteSpace_StoresItUnchanged()
+    {
+        // Act
+        var result = Sut.Validation(ErrorUri.None, "Test title").WithDetail(" Too short. ").Build();
+
+        // Assert
+        result.Detail.ShouldBe(" Too short. ");
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
+    [InlineData(" min")]
+    [InlineData("min ")]
+    [InlineData("\tmin")]
+    public void WithDetailTemplated_EmptyOrPaddedParameterName_ThrowsArgumentException(string name)
+    {
+        // Arrange
+        var sut = Sut.Validation(ErrorUri.None, "Test title");
+
+        // Act
+        var exception = Record.Exception(() => sut.WithDetailTemplated("errors.length", (name, 3)));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentException>();
+        ((ArgumentException)exception).ParamName.ShouldBe("namedValues");
+    }
+
+    [Theory]
+    [InlineData(" errors.length")]
+    [InlineData("errors.length ")]
+    [InlineData("\terrors.length")]
+    public void WithDetailTemplated_PaddedTemplateId_ThrowsArgumentException(string templateId)
+    {
+        // Arrange
+        var sut = Sut.Validation(ErrorUri.None, "Test title");
+
+        // Act
+        var exception = Record.Exception(() => sut.WithDetailTemplated(templateId));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentException>();
+        ((ArgumentException)exception).ParamName.ShouldBe("templateId");
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
+    [InlineData("\n")]
+    public void AddErrorDetail_EmptyOrWhitespaceDetailText_ThrowsArgumentExceptionAndAddsNothing(string detail)
+    {
+        // Arrange
+        var sut = Sut.Validation(ErrorUri.None, "Test title");
+
+        // Act
+        var exception = Record.Exception(() => sut.AddErrorDetail("/name", detail));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentException>();
+        ((ArgumentException)exception).ParamName.ShouldBe("Detail");
+        sut.Build().ErrorDetails.ShouldBeEmpty();
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
+    [InlineData(" min")]
+    [InlineData("min ")]
+    [InlineData("\tmin")]
+    public void AddErrorDetail_EmptyOrPaddedParameterName_ThrowsArgumentExceptionAndAddsNothing(string name)
+    {
+        // Arrange
+        var sut = Sut.Validation(ErrorUri.None, "Test title");
+
+        // Act
+        var exception = Record.Exception(() => sut.AddErrorDetail("/name", "Too short.", "errors.length", (name, 3)));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentException>();
+        ((ArgumentException)exception).ParamName.ShouldBe("detailNamedValues");
+        sut.Build().ErrorDetails.ShouldBeEmpty();
+    }
+
+    [Theory]
+    [InlineData(" errors.length")]
+    [InlineData("errors.length ")]
+    [InlineData("\terrors.length")]
+    public void AddErrorDetail_PaddedTemplateId_ThrowsArgumentExceptionAndAddsNothing(string templateId)
+    {
+        // Arrange
+        var sut = Sut.Validation(ErrorUri.None, "Test title");
+
+        // Act
+        var exception = Record.Exception(() => sut.AddErrorDetail("/name", "Too short.", templateId));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentException>();
+        ((ArgumentException)exception).ParamName.ShouldBe("detailTemplateId");
+        sut.Build().ErrorDetails.ShouldBeEmpty();
+    }
+
+    [Theory]
+    [InlineData(" type")]
+    [InlineData("type ")]
+    [InlineData("\tlimit")]
+    [InlineData(" limit ")]
+    public void WithMetadata_PaddedKey_ThrowsArgumentExceptionAndKeepsMetadata(string key)
+    {
+        // Arrange
+        var sut = Sut.LimitExceeded(ErrorUri.None, "Test title").WithMetadata("limit", 100);
+
+        // Act
+        var exception = Record.Exception(() => sut.WithMetadata(key, 1));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentException>();
+        ((ArgumentException)exception).ParamName.ShouldBe("key");
+        sut.Build().Metadata.Keys.ShouldBe(["limit"]);
+    }
+
+    [Fact]
+    public void WithMetadata_SequenceWithPaddedKey_ThrowsArgumentExceptionAndAddsNothing()
+    {
+        // Arrange
+        var sut = Sut.LimitExceeded(ErrorUri.None, "Test title").WithMetadata("limit", 100);
+
+        // Act
+        var exception = Record.Exception(() =>
+            sut.WithMetadata([new KeyValuePair<string, object?>("remaining", 0), new KeyValuePair<string, object?>("type ", 1)]));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentException>();
+        sut.Build().Metadata.Keys.ShouldBe(["limit"]);
+    }
+
+    [Fact]
+    public void WithMetadata_TuplesWithPaddedKey_ThrowsArgumentExceptionAndAddsNothing()
+    {
+        // Arrange
+        var sut = Sut.LimitExceeded(ErrorUri.None, "Test title").WithMetadata("limit", 100);
+
+        // Act
+        var exception = Record.Exception(() => sut.WithMetadata(("remaining", 0), (" type", 1)));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentException>();
+        sut.Build().Metadata.Keys.ShouldBe(["limit"]);
+    }
+
+    #endregion
 }

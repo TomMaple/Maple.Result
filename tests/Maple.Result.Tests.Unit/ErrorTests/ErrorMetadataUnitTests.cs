@@ -596,4 +596,69 @@ public class ErrorMetadataUnitTests
     }
 
     #endregion
+
+    #region padded keys (issue #203)
+
+    [Theory]
+    [InlineData(" type")]
+    [InlineData("type ")]
+    [InlineData("\tlimit")]
+    [InlineData(" limit ")]
+    public void WithMetadata_PaddedKey_ThrowsArgumentExceptionAndKeepsError(string key)
+    {
+        // Arrange
+        var sut = CreateError();
+
+        // Act
+        var exception = Record.Exception(() => sut.WithMetadata(key, 1));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentException>();
+        ((ArgumentException)exception).ParamName.ShouldBe("key");
+        sut.Metadata.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void WithMetadata_SequenceWithPaddedKey_ThrowsArgumentException()
+    {
+        // Arrange
+        var sut = CreateError();
+
+        // Act
+        var exception = Record.Exception(() =>
+            sut.WithMetadata([new KeyValuePair<string, object?>("limit", 1), new KeyValuePair<string, object?>("type ", 1)]));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentException>();
+        ((ArgumentException)exception).ParamName.ShouldBe("key");
+    }
+
+    [Fact]
+    public void WithMetadata_TuplesWithPaddedKey_ThrowsArgumentException()
+    {
+        // Arrange
+        var sut = CreateError();
+
+        // Act
+        var exception = Record.Exception(() => sut.WithMetadata(("limit", 1), (" type", 1)));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentException>();
+        ((ArgumentException)exception).ParamName.ShouldBe("key");
+    }
+
+    [Fact]
+    public void WithMetadata_KeyWithWhiteSpaceInside_AddsEntry()
+    {
+        // Act
+        var sut = CreateError().WithMetadata("retry after", 30);
+
+        // Assert
+        sut.Metadata["retry after"].ShouldBe(30);
+    }
+
+    #endregion
 }

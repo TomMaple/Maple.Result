@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L128" target="_blank">Error.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L129" target="_blank">Error.cs</a>
 
 Gets a human-readable explanation specific to this occurrence of the problem.
 
@@ -16,7 +16,7 @@ public string? Detail { get; }
 A human-readable explanation specific to this occurrence of the problem.
 
 ## Remarks
-This is an optional property.
+This is an optional property. It is `null` or a text with content: it is never empty or whitespace-only ([WithDetail](../ErrorBuilder/ErrorBuilder_WithDetail.md) and the factory methods reject such a text).
 
 If present, it should focus on helping the client correct the problem, rather than giving debugging information.
 

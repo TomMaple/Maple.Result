@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/TemplatedMessage.cs#L88" target="_blank">TemplatedMessage.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/TemplatedMessage.cs#L91" target="_blank">TemplatedMessage.cs</a>
 
 Gets a template identifier to be used when rendering the templated message.
 
@@ -28,7 +28,7 @@ var error = Error.NotFound(
 
 
 ## Remarks
-This is a mandatory property. It is never `null`, empty or white-space only: the [constructor](TemplatedMessage_constructors.md) rejects such a value.
+This is a mandatory property. It is never `null` or empty, and it does not start or end with white space: the [constructor](TemplatedMessage_constructors.md) rejects such a value and does not trim it (`" errors.length"` throws). White space inside is allowed.
 
 > [!NOTE]
 > An instance is usually created by the factory methods of the [Error](../Error/Error.md) record (the `detailTemplateId` and `detailNamedValues` parameters, e.g., [NotFound](../Error/Error_NotFound.md)), by [Error.WithErrorDetail](../Error/Error_WithErrorDetail.md), or by the [ErrorBuilder](../ErrorBuilder/ErrorBuilder.md) methods [WithDetailTemplated](../ErrorBuilder/ErrorBuilder_WithDetailTemplated.md) and [AddErrorDetail](../ErrorBuilder/ErrorBuilder_AddErrorDetail.md).
