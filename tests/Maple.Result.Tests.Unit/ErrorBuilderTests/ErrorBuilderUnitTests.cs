@@ -504,6 +504,22 @@ public class ErrorBuilderUnitTests
         sut.Build().ErrorDetails.ShouldBeEmpty();
     }
 
+    [Fact]
+    public void AddErrorDetail_InvalidPropertyPointer_ThrowsArgumentExceptionAndAddsNothing()
+    {
+        // Arrange
+        var sut = Sut.Validation(ErrorUri.None, "Test title");
+
+        // Act
+        var exception = Record.Exception(() => sut.AddErrorDetail("Email", "The email address is required."));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentException>();
+        ((ArgumentException)exception).ParamName.ShouldBe("PropertyPointer");
+        sut.Build().ErrorDetails.ShouldBeEmpty();
+    }
+
     #endregion
 
     #region metadata

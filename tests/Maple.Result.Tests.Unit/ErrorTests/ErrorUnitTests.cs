@@ -397,6 +397,22 @@ public class ErrorUnitTests
     }
 
     [Fact]
+    public void WithErrorDetail_InvalidPropertyPointer_ThrowsArgumentExceptionAndKeepsError()
+    {
+        // Arrange
+        var sut = Sut.Validation(ErrorUri.None, "Test title");
+
+        // Act
+        var exception = Record.Exception(() => sut.WithErrorDetail("Items[0].Name", "The name is too short."));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentException>();
+        ((ArgumentException)exception).ParamName.ShouldBe("PropertyPointer");
+        sut.ErrorDetails.ShouldBeEmpty();
+    }
+
+    [Fact]
     public void ErrorDetails_CastToMutableList_CannotBeModified()
     {
         // Arrange

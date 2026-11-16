@@ -68,6 +68,61 @@ public class ErrorDetailUnitTests
         sut.DetailTemplated.ShouldBeNull();
     }
 
+    [Theory]
+    [InlineData("email")]
+    [InlineData("Items[0].Name")]
+    [InlineData("/a~2b")]
+    [InlineData("#email")]
+    public void Ctor_InvalidPropertyPointer_ThrowsArgumentException(string propertyPointer)
+    {
+        // Act
+        var exception = Record.Exception(() => new ErrorDetail(propertyPointer, "The value is invalid."));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentException>();
+        ((ArgumentException)exception).ParamName.ShouldBe("PropertyPointer");
+    }
+
+    [Fact]
+    public void Ctor_InvalidPropertyPointer_MessageShowsValue()
+    {
+        // Act
+        var exception = Record.Exception(() => new ErrorDetail("Email", "The email address is required."));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.Message.ShouldContain("‘Email’");
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("/email")]
+    [InlineData("#/email")]
+    [InlineData("#")]
+    public void Ctor_ValidPropertyPointer_StoresItUnchanged(string propertyPointer)
+    {
+        // Act
+        var sut = new ErrorDetail(propertyPointer, "The value is invalid.");
+
+        // Assert
+        sut.PropertyPointer.ShouldBe(propertyPointer);
+    }
+
+    [Fact]
+    public void Equals_StringFormVsUriFragmentForm_AreNotEqual()
+    {
+        // Arrange
+        var stringForm = new ErrorDetail("/email", "The email address is required.");
+        var uriFragmentForm = new ErrorDetail("#/email", "The email address is required.");
+
+        // Act
+        var result = stringForm.Equals(uriFragmentForm);
+
+        // Assert
+        result.ShouldBeFalse();
+    }
+
     [Fact]
     public void Deconstruct_Always_ReturnsAllMembers()
     {
