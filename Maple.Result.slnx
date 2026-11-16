@@ -93,6 +93,7 @@
     <File Path="docs/Reference/ErrorDetail/ErrorDetail_constructors.md" />
     <File Path="docs/Reference/ErrorDetail/ErrorDetail_Detail.md" />
     <File Path="docs/Reference/ErrorDetail/ErrorDetail_DetailTemplated.md" />
+    <File Path="docs/Reference/ErrorDetail/ErrorDetail_Pointer.md" />
     <File Path="docs/Reference/ErrorDetail/ErrorDetail_PropertyPointer.md" />
   </Folder>
   <Folder Name="/docs/Reference/ErrorUri/">

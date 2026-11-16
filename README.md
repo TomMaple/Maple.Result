@@ -371,6 +371,8 @@ var error = builder.Build();
 
 To add a single detail to an existing error, use `error.WithErrorDetail(...)`, which returns a copy.
 
+The `propertyPointer` is a JSON Pointer. For a name taken from the input (a dictionary key, a form field), build it with `ErrorDetail.Pointer("items", 0, name)`: it escapes `~` and `/` in the names, so the pointer is always valid.
+
 where the parameters are:
 
 | Parameter | Type | Description | Required | Example |
