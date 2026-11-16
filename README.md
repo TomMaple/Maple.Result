@@ -514,6 +514,8 @@ Result<int> number = Result.Try<int, FormatException>(
 
 An `OperationCanceledException` is rethrown: cancellation is not a failure.
 
+A function that returns a `Result`, a `Result<T>` or an `Error` is flattened: `Result.Try(() => _repository.Load(id), map)` is a `Result<Customer>` when `Load` returns a `Result<Customer>`, and an `Error` gives a failed result.
+
 See more: [Try](https://github.com/TomMaple/Maple.Result/blob/main/docs/Reference/Result/Result_Try.md), [TryAsync](https://github.com/TomMaple/Maple.Result/blob/main/docs/Reference/Result/Result_TryAsync.md)
 
 ### Asynchronous methods in UI applications

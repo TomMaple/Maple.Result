@@ -473,7 +473,7 @@ public class ResultTryUnitTests
             .ToList();
 
         // Assert
-        priorities.Count.ShouldBe(4);
+        priorities.Count.ShouldBe(10);
         priorities.ShouldAllBe(p => p == 1);
     }
 
