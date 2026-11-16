@@ -132,7 +132,8 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Runs the synchronous action if the result that the `resultTask` returns is failed, and returns the result unchanged.
 
 ```csharp
-public static ValueTask<TResult> IfErrorAsync<TResult>(this ValueTask<TResult> resultTask, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null);
+public static ValueTask<TResult> IfErrorAsync<TResult>(this ValueTask<TResult> resultTask, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null)
+    where TResult : IOperationResult;
 ```
 
 ### Type Parameters

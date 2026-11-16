@@ -149,7 +149,8 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Runs the synchronous function if the result that the `resultTask` returns is failed, and returns the result that the function returns instead (e.g., a recovered value or another error).
 
 ```csharp
-public static ValueTask<TResult> ElseAsync<TResult>(this ValueTask<TResult> resultTask, Func<Error, TResult> ifErrorFunction, bool? continueOnCapturedContext = null);
+public static ValueTask<TResult> ElseAsync<TResult>(this ValueTask<TResult> resultTask, Func<Error, TResult> ifErrorFunction, bool? continueOnCapturedContext = null)
+    where TResult : IOperationResult;
 ```
 
 ### Type Parameters
