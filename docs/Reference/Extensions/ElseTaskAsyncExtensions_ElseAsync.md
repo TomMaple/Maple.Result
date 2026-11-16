@@ -24,12 +24,12 @@ A successful result is returned unchanged, and the function is not called. An ac
 
 
 ## ElseAsync&lt;TResult&gt;(TResult, Func&lt;Error, Task&lt;TResult&gt;&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ElseTaskAsyncExtensions.cs#L64" target="_blank">IfErrorExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ElseTaskAsyncExtensions.cs#L64" target="_blank">ElseTaskAsyncExtensions.cs</a>
 
 Executes the provided asynchronous function, only if the instance of `TResult` represents a failed operation (i.e., contains an [Error](../Error/Error.md)), as an asynchronous operation.
 
 ```csharp
-public static async Task<TResult> ElseAsync<TResult>(this TResult result, Func<Error, Task<TResult>> ifErrorFunction, bool? continueOnCapturedContext = null)
+public static Task<TResult> ElseAsync<TResult>(this TResult result, Func<Error, Task<TResult>> ifErrorFunction, bool? continueOnCapturedContext = null)
         where TResult : IOperationResult;
 ```
 
@@ -86,7 +86,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Executes the provided asynchronous function, if the provided asynchronous operation returns a failed`TResult` instance (i.e., contains an [Error](../Error/Error.md)), and returns its result as an asynchronous operation.
 
 ```csharp
-public static async Task<TResult> ElseAsync<TResult>(this Task<TResult> resultTask,
+public static Task<TResult> ElseAsync<TResult>(this Task<TResult> resultTask,
     Func<Error, Task<TResult>> ifErrorFunction, bool? continueOnCapturedContext = null)
     where TResult : IOperationResult;
 ```
@@ -146,7 +146,8 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Runs the synchronous function if the result that the `resultTask` returns is failed, and returns the result that the function returns instead (e.g., a recovered value or another error).
 
 ```csharp
-public static Task<TResult> ElseAsync<TResult>(this Task<TResult> resultTask, Func<Error, TResult> ifErrorFunction, bool? continueOnCapturedContext = null);
+public static Task<TResult> ElseAsync<TResult>(this Task<TResult> resultTask, Func<Error, TResult> ifErrorFunction, bool? continueOnCapturedContext = null)
+    where TResult : IOperationResult;
 ```
 
 ### Type Parameters

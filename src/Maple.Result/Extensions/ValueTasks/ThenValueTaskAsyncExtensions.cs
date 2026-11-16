@@ -480,7 +480,7 @@ public static class ThenValueTaskAsyncExtensions
     ///     <paramref name="ifSuccessFunction" /> if the <paramref name="resultTask" /> operation is successful; otherwise, the original result.
     /// </returns>
     /// <exception cref="ArgumentNullException">
-    ///     If any of the <paramref name="resultTask" /> or <paramref name="ifSuccessFunction" /> parameters are <see langword="null" />.
+    ///     If the <paramref name="ifSuccessFunction" /> parameter is <see langword="null" />.
     /// </exception>
     /// <exception cref="InvalidOperationException">
     ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />,
@@ -726,7 +726,7 @@ public static class ThenValueTaskAsyncExtensions
     ///     otherwise, a failed <see cref="Result" /> with the original <see cref="Error" />.
     /// </returns>
     /// <exception cref="ArgumentNullException">
-    ///     If any of the <paramref name="resultTask" /> or <paramref name="ifSuccessFunction" /> parameters are <see langword="null" />.
+    ///     If the <paramref name="ifSuccessFunction" /> parameter is <see langword="null" />.
     /// </exception>
     /// <exception cref="InvalidOperationException">
     ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />,

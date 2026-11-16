@@ -8,7 +8,7 @@ Asynchronously converts the outcome of the asynchronous operation represented by
 
 
 ```csharp
-public static async Task<Result> ToResultAsync<T>(this Task<Result<T>> resultTask,
+public static Task<Result> ToResultAsync<T>(this Task<Result<T>> resultTask,
     bool? continueOnCapturedContext = null);
 ```
 
@@ -17,7 +17,7 @@ public static async Task<Result> ToResultAsync<T>(this Task<Result<T>> resultTas
 The type of the [Result](../ResultT/ResultT.md)&lt;T&gt; `result` value to be converted.
 
 ### Parameters
-#### `resultTask` [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result](../Result/Result.md)&gt;
+#### `resultTask` [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result](../ResultT/ResultT.md)&lt;T&gt;&gt;
 The task that represents the asynchronous operation producing the [Result](../ResultT/ResultT.md) record to be converted.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -26,7 +26,7 @@ The task that represents the asynchronous operation producing the [Result](../Re
 The default value is: `null`.
 
 ### Returns
-#### [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task)&lt;[Result](../ResultT/ResultT.md)&lt;T&gt;&gt;
+#### [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result](../Result/Result.md)&gt;
 The task object representing the asynchronous operation.
 
 ### Exceptions

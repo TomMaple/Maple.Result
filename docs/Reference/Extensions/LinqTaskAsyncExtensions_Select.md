@@ -31,7 +31,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Projects the value of a successful [Result&lt;T&gt;](../ResultT/ResultT.md) produced by the awaited `result` into a new [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result&lt;TNext&gt;](../ResultT/ResultT.md)&gt; by applying the provided selector function; or returns a new [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result&lt;TNext&gt;](../ResultT/ResultT.md)&gt; with the same error, otherwise.
 
 ```csharp
-public static async Task<Result<TNext>> Select<T, TNext>(
+public static Task<Result<TNext>> Select<T, TNext>(
     this Task<Result<T>> result,
     Func<T, TNext> selector);
 ```
@@ -78,7 +78,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Applies the provided `selector` to the value of a successful [Result&lt;T&gt;](../ResultT/ResultT.md) produced by the awaited `result` and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) it returns; otherwise, returns a failed [Result](../Result/Result.md) with the original [Error](../Error/Error.md).
 
 ```csharp
-public static async Task<Result> Select<T>(this Task<Result<T>> result, Func<T, Error> selector);
+public static Task<Result> Select<T>(this Task<Result<T>> result, Func<T, Error> selector);
 ```
 
 ### Type Parameters

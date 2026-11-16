@@ -9,7 +9,7 @@ Creates a new instance of the [Error](Error.md) object of the *NotImplemented* c
 | Name | Description |
 | ---- | ----------- |
 | [NotImplemented(ErrorUri, String, String, ErrorUri, String, (String, Object)[])](#notimplementederroruri-string-string-erroruri-string-string-object) | Creates a new not implemented error with specified parameters. |
-| [NotImplemented(ErrorUri, String, String, ErrorUri, String, IEnumerable<KeyValuePair<String, Object>>)](#notimplemented-string-string-erroruri-string-ienumerablekeyvaluepairstring-object) | Creates a new not implemented error with specified parameters. |
+| [NotImplemented(ErrorUri, String, String, ErrorUri, String, IEnumerable<KeyValuePair<String, Object>>)](#notimplementederroruri-string-string-erroruri-string-ienumerablekeyvaluepairstring-object) | Creates a new not implemented error with specified parameters. |
 
 ## Remarks
 This error category is to report not implemented functionalities, cases or features, or the ones that are still in development.

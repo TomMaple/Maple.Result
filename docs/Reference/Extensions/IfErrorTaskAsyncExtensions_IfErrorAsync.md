@@ -29,7 +29,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Executes the provided asynchronous action, only if the instance of `TResult` represents a failed operation (i.e., contains an [Error](../Error/Error.md)), as an asynchronous operation.
 
 ```csharp
-public static async Task<TResult> IfErrorAsync<TResult>(this TResult result, Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
+public static Task<TResult> IfErrorAsync<TResult>(this TResult result, Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
     where TResult : IOperationResult;
 ```
 
@@ -78,7 +78,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Executes the provided asynchronous function, if the provided asynchronous operation returns a failed`TResult` instance (i.e., contains an [Error](../Error/Error.md)), and returns its result as an asynchronous operation.
 
 ```csharp
-public static async Task<TResult> IfErrorAsync<TResult>(
+public static Task<TResult> IfErrorAsync<TResult>(
     this Task<TResult> resultTask,
     Func<Error, Task> ifErrorAction,
     bool? continueOnCapturedContext = null)
@@ -132,7 +132,8 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Runs the synchronous action if the result that the `resultTask` returns is failed, and returns the result unchanged.
 
 ```csharp
-public static Task<TResult> IfErrorAsync<TResult>(this Task<TResult> resultTask, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null);
+public static Task<TResult> IfErrorAsync<TResult>(this Task<TResult> resultTask, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null)
+    where TResult : IOperationResult;
 ```
 
 ### Type Parameters

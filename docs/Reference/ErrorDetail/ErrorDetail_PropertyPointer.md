@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorDetail.cs#L56" target="_blank">ErrorDetail.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorDetail.cs#L58" target="_blank">ErrorDetail.cs</a>
 
 Gets a *JSON Pointer* that identifies the input value field that the [ErrorDetail](ErrorDetail.md) record describes.
 
