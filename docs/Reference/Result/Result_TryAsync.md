@@ -30,7 +30,7 @@ Runs asynchronous code that can throw and turns the exception into a failed resu
 | [TryAsync&lt;TException&gt;(Func&lt;ValueTask&lt;Error&gt;&gt;, Func&lt;TException, Error&gt;, Boolean?)](#tryasynctexceptionfuncvaluetaskerror-functexception-error-boolean) | The ValueTask form for a function returning an [Error](../Error/Error.md); maps only the exceptions of the given type. |
 
 ## Remarks
-The rules of [Try](Result_Try.md) apply: the mapper is required, nothing of the exception is copied into the error, an `OperationCanceledException` (e.g., a canceled task) is rethrown unless `TException` asks for it, and a mapper that returns `null` throws an `InvalidOperationException`. In addition:
+The rules of [Try](Result_Try.md) apply: the mapper is required, nothing of the exception is copied into the error, an `OperationCanceledException` (e.g., a canceled task) is rethrown unless `TException` asks for it, and a mapper that returns `null` declines the exception, which is rethrown (see [Try](Result_Try.md) for the timeout of `HttpClient`). In addition:
 * An exception is mapped whether the function throws before returning its task or the task faults.
 * A function that returns a `Result`, a `Result<T>` or an `Error` (in a task) is flattened, as for [Try](Result_Try.md); a `null` result or error throws an `InvalidOperationException` and is not mapped.
 * A `null` task is not mapped: it throws an `InvalidOperationException` (a bug of the caller, not a failure of the operation).
@@ -38,10 +38,10 @@ The rules of [Try](Result_Try.md) apply: the mapper is required, nothing of the 
 * An async lambda binds to the `Task` overloads (they have a higher [overload resolution priority](https://learn.microsoft.com/dotnet/api/system.runtime.compilerservices.overloadresolutionpriorityattribute)); a method or a lambda that returns a `ValueTask` binds to the `ValueTask` overloads.
 
 ## TryAsync(Func&lt;Task&gt;, Func&lt;Exception, Error&gt;, Boolean?)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L218" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L219" target="_blank">Result.Try.cs</a>
 
 ```csharp
-public static Task<Result> TryAsync(Func<Task> action, Func<Exception, Error> mapException, bool? continueOnCapturedContext = null);
+public static Task<Result> TryAsync(Func<Task> action, Func<Exception, Error?> mapException, bool? continueOnCapturedContext = null);
 ```
 
 ### Parameters
@@ -49,9 +49,9 @@ public static Task<Result> TryAsync(Func<Task> action, Func<Exception, Error> ma
 
 The asynchronous action to run. Must not be `null`, nor return a `null` task.
 
-`mapException` Func&lt;Exception, [Error](../Error/Error.md)&gt;
+`mapException` Func&lt;Exception, [Error](../Error/Error.md)?&gt;
 
-The function that creates the error from the exception. Must not be `null`, nor return `null`.
+The function that creates the error from the exception, or returns `null` to decline it (the exception is then rethrown as it is). Must not be `null`.
 
 `continueOnCapturedContext` [Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)?
 
@@ -69,7 +69,7 @@ A successful result if the `action` completes; otherwise, a failed one with the 
 
 [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
 
-`action` returns a `null` task, or `mapException` returns `null`.
+`action` returns a `null` task.
 
 ### Examples
 ```csharp
@@ -79,10 +79,10 @@ var result = await Result.TryAsync(
 ```
 
 ## TryAsync&lt;TException&gt;(Func&lt;Task&gt;, Func&lt;TException, Error&gt;, Boolean?)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L250" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L248" target="_blank">Result.Try.cs</a>
 
 ```csharp
-public static Task<Result> TryAsync<TException>(Func<Task> action, Func<TException, Error> mapException, bool? continueOnCapturedContext = null)
+public static Task<Result> TryAsync<TException>(Func<Task> action, Func<TException, Error?> mapException, bool? continueOnCapturedContext = null)
     where TException : Exception;
 ```
 
@@ -95,9 +95,9 @@ The type of the exceptions to map; other exceptions propagate. An `OperationCanc
 
 The asynchronous action to run. Must not be `null`, nor return a `null` task.
 
-`mapException` Func&lt;TException, [Error](../Error/Error.md)&gt;
+`mapException` Func&lt;TException, [Error](../Error/Error.md)?&gt;
 
-The function that creates the error from the exception. Must not be `null`, nor return `null`.
+The function that creates the error from the exception, or returns `null` to decline it (the exception is then rethrown as it is). Must not be `null`.
 
 `continueOnCapturedContext` [Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)?
 
@@ -115,13 +115,13 @@ A successful result if the `action` completes; otherwise, a failed one with the 
 
 [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
 
-`action` returns a `null` task, or `mapException` returns `null`.
+`action` returns a `null` task.
 
 ## TryAsync&lt;T&gt;(Func&lt;Task&lt;T&gt;&gt;, Func&lt;Exception, Error&gt;, Boolean?)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L324" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L325" target="_blank">Result.Try.cs</a>
 
 ```csharp
-public static Task<Result<T>> TryAsync<T>(Func<Task<T>> function, Func<Exception, Error> mapException, bool? continueOnCapturedContext = null);
+public static Task<Result<T>> TryAsync<T>(Func<Task<T>> function, Func<Exception, Error?> mapException, bool? continueOnCapturedContext = null);
 ```
 
 ### Type Parameters
@@ -133,9 +133,9 @@ The type of the value.
 
 The asynchronous function to run. Must not be `null`, nor return a `null` task; the value may be `null`.
 
-`mapException` Func&lt;Exception, [Error](../Error/Error.md)&gt;
+`mapException` Func&lt;Exception, [Error](../Error/Error.md)?&gt;
 
-The function that creates the error from the exception. Must not be `null`, nor return `null`.
+The function that creates the error from the exception, or returns `null` to decline it (the exception is then rethrown as it is). Must not be `null`.
 
 `continueOnCapturedContext` [Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)?
 
@@ -153,7 +153,7 @@ A successful result with the value of the `function`; otherwise, a failed one wi
 
 [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
 
-`function` returns a `null` task, or `mapException` returns `null`.
+`function` returns a `null` task.
 
 ### Examples
 ```csharp
@@ -163,10 +163,10 @@ Result<Customer> customer = await Result.TryAsync(
 ```
 
 ## TryAsync&lt;T, TException&gt;(Func&lt;Task&lt;T&gt;&gt;, Func&lt;TException, Error&gt;, Boolean?)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L363" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L361" target="_blank">Result.Try.cs</a>
 
 ```csharp
-public static Task<Result<T>> TryAsync<T, TException>(Func<Task<T>> function, Func<TException, Error> mapException, bool? continueOnCapturedContext = null)
+public static Task<Result<T>> TryAsync<T, TException>(Func<Task<T>> function, Func<TException, Error?> mapException, bool? continueOnCapturedContext = null)
     where TException : Exception;
 ```
 
@@ -182,9 +182,9 @@ The type of the exceptions to map; other exceptions propagate. An `OperationCanc
 
 The asynchronous function to run. Must not be `null`, nor return a `null` task; the value may be `null`.
 
-`mapException` Func&lt;TException, [Error](../Error/Error.md)&gt;
+`mapException` Func&lt;TException, [Error](../Error/Error.md)?&gt;
 
-The function that creates the error from the exception. Must not be `null`, nor return `null`.
+The function that creates the error from the exception, or returns `null` to decline it (the exception is then rethrown as it is). Must not be `null`.
 
 `continueOnCapturedContext` [Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)?
 
@@ -202,13 +202,13 @@ A successful result with the value of the `function`; otherwise, a failed one wi
 
 [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
 
-`function` returns a `null` task, or `mapException` returns `null`.
+`function` returns a `null` task.
 
 ## TryAsync(Func&lt;ValueTask&gt;, Func&lt;Exception, Error&gt;, Boolean?)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L432" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L435" target="_blank">Result.Try.cs</a>
 
 ```csharp
-public static ValueTask<Result> TryAsync(Func<ValueTask> action, Func<Exception, Error> mapException, bool? continueOnCapturedContext = null);
+public static ValueTask<Result> TryAsync(Func<ValueTask> action, Func<Exception, Error?> mapException, bool? continueOnCapturedContext = null);
 ```
 
 ### Parameters
@@ -216,9 +216,9 @@ public static ValueTask<Result> TryAsync(Func<ValueTask> action, Func<Exception,
 
 The asynchronous action to run. Must not be `null`.
 
-`mapException` Func&lt;Exception, [Error](../Error/Error.md)&gt;
+`mapException` Func&lt;Exception, [Error](../Error/Error.md)?&gt;
 
-The function that creates the error from the exception. Must not be `null`, nor return `null`.
+The function that creates the error from the exception, or returns `null` to decline it (the exception is then rethrown as it is). Must not be `null`.
 
 `continueOnCapturedContext` [Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)?
 
@@ -234,15 +234,11 @@ A successful result if the `action` completes; otherwise, a failed one with the 
 
 `action` or `mapException` is `null`.
 
-[InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
-
-`mapException` returns `null`.
-
 ## TryAsync&lt;TException&gt;(Func&lt;ValueTask&gt;, Func&lt;TException, Error&gt;, Boolean?)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L460" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L462" target="_blank">Result.Try.cs</a>
 
 ```csharp
-public static ValueTask<Result> TryAsync<TException>(Func<ValueTask> action, Func<TException, Error> mapException, bool? continueOnCapturedContext = null)
+public static ValueTask<Result> TryAsync<TException>(Func<ValueTask> action, Func<TException, Error?> mapException, bool? continueOnCapturedContext = null)
     where TException : Exception;
 ```
 
@@ -255,9 +251,9 @@ The type of the exceptions to map; other exceptions propagate. An `OperationCanc
 
 The asynchronous action to run. Must not be `null`.
 
-`mapException` Func&lt;TException, [Error](../Error/Error.md)&gt;
+`mapException` Func&lt;TException, [Error](../Error/Error.md)?&gt;
 
-The function that creates the error from the exception. Must not be `null`, nor return `null`.
+The function that creates the error from the exception, or returns `null` to decline it (the exception is then rethrown as it is). Must not be `null`.
 
 `continueOnCapturedContext` [Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)?
 
@@ -273,15 +269,11 @@ A successful result if the `action` completes; otherwise, a failed one with the 
 
 `action` or `mapException` is `null`.
 
-[InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
-
-`mapException` returns `null`.
-
 ## TryAsync&lt;T&gt;(Func&lt;ValueTask&lt;T&gt;&gt;, Func&lt;Exception, Error&gt;, Boolean?)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L519" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L523" target="_blank">Result.Try.cs</a>
 
 ```csharp
-public static ValueTask<Result<T>> TryAsync<T>(Func<ValueTask<T>> function, Func<Exception, Error> mapException, bool? continueOnCapturedContext = null);
+public static ValueTask<Result<T>> TryAsync<T>(Func<ValueTask<T>> function, Func<Exception, Error?> mapException, bool? continueOnCapturedContext = null);
 ```
 
 ### Type Parameters
@@ -293,9 +285,9 @@ The type of the value.
 
 The asynchronous function to run. Must not be `null`; the value may be `null`.
 
-`mapException` Func&lt;Exception, [Error](../Error/Error.md)&gt;
+`mapException` Func&lt;Exception, [Error](../Error/Error.md)?&gt;
 
-The function that creates the error from the exception. Must not be `null`, nor return `null`.
+The function that creates the error from the exception, or returns `null` to decline it (the exception is then rethrown as it is). Must not be `null`.
 
 `continueOnCapturedContext` [Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)?
 
@@ -311,15 +303,11 @@ A successful result with the value of the `function`; otherwise, a failed one wi
 
 `function` or `mapException` is `null`.
 
-[InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
-
-`mapException` returns `null`.
-
 ## TryAsync&lt;T, TException&gt;(Func&lt;ValueTask&lt;T&gt;&gt;, Func&lt;TException, Error&gt;, Boolean?)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L553" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L556" target="_blank">Result.Try.cs</a>
 
 ```csharp
-public static ValueTask<Result<T>> TryAsync<T, TException>(Func<ValueTask<T>> function, Func<TException, Error> mapException, bool? continueOnCapturedContext = null)
+public static ValueTask<Result<T>> TryAsync<T, TException>(Func<ValueTask<T>> function, Func<TException, Error?> mapException, bool? continueOnCapturedContext = null)
     where TException : Exception;
 ```
 
@@ -335,9 +323,9 @@ The type of the exceptions to map; other exceptions propagate. An `OperationCanc
 
 The asynchronous function to run. Must not be `null`; the value may be `null`.
 
-`mapException` Func&lt;TException, [Error](../Error/Error.md)&gt;
+`mapException` Func&lt;TException, [Error](../Error/Error.md)?&gt;
 
-The function that creates the error from the exception. Must not be `null`, nor return `null`.
+The function that creates the error from the exception, or returns `null` to decline it (the exception is then rethrown as it is). Must not be `null`.
 
 `continueOnCapturedContext` [Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)?
 
@@ -353,15 +341,11 @@ A successful result with the value of the `function`; otherwise, a failed one wi
 
 `function` or `mapException` is `null`.
 
-[InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
-
-`mapException` returns `null`.
-
 ## TryAsync(Func&lt;Task&lt;Result&gt;&gt;, Func&lt;Exception, Error&gt;, Boolean?)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L861" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L875" target="_blank">Result.Try.cs</a>
 
 ```csharp
-public static Task<Result> TryAsync(Func<Task<Result>> function, Func<Exception, Error> mapException, bool? continueOnCapturedContext = null);
+public static Task<Result> TryAsync(Func<Task<Result>> function, Func<Exception, Error?> mapException, bool? continueOnCapturedContext = null);
 ```
 
 ### Parameters
@@ -369,9 +353,9 @@ public static Task<Result> TryAsync(Func<Task<Result>> function, Func<Exception,
 
 The asynchronous function to run. Must not be `null`, nor return a `null` task; its result must not be `null`.
 
-`mapException` Func&lt;Exception, [Error](../Error/Error.md)&gt;
+`mapException` Func&lt;Exception, [Error](../Error/Error.md)?&gt;
 
-The function that creates the error from the exception. Must not be `null`, nor return `null`.
+The function that creates the error from the exception, or returns `null` to decline it (the exception is then rethrown as it is). Must not be `null`.
 
 `continueOnCapturedContext` [Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)?
 
@@ -389,13 +373,13 @@ A task with the [Result](Result.md) returned by the `function`, as it is; or a f
 
 [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
 
-`function` returns a `null` task or a `null` result, or `mapException` returns `null`.
+`function` returns a `null` task or a `null` result.
 
 ## TryAsync&lt;TException&gt;(Func&lt;Task&lt;Result&gt;&gt;, Func&lt;TException, Error&gt;, Boolean?)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L902" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L915" target="_blank">Result.Try.cs</a>
 
 ```csharp
-public static Task<Result> TryAsync<TException>(Func<Task<Result>> function, Func<TException, Error> mapException, bool? continueOnCapturedContext = null)
+public static Task<Result> TryAsync<TException>(Func<Task<Result>> function, Func<TException, Error?> mapException, bool? continueOnCapturedContext = null)
     where TException : Exception;
 ```
 
@@ -408,9 +392,9 @@ The type of the exceptions to map; other exceptions propagate. An `OperationCanc
 
 The asynchronous function to run. Must not be `null`, nor return a `null` task; its result must not be `null`.
 
-`mapException` Func&lt;TException, [Error](../Error/Error.md)&gt;
+`mapException` Func&lt;TException, [Error](../Error/Error.md)?&gt;
 
-The function that creates the error from the exception. Must not be `null`, nor return `null`.
+The function that creates the error from the exception, or returns `null` to decline it (the exception is then rethrown as it is). Must not be `null`.
 
 `continueOnCapturedContext` [Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)?
 
@@ -428,13 +412,13 @@ A task with the [Result](Result.md) returned by the `function`, as it is; or a f
 
 [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
 
-`function` returns a `null` task or a `null` result, or `mapException` returns `null`.
+`function` returns a `null` task or a `null` result.
 
 ## TryAsync&lt;T&gt;(Func&lt;Task&lt;Result&lt;T&gt;&gt;&gt;, Func&lt;Exception, Error&gt;, Boolean?)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L980" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L998" target="_blank">Result.Try.cs</a>
 
 ```csharp
-public static Task<Result<T>> TryAsync<T>(Func<Task<Result<T>>> function, Func<Exception, Error> mapException, bool? continueOnCapturedContext = null);
+public static Task<Result<T>> TryAsync<T>(Func<Task<Result<T>>> function, Func<Exception, Error?> mapException, bool? continueOnCapturedContext = null);
 ```
 
 ### Type Parameters
@@ -446,9 +430,9 @@ The type of the value.
 
 The asynchronous function to run. Must not be `null`, nor return a `null` task; its result must not be `null`.
 
-`mapException` Func&lt;Exception, [Error](../Error/Error.md)&gt;
+`mapException` Func&lt;Exception, [Error](../Error/Error.md)?&gt;
 
-The function that creates the error from the exception. Must not be `null`, nor return `null`.
+The function that creates the error from the exception, or returns `null` to decline it (the exception is then rethrown as it is). Must not be `null`.
 
 `continueOnCapturedContext` [Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)?
 
@@ -466,13 +450,13 @@ A task with the [Result&lt;T&gt;](../ResultT/ResultT.md) returned by the `functi
 
 [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
 
-`function` returns a `null` task or a `null` result, or `mapException` returns `null`.
+`function` returns a `null` task or a `null` result.
 
 ## TryAsync&lt;T, TException&gt;(Func&lt;Task&lt;Result&lt;T&gt;&gt;&gt;, Func&lt;TException, Error&gt;, Boolean?)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1022" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1039" target="_blank">Result.Try.cs</a>
 
 ```csharp
-public static Task<Result<T>> TryAsync<T, TException>(Func<Task<Result<T>>> function, Func<TException, Error> mapException, bool? continueOnCapturedContext = null)
+public static Task<Result<T>> TryAsync<T, TException>(Func<Task<Result<T>>> function, Func<TException, Error?> mapException, bool? continueOnCapturedContext = null)
     where TException : Exception;
 ```
 
@@ -488,9 +472,9 @@ The type of the exceptions to map; other exceptions propagate. An `OperationCanc
 
 The asynchronous function to run. Must not be `null`, nor return a `null` task; its result must not be `null`.
 
-`mapException` Func&lt;TException, [Error](../Error/Error.md)&gt;
+`mapException` Func&lt;TException, [Error](../Error/Error.md)?&gt;
 
-The function that creates the error from the exception. Must not be `null`, nor return `null`.
+The function that creates the error from the exception, or returns `null` to decline it (the exception is then rethrown as it is). Must not be `null`.
 
 `continueOnCapturedContext` [Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)?
 
@@ -508,13 +492,13 @@ A task with the [Result&lt;T&gt;](../ResultT/ResultT.md) returned by the `functi
 
 [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
 
-`function` returns a `null` task or a `null` result, or `mapException` returns `null`.
+`function` returns a `null` task or a `null` result.
 
 ## TryAsync(Func&lt;Task&lt;Error&gt;&gt;, Func&lt;Exception, Error&gt;, Boolean?)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1099" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1121" target="_blank">Result.Try.cs</a>
 
 ```csharp
-public static Task<Result> TryAsync(Func<Task<Error>> function, Func<Exception, Error> mapException, bool? continueOnCapturedContext = null);
+public static Task<Result> TryAsync(Func<Task<Error>> function, Func<Exception, Error?> mapException, bool? continueOnCapturedContext = null);
 ```
 
 ### Parameters
@@ -522,9 +506,9 @@ public static Task<Result> TryAsync(Func<Task<Error>> function, Func<Exception, 
 
 The asynchronous function to run. Must not be `null`, nor return a `null` task; its result must not be `null`.
 
-`mapException` Func&lt;Exception, [Error](../Error/Error.md)&gt;
+`mapException` Func&lt;Exception, [Error](../Error/Error.md)?&gt;
 
-The function that creates the error from the exception. Must not be `null`, nor return `null`.
+The function that creates the error from the exception, or returns `null` to decline it (the exception is then rethrown as it is). Must not be `null`.
 
 `continueOnCapturedContext` [Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)?
 
@@ -542,13 +526,13 @@ A task with a failed [Result](Result.md) with the [Error](../Error/Error.md) ret
 
 [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
 
-`function` returns a `null` task or a `null` error, or `mapException` returns `null`.
+`function` returns a `null` task or a `null` error.
 
 ## TryAsync&lt;TException&gt;(Func&lt;Task&lt;Error&gt;&gt;, Func&lt;TException, Error&gt;, Boolean?)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1140" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1161" target="_blank">Result.Try.cs</a>
 
 ```csharp
-public static Task<Result> TryAsync<TException>(Func<Task<Error>> function, Func<TException, Error> mapException, bool? continueOnCapturedContext = null)
+public static Task<Result> TryAsync<TException>(Func<Task<Error>> function, Func<TException, Error?> mapException, bool? continueOnCapturedContext = null)
     where TException : Exception;
 ```
 
@@ -561,9 +545,9 @@ The type of the exceptions to map; other exceptions propagate. An `OperationCanc
 
 The asynchronous function to run. Must not be `null`, nor return a `null` task; its result must not be `null`.
 
-`mapException` Func&lt;TException, [Error](../Error/Error.md)&gt;
+`mapException` Func&lt;TException, [Error](../Error/Error.md)?&gt;
 
-The function that creates the error from the exception. Must not be `null`, nor return `null`.
+The function that creates the error from the exception, or returns `null` to decline it (the exception is then rethrown as it is). Must not be `null`.
 
 `continueOnCapturedContext` [Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)?
 
@@ -581,13 +565,13 @@ A task with a failed [Result](Result.md) with the [Error](../Error/Error.md) ret
 
 [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
 
-`function` returns a `null` task or a `null` error, or `mapException` returns `null`.
+`function` returns a `null` task or a `null` error.
 
 ## TryAsync(Func&lt;ValueTask&lt;Result&gt;&gt;, Func&lt;Exception, Error&gt;, Boolean?)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1222" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1246" target="_blank">Result.Try.cs</a>
 
 ```csharp
-public static ValueTask<Result> TryAsync(Func<ValueTask<Result>> function, Func<Exception, Error> mapException, bool? continueOnCapturedContext = null);
+public static ValueTask<Result> TryAsync(Func<ValueTask<Result>> function, Func<Exception, Error?> mapException, bool? continueOnCapturedContext = null);
 ```
 
 ### Parameters
@@ -595,9 +579,9 @@ public static ValueTask<Result> TryAsync(Func<ValueTask<Result>> function, Func<
 
 The asynchronous function to run. Must not be `null`; its result must not be `null`.
 
-`mapException` Func&lt;Exception, [Error](../Error/Error.md)&gt;
+`mapException` Func&lt;Exception, [Error](../Error/Error.md)?&gt;
 
-The function that creates the error from the exception. Must not be `null`, nor return `null`.
+The function that creates the error from the exception, or returns `null` to decline it (the exception is then rethrown as it is). Must not be `null`.
 
 `continueOnCapturedContext` [Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)?
 
@@ -615,13 +599,13 @@ A task with the [Result](Result.md) returned by the `function`, as it is; or a f
 
 [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
 
-`function` returns a `null` result, or `mapException` returns `null`.
+`function` returns a `null` result.
 
 ## TryAsync&lt;TException&gt;(Func&lt;ValueTask&lt;Result&gt;&gt;, Func&lt;TException, Error&gt;, Boolean?)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1262" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1283" target="_blank">Result.Try.cs</a>
 
 ```csharp
-public static ValueTask<Result> TryAsync<TException>(Func<ValueTask<Result>> function, Func<TException, Error> mapException, bool? continueOnCapturedContext = null)
+public static ValueTask<Result> TryAsync<TException>(Func<ValueTask<Result>> function, Func<TException, Error?> mapException, bool? continueOnCapturedContext = null)
     where TException : Exception;
 ```
 
@@ -634,9 +618,9 @@ The type of the exceptions to map; other exceptions propagate. An `OperationCanc
 
 The asynchronous function to run. Must not be `null`; its result must not be `null`.
 
-`mapException` Func&lt;TException, [Error](../Error/Error.md)&gt;
+`mapException` Func&lt;TException, [Error](../Error/Error.md)?&gt;
 
-The function that creates the error from the exception. Must not be `null`, nor return `null`.
+The function that creates the error from the exception, or returns `null` to decline it (the exception is then rethrown as it is). Must not be `null`.
 
 `continueOnCapturedContext` [Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)?
 
@@ -654,13 +638,13 @@ A task with the [Result](Result.md) returned by the `function`, as it is; or a f
 
 [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
 
-`function` returns a `null` result, or `mapException` returns `null`.
+`function` returns a `null` result.
 
 ## TryAsync&lt;T&gt;(Func&lt;ValueTask&lt;Result&lt;T&gt;&gt;&gt;, Func&lt;Exception, Error&gt;, Boolean?)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1328" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1349" target="_blank">Result.Try.cs</a>
 
 ```csharp
-public static ValueTask<Result<T>> TryAsync<T>(Func<ValueTask<Result<T>>> function, Func<Exception, Error> mapException, bool? continueOnCapturedContext = null);
+public static ValueTask<Result<T>> TryAsync<T>(Func<ValueTask<Result<T>>> function, Func<Exception, Error?> mapException, bool? continueOnCapturedContext = null);
 ```
 
 ### Type Parameters
@@ -672,9 +656,9 @@ The type of the value.
 
 The asynchronous function to run. Must not be `null`; its result must not be `null`.
 
-`mapException` Func&lt;Exception, [Error](../Error/Error.md)&gt;
+`mapException` Func&lt;Exception, [Error](../Error/Error.md)?&gt;
 
-The function that creates the error from the exception. Must not be `null`, nor return `null`.
+The function that creates the error from the exception, or returns `null` to decline it (the exception is then rethrown as it is). Must not be `null`.
 
 `continueOnCapturedContext` [Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)?
 
@@ -692,13 +676,13 @@ A task with the [Result&lt;T&gt;](../ResultT/ResultT.md) returned by the `functi
 
 [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
 
-`function` returns a `null` result, or `mapException` returns `null`.
+`function` returns a `null` result.
 
 ## TryAsync&lt;T, TException&gt;(Func&lt;ValueTask&lt;Result&lt;T&gt;&gt;&gt;, Func&lt;TException, Error&gt;, Boolean?)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1369" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1387" target="_blank">Result.Try.cs</a>
 
 ```csharp
-public static ValueTask<Result<T>> TryAsync<T, TException>(Func<ValueTask<Result<T>>> function, Func<TException, Error> mapException, bool? continueOnCapturedContext = null)
+public static ValueTask<Result<T>> TryAsync<T, TException>(Func<ValueTask<Result<T>>> function, Func<TException, Error?> mapException, bool? continueOnCapturedContext = null)
     where TException : Exception;
 ```
 
@@ -714,9 +698,9 @@ The type of the exceptions to map; other exceptions propagate. An `OperationCanc
 
 The asynchronous function to run. Must not be `null`; its result must not be `null`.
 
-`mapException` Func&lt;TException, [Error](../Error/Error.md)&gt;
+`mapException` Func&lt;TException, [Error](../Error/Error.md)?&gt;
 
-The function that creates the error from the exception. Must not be `null`, nor return `null`.
+The function that creates the error from the exception, or returns `null` to decline it (the exception is then rethrown as it is). Must not be `null`.
 
 `continueOnCapturedContext` [Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)?
 
@@ -734,13 +718,13 @@ A task with the [Result&lt;T&gt;](../ResultT/ResultT.md) returned by the `functi
 
 [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
 
-`function` returns a `null` result, or `mapException` returns `null`.
+`function` returns a `null` result.
 
 ## TryAsync(Func&lt;ValueTask&lt;Error&gt;&gt;, Func&lt;Exception, Error&gt;, Boolean?)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1434" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1452" target="_blank">Result.Try.cs</a>
 
 ```csharp
-public static ValueTask<Result> TryAsync(Func<ValueTask<Error>> function, Func<Exception, Error> mapException, bool? continueOnCapturedContext = null);
+public static ValueTask<Result> TryAsync(Func<ValueTask<Error>> function, Func<Exception, Error?> mapException, bool? continueOnCapturedContext = null);
 ```
 
 ### Parameters
@@ -748,9 +732,9 @@ public static ValueTask<Result> TryAsync(Func<ValueTask<Error>> function, Func<E
 
 The asynchronous function to run. Must not be `null`; its result must not be `null`.
 
-`mapException` Func&lt;Exception, [Error](../Error/Error.md)&gt;
+`mapException` Func&lt;Exception, [Error](../Error/Error.md)?&gt;
 
-The function that creates the error from the exception. Must not be `null`, nor return `null`.
+The function that creates the error from the exception, or returns `null` to decline it (the exception is then rethrown as it is). Must not be `null`.
 
 `continueOnCapturedContext` [Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)?
 
@@ -768,13 +752,13 @@ A task with a failed [Result](Result.md) with the [Error](../Error/Error.md) ret
 
 [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
 
-`function` returns a `null` error, or `mapException` returns `null`.
+`function` returns a `null` error.
 
 ## TryAsync&lt;TException&gt;(Func&lt;ValueTask&lt;Error&gt;&gt;, Func&lt;TException, Error&gt;, Boolean?)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1474" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1489" target="_blank">Result.Try.cs</a>
 
 ```csharp
-public static ValueTask<Result> TryAsync<TException>(Func<ValueTask<Error>> function, Func<TException, Error> mapException, bool? continueOnCapturedContext = null)
+public static ValueTask<Result> TryAsync<TException>(Func<ValueTask<Error>> function, Func<TException, Error?> mapException, bool? continueOnCapturedContext = null)
     where TException : Exception;
 ```
 
@@ -787,9 +771,9 @@ The type of the exceptions to map; other exceptions propagate. An `OperationCanc
 
 The asynchronous function to run. Must not be `null`; its result must not be `null`.
 
-`mapException` Func&lt;TException, [Error](../Error/Error.md)&gt;
+`mapException` Func&lt;TException, [Error](../Error/Error.md)?&gt;
 
-The function that creates the error from the exception. Must not be `null`, nor return `null`.
+The function that creates the error from the exception, or returns `null` to decline it (the exception is then rethrown as it is). Must not be `null`.
 
 `continueOnCapturedContext` [Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)?
 
@@ -807,7 +791,7 @@ A task with a failed [Result](Result.md) with the [Error](../Error/Error.md) ret
 
 [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
 
-`function` returns a `null` error, or `mapException` returns `null`.
+`function` returns a `null` error.
 
 ## See Also
 * [Try](Result_Try.md)
