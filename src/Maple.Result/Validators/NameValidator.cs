@@ -24,7 +24,12 @@ namespace Maple.Results.Validators;
 ///         trimmed. A name is not trimmed: a padded name is rejected.
 ///     </para>
 ///     <para>
-///         This is a rule of this library, for consistency with the title and the metadata keys, not of an RFC: <i>RFC 8259</i> (section 4)
+///         Two metadata keys of one error, or two parameter names of one message, do not differ only in case
+///         (<see cref="FindNameDifferingOnlyInCase" />): clients often read JSON case-insensitively, and naming policies change the case of the
+///         keys, so they would be the same member.
+///     </para>
+///     <para>
+///         These are rules of this library, for consistency with the title and the metadata keys, not of an RFC: <i>RFC 8259</i> (section 4)
 ///         allows any string as a member name, and the naming recommendations of <i>RFC 9457</i> (section 4) are not mandatory.
 ///     </para>
 /// </remarks>

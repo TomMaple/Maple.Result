@@ -276,7 +276,7 @@ public sealed record Error
     ///     If the <paramref name="propertyPointer" /> is not a JSON Pointer (e.g., <c>Email</c> or <c>Items[0].Name</c>; the parameter name
     ///     of the exception is <c>PropertyPointer</c>), the <paramref name="detail" /> is empty or whitespace-only (the parameter name of the
     ///     exception is <c>Detail</c>), the <paramref name="detailTemplateId" /> is empty, whitespace-only or starts or ends with white space, a
-    ///     parameter name is empty, starts or ends with white space, or is repeated,
+    ///     parameter name is empty, starts or ends with white space, is repeated, or differs only in case from another parameter name,
     ///     or <paramref name="detailNamedValues" /> are passed without a <paramref name="detailTemplateId" />.
     /// </exception>
     public Error WithErrorDetail(string? propertyPointer, string detail, string? detailTemplateId = null,
@@ -552,8 +552,9 @@ public sealed record Error
     /// </exception>
     /// <exception cref="ArgumentException">
     ///     If the <paramref name="title" /> or the <paramref name="detail" /> is empty or whitespace-only, the <paramref name="detailTemplateId" />
-    ///     is empty, whitespace-only or starts or ends with white space, a parameter name is empty, starts or ends with white space, or is repeated,
-    ///     <paramref name="detailNamedValues" /> are passed without a <paramref name="detailTemplateId" />,
+    ///     is empty, whitespace-only or starts or ends with white space, a parameter name is empty, starts or ends with white space, is repeated,
+    ///     or differs only in case from another parameter name, <paramref name="detailNamedValues" /> are passed without a
+    ///     <paramref name="detailTemplateId" />,
     ///     or the <paramref name="instanceUri" /> is <c>about:blank</c>.
     /// </exception>
     private static Error Create(ErrorCategory category, ErrorUri typeUri, string title, string? detail,
@@ -587,8 +588,9 @@ public sealed record Error
     /// </exception>
     /// <exception cref="ArgumentException">
     ///     If the <paramref name="title" /> or the <paramref name="detail" /> is empty or whitespace-only, the <paramref name="detailTemplateId" />
-    ///     is empty, whitespace-only or starts or ends with white space, a parameter name is empty, starts or ends with white space, or is repeated,
-    ///     <paramref name="detailNamedValues" /> are passed without a <paramref name="detailTemplateId" />,
+    ///     is empty, whitespace-only or starts or ends with white space, a parameter name is empty, starts or ends with white space, is repeated,
+    ///     or differs only in case from another parameter name, <paramref name="detailNamedValues" /> are passed without a
+    ///     <paramref name="detailTemplateId" />,
     ///     or the <paramref name="instanceUri" /> is <c>about:blank</c>.
     /// </exception>
     private static Error Create(ErrorCategory category, ErrorUri typeUri, string title, string? detail,

@@ -45,7 +45,7 @@ public sealed record TemplatedMessage
     /// </exception>
     /// <exception cref="ArgumentException">
     ///     If the <paramref name="templateId" /> is empty, whitespace-only or starts or ends with white space, or a parameter name is empty,
-    ///     starts or ends with white space, or is repeated.
+    ///     starts or ends with white space, is repeated, or differs only in case from another parameter name.
     /// </exception>
     /// <remarks>
     ///     A <see langword="null" /> or an empty collection expression (<c>[]</c>) as the second argument binds to this constructor.
@@ -70,7 +70,7 @@ public sealed record TemplatedMessage
     /// </exception>
     /// <exception cref="ArgumentException">
     ///     If the <paramref name="templateId" /> is empty, whitespace-only or starts or ends with white space, or a parameter name is empty,
-    ///     starts or ends with white space, or is repeated.
+    ///     starts or ends with white space, is repeated, or differs only in case from another parameter name.
     /// </exception>
     public TemplatedMessage(string templateId, params ReadOnlySpan<(string Key, object? Value)> parameters)
         : this(Validate(templateId, parameters, nameof(templateId), nameof(parameters)))
@@ -96,6 +96,8 @@ public sealed record TemplatedMessage
     /// <remarks>
     ///     A read-only dictionary built from the parameters passed to the constructor, with keys compared ordinally (case-sensitive);
     ///     <see langword="null" /> when there are no parameters, so it is never empty. Values may be <see langword="null" />.
+    ///     Two names never differ only in case (e.g., <c>Min</c> and <c>min</c>): they would be the same placeholder for a template engine that
+    ///     ignores case, and the same member of <c>params</c> once a naming policy changes the case of the keys.
     /// </remarks>
     public IReadOnlyDictionary<string, object?>? Params => ParamsDictionary;
 
@@ -231,10 +233,11 @@ public sealed record TemplatedMessage
             return new Validated(templateId, null);
 
         Dictionary<string, object?>? dictionary = null;
+        Dictionary<string, string>? caseIndex = null;
         foreach (var (key, value) in parameters)
         {
             dictionary ??= new Dictionary<string, object?>(count, StringComparer.Ordinal);
-            Add(dictionary, key, value, parametersParameterName);
+            Add(dictionary, ref caseIndex, key, value, parametersParameterName);
         }
 
         var copy = dictionary is null
@@ -253,8 +256,9 @@ public sealed record TemplatedMessage
             return new Validated(templateId, null);
 
         var dictionary = new Dictionary<string, object?>(parameters.Length, StringComparer.Ordinal);
+        Dictionary<string, string>? caseIndex = null;
         foreach (var (key, value) in parameters)
-            Add(dictionary, key, value, parametersParameterName);
+            Add(dictionary, ref caseIndex, key, value, parametersParameterName);
 
         var copy = new ImmutableStringDictionary(dictionary);
 
@@ -273,7 +277,15 @@ public sealed record TemplatedMessage
         }
     }
 
-    private static void Add(Dictionary<string, object?> dictionary, string key, object? value, string parameterName)
+    /// <summary>
+    ///     Adds a validated parameter to the dictionary that is being built.
+    /// </summary>
+    /// <remarks>
+    ///     A name that differs only in case from an earlier name is found with the <paramref name="caseIndex" /> (see
+    ///     <see cref="NameValidator.FindNameDifferingOnlyInCase" />), so the names of a message are checked in linear time.
+    /// </remarks>
+    private static void Add(Dictionary<string, object?> dictionary, ref Dictionary<string, string>? caseIndex, string key, object? value,
+        string parameterName)
     {
         if (key is null)
             throw new ArgumentNullException(parameterName, "A parameter name must not be null.");
@@ -285,8 +297,20 @@ public sealed record TemplatedMessage
                 parameterName);
         }
 
-        if (!dictionary.TryAdd(key, value))
+        if (dictionary.ContainsKey(key))
             throw new ArgumentException($"The parameter ‘{key}’ is repeated.", parameterName);
+
+        var earlierKey = NameValidator.FindNameDifferingOnlyInCase(key, dictionary, ref caseIndex);
+        if (earlierKey is not null)
+        {
+            throw new ArgumentException(
+                $"The parameter names ‘{earlierKey}’ and ‘{key}’ differ only in case. " +
+                "Names that differ only in case would be the same placeholder and the same member of ‘params’; use one spelling.",
+                parameterName);
+        }
+
+        dictionary.Add(key, value);
+        caseIndex?.Add(key, key);
     }
 
     private static ArgumentException ParametersWithoutTemplateId(string templateIdParameterName, string parametersParameterName)

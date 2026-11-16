@@ -312,7 +312,7 @@ public sealed class ErrorBuilder
     /// </exception>
     /// <exception cref="ArgumentException">
     ///     If the <paramref name="templateId" /> is empty, whitespace-only or starts or ends with white space, or a parameter name is empty,
-    ///     starts or ends with white space, or is repeated.
+    ///     starts or ends with white space, is repeated, or differs only in case from another parameter name.
     /// </exception>
     public ErrorBuilder WithDetailTemplated(string templateId, params ReadOnlySpan<(string Key, object? Value)> namedValues)
     {
@@ -388,7 +388,7 @@ public sealed class ErrorBuilder
     ///     If the <paramref name="propertyPointer" /> is not a JSON Pointer (e.g., <c>Email</c> or <c>Items[0].Name</c>; the parameter name
     ///     of the exception is <c>PropertyPointer</c>), the <paramref name="detail" /> is empty or whitespace-only (the parameter name of the
     ///     exception is <c>Detail</c>), the <paramref name="detailTemplateId" /> is empty, whitespace-only or starts or ends with white space, a
-    ///     parameter name is empty, starts or ends with white space, or is repeated,
+    ///     parameter name is empty, starts or ends with white space, is repeated, or differs only in case from another parameter name,
     ///     or <paramref name="detailNamedValues" /> are passed without a <paramref name="detailTemplateId" />.
     /// </exception>
     public ErrorBuilder AddErrorDetail(string? propertyPointer, string detail, string? detailTemplateId = null,
