@@ -503,8 +503,16 @@ var userTokenResult =
     select user.Token;
 ```
 
+A step that returns the non-generic `Result` (e.g., a check) can be a `from` clause too; its range variable is the successful `Result`, so it is usually named `_`. A `select` that returns a `Result` or a `Result<T>` gives that result, not a nested one:
+```csharp
+var orderResult =
+    from user in _userService.GetUser(userId)
+    from _ in _policy.EnsureActive(user)          // returns Result
+    select _orderService.CreateOrder(user);       // returns Result<Order>: orderResult is a Result<Order>
+```
+
 > [!NOTE]
-> The query syntax needs a value in every `from` clause, so it works with `Result<T>` (and its `Task` and `ValueTask`) but not with the non-generic `Result`. Chain operations that return a `Result` with `Then()` / `ThenAsync()` instead. Mixing a `Task` and a `ValueTask` in one query is not supported. A `select` that returns a task is a compile error, because the query would not await it: chain the operation in a `from` clause (with a function that returns `Task<Result<T>>`) or use `ThenAsync()`.
+> A query cannot declare a range variable twice, so a second non-generic clause needs another name (e.g., `from active in …`). Mixing a `Task` and a `ValueTask` in one query is not supported. A `select` that returns a task is a compile error, because the query would not await it: chain the operation in a `from` clause (with a function that returns `Task<Result<T>>`) or use `ThenAsync()`.
 
 ### Turning exceptions into results
 `Result.Try()` and `Result.TryAsync()` run code that can throw (e.g., a library or a database call) and return a failed result instead of the exception. The mapper from the exception to the `Error` is required: the library cannot pick the category, the type *URI* and the title, and it never copies the exception message into the error, which is meant for clients.

@@ -14,8 +14,52 @@ Enables the LINQ query syntax with more than one `from` clause for [Result&lt;T&
 | [SelectMany&lt;T, TMiddle&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;T, TMiddle, Error&gt;)](#selectmanyt-tmiddlevaluetaskresultt-funct-valuetaskresulttmiddle-funct-tmiddle-error) | Applies the asynchronous selector and returns a failed [Result](../../Result/Result.md) with the [Error](../../Error/Error.md) returned by the result selector. |
 | [SelectMany&lt;T, TMiddle&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&lt;TMiddle&gt;&gt;, Func&lt;T, TMiddle, Error&gt;)](#selectmanyt-tmiddlevaluetaskresultt-funct-resulttmiddle-funct-tmiddle-error) | Applies the synchronous selector and returns a failed [Result](../../Result/Result.md) with the [Error](../../Error/Error.md) returned by the result selector. |
 | [SelectMany&lt;T, TMiddle&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;T, TMiddle, Error&gt;)](#selectmanyt-tmiddleresultt-funct-valuetaskresulttmiddle-funct-tmiddle-error) | Applies the asynchronous selector and returns a failed [Result](../../Result/Result.md) with the [Error](../../Error/Error.md) returned by the result selector. |
+| [SelectMany&lt;T, TMiddle&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;T, TMiddle, Result&gt;)](#selectmanyt-tmiddlevaluetaskresultt-funct-valuetaskresulttmiddle-funct-tmiddle-result) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany&lt;T, TMiddle, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;T, TMiddle, Result&lt;TNext&gt;&gt;)](#selectmanyt-tmiddle-tnextvaluetaskresultt-funct-valuetaskresulttmiddle-funct-tmiddle-resulttnext) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Func&lt;T, Result, TNext&gt;)](#selectmanyt-tnextvaluetaskresultt-funct-valuetaskresult-funct-result-tnext) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Func&lt;T, Result, Error&gt;)](#selectmanytvaluetaskresultt-funct-valuetaskresult-funct-result-error) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Func&lt;T, Result, Result&gt;)](#selectmanytvaluetaskresultt-funct-valuetaskresult-funct-result-result) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Func&lt;T, Result, Result&lt;TNext&gt;&gt;)](#selectmanyt-tnextvaluetaskresultt-funct-valuetaskresult-funct-result-resulttnext) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany&lt;TMiddle, TNext&gt;(ValueTask&lt;Result&gt;, Func&lt;Result, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;Result, TMiddle, TNext&gt;)](#selectmanytmiddle-tnextvaluetaskresult-funcresult-valuetaskresulttmiddle-funcresult-tmiddle-tnext) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany&lt;TMiddle&gt;(ValueTask&lt;Result&gt;, Func&lt;Result, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;Result, TMiddle, Error&gt;)](#selectmanytmiddlevaluetaskresult-funcresult-valuetaskresulttmiddle-funcresult-tmiddle-error) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany&lt;TMiddle&gt;(ValueTask&lt;Result&gt;, Func&lt;Result, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;Result, TMiddle, Result&gt;)](#selectmanytmiddlevaluetaskresult-funcresult-valuetaskresulttmiddle-funcresult-tmiddle-result) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany&lt;TMiddle, TNext&gt;(ValueTask&lt;Result&gt;, Func&lt;Result, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;Result, TMiddle, Result&lt;TNext&gt;&gt;)](#selectmanytmiddle-tnextvaluetaskresult-funcresult-valuetaskresulttmiddle-funcresult-tmiddle-resulttnext) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany&lt;TNext&gt;(ValueTask&lt;Result&gt;, Func&lt;Result, ValueTask&lt;Result&gt;&gt;, Func&lt;Result, Result, TNext&gt;)](#selectmanytnextvaluetaskresult-funcresult-valuetaskresult-funcresult-result-tnext) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany(ValueTask&lt;Result&gt;, Func&lt;Result, ValueTask&lt;Result&gt;&gt;, Func&lt;Result, Result, Error&gt;)](#selectmanyvaluetaskresult-funcresult-valuetaskresult-funcresult-result-error) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany(ValueTask&lt;Result&gt;, Func&lt;Result, ValueTask&lt;Result&gt;&gt;, Func&lt;Result, Result, Result&gt;)](#selectmanyvaluetaskresult-funcresult-valuetaskresult-funcresult-result-result) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany&lt;TNext&gt;(ValueTask&lt;Result&gt;, Func&lt;Result, ValueTask&lt;Result&gt;&gt;, Func&lt;Result, Result, Result&lt;TNext&gt;&gt;)](#selectmanytnextvaluetaskresult-funcresult-valuetaskresult-funcresult-result-resulttnext) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany&lt;T, TMiddle&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&lt;TMiddle&gt;&gt;, Func&lt;T, TMiddle, Result&gt;)](#selectmanyt-tmiddlevaluetaskresultt-funct-resulttmiddle-funct-tmiddle-result) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany&lt;T, TMiddle, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&lt;TMiddle&gt;&gt;, Func&lt;T, TMiddle, Result&lt;TNext&gt;&gt;)](#selectmanyt-tmiddle-tnextvaluetaskresultt-funct-resulttmiddle-funct-tmiddle-resulttnext) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&gt;, Func&lt;T, Result, TNext&gt;)](#selectmanyt-tnextvaluetaskresultt-funct-result-funct-result-tnext) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&gt;, Func&lt;T, Result, Error&gt;)](#selectmanytvaluetaskresultt-funct-result-funct-result-error) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&gt;, Func&lt;T, Result, Result&gt;)](#selectmanytvaluetaskresultt-funct-result-funct-result-result) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&gt;, Func&lt;T, Result, Result&lt;TNext&gt;&gt;)](#selectmanyt-tnextvaluetaskresultt-funct-result-funct-result-resulttnext) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany&lt;TMiddle, TNext&gt;(ValueTask&lt;Result&gt;, Func&lt;Result, Result&lt;TMiddle&gt;&gt;, Func&lt;Result, TMiddle, TNext&gt;)](#selectmanytmiddle-tnextvaluetaskresult-funcresult-resulttmiddle-funcresult-tmiddle-tnext) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany&lt;TMiddle&gt;(ValueTask&lt;Result&gt;, Func&lt;Result, Result&lt;TMiddle&gt;&gt;, Func&lt;Result, TMiddle, Error&gt;)](#selectmanytmiddlevaluetaskresult-funcresult-resulttmiddle-funcresult-tmiddle-error) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany&lt;TMiddle&gt;(ValueTask&lt;Result&gt;, Func&lt;Result, Result&lt;TMiddle&gt;&gt;, Func&lt;Result, TMiddle, Result&gt;)](#selectmanytmiddlevaluetaskresult-funcresult-resulttmiddle-funcresult-tmiddle-result) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany&lt;TMiddle, TNext&gt;(ValueTask&lt;Result&gt;, Func&lt;Result, Result&lt;TMiddle&gt;&gt;, Func&lt;Result, TMiddle, Result&lt;TNext&gt;&gt;)](#selectmanytmiddle-tnextvaluetaskresult-funcresult-resulttmiddle-funcresult-tmiddle-resulttnext) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany&lt;TNext&gt;(ValueTask&lt;Result&gt;, Func&lt;Result, Result&gt;, Func&lt;Result, Result, TNext&gt;)](#selectmanytnextvaluetaskresult-funcresult-result-funcresult-result-tnext) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany(ValueTask&lt;Result&gt;, Func&lt;Result, Result&gt;, Func&lt;Result, Result, Error&gt;)](#selectmanyvaluetaskresult-funcresult-result-funcresult-result-error) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany(ValueTask&lt;Result&gt;, Func&lt;Result, Result&gt;, Func&lt;Result, Result, Result&gt;)](#selectmanyvaluetaskresult-funcresult-result-funcresult-result-result) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany&lt;TNext&gt;(ValueTask&lt;Result&gt;, Func&lt;Result, Result&gt;, Func&lt;Result, Result, Result&lt;TNext&gt;&gt;)](#selectmanytnextvaluetaskresult-funcresult-result-funcresult-result-resulttnext) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany&lt;T, TMiddle&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;T, TMiddle, Result&gt;)](#selectmanyt-tmiddleresultt-funct-valuetaskresulttmiddle-funct-tmiddle-result) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany&lt;T, TMiddle, TNext&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;T, TMiddle, Result&lt;TNext&gt;&gt;)](#selectmanyt-tmiddle-tnextresultt-funct-valuetaskresulttmiddle-funct-tmiddle-resulttnext) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Func&lt;T, Result, TNext&gt;)](#selectmanyt-tnextresultt-funct-valuetaskresult-funct-result-tnext) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Func&lt;T, Result, Error&gt;)](#selectmanytresultt-funct-valuetaskresult-funct-result-error) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Func&lt;T, Result, Result&gt;)](#selectmanytresultt-funct-valuetaskresult-funct-result-result) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Func&lt;T, Result, Result&lt;TNext&gt;&gt;)](#selectmanyt-tnextresultt-funct-valuetaskresult-funct-result-resulttnext) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany&lt;TMiddle, TNext&gt;(Result, Func&lt;Result, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;Result, TMiddle, TNext&gt;)](#selectmanytmiddle-tnextresult-funcresult-valuetaskresulttmiddle-funcresult-tmiddle-tnext) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany&lt;TMiddle&gt;(Result, Func&lt;Result, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;Result, TMiddle, Error&gt;)](#selectmanytmiddleresult-funcresult-valuetaskresulttmiddle-funcresult-tmiddle-error) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany&lt;TMiddle&gt;(Result, Func&lt;Result, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;Result, TMiddle, Result&gt;)](#selectmanytmiddleresult-funcresult-valuetaskresulttmiddle-funcresult-tmiddle-result) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany&lt;TMiddle, TNext&gt;(Result, Func&lt;Result, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;Result, TMiddle, Result&lt;TNext&gt;&gt;)](#selectmanytmiddle-tnextresult-funcresult-valuetaskresulttmiddle-funcresult-tmiddle-resulttnext) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany&lt;TNext&gt;(Result, Func&lt;Result, ValueTask&lt;Result&gt;&gt;, Func&lt;Result, Result, TNext&gt;)](#selectmanytnextresult-funcresult-valuetaskresult-funcresult-result-tnext) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany(Result, Func&lt;Result, ValueTask&lt;Result&gt;&gt;, Func&lt;Result, Result, Error&gt;)](#selectmanyresult-funcresult-valuetaskresult-funcresult-result-error) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany(Result, Func&lt;Result, ValueTask&lt;Result&gt;&gt;, Func&lt;Result, Result, Result&gt;)](#selectmanyresult-funcresult-valuetaskresult-funcresult-result-result) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
+| [SelectMany&lt;TNext&gt;(Result, Func&lt;Result, ValueTask&lt;Result&gt;&gt;, Func&lt;Result, Result, Result&lt;TNext&gt;&gt;)](#selectmanytnextresult-funcresult-valuetaskresult-funcresult-result-resulttnext) | Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result. |
 
 ## Remarks
+A non-generic [Result](../../Result/Result.md) can be any `from` clause, e.g., a check in the middle of a query (`from _ in EnsureActive(user)`) or the first clause (`from _ in Validate(request)`): its range variable is the successful `Result` itself. A query cannot declare a range variable twice, so a second such clause needs another name (e.g., `from active in …`). A result selector that returns a `Result` or a `Result<T>` is not nested, as `Then` does.
+
 A result selector that returns an [Error](../../Error/Error.md) makes the query fail: such a query returns a failed [Result](../../Result/Result.md) instead of a **successful** `Result<Error>`.
 
 A result selector that returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>` is not supported: the query does not await it, so such a query is a compile error. Await the operation with [ThenAsync](ThenValueTaskAsyncExtensions_ThenAsync.md) instead, or chain it in a `from` clause whose function returns a `ValueTask<Result<T>>`. To keep the task in the result on purpose, call `SelectMany<T, TMiddle, Task>(…)` with explicit type arguments.
@@ -24,7 +68,7 @@ The query syntax needs a value in every `from` clause, so it works with [Result&
 
 
 ## SelectMany&lt;T, TMiddle, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;T, TMiddle, TNext&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L169" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L171" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
 
 Returns a new instance of [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result&lt;TNext&gt;](../../ResultT/ResultT.md)&gt; instance by applying the provided selector functions if the current [Result&lt;T&gt;](../../ResultT/ResultT.md) if it is successful; or a new [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result&lt;TNext&gt;](../../ResultT/ResultT.md)&gt; instance with the same error, otherwise.
 
@@ -82,7 +126,7 @@ var emailResult =
 
 
 ## SelectMany&lt;T, TMiddle, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&lt;TMiddle&gt;&gt;, Func&lt;T, TMiddle, TNext&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L230" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L232" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
 
 Applies the synchronous `collectionSelector` and the `resultSelector` to the value of a successful [Result&lt;T&gt;](../../ResultT/ResultT.md) produced by the awaited `result`; otherwise, returns a failed result with the original [Error](../../Error/Error.md).
 
@@ -137,7 +181,7 @@ var addressResult =
 
 
 ## SelectMany&lt;T, TMiddle, TNext&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;T, TMiddle, TNext&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L281" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L283" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
 
 Applies the asynchronous `collectionSelector` and the `resultSelector` to the value of a successful `result`; otherwise, returns a failed result with the original [Error](../../Error/Error.md).
 
@@ -192,7 +236,7 @@ var ordersResult =
 
 
 ## SelectMany&lt;T, TMiddle&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;T, TMiddle, Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L346" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L348" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
 
 Applies the asynchronous `collectionSelector` and the `resultSelector` to the value of a successful [Result&lt;T&gt;](../../ResultT/ResultT.md) produced by the awaited `result` and returns a failed [Result](../../Result/Result.md) with the [Error](../../Error/Error.md) returned by `resultSelector`; otherwise, returns a failed [Result](../../Result/Result.md) with the first [Error](../../Error/Error.md).
 
@@ -244,7 +288,7 @@ var result =
 
 
 ## SelectMany&lt;T, TMiddle&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&lt;TMiddle&gt;&gt;, Func&lt;T, TMiddle, Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L415" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L417" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
 
 Applies the synchronous `collectionSelector` and the `resultSelector` to the value of a successful [Result&lt;T&gt;](../../ResultT/ResultT.md) produced by the awaited `result` and returns a failed [Result](../../Result/Result.md) with the [Error](../../Error/Error.md) returned by `resultSelector`; otherwise, returns a failed [Result](../../Result/Result.md) with the first [Error](../../Error/Error.md).
 
@@ -296,7 +340,7 @@ var result =
 
 
 ## SelectMany&lt;T, TMiddle&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;T, TMiddle, Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L470" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L472" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
 
 Applies the asynchronous `collectionSelector` and the `resultSelector` to the value of a successful [Result&lt;T&gt;](../../ResultT/ResultT.md) and returns a failed [Result](../../Result/Result.md) with the [Error](../../Error/Error.md) returned by `resultSelector`; otherwise, returns a failed [Result](../../Result/Result.md) with the first [Error](../../Error/Error.md).
 
@@ -346,6 +390,2012 @@ var result =
     select Error.Conflict(typeUri, $"The order {order.Number} is already shipped.");
 ```
 
+
+## SelectMany&lt;T, TMiddle&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;T, TMiddle, Result&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L971" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result> SelectMany<T, TMiddle>(this ValueTask<Result<T>> result, Func<T, ValueTask<Result<TMiddle>>> collectionSelector, Func<T, TMiddle, Result> resultSelector);
+```
+
+### Type Parameters
+#### `T`
+The type of the value of the source result.
+
+#### `TMiddle`
+The type of the value of the result that the collection selector returns.
+
+### Parameters
+#### `result` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;T&gt;&gt;
+The asynchronous operation that returns the source result.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;TMiddle&gt;&gt;&gt;
+The function that receives the value and returns the asynchronous operation that returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;T, TMiddle, [Result](../../Result/Result.md)&gt;
+The function that receives the value and the value of the next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+The result that the result selector returns (not nested), or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the asynchronous operation represented by `result` returns `null`, or the `collectionSelector` returns `null` or a task with a `null` result, or the `resultSelector` returns `null`.
+
+### Remarks
+A result that the result selector returns is not nested (as by `Then`): a [Result](../../Result/Result.md) or a [Result&lt;T&gt;](../../ResultT/ResultT.md) is returned as it is. Specify the type arguments to keep it nested on purpose.
+
+### Examples
+```csharp
+var result = await (
+    from user in GetUserAsync(id)
+    from order in GetLastOrderAsync(user.Id)
+    select Audit(user));
+```
+
+
+## SelectMany&lt;T, TMiddle, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;T, TMiddle, Result&lt;TNext&gt;&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L1034" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result<TNext>> SelectMany<T, TMiddle, TNext>(this ValueTask<Result<T>> result, Func<T, ValueTask<Result<TMiddle>>> collectionSelector, Func<T, TMiddle, Result<TNext>> resultSelector);
+```
+
+### Type Parameters
+#### `T`
+The type of the value of the source result.
+
+#### `TMiddle`
+The type of the value of the result that the collection selector returns.
+
+#### `TNext`
+The type of the value of the returned result.
+
+### Parameters
+#### `result` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;T&gt;&gt;
+The asynchronous operation that returns the source result.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;TMiddle&gt;&gt;&gt;
+The function that receives the value and returns the asynchronous operation that returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;T, TMiddle, [Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;
+The function that receives the value and the value of the next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;
+The result that the result selector returns (not nested), or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the asynchronous operation represented by `result` returns `null`, or the `collectionSelector` returns `null` or a task with a `null` result, or the `resultSelector` returns `null`.
+
+### Remarks
+A result that the result selector returns is not nested (as by `Then`): a [Result](../../Result/Result.md) or a [Result&lt;T&gt;](../../ResultT/ResultT.md) is returned as it is. Specify the type arguments to keep it nested on purpose.
+
+### Examples
+```csharp
+var result = await (
+    from user in GetUserAsync(id)
+    from order in GetLastOrderAsync(user.Id)
+    select CreateOrder(user));
+```
+
+
+## SelectMany&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Func&lt;T, Result, TNext&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L1096" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result<TNext>> SelectMany<T, TNext>(this ValueTask<Result<T>> result, Func<T, ValueTask<Result>> collectionSelector, Func<T, Result, TNext> resultSelector);
+```
+
+### Type Parameters
+#### `T`
+The type of the value of the source result.
+
+#### `TNext`
+The type of the value of the returned result.
+
+### Parameters
+#### `result` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;T&gt;&gt;
+The asynchronous operation that returns the source result.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;&gt;
+The function that receives the value and returns the asynchronous operation that returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;T, [Result](../../Result/Result.md), TNext&gt;
+The function that receives the value and the successful next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;
+A successful result with the value of the result selector, or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the asynchronous operation represented by `result` returns `null`, or the `collectionSelector` returns `null` or a task with a `null` result.
+
+### Remarks
+A non-generic [Result](../../Result/Result.md) clause has no value: its range variable is the successful [Result](../../Result/Result.md) itself (e.g., `from _ in Validate(input)`). A query cannot declare a range variable twice, so a second such clause needs another name (e.g., `from active in …`).
+
+### Examples
+```csharp
+var result = await (
+    from user in GetUserAsync(id)
+    from _ in EnsureActiveAsync(user)
+    select user.Name);
+```
+
+
+## SelectMany&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Func&lt;T, Result, Error&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L1154" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result> SelectMany<T>(this ValueTask<Result<T>> result, Func<T, ValueTask<Result>> collectionSelector, Func<T, Result, Error> resultSelector);
+```
+
+### Type Parameters
+#### `T`
+The type of the value of the source result.
+
+### Parameters
+#### `result` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;T&gt;&gt;
+The asynchronous operation that returns the source result.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;&gt;
+The function that receives the value and returns the asynchronous operation that returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;T, [Result](../../Result/Result.md), [Error](../../Error/Error.md)&gt;
+The function that receives the value and the successful next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+A failed result with the error of the result selector, or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the asynchronous operation represented by `result` returns `null`, or the `collectionSelector` returns `null` or a task with a `null` result, or the `resultSelector` returns `null`.
+
+### Remarks
+A non-generic [Result](../../Result/Result.md) clause has no value: its range variable is the successful [Result](../../Result/Result.md) itself (e.g., `from _ in Validate(input)`). A query cannot declare a range variable twice, so a second such clause needs another name (e.g., `from active in …`).
+
+### Examples
+```csharp
+var result = await (
+    from user in GetUserAsync(id)
+    from _ in EnsureActiveAsync(user)
+    select Error.Conflict(typeUri, "Not allowed."));
+```
+
+
+## SelectMany&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Func&lt;T, Result, Result&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L1220" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result> SelectMany<T>(this ValueTask<Result<T>> result, Func<T, ValueTask<Result>> collectionSelector, Func<T, Result, Result> resultSelector);
+```
+
+### Type Parameters
+#### `T`
+The type of the value of the source result.
+
+### Parameters
+#### `result` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;T&gt;&gt;
+The asynchronous operation that returns the source result.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;&gt;
+The function that receives the value and returns the asynchronous operation that returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;T, [Result](../../Result/Result.md), [Result](../../Result/Result.md)&gt;
+The function that receives the value and the successful next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+The result that the result selector returns (not nested), or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the asynchronous operation represented by `result` returns `null`, or the `collectionSelector` returns `null` or a task with a `null` result, or the `resultSelector` returns `null`.
+
+### Remarks
+A non-generic [Result](../../Result/Result.md) clause has no value: its range variable is the successful [Result](../../Result/Result.md) itself (e.g., `from _ in Validate(input)`). A query cannot declare a range variable twice, so a second such clause needs another name (e.g., `from active in …`).
+
+A result that the result selector returns is not nested (as by `Then`): a [Result](../../Result/Result.md) or a [Result&lt;T&gt;](../../ResultT/ResultT.md) is returned as it is. Specify the type arguments to keep it nested on purpose.
+
+### Examples
+```csharp
+var result = await (
+    from user in GetUserAsync(id)
+    from _ in EnsureActiveAsync(user)
+    select Audit(user));
+```
+
+
+## SelectMany&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Func&lt;T, Result, Result&lt;TNext&gt;&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L1287" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result<TNext>> SelectMany<T, TNext>(this ValueTask<Result<T>> result, Func<T, ValueTask<Result>> collectionSelector, Func<T, Result, Result<TNext>> resultSelector);
+```
+
+### Type Parameters
+#### `T`
+The type of the value of the source result.
+
+#### `TNext`
+The type of the value of the returned result.
+
+### Parameters
+#### `result` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;T&gt;&gt;
+The asynchronous operation that returns the source result.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;&gt;
+The function that receives the value and returns the asynchronous operation that returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;T, [Result](../../Result/Result.md), [Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;
+The function that receives the value and the successful next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;
+The result that the result selector returns (not nested), or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the asynchronous operation represented by `result` returns `null`, or the `collectionSelector` returns `null` or a task with a `null` result, or the `resultSelector` returns `null`.
+
+### Remarks
+A non-generic [Result](../../Result/Result.md) clause has no value: its range variable is the successful [Result](../../Result/Result.md) itself (e.g., `from _ in Validate(input)`). A query cannot declare a range variable twice, so a second such clause needs another name (e.g., `from active in …`).
+
+A result that the result selector returns is not nested (as by `Then`): a [Result](../../Result/Result.md) or a [Result&lt;T&gt;](../../ResultT/ResultT.md) is returned as it is. Specify the type arguments to keep it nested on purpose.
+
+### Examples
+```csharp
+var result = await (
+    from user in GetUserAsync(id)
+    from _ in EnsureActiveAsync(user)
+    select CreateOrder(user));
+```
+
+
+## SelectMany&lt;TMiddle, TNext&gt;(ValueTask&lt;Result&gt;, Func&lt;Result, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;Result, TMiddle, TNext&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L1350" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result<TNext>> SelectMany<TMiddle, TNext>(this ValueTask<Result> result, Func<Result, ValueTask<Result<TMiddle>>> collectionSelector, Func<Result, TMiddle, TNext> resultSelector);
+```
+
+### Type Parameters
+#### `TMiddle`
+The type of the value of the result that the collection selector returns.
+
+#### `TNext`
+The type of the value of the returned result.
+
+### Parameters
+#### `result` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+The asynchronous operation that returns the source result.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Result](../../Result/Result.md), [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;TMiddle&gt;&gt;&gt;
+The function that receives the successful source result and returns the asynchronous operation that returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;[Result](../../Result/Result.md), TMiddle, TNext&gt;
+The function that receives the successful source result and the value of the next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;
+A successful result with the value of the result selector, or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the asynchronous operation represented by `result` returns `null`, or the `collectionSelector` returns `null` or a task with a `null` result.
+
+### Remarks
+A non-generic [Result](../../Result/Result.md) clause has no value: its range variable is the successful [Result](../../Result/Result.md) itself (e.g., `from _ in Validate(input)`). A query cannot declare a range variable twice, so a second such clause needs another name (e.g., `from active in …`).
+
+### Examples
+```csharp
+var result = await (
+    from _ in ValidateAsync(request)
+    from user in GetUserAsync(request.UserId)
+    select user.Name);
+```
+
+
+## SelectMany&lt;TMiddle&gt;(ValueTask&lt;Result&gt;, Func&lt;Result, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;Result, TMiddle, Error&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L1409" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result> SelectMany<TMiddle>(this ValueTask<Result> result, Func<Result, ValueTask<Result<TMiddle>>> collectionSelector, Func<Result, TMiddle, Error> resultSelector);
+```
+
+### Type Parameters
+#### `TMiddle`
+The type of the value of the result that the collection selector returns.
+
+### Parameters
+#### `result` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+The asynchronous operation that returns the source result.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Result](../../Result/Result.md), [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;TMiddle&gt;&gt;&gt;
+The function that receives the successful source result and returns the asynchronous operation that returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;[Result](../../Result/Result.md), TMiddle, [Error](../../Error/Error.md)&gt;
+The function that receives the successful source result and the value of the next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+A failed result with the error of the result selector, or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the asynchronous operation represented by `result` returns `null`, or the `collectionSelector` returns `null` or a task with a `null` result, or the `resultSelector` returns `null`.
+
+### Remarks
+A non-generic [Result](../../Result/Result.md) clause has no value: its range variable is the successful [Result](../../Result/Result.md) itself (e.g., `from _ in Validate(input)`). A query cannot declare a range variable twice, so a second such clause needs another name (e.g., `from active in …`).
+
+### Examples
+```csharp
+var result = await (
+    from _ in ValidateAsync(request)
+    from user in GetUserAsync(request.UserId)
+    select Error.Conflict(typeUri, "Not allowed."));
+```
+
+
+## SelectMany&lt;TMiddle&gt;(ValueTask&lt;Result&gt;, Func&lt;Result, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;Result, TMiddle, Result&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L1476" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result> SelectMany<TMiddle>(this ValueTask<Result> result, Func<Result, ValueTask<Result<TMiddle>>> collectionSelector, Func<Result, TMiddle, Result> resultSelector);
+```
+
+### Type Parameters
+#### `TMiddle`
+The type of the value of the result that the collection selector returns.
+
+### Parameters
+#### `result` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+The asynchronous operation that returns the source result.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Result](../../Result/Result.md), [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;TMiddle&gt;&gt;&gt;
+The function that receives the successful source result and returns the asynchronous operation that returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;[Result](../../Result/Result.md), TMiddle, [Result](../../Result/Result.md)&gt;
+The function that receives the successful source result and the value of the next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+The result that the result selector returns (not nested), or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the asynchronous operation represented by `result` returns `null`, or the `collectionSelector` returns `null` or a task with a `null` result, or the `resultSelector` returns `null`.
+
+### Remarks
+A non-generic [Result](../../Result/Result.md) clause has no value: its range variable is the successful [Result](../../Result/Result.md) itself (e.g., `from _ in Validate(input)`). A query cannot declare a range variable twice, so a second such clause needs another name (e.g., `from active in …`).
+
+A result that the result selector returns is not nested (as by `Then`): a [Result](../../Result/Result.md) or a [Result&lt;T&gt;](../../ResultT/ResultT.md) is returned as it is. Specify the type arguments to keep it nested on purpose.
+
+### Examples
+```csharp
+var result = await (
+    from _ in ValidateAsync(request)
+    from user in GetUserAsync(request.UserId)
+    select Audit(user));
+```
+
+
+## SelectMany&lt;TMiddle, TNext&gt;(ValueTask&lt;Result&gt;, Func&lt;Result, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;Result, TMiddle, Result&lt;TNext&gt;&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L1544" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result<TNext>> SelectMany<TMiddle, TNext>(this ValueTask<Result> result, Func<Result, ValueTask<Result<TMiddle>>> collectionSelector, Func<Result, TMiddle, Result<TNext>> resultSelector);
+```
+
+### Type Parameters
+#### `TMiddle`
+The type of the value of the result that the collection selector returns.
+
+#### `TNext`
+The type of the value of the returned result.
+
+### Parameters
+#### `result` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+The asynchronous operation that returns the source result.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Result](../../Result/Result.md), [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;TMiddle&gt;&gt;&gt;
+The function that receives the successful source result and returns the asynchronous operation that returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;[Result](../../Result/Result.md), TMiddle, [Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;
+The function that receives the successful source result and the value of the next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;
+The result that the result selector returns (not nested), or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the asynchronous operation represented by `result` returns `null`, or the `collectionSelector` returns `null` or a task with a `null` result, or the `resultSelector` returns `null`.
+
+### Remarks
+A non-generic [Result](../../Result/Result.md) clause has no value: its range variable is the successful [Result](../../Result/Result.md) itself (e.g., `from _ in Validate(input)`). A query cannot declare a range variable twice, so a second such clause needs another name (e.g., `from active in …`).
+
+A result that the result selector returns is not nested (as by `Then`): a [Result](../../Result/Result.md) or a [Result&lt;T&gt;](../../ResultT/ResultT.md) is returned as it is. Specify the type arguments to keep it nested on purpose.
+
+### Examples
+```csharp
+var result = await (
+    from _ in ValidateAsync(request)
+    from user in GetUserAsync(request.UserId)
+    select CreateOrder(user));
+```
+
+
+## SelectMany&lt;TNext&gt;(ValueTask&lt;Result&gt;, Func&lt;Result, ValueTask&lt;Result&gt;&gt;, Func&lt;Result, Result, TNext&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L1606" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result<TNext>> SelectMany<TNext>(this ValueTask<Result> result, Func<Result, ValueTask<Result>> collectionSelector, Func<Result, Result, TNext> resultSelector);
+```
+
+### Type Parameters
+#### `TNext`
+The type of the value of the returned result.
+
+### Parameters
+#### `result` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+The asynchronous operation that returns the source result.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Result](../../Result/Result.md), [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;&gt;
+The function that receives the successful source result and returns the asynchronous operation that returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;[Result](../../Result/Result.md), [Result](../../Result/Result.md), TNext&gt;
+The function that receives the successful source result and the successful next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;
+A successful result with the value of the result selector, or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the asynchronous operation represented by `result` returns `null`, or the `collectionSelector` returns `null` or a task with a `null` result.
+
+### Remarks
+A non-generic [Result](../../Result/Result.md) clause has no value: its range variable is the successful [Result](../../Result/Result.md) itself (e.g., `from _ in Validate(input)`). A query cannot declare a range variable twice, so a second such clause needs another name (e.g., `from active in …`).
+
+### Examples
+```csharp
+var result = await (
+    from _ in ValidateAsync(request)
+    from unique in EnsureUniqueAsync(request)
+    select request.Id);
+```
+
+
+## SelectMany(ValueTask&lt;Result&gt;, Func&lt;Result, ValueTask&lt;Result&gt;&gt;, Func&lt;Result, Result, Error&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L1664" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result> SelectMany(this ValueTask<Result> result, Func<Result, ValueTask<Result>> collectionSelector, Func<Result, Result, Error> resultSelector);
+```
+
+### Parameters
+#### `result` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+The asynchronous operation that returns the source result.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Result](../../Result/Result.md), [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;&gt;
+The function that receives the successful source result and returns the asynchronous operation that returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;[Result](../../Result/Result.md), [Result](../../Result/Result.md), [Error](../../Error/Error.md)&gt;
+The function that receives the successful source result and the successful next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+A failed result with the error of the result selector, or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the asynchronous operation represented by `result` returns `null`, or the `collectionSelector` returns `null` or a task with a `null` result, or the `resultSelector` returns `null`.
+
+### Remarks
+A non-generic [Result](../../Result/Result.md) clause has no value: its range variable is the successful [Result](../../Result/Result.md) itself (e.g., `from _ in Validate(input)`). A query cannot declare a range variable twice, so a second such clause needs another name (e.g., `from active in …`).
+
+### Examples
+```csharp
+var result = await (
+    from _ in ValidateAsync(request)
+    from unique in EnsureUniqueAsync(request)
+    select Error.Conflict(typeUri, "Not allowed."));
+```
+
+
+## SelectMany(ValueTask&lt;Result&gt;, Func&lt;Result, ValueTask&lt;Result&gt;&gt;, Func&lt;Result, Result, Result&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L1730" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result> SelectMany(this ValueTask<Result> result, Func<Result, ValueTask<Result>> collectionSelector, Func<Result, Result, Result> resultSelector);
+```
+
+### Parameters
+#### `result` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+The asynchronous operation that returns the source result.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Result](../../Result/Result.md), [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;&gt;
+The function that receives the successful source result and returns the asynchronous operation that returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;[Result](../../Result/Result.md), [Result](../../Result/Result.md), [Result](../../Result/Result.md)&gt;
+The function that receives the successful source result and the successful next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+The result that the result selector returns (not nested), or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the asynchronous operation represented by `result` returns `null`, or the `collectionSelector` returns `null` or a task with a `null` result, or the `resultSelector` returns `null`.
+
+### Remarks
+A non-generic [Result](../../Result/Result.md) clause has no value: its range variable is the successful [Result](../../Result/Result.md) itself (e.g., `from _ in Validate(input)`). A query cannot declare a range variable twice, so a second such clause needs another name (e.g., `from active in …`).
+
+A result that the result selector returns is not nested (as by `Then`): a [Result](../../Result/Result.md) or a [Result&lt;T&gt;](../../ResultT/ResultT.md) is returned as it is. Specify the type arguments to keep it nested on purpose.
+
+### Examples
+```csharp
+var result = await (
+    from _ in ValidateAsync(request)
+    from unique in EnsureUniqueAsync(request)
+    select Audit(request));
+```
+
+
+## SelectMany&lt;TNext&gt;(ValueTask&lt;Result&gt;, Func&lt;Result, ValueTask&lt;Result&gt;&gt;, Func&lt;Result, Result, Result&lt;TNext&gt;&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L1797" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result<TNext>> SelectMany<TNext>(this ValueTask<Result> result, Func<Result, ValueTask<Result>> collectionSelector, Func<Result, Result, Result<TNext>> resultSelector);
+```
+
+### Type Parameters
+#### `TNext`
+The type of the value of the returned result.
+
+### Parameters
+#### `result` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+The asynchronous operation that returns the source result.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Result](../../Result/Result.md), [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;&gt;
+The function that receives the successful source result and returns the asynchronous operation that returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;[Result](../../Result/Result.md), [Result](../../Result/Result.md), [Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;
+The function that receives the successful source result and the successful next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;
+The result that the result selector returns (not nested), or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the asynchronous operation represented by `result` returns `null`, or the `collectionSelector` returns `null` or a task with a `null` result, or the `resultSelector` returns `null`.
+
+### Remarks
+A non-generic [Result](../../Result/Result.md) clause has no value: its range variable is the successful [Result](../../Result/Result.md) itself (e.g., `from _ in Validate(input)`). A query cannot declare a range variable twice, so a second such clause needs another name (e.g., `from active in …`).
+
+A result that the result selector returns is not nested (as by `Then`): a [Result](../../Result/Result.md) or a [Result&lt;T&gt;](../../ResultT/ResultT.md) is returned as it is. Specify the type arguments to keep it nested on purpose.
+
+### Examples
+```csharp
+var result = await (
+    from _ in ValidateAsync(request)
+    from unique in EnsureUniqueAsync(request)
+    select CreateOrder(request));
+```
+
+
+## SelectMany&lt;T, TMiddle&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&lt;TMiddle&gt;&gt;, Func&lt;T, TMiddle, Result&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L1858" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result> SelectMany<T, TMiddle>(this ValueTask<Result<T>> result, Func<T, Result<TMiddle>> collectionSelector, Func<T, TMiddle, Result> resultSelector);
+```
+
+### Type Parameters
+#### `T`
+The type of the value of the source result.
+
+#### `TMiddle`
+The type of the value of the result that the collection selector returns.
+
+### Parameters
+#### `result` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;T&gt;&gt;
+The asynchronous operation that returns the source result.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [Result](../../ResultT/ResultT.md)&lt;TMiddle&gt;&gt;
+The function that receives the value and returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;T, TMiddle, [Result](../../Result/Result.md)&gt;
+The function that receives the value and the value of the next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+The result that the result selector returns (not nested), or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the asynchronous operation represented by `result` returns `null`, or the `collectionSelector` returns `null`, or the `resultSelector` returns `null`.
+
+### Remarks
+A result that the result selector returns is not nested (as by `Then`): a [Result](../../Result/Result.md) or a [Result&lt;T&gt;](../../ResultT/ResultT.md) is returned as it is. Specify the type arguments to keep it nested on purpose.
+
+### Examples
+```csharp
+var result = await (
+    from user in GetUserAsync(id)
+    from order in GetLastOrder(user.Id)
+    select Audit(user));
+```
+
+
+## SelectMany&lt;T, TMiddle, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&lt;TMiddle&gt;&gt;, Func&lt;T, TMiddle, Result&lt;TNext&gt;&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L1908" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result<TNext>> SelectMany<T, TMiddle, TNext>(this ValueTask<Result<T>> result, Func<T, Result<TMiddle>> collectionSelector, Func<T, TMiddle, Result<TNext>> resultSelector);
+```
+
+### Type Parameters
+#### `T`
+The type of the value of the source result.
+
+#### `TMiddle`
+The type of the value of the result that the collection selector returns.
+
+#### `TNext`
+The type of the value of the returned result.
+
+### Parameters
+#### `result` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;T&gt;&gt;
+The asynchronous operation that returns the source result.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [Result](../../ResultT/ResultT.md)&lt;TMiddle&gt;&gt;
+The function that receives the value and returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;T, TMiddle, [Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;
+The function that receives the value and the value of the next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;
+The result that the result selector returns (not nested), or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the asynchronous operation represented by `result` returns `null`, or the `collectionSelector` returns `null`, or the `resultSelector` returns `null`.
+
+### Remarks
+A result that the result selector returns is not nested (as by `Then`): a [Result](../../Result/Result.md) or a [Result&lt;T&gt;](../../ResultT/ResultT.md) is returned as it is. Specify the type arguments to keep it nested on purpose.
+
+### Examples
+```csharp
+var result = await (
+    from user in GetUserAsync(id)
+    from order in GetLastOrder(user.Id)
+    select CreateOrder(user));
+```
+
+
+## SelectMany&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&gt;, Func&lt;T, Result, TNext&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L1957" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result<TNext>> SelectMany<T, TNext>(this ValueTask<Result<T>> result, Func<T, Result> collectionSelector, Func<T, Result, TNext> resultSelector);
+```
+
+### Type Parameters
+#### `T`
+The type of the value of the source result.
+
+#### `TNext`
+The type of the value of the returned result.
+
+### Parameters
+#### `result` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;T&gt;&gt;
+The asynchronous operation that returns the source result.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [Result](../../Result/Result.md)&gt;
+The function that receives the value and returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;T, [Result](../../Result/Result.md), TNext&gt;
+The function that receives the value and the successful next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;
+A successful result with the value of the result selector, or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the asynchronous operation represented by `result` returns `null`, or the `collectionSelector` returns `null`.
+
+### Remarks
+A non-generic [Result](../../Result/Result.md) clause has no value: its range variable is the successful [Result](../../Result/Result.md) itself (e.g., `from _ in Validate(input)`). A query cannot declare a range variable twice, so a second such clause needs another name (e.g., `from active in …`).
+
+### Examples
+```csharp
+var result = await (
+    from user in GetUserAsync(id)
+    from _ in EnsureActive(user)
+    select user.Name);
+```
+
+
+## SelectMany&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&gt;, Func&lt;T, Result, Error&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L2006" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result> SelectMany<T>(this ValueTask<Result<T>> result, Func<T, Result> collectionSelector, Func<T, Result, Error> resultSelector);
+```
+
+### Type Parameters
+#### `T`
+The type of the value of the source result.
+
+### Parameters
+#### `result` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;T&gt;&gt;
+The asynchronous operation that returns the source result.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [Result](../../Result/Result.md)&gt;
+The function that receives the value and returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;T, [Result](../../Result/Result.md), [Error](../../Error/Error.md)&gt;
+The function that receives the value and the successful next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+A failed result with the error of the result selector, or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the asynchronous operation represented by `result` returns `null`, or the `collectionSelector` returns `null`, or the `resultSelector` returns `null`.
+
+### Remarks
+A non-generic [Result](../../Result/Result.md) clause has no value: its range variable is the successful [Result](../../Result/Result.md) itself (e.g., `from _ in Validate(input)`). A query cannot declare a range variable twice, so a second such clause needs another name (e.g., `from active in …`).
+
+### Examples
+```csharp
+var result = await (
+    from user in GetUserAsync(id)
+    from _ in EnsureActive(user)
+    select Error.Conflict(typeUri, "Not allowed."));
+```
+
+
+## SelectMany&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&gt;, Func&lt;T, Result, Result&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L2056" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result> SelectMany<T>(this ValueTask<Result<T>> result, Func<T, Result> collectionSelector, Func<T, Result, Result> resultSelector);
+```
+
+### Type Parameters
+#### `T`
+The type of the value of the source result.
+
+### Parameters
+#### `result` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;T&gt;&gt;
+The asynchronous operation that returns the source result.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [Result](../../Result/Result.md)&gt;
+The function that receives the value and returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;T, [Result](../../Result/Result.md), [Result](../../Result/Result.md)&gt;
+The function that receives the value and the successful next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+The result that the result selector returns (not nested), or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the asynchronous operation represented by `result` returns `null`, or the `collectionSelector` returns `null`, or the `resultSelector` returns `null`.
+
+### Remarks
+A non-generic [Result](../../Result/Result.md) clause has no value: its range variable is the successful [Result](../../Result/Result.md) itself (e.g., `from _ in Validate(input)`). A query cannot declare a range variable twice, so a second such clause needs another name (e.g., `from active in …`).
+
+A result that the result selector returns is not nested (as by `Then`): a [Result](../../Result/Result.md) or a [Result&lt;T&gt;](../../ResultT/ResultT.md) is returned as it is. Specify the type arguments to keep it nested on purpose.
+
+### Examples
+```csharp
+var result = await (
+    from user in GetUserAsync(id)
+    from _ in EnsureActive(user)
+    select Audit(user));
+```
+
+
+## SelectMany&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&gt;, Func&lt;T, Result, Result&lt;TNext&gt;&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L2107" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result<TNext>> SelectMany<T, TNext>(this ValueTask<Result<T>> result, Func<T, Result> collectionSelector, Func<T, Result, Result<TNext>> resultSelector);
+```
+
+### Type Parameters
+#### `T`
+The type of the value of the source result.
+
+#### `TNext`
+The type of the value of the returned result.
+
+### Parameters
+#### `result` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;T&gt;&gt;
+The asynchronous operation that returns the source result.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [Result](../../Result/Result.md)&gt;
+The function that receives the value and returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;T, [Result](../../Result/Result.md), [Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;
+The function that receives the value and the successful next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;
+The result that the result selector returns (not nested), or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the asynchronous operation represented by `result` returns `null`, or the `collectionSelector` returns `null`, or the `resultSelector` returns `null`.
+
+### Remarks
+A non-generic [Result](../../Result/Result.md) clause has no value: its range variable is the successful [Result](../../Result/Result.md) itself (e.g., `from _ in Validate(input)`). A query cannot declare a range variable twice, so a second such clause needs another name (e.g., `from active in …`).
+
+A result that the result selector returns is not nested (as by `Then`): a [Result](../../Result/Result.md) or a [Result&lt;T&gt;](../../ResultT/ResultT.md) is returned as it is. Specify the type arguments to keep it nested on purpose.
+
+### Examples
+```csharp
+var result = await (
+    from user in GetUserAsync(id)
+    from _ in EnsureActive(user)
+    select CreateOrder(user));
+```
+
+
+## SelectMany&lt;TMiddle, TNext&gt;(ValueTask&lt;Result&gt;, Func&lt;Result, Result&lt;TMiddle&gt;&gt;, Func&lt;Result, TMiddle, TNext&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L2157" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result<TNext>> SelectMany<TMiddle, TNext>(this ValueTask<Result> result, Func<Result, Result<TMiddle>> collectionSelector, Func<Result, TMiddle, TNext> resultSelector);
+```
+
+### Type Parameters
+#### `TMiddle`
+The type of the value of the result that the collection selector returns.
+
+#### `TNext`
+The type of the value of the returned result.
+
+### Parameters
+#### `result` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+The asynchronous operation that returns the source result.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Result](../../Result/Result.md), [Result](../../ResultT/ResultT.md)&lt;TMiddle&gt;&gt;
+The function that receives the successful source result and returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;[Result](../../Result/Result.md), TMiddle, TNext&gt;
+The function that receives the successful source result and the value of the next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;
+A successful result with the value of the result selector, or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the asynchronous operation represented by `result` returns `null`, or the `collectionSelector` returns `null`.
+
+### Remarks
+A non-generic [Result](../../Result/Result.md) clause has no value: its range variable is the successful [Result](../../Result/Result.md) itself (e.g., `from _ in Validate(input)`). A query cannot declare a range variable twice, so a second such clause needs another name (e.g., `from active in …`).
+
+### Examples
+```csharp
+var result = await (
+    from _ in ValidateAsync(request)
+    from user in GetUser(request.UserId)
+    select user.Name);
+```
+
+
+## SelectMany&lt;TMiddle&gt;(ValueTask&lt;Result&gt;, Func&lt;Result, Result&lt;TMiddle&gt;&gt;, Func&lt;Result, TMiddle, Error&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L2207" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result> SelectMany<TMiddle>(this ValueTask<Result> result, Func<Result, Result<TMiddle>> collectionSelector, Func<Result, TMiddle, Error> resultSelector);
+```
+
+### Type Parameters
+#### `TMiddle`
+The type of the value of the result that the collection selector returns.
+
+### Parameters
+#### `result` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+The asynchronous operation that returns the source result.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Result](../../Result/Result.md), [Result](../../ResultT/ResultT.md)&lt;TMiddle&gt;&gt;
+The function that receives the successful source result and returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;[Result](../../Result/Result.md), TMiddle, [Error](../../Error/Error.md)&gt;
+The function that receives the successful source result and the value of the next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+A failed result with the error of the result selector, or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the asynchronous operation represented by `result` returns `null`, or the `collectionSelector` returns `null`, or the `resultSelector` returns `null`.
+
+### Remarks
+A non-generic [Result](../../Result/Result.md) clause has no value: its range variable is the successful [Result](../../Result/Result.md) itself (e.g., `from _ in Validate(input)`). A query cannot declare a range variable twice, so a second such clause needs another name (e.g., `from active in …`).
+
+### Examples
+```csharp
+var result = await (
+    from _ in ValidateAsync(request)
+    from user in GetUser(request.UserId)
+    select Error.Conflict(typeUri, "Not allowed."));
+```
+
+
+## SelectMany&lt;TMiddle&gt;(ValueTask&lt;Result&gt;, Func&lt;Result, Result&lt;TMiddle&gt;&gt;, Func&lt;Result, TMiddle, Result&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L2261" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result> SelectMany<TMiddle>(this ValueTask<Result> result, Func<Result, Result<TMiddle>> collectionSelector, Func<Result, TMiddle, Result> resultSelector);
+```
+
+### Type Parameters
+#### `TMiddle`
+The type of the value of the result that the collection selector returns.
+
+### Parameters
+#### `result` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+The asynchronous operation that returns the source result.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Result](../../Result/Result.md), [Result](../../ResultT/ResultT.md)&lt;TMiddle&gt;&gt;
+The function that receives the successful source result and returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;[Result](../../Result/Result.md), TMiddle, [Result](../../Result/Result.md)&gt;
+The function that receives the successful source result and the value of the next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+The result that the result selector returns (not nested), or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the asynchronous operation represented by `result` returns `null`, or the `collectionSelector` returns `null`, or the `resultSelector` returns `null`.
+
+### Remarks
+A non-generic [Result](../../Result/Result.md) clause has no value: its range variable is the successful [Result](../../Result/Result.md) itself (e.g., `from _ in Validate(input)`). A query cannot declare a range variable twice, so a second such clause needs another name (e.g., `from active in …`).
+
+A result that the result selector returns is not nested (as by `Then`): a [Result](../../Result/Result.md) or a [Result&lt;T&gt;](../../ResultT/ResultT.md) is returned as it is. Specify the type arguments to keep it nested on purpose.
+
+### Examples
+```csharp
+var result = await (
+    from _ in ValidateAsync(request)
+    from user in GetUser(request.UserId)
+    select Audit(user));
+```
+
+
+## SelectMany&lt;TMiddle, TNext&gt;(ValueTask&lt;Result&gt;, Func&lt;Result, Result&lt;TMiddle&gt;&gt;, Func&lt;Result, TMiddle, Result&lt;TNext&gt;&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L2316" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result<TNext>> SelectMany<TMiddle, TNext>(this ValueTask<Result> result, Func<Result, Result<TMiddle>> collectionSelector, Func<Result, TMiddle, Result<TNext>> resultSelector);
+```
+
+### Type Parameters
+#### `TMiddle`
+The type of the value of the result that the collection selector returns.
+
+#### `TNext`
+The type of the value of the returned result.
+
+### Parameters
+#### `result` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+The asynchronous operation that returns the source result.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Result](../../Result/Result.md), [Result](../../ResultT/ResultT.md)&lt;TMiddle&gt;&gt;
+The function that receives the successful source result and returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;[Result](../../Result/Result.md), TMiddle, [Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;
+The function that receives the successful source result and the value of the next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;
+The result that the result selector returns (not nested), or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the asynchronous operation represented by `result` returns `null`, or the `collectionSelector` returns `null`, or the `resultSelector` returns `null`.
+
+### Remarks
+A non-generic [Result](../../Result/Result.md) clause has no value: its range variable is the successful [Result](../../Result/Result.md) itself (e.g., `from _ in Validate(input)`). A query cannot declare a range variable twice, so a second such clause needs another name (e.g., `from active in …`).
+
+A result that the result selector returns is not nested (as by `Then`): a [Result](../../Result/Result.md) or a [Result&lt;T&gt;](../../ResultT/ResultT.md) is returned as it is. Specify the type arguments to keep it nested on purpose.
+
+### Examples
+```csharp
+var result = await (
+    from _ in ValidateAsync(request)
+    from user in GetUser(request.UserId)
+    select CreateOrder(user));
+```
+
+
+## SelectMany&lt;TNext&gt;(ValueTask&lt;Result&gt;, Func&lt;Result, Result&gt;, Func&lt;Result, Result, TNext&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L2365" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result<TNext>> SelectMany<TNext>(this ValueTask<Result> result, Func<Result, Result> collectionSelector, Func<Result, Result, TNext> resultSelector);
+```
+
+### Type Parameters
+#### `TNext`
+The type of the value of the returned result.
+
+### Parameters
+#### `result` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+The asynchronous operation that returns the source result.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Result](../../Result/Result.md), [Result](../../Result/Result.md)&gt;
+The function that receives the successful source result and returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;[Result](../../Result/Result.md), [Result](../../Result/Result.md), TNext&gt;
+The function that receives the successful source result and the successful next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;
+A successful result with the value of the result selector, or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the asynchronous operation represented by `result` returns `null`, or the `collectionSelector` returns `null`.
+
+### Remarks
+A non-generic [Result](../../Result/Result.md) clause has no value: its range variable is the successful [Result](../../Result/Result.md) itself (e.g., `from _ in Validate(input)`). A query cannot declare a range variable twice, so a second such clause needs another name (e.g., `from active in …`).
+
+### Examples
+```csharp
+var result = await (
+    from _ in ValidateAsync(request)
+    from unique in EnsureUnique(request)
+    select request.Id);
+```
+
+
+## SelectMany(ValueTask&lt;Result&gt;, Func&lt;Result, Result&gt;, Func&lt;Result, Result, Error&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L2414" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result> SelectMany(this ValueTask<Result> result, Func<Result, Result> collectionSelector, Func<Result, Result, Error> resultSelector);
+```
+
+### Parameters
+#### `result` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+The asynchronous operation that returns the source result.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Result](../../Result/Result.md), [Result](../../Result/Result.md)&gt;
+The function that receives the successful source result and returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;[Result](../../Result/Result.md), [Result](../../Result/Result.md), [Error](../../Error/Error.md)&gt;
+The function that receives the successful source result and the successful next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+A failed result with the error of the result selector, or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the asynchronous operation represented by `result` returns `null`, or the `collectionSelector` returns `null`, or the `resultSelector` returns `null`.
+
+### Remarks
+A non-generic [Result](../../Result/Result.md) clause has no value: its range variable is the successful [Result](../../Result/Result.md) itself (e.g., `from _ in Validate(input)`). A query cannot declare a range variable twice, so a second such clause needs another name (e.g., `from active in …`).
+
+### Examples
+```csharp
+var result = await (
+    from _ in ValidateAsync(request)
+    from unique in EnsureUnique(request)
+    select Error.Conflict(typeUri, "Not allowed."));
+```
+
+
+## SelectMany(ValueTask&lt;Result&gt;, Func&lt;Result, Result&gt;, Func&lt;Result, Result, Result&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L2467" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result> SelectMany(this ValueTask<Result> result, Func<Result, Result> collectionSelector, Func<Result, Result, Result> resultSelector);
+```
+
+### Parameters
+#### `result` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+The asynchronous operation that returns the source result.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Result](../../Result/Result.md), [Result](../../Result/Result.md)&gt;
+The function that receives the successful source result and returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;[Result](../../Result/Result.md), [Result](../../Result/Result.md), [Result](../../Result/Result.md)&gt;
+The function that receives the successful source result and the successful next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+The result that the result selector returns (not nested), or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the asynchronous operation represented by `result` returns `null`, or the `collectionSelector` returns `null`, or the `resultSelector` returns `null`.
+
+### Remarks
+A non-generic [Result](../../Result/Result.md) clause has no value: its range variable is the successful [Result](../../Result/Result.md) itself (e.g., `from _ in Validate(input)`). A query cannot declare a range variable twice, so a second such clause needs another name (e.g., `from active in …`).
+
+A result that the result selector returns is not nested (as by `Then`): a [Result](../../Result/Result.md) or a [Result&lt;T&gt;](../../ResultT/ResultT.md) is returned as it is. Specify the type arguments to keep it nested on purpose.
+
+### Examples
+```csharp
+var result = await (
+    from _ in ValidateAsync(request)
+    from unique in EnsureUnique(request)
+    select Audit(request));
+```
+
+
+## SelectMany&lt;TNext&gt;(ValueTask&lt;Result&gt;, Func&lt;Result, Result&gt;, Func&lt;Result, Result, Result&lt;TNext&gt;&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L2521" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result<TNext>> SelectMany<TNext>(this ValueTask<Result> result, Func<Result, Result> collectionSelector, Func<Result, Result, Result<TNext>> resultSelector);
+```
+
+### Type Parameters
+#### `TNext`
+The type of the value of the returned result.
+
+### Parameters
+#### `result` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+The asynchronous operation that returns the source result.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Result](../../Result/Result.md), [Result](../../Result/Result.md)&gt;
+The function that receives the successful source result and returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;[Result](../../Result/Result.md), [Result](../../Result/Result.md), [Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;
+The function that receives the successful source result and the successful next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;
+The result that the result selector returns (not nested), or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the asynchronous operation represented by `result` returns `null`, or the `collectionSelector` returns `null`, or the `resultSelector` returns `null`.
+
+### Remarks
+A non-generic [Result](../../Result/Result.md) clause has no value: its range variable is the successful [Result](../../Result/Result.md) itself (e.g., `from _ in Validate(input)`). A query cannot declare a range variable twice, so a second such clause needs another name (e.g., `from active in …`).
+
+A result that the result selector returns is not nested (as by `Then`): a [Result](../../Result/Result.md) or a [Result&lt;T&gt;](../../ResultT/ResultT.md) is returned as it is. Specify the type arguments to keep it nested on purpose.
+
+### Examples
+```csharp
+var result = await (
+    from _ in ValidateAsync(request)
+    from unique in EnsureUnique(request)
+    select CreateOrder(request));
+```
+
+
+## SelectMany&lt;T, TMiddle&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;T, TMiddle, Result&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L2571" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result> SelectMany<T, TMiddle>(this Result<T> result, Func<T, ValueTask<Result<TMiddle>>> collectionSelector, Func<T, TMiddle, Result> resultSelector);
+```
+
+### Type Parameters
+#### `T`
+The type of the value of the source result.
+
+#### `TMiddle`
+The type of the value of the result that the collection selector returns.
+
+### Parameters
+#### `result` [Result](../../ResultT/ResultT.md)&lt;T&gt;
+The source result. Must not be `null`.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;TMiddle&gt;&gt;&gt;
+The function that receives the value and returns the asynchronous operation that returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;T, TMiddle, [Result](../../Result/Result.md)&gt;
+The function that receives the value and the value of the next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+The result that the result selector returns (not nested), or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `result`, the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the `collectionSelector` returns `null` or a task with a `null` result, or the `resultSelector` returns `null`.
+
+### Remarks
+A result that the result selector returns is not nested (as by `Then`): a [Result](../../Result/Result.md) or a [Result&lt;T&gt;](../../ResultT/ResultT.md) is returned as it is. Specify the type arguments to keep it nested on purpose.
+
+### Examples
+```csharp
+var result = await (
+    from user in GetUser(id)
+    from order in GetLastOrderAsync(user.Id)
+    select Audit(user));
+```
+
+
+## SelectMany&lt;T, TMiddle, TNext&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;T, TMiddle, Result&lt;TNext&gt;&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L2633" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result<TNext>> SelectMany<T, TMiddle, TNext>(this Result<T> result, Func<T, ValueTask<Result<TMiddle>>> collectionSelector, Func<T, TMiddle, Result<TNext>> resultSelector);
+```
+
+### Type Parameters
+#### `T`
+The type of the value of the source result.
+
+#### `TMiddle`
+The type of the value of the result that the collection selector returns.
+
+#### `TNext`
+The type of the value of the returned result.
+
+### Parameters
+#### `result` [Result](../../ResultT/ResultT.md)&lt;T&gt;
+The source result. Must not be `null`.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;TMiddle&gt;&gt;&gt;
+The function that receives the value and returns the asynchronous operation that returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;T, TMiddle, [Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;
+The function that receives the value and the value of the next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;
+The result that the result selector returns (not nested), or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `result`, the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the `collectionSelector` returns `null` or a task with a `null` result, or the `resultSelector` returns `null`.
+
+### Remarks
+A result that the result selector returns is not nested (as by `Then`): a [Result](../../Result/Result.md) or a [Result&lt;T&gt;](../../ResultT/ResultT.md) is returned as it is. Specify the type arguments to keep it nested on purpose.
+
+### Examples
+```csharp
+var result = await (
+    from user in GetUser(id)
+    from order in GetLastOrderAsync(user.Id)
+    select CreateOrder(user));
+```
+
+
+## SelectMany&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Func&lt;T, Result, TNext&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L2694" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result<TNext>> SelectMany<T, TNext>(this Result<T> result, Func<T, ValueTask<Result>> collectionSelector, Func<T, Result, TNext> resultSelector);
+```
+
+### Type Parameters
+#### `T`
+The type of the value of the source result.
+
+#### `TNext`
+The type of the value of the returned result.
+
+### Parameters
+#### `result` [Result](../../ResultT/ResultT.md)&lt;T&gt;
+The source result. Must not be `null`.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;&gt;
+The function that receives the value and returns the asynchronous operation that returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;T, [Result](../../Result/Result.md), TNext&gt;
+The function that receives the value and the successful next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;
+A successful result with the value of the result selector, or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `result`, the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the `collectionSelector` returns `null` or a task with a `null` result.
+
+### Remarks
+A non-generic [Result](../../Result/Result.md) clause has no value: its range variable is the successful [Result](../../Result/Result.md) itself (e.g., `from _ in Validate(input)`). A query cannot declare a range variable twice, so a second such clause needs another name (e.g., `from active in …`).
+
+### Examples
+```csharp
+var result = await (
+    from user in GetUser(id)
+    from _ in EnsureActiveAsync(user)
+    select user.Name);
+```
+
+
+## SelectMany&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Func&lt;T, Result, Error&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L2751" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result> SelectMany<T>(this Result<T> result, Func<T, ValueTask<Result>> collectionSelector, Func<T, Result, Error> resultSelector);
+```
+
+### Type Parameters
+#### `T`
+The type of the value of the source result.
+
+### Parameters
+#### `result` [Result](../../ResultT/ResultT.md)&lt;T&gt;
+The source result. Must not be `null`.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;&gt;
+The function that receives the value and returns the asynchronous operation that returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;T, [Result](../../Result/Result.md), [Error](../../Error/Error.md)&gt;
+The function that receives the value and the successful next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+A failed result with the error of the result selector, or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `result`, the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the `collectionSelector` returns `null` or a task with a `null` result, or the `resultSelector` returns `null`.
+
+### Remarks
+A non-generic [Result](../../Result/Result.md) clause has no value: its range variable is the successful [Result](../../Result/Result.md) itself (e.g., `from _ in Validate(input)`). A query cannot declare a range variable twice, so a second such clause needs another name (e.g., `from active in …`).
+
+### Examples
+```csharp
+var result = await (
+    from user in GetUser(id)
+    from _ in EnsureActiveAsync(user)
+    select Error.Conflict(typeUri, "Not allowed."));
+```
+
+
+## SelectMany&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Func&lt;T, Result, Result&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L2813" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result> SelectMany<T>(this Result<T> result, Func<T, ValueTask<Result>> collectionSelector, Func<T, Result, Result> resultSelector);
+```
+
+### Type Parameters
+#### `T`
+The type of the value of the source result.
+
+### Parameters
+#### `result` [Result](../../ResultT/ResultT.md)&lt;T&gt;
+The source result. Must not be `null`.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;&gt;
+The function that receives the value and returns the asynchronous operation that returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;T, [Result](../../Result/Result.md), [Result](../../Result/Result.md)&gt;
+The function that receives the value and the successful next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+The result that the result selector returns (not nested), or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `result`, the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the `collectionSelector` returns `null` or a task with a `null` result, or the `resultSelector` returns `null`.
+
+### Remarks
+A non-generic [Result](../../Result/Result.md) clause has no value: its range variable is the successful [Result](../../Result/Result.md) itself (e.g., `from _ in Validate(input)`). A query cannot declare a range variable twice, so a second such clause needs another name (e.g., `from active in …`).
+
+A result that the result selector returns is not nested (as by `Then`): a [Result](../../Result/Result.md) or a [Result&lt;T&gt;](../../ResultT/ResultT.md) is returned as it is. Specify the type arguments to keep it nested on purpose.
+
+### Examples
+```csharp
+var result = await (
+    from user in GetUser(id)
+    from _ in EnsureActiveAsync(user)
+    select Audit(user));
+```
+
+
+## SelectMany&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Func&lt;T, Result, Result&lt;TNext&gt;&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L2876" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result<TNext>> SelectMany<T, TNext>(this Result<T> result, Func<T, ValueTask<Result>> collectionSelector, Func<T, Result, Result<TNext>> resultSelector);
+```
+
+### Type Parameters
+#### `T`
+The type of the value of the source result.
+
+#### `TNext`
+The type of the value of the returned result.
+
+### Parameters
+#### `result` [Result](../../ResultT/ResultT.md)&lt;T&gt;
+The source result. Must not be `null`.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;&gt;
+The function that receives the value and returns the asynchronous operation that returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;T, [Result](../../Result/Result.md), [Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;
+The function that receives the value and the successful next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;
+The result that the result selector returns (not nested), or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `result`, the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the `collectionSelector` returns `null` or a task with a `null` result, or the `resultSelector` returns `null`.
+
+### Remarks
+A non-generic [Result](../../Result/Result.md) clause has no value: its range variable is the successful [Result](../../Result/Result.md) itself (e.g., `from _ in Validate(input)`). A query cannot declare a range variable twice, so a second such clause needs another name (e.g., `from active in …`).
+
+A result that the result selector returns is not nested (as by `Then`): a [Result](../../Result/Result.md) or a [Result&lt;T&gt;](../../ResultT/ResultT.md) is returned as it is. Specify the type arguments to keep it nested on purpose.
+
+### Examples
+```csharp
+var result = await (
+    from user in GetUser(id)
+    from _ in EnsureActiveAsync(user)
+    select CreateOrder(user));
+```
+
+
+## SelectMany&lt;TMiddle, TNext&gt;(Result, Func&lt;Result, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;Result, TMiddle, TNext&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L2938" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result<TNext>> SelectMany<TMiddle, TNext>(this Result result, Func<Result, ValueTask<Result<TMiddle>>> collectionSelector, Func<Result, TMiddle, TNext> resultSelector);
+```
+
+### Type Parameters
+#### `TMiddle`
+The type of the value of the result that the collection selector returns.
+
+#### `TNext`
+The type of the value of the returned result.
+
+### Parameters
+#### `result` [Result](../../Result/Result.md)
+The source result. Must not be `null`.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Result](../../Result/Result.md), [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;TMiddle&gt;&gt;&gt;
+The function that receives the successful source result and returns the asynchronous operation that returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;[Result](../../Result/Result.md), TMiddle, TNext&gt;
+The function that receives the successful source result and the value of the next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;
+A successful result with the value of the result selector, or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `result`, the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the `collectionSelector` returns `null` or a task with a `null` result.
+
+### Remarks
+A non-generic [Result](../../Result/Result.md) clause has no value: its range variable is the successful [Result](../../Result/Result.md) itself (e.g., `from _ in Validate(input)`). A query cannot declare a range variable twice, so a second such clause needs another name (e.g., `from active in …`).
+
+### Examples
+```csharp
+var result = await (
+    from _ in Validate(request)
+    from user in GetUserAsync(request.UserId)
+    select user.Name);
+```
+
+
+## SelectMany&lt;TMiddle&gt;(Result, Func&lt;Result, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;Result, TMiddle, Error&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L2996" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result> SelectMany<TMiddle>(this Result result, Func<Result, ValueTask<Result<TMiddle>>> collectionSelector, Func<Result, TMiddle, Error> resultSelector);
+```
+
+### Type Parameters
+#### `TMiddle`
+The type of the value of the result that the collection selector returns.
+
+### Parameters
+#### `result` [Result](../../Result/Result.md)
+The source result. Must not be `null`.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Result](../../Result/Result.md), [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;TMiddle&gt;&gt;&gt;
+The function that receives the successful source result and returns the asynchronous operation that returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;[Result](../../Result/Result.md), TMiddle, [Error](../../Error/Error.md)&gt;
+The function that receives the successful source result and the value of the next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+A failed result with the error of the result selector, or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `result`, the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the `collectionSelector` returns `null` or a task with a `null` result, or the `resultSelector` returns `null`.
+
+### Remarks
+A non-generic [Result](../../Result/Result.md) clause has no value: its range variable is the successful [Result](../../Result/Result.md) itself (e.g., `from _ in Validate(input)`). A query cannot declare a range variable twice, so a second such clause needs another name (e.g., `from active in …`).
+
+### Examples
+```csharp
+var result = await (
+    from _ in Validate(request)
+    from user in GetUserAsync(request.UserId)
+    select Error.Conflict(typeUri, "Not allowed."));
+```
+
+
+## SelectMany&lt;TMiddle&gt;(Result, Func&lt;Result, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;Result, TMiddle, Result&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L3062" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result> SelectMany<TMiddle>(this Result result, Func<Result, ValueTask<Result<TMiddle>>> collectionSelector, Func<Result, TMiddle, Result> resultSelector);
+```
+
+### Type Parameters
+#### `TMiddle`
+The type of the value of the result that the collection selector returns.
+
+### Parameters
+#### `result` [Result](../../Result/Result.md)
+The source result. Must not be `null`.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Result](../../Result/Result.md), [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;TMiddle&gt;&gt;&gt;
+The function that receives the successful source result and returns the asynchronous operation that returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;[Result](../../Result/Result.md), TMiddle, [Result](../../Result/Result.md)&gt;
+The function that receives the successful source result and the value of the next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+The result that the result selector returns (not nested), or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `result`, the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the `collectionSelector` returns `null` or a task with a `null` result, or the `resultSelector` returns `null`.
+
+### Remarks
+A non-generic [Result](../../Result/Result.md) clause has no value: its range variable is the successful [Result](../../Result/Result.md) itself (e.g., `from _ in Validate(input)`). A query cannot declare a range variable twice, so a second such clause needs another name (e.g., `from active in …`).
+
+A result that the result selector returns is not nested (as by `Then`): a [Result](../../Result/Result.md) or a [Result&lt;T&gt;](../../ResultT/ResultT.md) is returned as it is. Specify the type arguments to keep it nested on purpose.
+
+### Examples
+```csharp
+var result = await (
+    from _ in Validate(request)
+    from user in GetUserAsync(request.UserId)
+    select Audit(user));
+```
+
+
+## SelectMany&lt;TMiddle, TNext&gt;(Result, Func&lt;Result, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;Result, TMiddle, Result&lt;TNext&gt;&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L3129" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result<TNext>> SelectMany<TMiddle, TNext>(this Result result, Func<Result, ValueTask<Result<TMiddle>>> collectionSelector, Func<Result, TMiddle, Result<TNext>> resultSelector);
+```
+
+### Type Parameters
+#### `TMiddle`
+The type of the value of the result that the collection selector returns.
+
+#### `TNext`
+The type of the value of the returned result.
+
+### Parameters
+#### `result` [Result](../../Result/Result.md)
+The source result. Must not be `null`.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Result](../../Result/Result.md), [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;TMiddle&gt;&gt;&gt;
+The function that receives the successful source result and returns the asynchronous operation that returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;[Result](../../Result/Result.md), TMiddle, [Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;
+The function that receives the successful source result and the value of the next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;
+The result that the result selector returns (not nested), or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `result`, the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the `collectionSelector` returns `null` or a task with a `null` result, or the `resultSelector` returns `null`.
+
+### Remarks
+A non-generic [Result](../../Result/Result.md) clause has no value: its range variable is the successful [Result](../../Result/Result.md) itself (e.g., `from _ in Validate(input)`). A query cannot declare a range variable twice, so a second such clause needs another name (e.g., `from active in …`).
+
+A result that the result selector returns is not nested (as by `Then`): a [Result](../../Result/Result.md) or a [Result&lt;T&gt;](../../ResultT/ResultT.md) is returned as it is. Specify the type arguments to keep it nested on purpose.
+
+### Examples
+```csharp
+var result = await (
+    from _ in Validate(request)
+    from user in GetUserAsync(request.UserId)
+    select CreateOrder(user));
+```
+
+
+## SelectMany&lt;TNext&gt;(Result, Func&lt;Result, ValueTask&lt;Result&gt;&gt;, Func&lt;Result, Result, TNext&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L3190" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result<TNext>> SelectMany<TNext>(this Result result, Func<Result, ValueTask<Result>> collectionSelector, Func<Result, Result, TNext> resultSelector);
+```
+
+### Type Parameters
+#### `TNext`
+The type of the value of the returned result.
+
+### Parameters
+#### `result` [Result](../../Result/Result.md)
+The source result. Must not be `null`.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Result](../../Result/Result.md), [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;&gt;
+The function that receives the successful source result and returns the asynchronous operation that returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;[Result](../../Result/Result.md), [Result](../../Result/Result.md), TNext&gt;
+The function that receives the successful source result and the successful next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;
+A successful result with the value of the result selector, or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `result`, the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the `collectionSelector` returns `null` or a task with a `null` result.
+
+### Remarks
+A non-generic [Result](../../Result/Result.md) clause has no value: its range variable is the successful [Result](../../Result/Result.md) itself (e.g., `from _ in Validate(input)`). A query cannot declare a range variable twice, so a second such clause needs another name (e.g., `from active in …`).
+
+### Examples
+```csharp
+var result = await (
+    from _ in Validate(request)
+    from unique in EnsureUniqueAsync(request)
+    select request.Id);
+```
+
+
+## SelectMany(Result, Func&lt;Result, ValueTask&lt;Result&gt;&gt;, Func&lt;Result, Result, Error&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L3247" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result> SelectMany(this Result result, Func<Result, ValueTask<Result>> collectionSelector, Func<Result, Result, Error> resultSelector);
+```
+
+### Parameters
+#### `result` [Result](../../Result/Result.md)
+The source result. Must not be `null`.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Result](../../Result/Result.md), [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;&gt;
+The function that receives the successful source result and returns the asynchronous operation that returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;[Result](../../Result/Result.md), [Result](../../Result/Result.md), [Error](../../Error/Error.md)&gt;
+The function that receives the successful source result and the successful next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+A failed result with the error of the result selector, or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `result`, the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the `collectionSelector` returns `null` or a task with a `null` result, or the `resultSelector` returns `null`.
+
+### Remarks
+A non-generic [Result](../../Result/Result.md) clause has no value: its range variable is the successful [Result](../../Result/Result.md) itself (e.g., `from _ in Validate(input)`). A query cannot declare a range variable twice, so a second such clause needs another name (e.g., `from active in …`).
+
+### Examples
+```csharp
+var result = await (
+    from _ in Validate(request)
+    from unique in EnsureUniqueAsync(request)
+    select Error.Conflict(typeUri, "Not allowed."));
+```
+
+
+## SelectMany(Result, Func&lt;Result, ValueTask&lt;Result&gt;&gt;, Func&lt;Result, Result, Result&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L3312" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result> SelectMany(this Result result, Func<Result, ValueTask<Result>> collectionSelector, Func<Result, Result, Result> resultSelector);
+```
+
+### Parameters
+#### `result` [Result](../../Result/Result.md)
+The source result. Must not be `null`.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Result](../../Result/Result.md), [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;&gt;
+The function that receives the successful source result and returns the asynchronous operation that returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;[Result](../../Result/Result.md), [Result](../../Result/Result.md), [Result](../../Result/Result.md)&gt;
+The function that receives the successful source result and the successful next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+The result that the result selector returns (not nested), or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `result`, the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the `collectionSelector` returns `null` or a task with a `null` result, or the `resultSelector` returns `null`.
+
+### Remarks
+A non-generic [Result](../../Result/Result.md) clause has no value: its range variable is the successful [Result](../../Result/Result.md) itself (e.g., `from _ in Validate(input)`). A query cannot declare a range variable twice, so a second such clause needs another name (e.g., `from active in …`).
+
+A result that the result selector returns is not nested (as by `Then`): a [Result](../../Result/Result.md) or a [Result&lt;T&gt;](../../ResultT/ResultT.md) is returned as it is. Specify the type arguments to keep it nested on purpose.
+
+### Examples
+```csharp
+var result = await (
+    from _ in Validate(request)
+    from unique in EnsureUniqueAsync(request)
+    select Audit(request));
+```
+
+
+## SelectMany&lt;TNext&gt;(Result, Func&lt;Result, ValueTask&lt;Result&gt;&gt;, Func&lt;Result, Result, Result&lt;TNext&gt;&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L3378" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+
+Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
+
+```csharp
+public static ValueTask<Result<TNext>> SelectMany<TNext>(this Result result, Func<Result, ValueTask<Result>> collectionSelector, Func<Result, Result, Result<TNext>> resultSelector);
+```
+
+### Type Parameters
+#### `TNext`
+The type of the value of the returned result.
+
+### Parameters
+#### `result` [Result](../../Result/Result.md)
+The source result. Must not be `null`.
+
+#### `collectionSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Result](../../Result/Result.md), [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;&gt;
+The function that receives the successful source result and returns the asynchronous operation that returns the next result. Must not be `null`.
+
+#### `resultSelector` [Func](https://learn.microsoft.com/dotnet/api/system.func-3)&lt;[Result](../../Result/Result.md), [Result](../../Result/Result.md), [Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;
+The function that receives the successful source result and the successful next result, and returns the projection. Must not be `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;
+The result that the result selector returns (not nested), or the first failed result.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `result`, the `collectionSelector` or the `resultSelector` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the `collectionSelector` returns `null` or a task with a `null` result, or the `resultSelector` returns `null`.
+
+### Remarks
+A non-generic [Result](../../Result/Result.md) clause has no value: its range variable is the successful [Result](../../Result/Result.md) itself (e.g., `from _ in Validate(input)`). A query cannot declare a range variable twice, so a second such clause needs another name (e.g., `from active in …`).
+
+A result that the result selector returns is not nested (as by `Then`): a [Result](../../Result/Result.md) or a [Result&lt;T&gt;](../../ResultT/ResultT.md) is returned as it is. Specify the type arguments to keep it nested on purpose.
+
+### Examples
+```csharp
+var result = await (
+    from _ in Validate(request)
+    from unique in EnsureUniqueAsync(request)
+    select CreateOrder(request));
+```
 
 ## See Also
 * [Result&lt;T&gt;](../../ResultT/ResultT.md)

@@ -691,7 +691,7 @@ public class LinqExtensionsUnitTests
             .ToArray();
 
         // Act & Assert
-        overloads.Length.ShouldBe(4);
+        overloads.Length.ShouldBe(8);
         overloads.ShouldAllBe(m => m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
                                    && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
     }
@@ -705,7 +705,7 @@ public class LinqExtensionsUnitTests
             .ToArray();
 
         // Act & Assert
-        overloads.Length.ShouldBe(4);
+        overloads.Length.ShouldBe(16);
         overloads.ShouldAllBe(m => m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
                                    && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
     }
@@ -720,7 +720,7 @@ public class LinqExtensionsUnitTests
             .ToArray();
 
         // Act & Assert
-        overloads.Length.ShouldBe(4);
+        overloads.Length.ShouldBe(12);
         overloads.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 1);
     }
 
@@ -734,7 +734,7 @@ public class LinqExtensionsUnitTests
             .ToArray();
 
         // Act & Assert
-        overloads.Length.ShouldBe(4);
+        overloads.Length.ShouldBe(12);
         overloads.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 0);
     }
 
@@ -752,6 +752,435 @@ public class LinqExtensionsUnitTests
         result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBeSameAs(taskSource.Task);
         result.Value.IsCompleted.ShouldBeFalse();
+    }
+
+    #endregion
+
+    #region non-generic results and selected results (issue #217)
+
+    private static readonly Error QuerySourceError = Error.NotFound(ErrorUri.None, "Query source error");
+    private static readonly Error QueryCheckError = Error.Conflict(ErrorUri.None, "Query check error");
+    private static readonly Error QuerySelectedError = Error.Failure(ErrorUri.None, "Query selected error");
+
+    private static Result Check(Action onCall)
+    {
+        onCall();
+        return Result.Success();
+    }
+
+    private static Result<int> Next(Action onCall)
+    {
+        onCall();
+        return Result.FromValue(1);
+    }
+
+    [Fact]
+    public void Select_SuccessfulResultSelectingResultOfT_ReturnsSelectedResultNotNested()
+    {
+        // Arrange
+        var sut = Result.FromValue(5);
+
+        // Act
+        var result = from value in sut select Result.FromValue(value.ToString());
+
+        // Assert
+        result.Value.ShouldBe("5");
+    }
+
+    [Fact]
+    public void Select_SuccessfulResultSelectingFailedResult_ReturnsSelectedError()
+    {
+        // Arrange
+        var sut = Result.FromValue(5);
+
+        // Act
+        var result = from value in sut select Result.FromError(QuerySelectedError);
+
+        // Assert
+        result.Error.ShouldBeSameAs(QuerySelectedError);
+    }
+
+    [Fact]
+    public void Select_FailedResultSelectingResultOfT_ReturnsOriginalError()
+    {
+        // Arrange
+        var sut = Result<int>.FromError(QuerySourceError);
+
+        // Act
+        var result = from value in sut select Result.FromValue(value.ToString());
+
+        // Assert
+        result.Error.ShouldBeSameAs(QuerySourceError);
+    }
+
+    [Fact]
+    public void Select_ExplicitTypeArgumentsSelectingResult_KeepsNestedResult()
+    {
+        // Arrange
+        var sut = Result.FromValue(5);
+
+        // Act
+        var result = sut.Select<int, Result<string>>(value => Result.FromValue(value.ToString()));
+
+        // Assert
+        result.Value.Value.ShouldBe("5");
+    }
+
+    [Fact]
+    public void Select_SuccessfulNonGenericResult_ReturnsSelectedValue()
+    {
+        // Arrange
+        var sut = Result.Success();
+
+        // Act
+        var result = from _ in sut select 7;
+
+        // Assert
+        result.Value.ShouldBe(7);
+    }
+
+    [Fact]
+    public void Select_FailedNonGenericResult_ReturnsOriginalError()
+    {
+        // Arrange
+        var sut = Result.FromError(QueryCheckError);
+
+        // Act
+        var result = from _ in sut select 7;
+
+        // Assert
+        result.Error.ShouldBeSameAs(QueryCheckError);
+    }
+
+    [Fact]
+    public void Select_SuccessfulNonGenericResultSelectingError_ReturnsFailedResult()
+    {
+        // Arrange
+        var sut = Result.Success();
+
+        // Act
+        var result = from _ in sut select QuerySelectedError;
+
+        // Assert
+        result.Error.ShouldBeSameAs(QuerySelectedError);
+    }
+
+    [Fact]
+    public void Select_SuccessfulNonGenericResultSelectingResult_ReturnsSelectedResult()
+    {
+        // Arrange
+        var sut = Result.Success();
+
+        // Act
+        var result = from _ in sut select Result.FromError(QuerySelectedError);
+
+        // Assert
+        result.Error.ShouldBeSameAs(QuerySelectedError);
+    }
+
+    [Fact]
+    public void Select_SuccessfulNonGenericResultSelectingResultOfT_ReturnsSelectedResult()
+    {
+        // Arrange
+        var sut = Result.Success();
+
+        // Act
+        var result = from _ in sut select Result.FromValue("next");
+
+        // Assert
+        result.Value.ShouldBe("next");
+    }
+
+    [Fact]
+    public void Select_NonGenericResult_PassesTheResultAsRangeVariable()
+    {
+        // Arrange
+        var sut = Result.Success();
+        Result? received = null;
+
+        // Act
+        var result = from validated in sut select received = validated;
+
+        // Assert
+        received.ShouldBeSameAs(sut);
+        result.IsSuccess.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void SelectMany_SuccessfulResultAndSuccessfulNonGenericClause_ReturnsSelectedValue()
+    {
+        // Arrange
+        var sut = Result.FromValue(5);
+
+        // Act
+        var result = from value in sut from _ in Result.Success() select value * 2;
+
+        // Assert
+        result.Value.ShouldBe(10);
+    }
+
+    [Fact]
+    public void SelectMany_SuccessfulResultAndFailedNonGenericClause_ReturnsClauseError()
+    {
+        // Arrange
+        var sut = Result.FromValue(5);
+
+        // Act
+        var result = from value in sut from _ in Result.FromError(QueryCheckError) select value * 2;
+
+        // Assert
+        result.Error.ShouldBeSameAs(QueryCheckError);
+    }
+
+    [Fact]
+    public void SelectMany_FailedResultAndNonGenericClause_ReturnsSourceErrorAndDoesNotRunClause()
+    {
+        // Arrange
+        var sut = Result<int>.FromError(QuerySourceError);
+        var called = false;
+
+        // Act
+        var result = from value in sut from _ in Check(() => called = true) select value * 2;
+
+        // Assert
+        result.Error.ShouldBeSameAs(QuerySourceError);
+        called.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void SelectMany_NonGenericClauseReturningError_ReturnsThatError()
+    {
+        // Arrange
+        var sut = Result.FromValue(5);
+
+        // Act
+        var result = from value in sut from _ in QueryCheckError select value;
+
+        // Assert
+        result.Error.ShouldBeSameAs(QueryCheckError);
+    }
+
+    [Fact]
+    public void SelectMany_NonGenericClauseAndSelectedError_ReturnsSelectedError()
+    {
+        // Arrange
+        var sut = Result.FromValue(5);
+
+        // Act
+        var result = from value in sut from _ in Result.Success() select QuerySelectedError;
+
+        // Assert
+        result.Error.ShouldBeSameAs(QuerySelectedError);
+    }
+
+    [Fact]
+    public void SelectMany_NonGenericClauseAndSelectedResult_ReturnsSelectedResult()
+    {
+        // Arrange
+        var sut = Result.FromValue(5);
+
+        // Act
+        var result = from value in sut from _ in Result.Success() select Result.FromError(QuerySelectedError);
+
+        // Assert
+        result.Error.ShouldBeSameAs(QuerySelectedError);
+    }
+
+    [Fact]
+    public void SelectMany_NonGenericClauseAndSelectedResultOfT_ReturnsSelectedResult()
+    {
+        // Arrange
+        var sut = Result.FromValue(5);
+
+        // Act
+        var result = from value in sut from _ in Result.Success() select Result.FromValue(value.ToString());
+
+        // Assert
+        result.Value.ShouldBe("5");
+    }
+
+    [Fact]
+    public void SelectMany_SuccessfulNonGenericFirstClause_ReturnsSelectedValue()
+    {
+        // Arrange
+        var sut = Result.Success();
+
+        // Act
+        var result = from _ in sut from value in Result.FromValue(5) select value * 2;
+
+        // Assert
+        result.Value.ShouldBe(10);
+    }
+
+    [Fact]
+    public void SelectMany_FailedNonGenericFirstClause_ReturnsItsErrorAndDoesNotRunNextClause()
+    {
+        // Arrange
+        var sut = Result.FromError(QueryCheckError);
+        var called = false;
+
+        // Act
+        var result = from _ in sut from value in Next(() => called = true) select value;
+
+        // Assert
+        result.Error.ShouldBeSameAs(QueryCheckError);
+        called.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void SelectMany_NonGenericFirstClauseAndFailedNextClause_ReturnsNextError()
+    {
+        // Arrange
+        var sut = Result.Success();
+
+        // Act
+        var result = from _ in sut from value in Result<int>.FromError(QuerySourceError) select value;
+
+        // Assert
+        result.Error.ShouldBeSameAs(QuerySourceError);
+    }
+
+    [Fact]
+    public void SelectMany_NonGenericFirstClauseAndSelectedError_ReturnsSelectedError()
+    {
+        // Arrange
+        var sut = Result.Success();
+
+        // Act
+        var result = from _ in sut from value in Result.FromValue(5) select QuerySelectedError;
+
+        // Assert
+        result.Error.ShouldBeSameAs(QuerySelectedError);
+    }
+
+    [Fact]
+    public void SelectMany_NonGenericFirstClauseAndSelectedResult_ReturnsSelectedResult()
+    {
+        // Arrange
+        var sut = Result.Success();
+
+        // Act
+        var result = from _ in sut from value in Result.FromValue(5) select Result.FromError(QuerySelectedError);
+
+        // Assert
+        result.Error.ShouldBeSameAs(QuerySelectedError);
+    }
+
+    [Fact]
+    public void SelectMany_NonGenericFirstClauseAndSelectedResultOfT_ReturnsSelectedResult()
+    {
+        // Arrange
+        var sut = Result.Success();
+
+        // Act
+        var result = from _ in sut from value in Result.FromValue(5) select Result.FromValue(value.ToString());
+
+        // Assert
+        result.Value.ShouldBe("5");
+    }
+
+    [Fact]
+    public void SelectMany_TwoSuccessfulNonGenericClauses_ReturnsSelectedValue()
+    {
+        // Arrange
+        var sut = Result.Success();
+
+        // Act
+        var result = from _ in sut from checkedAgain in Result.Success() select 7;
+
+        // Assert
+        result.Value.ShouldBe(7);
+    }
+
+    [Fact]
+    public void SelectMany_SecondNonGenericClauseFailed_ReturnsItsError()
+    {
+        // Arrange
+        var sut = Result.Success();
+
+        // Act
+        var result = from _ in sut from checkedAgain in Result.FromError(QueryCheckError) select 7;
+
+        // Assert
+        result.Error.ShouldBeSameAs(QueryCheckError);
+    }
+
+    [Fact]
+    public void SelectMany_TwoNonGenericClausesAndSelectedError_ReturnsSelectedError()
+    {
+        // Arrange
+        var sut = Result.Success();
+
+        // Act
+        var result = from _ in sut from checkedAgain in Result.Success() select QuerySelectedError;
+
+        // Assert
+        result.Error.ShouldBeSameAs(QuerySelectedError);
+    }
+
+    [Fact]
+    public void SelectMany_TwoNonGenericClausesAndSelectedResult_ReturnsSelectedResult()
+    {
+        // Arrange
+        var sut = Result.Success();
+
+        // Act
+        var result = from _ in sut from checkedAgain in Result.Success() select Result.FromError(QuerySelectedError);
+
+        // Assert
+        result.Error.ShouldBeSameAs(QuerySelectedError);
+    }
+
+    [Fact]
+    public void SelectMany_TwoNonGenericClausesAndSelectedResultOfT_ReturnsSelectedResult()
+    {
+        // Arrange
+        var sut = Result.Success();
+
+        // Act
+        var result = from _ in sut from checkedAgain in Result.Success() select Result.FromValue("next");
+
+        // Assert
+        result.Value.ShouldBe("next");
+    }
+
+    [Fact]
+    public void SelectMany_GenericClausesSelectingResult_ReturnsSelectedResult()
+    {
+        // Arrange
+        var sut = Result.FromValue(5);
+
+        // Act
+        var result = from value in sut from other in Result.FromValue(5) select Result.FromError(QuerySelectedError);
+
+        // Assert
+        result.Error.ShouldBeSameAs(QuerySelectedError);
+    }
+
+    [Fact]
+    public void SelectMany_GenericClausesSelectingResultOfT_ReturnsSelectedResultNotNested()
+    {
+        // Arrange
+        var sut = Result.FromValue(5);
+
+        // Act
+        var result = from value in sut from other in Result.FromValue(5) select Result.FromValue(value + other);
+
+        // Assert
+        result.Value.ShouldBe(10);
+    }
+
+    [Fact]
+    public void SelectMany_ThreeClausesWithNonGenericMiddle_ReturnsSelectedValue()
+    {
+        // Arrange
+        var sut = Result.FromValue(5);
+
+        // Act
+        var result = from value in sut from _ in Result.Success() from other in Result.FromValue(5) select value + other;
+
+        // Assert
+        result.Value.ShouldBe(10);
     }
 
     #endregion

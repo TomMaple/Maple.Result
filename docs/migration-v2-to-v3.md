@@ -27,6 +27,7 @@ Version 3.0 makes `Result`, `Result<T>` and `Error` **immutable** and **always v
   * [`Then` and `Match` with an `Error` or a task](#then-and-match-with-an-error-or-a-task)
   * [`IfError` and `Match` with an error action that returns a task](#iferror-and-match-with-an-error-action-that-returns-a-task)
   * [LINQ queries that select a task](#linq-queries-that-select-a-task)
+  * [LINQ queries that select a result](#linq-queries-that-select-a-result)
   * [Null results and null arguments of the extension methods](#null-results-and-null-arguments-of-the-extension-methods)
   * [Extension packages](#extension-packages)
 * [New features](#new-features)
@@ -44,7 +45,7 @@ Version 3.0 makes `Result`, `Result<T>` and `Error` **immutable** and **always v
 9. Rename the calls of `IfSuccess`, `IfSuccessAsync`, `IfError` and `IfErrorAsync` that transform or replace the result to `Then`, `ThenAsync`, `Else` and `ElseAsync`; the compiler reports each of them (see [Transforming `IfSuccess` and `IfError` renamed to `Then` and `Else`](#transforming-ifsuccess-and-iferror-renamed-to-then-and-else)).
 10. Fix the calls of `Then`, `Match` and the LINQ queries that no longer compile or that now return a failed result (see [`Then` and `Match` with an `Error` or a task](#then-and-match-with-an-error-or-a-task)).
 11. Replace the error actions of `IfError` and `Match` that return a task with the asynchronous methods (see [`IfError` and `Match` with an error action that returns a task](#iferror-and-match-with-an-error-action-that-returns-a-task)).
-12. Replace the LINQ queries whose `select` returns a task with an asynchronous `from` clause or `IfSuccessAsync` (see [LINQ queries that select a task](#linq-queries-that-select-a-task)).
+12. Replace the LINQ queries whose `select` returns a task with an asynchronous `from` clause or `ThenAsync` (see [LINQ queries that select a task](#linq-queries-that-select-a-task)), and check the queries whose `select` returns a result (see [LINQ queries that select a result](#linq-queries-that-select-a-result)).
 13. Make sure the functions passed to the extension methods never return `null` where a result, an `Error` or a task is expected (see [Null results and null arguments of the extension methods](#null-results-and-null-arguments-of-the-extension-methods)).
 14. Upgrade the `Maple.Result.Extensions.*` packages together with `Maple.Result` (see [Extension packages](#extension-packages)).
 15. Replace `result.IsSuccess()` with `result.IsSuccess`, and `!result.IsSuccess()` with `result.IsError` (see [`IsSuccess` is a property; new `IsError`](#issuccess-is-a-property-new-iserror)).
@@ -432,6 +433,17 @@ var result = await userResult.ThenAsync(user => SaveAsync(user));
 Result<Task<int>> result = userResult.Select<User, Task<int>>(user => SaveAsync(user));
 ```
 
+### LINQ queries that select a result
+In 2.x, a query whose `select` returns a `Result` or a `Result<T>` nested it: `from user in userResult select CreateOrder(user)`, with `Result<Order> CreateOrder(User)`, was a `Result<Result<Order>>`. In 3.0 it is the `Result<Order>` that `CreateOrder` returns, as `Then` gives it; the same applies to a `select` after several `from` clauses, for every source (`Result<T>`, `Task<Result<T>>`, `ValueTask<Result<T>>`). Code that unwrapped the nested result no longer compiles; to keep it nested on purpose, call `Select` with explicit type arguments.
+
+```csharp
+// 2.x: a Result<Result<Order>>; 3.0: a Result<Order>
+var orderResult = from user in userResult select CreateOrder(user);
+
+// …or keep it nested on purpose
+Result<Result<Order>> nested = userResult.Select<User, Result<Order>>(user => CreateOrder(user));
+```
+
 ### Null results and null arguments of the extension methods
 In 2.x, a `null` returned by a function passed to `IfSuccess`, `IfError` (now `Then` and `Else`), `Match` or a LINQ query was returned to the caller, caused a `NullReferenceException` inside the library, or an `ArgumentNullException` for a parameter the caller did not pass. In 3.0 the rules are the same for all extension methods (sync, `Task` and `ValueTask`):
 
@@ -463,6 +475,7 @@ The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an
 * **`ErrorUri.Parse()`**, **`ErrorUri.TryParse()`** and **`IParsable<ErrorUri>`** — create an `ErrorUri` when the kind is not known in advance: the kind is detected from the value (`about:blank`, `/…`, `tag:`, `urn:`, `http:`/`https:`) and validated as by its factory method. See [Parse](Reference/ErrorUri/ErrorUri_Parse.md).
 * **`ErrorUri.Urn()`** and **`ErrorUri.Relative()`** — `urn:` types and instances (*RFC 8141*), and relative references with the full path (e.g., the *RFC 9457* example `/account/12345/msgs/abc`). See [ErrorUri](Reference/ErrorUri/ErrorUri.md).
 * **Synchronous delegates after an asynchronous call** — `ThenAsync`, `ElseAsync`, `IfSuccessAsync`, `IfErrorAsync` and `MatchAsync` on a `Task` or `ValueTask` of a result also take synchronous delegates, e.g., `await GetUserAsync(id).ThenAsync(user => user.Name)`. A delegate that returns the other kind of task (a `ValueTask` with `Maple.Results.Extensions`, a `Task` with `Maple.Results.Extensions.ValueTasks`), and one synchronous and one asynchronous delegate of `MatchAsync`, are compile errors (CS0619). See [ThenAsync](Reference/Extensions/ThenTaskAsyncExtensions_ThenAsync.md).
+* **The non-generic `Result` in LINQ queries** — a step that returns a `Result` (e.g., a check) can be any `from` clause, first or in the middle (`from _ in EnsureActive(user)`), synchronous or asynchronous; its range variable is the successful `Result`. See [SelectMany](Reference/Extensions/LinqExtensions_SelectMany.md).
 * **Mixed LINQ queries** — synchronous and asynchronous `from` clauses can be mixed in one query (e.g., `from user in GetUserAsync(id) from address in GetAddress(user) select …`); the query is then asynchronous and has to be awaited. See [SelectMany](Reference/Extensions/LinqTaskAsyncExtensions_SelectMany.md).
 * **`ResultConfiguration.ContinueOnCapturedContext`** — a global default for the `continueOnCapturedContext` argument of the asynchronous extension methods and for the LINQ query operators; see above.
 * **Short debugger display** — the debugger shows an `Error` as its category and title (e.g., `Validation "Invalid request" (3 details)`) and a failed result as `Error: NotFound "Missing"`; `ToString()` stays complete for the logs.
@@ -492,6 +505,7 @@ The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an
 | `result.Match(…, e => LogAsync(e))` (an error action returning a task) | `await result.MatchAsync(…, e => LogAsync(e))` |
 | `from x in result select SaveAsync(x)` (a selector returning a task) | `await result.ThenAsync(x => SaveAsync(x))` |
 | `result.IfSuccess(x => Error…)` relied on as a `Result<Error>` | `result.Then<T, Error>(x => Error…)` |
+| `from x in result select Save(x)` relied on as a `Result<Result<T>>` | `result.Select<T, Result<TNext>>(x => Save(x))` |
 | `result.Match(x => Error…, e => …)` relied on as a `Result<Error>` | `result.Match<T, Error>(x => Error…, e => …)` |
 | `WithErrorDetail("Email", …)` / `AddErrorDetail(nameof(request.Email), …)` (a pointer that is not a JSON Pointer) | `WithErrorDetail("/email", …)` / `AddErrorDetail("/email", …)` |
 | `Dictionary<string, object>` passed as named values | `Dictionary<string, object?>` |
@@ -519,3 +533,4 @@ The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an
 * [Issue #198: Validate `ErrorDetail.PropertyPointer` as a JSON Pointer](https://github.com/TomMaple/Maple.Result/issues/198)
 * [Issue #203: Reject empty or whitespace-only detail texts and names padded with white space](https://github.com/TomMaple/Maple.Result/issues/203)
 * [Issue #205: The default `ErrorCategory` and the status codes read as `Failure`](https://github.com/TomMaple/Maple.Result/issues/205)
+* [Issue #217: The non-generic `Result` in LINQ `from` clauses, and a selected result](https://github.com/TomMaple/Maple.Result/issues/217)
