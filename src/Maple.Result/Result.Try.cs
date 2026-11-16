@@ -70,6 +70,13 @@ public sealed partial record Result
     ///         The library does not copy the exception message or stack trace into the error; the <paramref name="mapException" /> function
     ///         decides what the error contains.
     ///     </para>
+    ///     <para>
+    ///         A call that names only the exception type binds to this overload even when the function returns a value, because C# infers
+    ///         all type arguments or none: <c>Result.Try&lt;IOException&gt;(() =&gt; File.ReadAllText(path), e =&gt; …)</c> discards the text
+    ///         and returns a <see cref="Result" />. To keep the value, type the parameter of the mapper
+    ///         (<c>Result.Try(() =&gt; File.ReadAllText(path), (IOException e) =&gt; …)</c>) or pass both type arguments
+    ///         (<c>Result.Try&lt;string, IOException&gt;(…)</c>).
+    ///     </para>
     /// </remarks>
     /// <typeparam name="TException">The type of the exceptions to map; other exceptions propagate.</typeparam>
     /// <param name="action">The action to run. Must not be <see langword="null" />.</param>
@@ -227,8 +234,17 @@ public sealed partial record Result
     ///     throws, either before returning its task or when the task faults.
     /// </summary>
     /// <remarks>
-    ///     Other exceptions propagate. An <see cref="OperationCanceledException" /> is rethrown, unless <typeparamref name="TException" /> is
-    ///     <see cref="OperationCanceledException" /> or a type derived from it. The arguments are checked when the method is called.
+    ///     <para>
+    ///         Other exceptions propagate. An <see cref="OperationCanceledException" /> is rethrown, unless <typeparamref name="TException" /> is
+    ///         <see cref="OperationCanceledException" /> or a type derived from it. The arguments are checked when the method is called.
+    ///     </para>
+    ///     <para>
+    ///         A call that names only the exception type binds to this overload even when the task has a value, because C# infers all type
+    ///         arguments or none and a <see cref="Task{TResult}" /> is a <see cref="Task" />:
+    ///         <c>Result.TryAsync&lt;IOException&gt;(() =&gt; File.ReadAllTextAsync(path), e =&gt; …)</c> discards the text and returns a
+    ///         <see cref="Result" />. To keep the value, type the parameter of the mapper (<c>(IOException e) =&gt; …</c>) or pass both type
+    ///         arguments (<c>Result.TryAsync&lt;string, IOException&gt;(…)</c>).
+    ///     </para>
     /// </remarks>
     /// <typeparam name="TException">The type of the exceptions to map; other exceptions propagate.</typeparam>
     /// <param name="action">The asynchronous action to run. Must not be <see langword="null" />, nor return a <see langword="null" /> task.</param>
