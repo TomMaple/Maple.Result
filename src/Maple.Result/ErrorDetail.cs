@@ -74,18 +74,24 @@ public sealed record ErrorDetail(string? PropertyPointer, string Detail, Templat
     /// <remarks>
     ///     <para>
     ///         A <see cref="string" /> segment is a name: <c>~</c> is written as <c>~0</c> first, then <c>/</c> as <c>~1</c>. An empty name is a
-    ///         valid segment. An <see cref="int" /> or a <see cref="long" /> segment is an array index and must not be negative.
+    ///         valid segment. A segment of a built-in integer type (<see cref="sbyte" />, <see cref="byte" />, <see cref="short" />,
+    ///         <see cref="ushort" />, <see cref="int" />, <see cref="uint" />, <see cref="long" />, <see cref="ulong" />, <see cref="nint" /> or
+    ///         <see cref="nuint" />) is an array index: it must not be negative, and it is written in decimal with the invariant culture.
+    ///         A <see cref="char" /> or an enumeration value is not an index.
     ///     </para>
     ///     <para>
     ///         The result is always accepted by the constructor of <see cref="ErrorDetail" />. Without segments, it is the empty pointer, which
     ///         points to the whole input.
     ///     </para>
     /// </remarks>
-    /// <param name="segments">The names (<see cref="string" />) and the indexes (<see cref="int" /> or <see cref="long" />), in order.</param>
+    /// <param name="segments">The names (<see cref="string" />) and the indexes (any built-in integer type, e.g., <see cref="int" />), in order.</param>
     /// <returns>The pointer, e.g., <c>/items/0/name</c>; empty when there are no segments.</returns>
     /// <exception cref="ArgumentNullException">If a segment is <see langword="null" />.</exception>
     /// <exception cref="ArgumentOutOfRangeException">If an index is negative.</exception>
-    /// <exception cref="ArgumentException">If a segment is not a <see cref="string" />, an <see cref="int" /> or a <see cref="long" />.</exception>
+    /// <exception cref="ArgumentException">
+    ///     If a segment is not a <see cref="string" /> or a built-in integer type (e.g., a <see cref="char" />, an enumeration value or a
+    ///     <see cref="double" />).
+    /// </exception>
     public static string Pointer(params ReadOnlySpan<object> segments)
     {
         var builder = new StringBuilder();
@@ -104,21 +110,40 @@ public sealed record ErrorDetail(string? PropertyPointer, string Detail, Templat
                         .Replace("/", "~1", StringComparison.Ordinal);
                     builder.Append(escapedName);
                     break;
-                case int index when index >= 0:
-                    builder.Append(index.ToString(CultureInfo.InvariantCulture));
+                case sbyte or byte or short or ushort or int or uint or long or ulong or nint or nuint:
+                    var index = FormatIndex(segment, nameof(segments));
+                    builder.Append(index);
                     break;
-                case long index when index >= 0:
-                    builder.Append(index.ToString(CultureInfo.InvariantCulture));
-                    break;
-                case int or long:
-                    throw new ArgumentOutOfRangeException(nameof(segments), segment, "The index in a JSON Pointer must not be negative.");
                 default:
                     throw new ArgumentException(
-                        $"A segment of a JSON Pointer must be a string, an int or a long, not ‘{segment.GetType()}’.", nameof(segments));
+                        $"A segment of a JSON Pointer must be a string or an integer (e.g., an int or a long), not ‘{segment.GetType()}’.",
+                        nameof(segments));
             }
         }
 
         return builder.ToString();
+    }
+
+    /// <summary>
+    ///     Writes an index of a built-in integer type in decimal, with the invariant culture.
+    /// </summary>
+    /// <exception cref="ArgumentOutOfRangeException">If the index is negative.</exception>
+    private static string FormatIndex(object index, string parameterName)
+    {
+        var isNegative = index switch
+        {
+            sbyte value => value < 0,
+            short value => value < 0,
+            int value => value < 0,
+            long value => value < 0,
+            nint value => value < 0,
+            _ => false
+        };
+
+        if (isNegative)
+            throw new ArgumentOutOfRangeException(parameterName, index, "The index in a JSON Pointer must not be negative.");
+
+        return ((IFormattable)index).ToString(null, CultureInfo.InvariantCulture);
     }
 
     private static string ValidateDetail(string detail, string parameterName)
