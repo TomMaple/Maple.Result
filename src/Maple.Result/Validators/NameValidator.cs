@@ -32,6 +32,8 @@ internal static class NameValidator
     /// </summary>
     internal static bool IsValid(string name)
     {
-        return name.Length > 0 && !char.IsWhiteSpace(name[0]) && !char.IsWhiteSpace(name[^1]);
+        return name.Length > 0
+               && !char.IsWhiteSpace(name[0])
+               && !char.IsWhiteSpace(name[^1]);
     }
 }

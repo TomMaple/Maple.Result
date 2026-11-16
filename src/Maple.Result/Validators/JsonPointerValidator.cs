@@ -75,7 +75,9 @@ internal static class JsonPointerValidator
             if (path[i] != '~')
                 continue;
 
-            var isEscape = i + 1 < path.Length && path[i + 1] is '0' or '1';
+            var isEscape = i + 1 < path.Length
+                           && path[i + 1] is '0' or '1';
+
             if (!isEscape)
                 return false;
 
@@ -93,7 +95,10 @@ internal static class JsonPointerValidator
             if (fragment[i] != '%')
                 continue;
 
-            var isEscape = i + 2 < fragment.Length && char.IsAsciiHexDigit(fragment[i + 1]) && char.IsAsciiHexDigit(fragment[i + 2]);
+            var isEscape = i + 2 < fragment.Length
+                           && char.IsAsciiHexDigit(fragment[i + 1])
+                           && char.IsAsciiHexDigit(fragment[i + 2]);
+
             if (!isEscape)
                 return false;
 
