@@ -114,11 +114,12 @@ public static class SwitchValueTaskAsyncExtensions
 
     #endregion
 
-    #region Not supported: actions returning a task (#255)
+    #region Not supported: actions returning a task
 
     // A lambda that returns a task converts to an action, and the task would never be awaited (an async lambda becomes async void). These
     // overloads turn such a call into a compile error (CS0619) that names MatchAsync; they follow the traps of the synchronous Switch (see
     // SwitchExtensions), with the continueOnCapturedContext parameter before the unused one.
+    // See issue #255.
 
     private const string ActionReturningTaskMessage =
         "An action returns a task, which SwitchAsync does not await. Use MatchAsync with two functions that return a task.";

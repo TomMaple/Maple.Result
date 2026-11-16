@@ -512,7 +512,7 @@ public class IfSuccessTaskAsyncExtensionsUnitTests
 
     #endregion
 
-    #region IfSuccessAsync with a function returning a value (overload trap, issue #197)
+    #region IfSuccessAsync with a function returning a value (overload trap)
 
     // A function that returns a value is a transformation: the side-effect method reports it as a compile error (CS0619) that
     // names the transforming method, instead of discarding the value (#197). The bindings are checked with a consumer project.
@@ -534,7 +534,9 @@ public class IfSuccessTaskAsyncExtensionsUnitTests
 
     #endregion
 
-    #region Task results with synchronous delegates (issue #214)
+    #region Task results with synchronous delegates
+
+    // See issue #214.
 
     private static readonly Error SyncTestError = Error.Failure(ErrorUri.None, "Synchronous delegate test error");
     private static readonly Error SyncOtherError = Error.Conflict(ErrorUri.None, "Synchronous delegate other error");

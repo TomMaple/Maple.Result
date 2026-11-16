@@ -109,7 +109,7 @@ public static class ElseExtensions
 
     #endregion
 
-    #region Not supported: actions (#197)
+    #region Not supported: actions
 
     // A function that returns nothing is a side effect, not a transformation (#197): these overloads turn the call into a compile
     // error (CS0619) that names the method to use, instead of the conversion errors CS0029 and CS1662.

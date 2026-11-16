@@ -1991,7 +1991,9 @@ public class ErrorUnitTests
 
     #endregion
 
-    #region empty texts and padded names (issue #203)
+    #region empty texts and padded names
+
+    // See issue #203.
 
     [Theory]
     [InlineData("")]

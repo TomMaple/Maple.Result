@@ -425,7 +425,9 @@ public class MatchTaskAsyncExtensionsUnitTests
 
     #endregion
 
-    #region overload traps (issue #255)
+    #region overload traps
+
+    // See issue #255.
 
     [Fact]
     public void MatchAsync_TwoActionsOverloads_AreHiddenCompileErrorsThatNameSwitchAsync()

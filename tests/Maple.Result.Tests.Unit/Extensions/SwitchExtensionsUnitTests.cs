@@ -207,7 +207,9 @@ public class SwitchExtensionsUnitTests
 
     #endregion
 
-    #region Switch with an action returning a task (overload trap, issue #255)
+    #region Switch with an action returning a task (overload trap)
+
+    // See issue #255.
 
     [Fact]
     public void Switch_ActionReturningTaskOverloads_AreHiddenCompileErrorsThatNameMatch()

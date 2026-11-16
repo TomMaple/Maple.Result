@@ -18,7 +18,9 @@ public class TemplatedMessageAllocationUnitTests
 {
     private static readonly Dictionary<string, object?> EmptyDictionary = new();
 
-    #region no parameters (issue #128)
+    #region no parameters
+
+    // See issue #128.
 
     [Fact]
     public void Ctor_EmptyTupleArray_AllocatesOnlyTheMessage()
@@ -48,7 +50,9 @@ public class TemplatedMessageAllocationUnitTests
 
     #endregion
 
-    #region equality (issue #128)
+    #region equality
+
+    // See issue #128.
 
     [Fact]
     public void Equals_MessagesWithParams_AllocatesNothing()
@@ -79,7 +83,9 @@ public class TemplatedMessageAllocationUnitTests
 
     #endregion
 
-    #region parameters of another message (issue #128)
+    #region parameters of another message
+
+    // See issue #128.
 
     [Fact]
     public void Ctor_ParamsOfAnotherMessage_SharesTheDictionary()

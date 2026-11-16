@@ -806,7 +806,9 @@ public class ThenExtensionsUnitTests
 
     #endregion
 
-    #region IfSuccess with a function returning an Error (overload trap, issue #119)
+    #region IfSuccess with a function returning an Error (overload trap)
+
+    // See issue #119.
 
     private static readonly Error TrapError = Error.Conflict(ErrorUri.Tag("tag:test.com,2024:Trap"), "Trap title");
 
@@ -958,10 +960,11 @@ public class ThenExtensionsUnitTests
 
     #endregion
 
-    #region Then with a function returning a task (overload trap, issue #119)
+    #region Then with a function returning a task (overload trap)
 
     // The traps of IfSuccess, copied to Then (#197): a function that returns a task points to ThenAsync, and explicit type
     // arguments keep the task on purpose.
+    // See issue #119.
 
     [Fact]
     public void Then_FunctionReturningTaskOverloads_AreHiddenCompileErrors()
@@ -1027,7 +1030,7 @@ public class ThenExtensionsUnitTests
 
     #endregion
 
-    #region Then with an action (overload trap, issue #197)
+    #region Then with an action (overload trap)
 
     // A function that returns nothing is a side effect: the transforming method reports it as a compile error (CS0619) that
     // names the side-effect method (#197). The bindings are checked with a consumer project.

@@ -86,7 +86,9 @@ public class MetadataKeyValidatorUnitTests
         Should.Throw<ArgumentException>(() => MetadataKeyValidator.Validate(key));
     }
 
-    #region padded keys (issue #203)
+    #region padded keys
+
+    // See issue #203.
 
     [Theory]
     [InlineData(" type")]

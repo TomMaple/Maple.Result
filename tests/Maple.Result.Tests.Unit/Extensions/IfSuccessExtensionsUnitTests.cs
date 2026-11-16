@@ -275,7 +275,9 @@ public class IfSuccessExtensionsUnitTests
 
     #endregion
 
-    #region IfSuccess with a function returning a task (overload trap, issue #119)
+    #region IfSuccess with a function returning a task (overload trap)
+
+    // See issue #119.
 
     [Fact]
     public void IfSuccess_FunctionReturningTaskOverloads_AreHiddenCompileErrors()
@@ -294,7 +296,7 @@ public class IfSuccessExtensionsUnitTests
 
     #endregion
 
-    #region IfSuccess with a function returning a value (overload trap, issue #197)
+    #region IfSuccess with a function returning a value (overload trap)
 
     // A function that returns a value is a transformation: the side-effect method reports it as a compile error (CS0619) that
     // names the transforming method, instead of discarding the value (#197). The bindings are checked with a consumer project.

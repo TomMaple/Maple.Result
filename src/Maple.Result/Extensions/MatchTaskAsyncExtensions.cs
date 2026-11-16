@@ -353,12 +353,13 @@ public static class MatchTaskAsyncExtensions
 
     #endregion
 
-    #region Not supported: two actions (#255)
+    #region Not supported: two actions
 
     // MatchAsync is a fold: two functions that return one type. These overloads turn a call with two actions into a compile error (CS0619)
     // that names SwitchAsync. They return what the MatchAsync with two actions of 2.x returned, so that its call reports this error only.
     // A call that the fold accepts binds to the fold: a lambda with a value converts better to a function than to an action, and the
     // overloads with functions that return a task have priority 1.
+    // See issue #255.
 
     private const string TwoActionsMessage =
         "MatchAsync takes two functions that return a value. Use SwitchAsync for two side effects, or ThenAsync(…).IfErrorAsync(…) to " +
@@ -388,11 +389,12 @@ public static class MatchTaskAsyncExtensions
 
     #endregion
 
-    #region Not supported: functions returning a ValueTask (#214)
+    #region Not supported: functions returning a ValueTask
 
     // Two functions that return a ValueTask would bind to the overload with synchronous functions, which would return the ValueTask in a
     // Task without awaiting it (e.g., a Task<ValueTask<int>>). These overloads turn such a call into a compile error (CS0619) until the
     // Task-based and the ValueTask-based methods share one namespace (#248).
+    // See issue #214.
 
     private const string OtherTaskMessage =
         "The delegates return a ValueTask, which the Task-based MatchAsync does not await. Import " +

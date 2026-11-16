@@ -580,7 +580,7 @@ public class ElseTaskAsyncExtensionsUnitTests
 
     #endregion
 
-    #region ElseAsync with a function returning a task without a value (overload trap, issue #197)
+    #region ElseAsync with a function returning a task without a value (overload trap)
 
     // A function that returns nothing is a side effect: the transforming method reports it as a compile error (CS0619) that
     // names the side-effect method (#197). The bindings are checked with a consumer project.
@@ -602,7 +602,9 @@ public class ElseTaskAsyncExtensionsUnitTests
 
     #endregion
 
-    #region Task results with synchronous delegates (issue #214)
+    #region Task results with synchronous delegates
+
+    // See issue #214.
 
     private static readonly Error SyncTestError = Error.Failure(ErrorUri.None, "Synchronous delegate test error");
     private static readonly Error SyncOtherError = Error.Conflict(ErrorUri.None, "Synchronous delegate other error");
@@ -731,10 +733,11 @@ public class ElseTaskAsyncExtensionsUnitTests
 
     #endregion
 
-    #region A function returning a value or an Error in a task (issue #237)
+    #region A function returning a value or an Error in a task
 
     // ElseAsync takes a function that returns the value or the Error of the replacement result, as Else does through the implicit
     // conversions. A successful result is returned unchanged; the null rules are checked over every overload by NullCheckUnitTests.
+    // See issue #237.
 
     private static readonly Error FailedError = Error.Failure(ErrorUri.None, "The failed result");
     private static readonly Error ReplacementError = Error.Conflict(ErrorUri.None, "The replacement error");

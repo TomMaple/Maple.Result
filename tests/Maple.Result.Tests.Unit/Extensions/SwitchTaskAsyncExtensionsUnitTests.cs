@@ -194,7 +194,9 @@ public class SwitchTaskAsyncExtensionsUnitTests
 
     #endregion
 
-    #region SwitchAsync with an action returning a task (overload trap, issue #255)
+    #region SwitchAsync with an action returning a task (overload trap)
+
+    // See issue #255.
 
     [Fact]
     public void SwitchAsync_ActionReturningTaskOverloads_AreHiddenCompileErrorsThatNameMatchAsync()

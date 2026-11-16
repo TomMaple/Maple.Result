@@ -190,7 +190,7 @@ public static class IfSuccessExtensions
 
     #endregion
 
-    #region Not supported: functions returning a value (#197)
+    #region Not supported: functions returning a value
 
     // A function that returns a value is a transformation, not a side effect (#197): these overloads turn the call into a compile
     // error (CS0619) that names the method to use, instead of discarding the value. A statement lambda (e.g., x => { list.Add(x); })

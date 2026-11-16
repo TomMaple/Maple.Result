@@ -628,7 +628,9 @@ public class LinqTaskAsyncExtensionsUnitTests
 
     #endregion
 
-    #region Mixed synchronous and asynchronous from clauses (issue #119)
+    #region Mixed synchronous and asynchronous from clauses
+
+    // See issue #119.
 
     private static readonly Error MixedError = Error.NotFound(ErrorUri.Tag("tag:test.com,2024:Mixed"), "Mixed title");
 
@@ -772,7 +774,9 @@ public class LinqTaskAsyncExtensionsUnitTests
 
     #endregion
 
-    #region LINQ query selecting an Error (overload trap, issue #119)
+    #region LINQ query selecting an Error (overload trap)
+
+    // See issue #119.
 
     private static readonly Error TrapError = Error.Conflict(ErrorUri.Tag("tag:test.com,2024:Trap"), "Trap title");
 
@@ -909,7 +913,9 @@ public class LinqTaskAsyncExtensionsUnitTests
 
     #endregion
 
-    #region LINQ query selecting a task (overload trap, issue #126)
+    #region LINQ query selecting a task (overload trap)
+
+    // See issue #126.
 
     [Fact]
     public void Select_SelectorReturningTaskOverloads_AreHiddenCompileErrors()
@@ -985,7 +991,9 @@ public class LinqTaskAsyncExtensionsUnitTests
 
     #endregion
 
-    #region non-generic results and selected results (issue #217)
+    #region non-generic results and selected results
+
+    // See issue #217.
 
     private static readonly Error QuerySourceError = Error.NotFound(ErrorUri.None, "Query source error");
     private static readonly Error QueryCheckError = Error.Conflict(ErrorUri.None, "Query check error");

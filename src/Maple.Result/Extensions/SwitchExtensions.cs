@@ -87,7 +87,7 @@ public static class SwitchExtensions
 
     #endregion
 
-    #region Not supported: actions returning a task (#255)
+    #region Not supported: actions returning a task
 
     // A lambda that returns a task converts to an action, and the task would never be awaited (an async lambda becomes async void). These
     // overloads turn such a call into a compile error (CS0619) that names Match, in the success position, in the error position and in both.
@@ -95,6 +95,7 @@ public static class SwitchExtensions
     // reach them, and a lambda that returns another value fails the constraint. The unused optional parameter only makes the signatures
     // differ. The overloads constrained to a Task or a ValueTask have priority 1: an async lambda converts to both a Task and a ValueTask,
     // and an action that returns a task in both positions would otherwise be ambiguous (CS0121) between the overloads for one position.
+    // See issue #255.
 
     private const string ActionReturningTaskMessage =
         "An action returns a task, which Switch does not await. Use Match with two functions that return a task.";

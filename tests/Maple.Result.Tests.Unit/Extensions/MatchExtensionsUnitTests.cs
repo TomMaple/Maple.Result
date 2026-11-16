@@ -373,7 +373,9 @@ public class MatchExtensionsUnitTests
 
     #endregion
 
-    #region Match with two actions (overload trap, issue #255)
+    #region Match with two actions (overload trap)
+
+    // See issue #255.
 
     [Fact]
     public void Match_TwoActionsOverloads_AreHiddenCompileErrorsThatNameSwitch()

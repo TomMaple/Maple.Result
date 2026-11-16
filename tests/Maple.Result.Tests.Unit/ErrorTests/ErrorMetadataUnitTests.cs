@@ -597,7 +597,9 @@ public class ErrorMetadataUnitTests
 
     #endregion
 
-    #region padded keys (issue #203)
+    #region padded keys
+
+    // See issue #203.
 
     [Theory]
     [InlineData(" type")]

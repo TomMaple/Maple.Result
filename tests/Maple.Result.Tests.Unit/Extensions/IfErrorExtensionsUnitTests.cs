@@ -256,7 +256,9 @@ public class IfErrorExtensionsUnitTests
 
     #endregion
 
-    #region IfError with an error action returning a task (overload trap, issue #123)
+    #region IfError with an error action returning a task (overload trap)
+
+    // See issue #123.
 
     [Fact]
     public void IfError_ErrorActionReturningTaskOverloads_AreHiddenCompileErrors()
@@ -329,7 +331,7 @@ public class IfErrorExtensionsUnitTests
 
     #endregion
 
-    #region IfError with a function returning a value (overload trap, issue #197)
+    #region IfError with a function returning a value (overload trap)
 
     // A function that returns a value is a transformation: the side-effect method reports it as a compile error (CS0619) that
     // names the transforming method, instead of discarding the value (#197). The bindings are checked with a consumer project.

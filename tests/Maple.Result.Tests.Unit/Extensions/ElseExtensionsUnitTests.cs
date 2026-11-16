@@ -307,9 +307,10 @@ public class ElseExtensionsUnitTests
 
     #endregion
 
-    #region Else with a function returning a task (overload trap, issue #123)
+    #region Else with a function returning a task (overload trap)
 
     // The traps of IfError, copied to Else (#197): a function that returns a task points to ElseAsync.
+    // See issue #123.
 
     [Fact]
     public void Else_FunctionReturningTaskOverloads_AreHiddenCompileErrors()
@@ -343,7 +344,7 @@ public class ElseExtensionsUnitTests
 
     #endregion
 
-    #region Else with an action (overload trap, issue #197)
+    #region Else with an action (overload trap)
 
     // A function that returns nothing is a side effect: the transforming method reports it as a compile error (CS0619) that
     // names the side-effect method (#197). The bindings are checked with a consumer project.

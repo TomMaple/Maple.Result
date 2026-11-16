@@ -134,7 +134,7 @@ public static class ElseValueTaskAsyncExtensions
 
     #endregion
 
-    #region A value or an Error in a value task (#237)
+    #region A value or an Error in a value task
 
     // The ValueTask counterparts of the Task overloads (#237): a function that returns a value or an Error, as Else takes one through
     // the implicit conversions. The overloads on a value task receiver have priority 1, as the generic one.
@@ -321,7 +321,7 @@ public static class ElseValueTaskAsyncExtensions
 
     #endregion
 
-    #region Not supported: actions (#197)
+    #region Not supported: actions
 
     // A function that returns nothing is a side effect, not a transformation (#197): these overloads turn the call into a compile
     // error (CS0619) that names the method to use, instead of the conversion errors CS0029 and CS1662.
@@ -355,7 +355,9 @@ public static class ElseValueTaskAsyncExtensions
 
     #endregion
 
-    #region ValueTask results with synchronous delegates (#214)
+    #region ValueTask results with synchronous delegates
+
+    // See issue #214.
 
     /// <summary>
     ///     Runs the synchronous function if the result that the <paramref name="resultTask" /> returns is failed, and returns
@@ -398,7 +400,7 @@ public static class ElseValueTaskAsyncExtensions
 
     #endregion
 
-    #region Not supported: synchronous delegates of the wrong kind, and functions returning a Task (#214)
+    #region Not supported: synchronous delegates of the wrong kind, and functions returning a Task
 
     // A synchronous action passed to ThenAsync or ElseAsync, or a synchronous function that returns a value passed to
     // IfSuccessAsync or IfErrorAsync, is a compile error (CS0619) that names the method to use, as in #197.

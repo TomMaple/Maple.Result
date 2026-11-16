@@ -327,7 +327,9 @@ public static class LinqExtensions
 
     #endregion
 
-    #region Non-generic results and selected results (#217)
+    #region Non-generic results and selected results
+
+    // See issue #217.
 
     /// <summary>
     ///     Projects a successful result (the <c>select</c> clause of a query); a failed result is returned unchanged.
@@ -1253,7 +1255,7 @@ public static class LinqExtensions
 
     #endregion
 
-    #region Not supported: selectors returning a task, for the non-generic results (#217)
+    #region Not supported: selectors returning a task, for the non-generic results
 
     // The traps of the region above, for the new source and collection shapes (#217): a result selector that returns a task
     // would bind to the overload with a TNext and wrap the task in the result.

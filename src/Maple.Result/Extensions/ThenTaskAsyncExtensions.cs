@@ -974,7 +974,7 @@ public static class ThenTaskAsyncExtensions
 
     #endregion
 
-    #region Not supported: actions (#197)
+    #region Not supported: actions
 
     // A function that returns nothing is a side effect, not a transformation (#197): these overloads turn the call into a compile
     // error (CS0619) that names the method to use, instead of the conversion errors CS0029 and CS1662.
@@ -1027,7 +1027,9 @@ public static class ThenTaskAsyncExtensions
 
     #endregion
 
-    #region Task results with synchronous delegates (#214)
+    #region Task results with synchronous delegates
+
+    // See issue #214.
 
     /// <summary>
     ///     Runs the synchronous function if the result that the <paramref name="resultTask" /> returns is successful, and returns a result with its value.
@@ -1352,7 +1354,7 @@ public static class ThenTaskAsyncExtensions
 
     #endregion
 
-    #region Not supported: synchronous delegates of the wrong kind, and functions returning a ValueTask (#214)
+    #region Not supported: synchronous delegates of the wrong kind, and functions returning a ValueTask
 
     // A synchronous action passed to ThenAsync or ElseAsync, or a synchronous function that returns a value passed to
     // IfSuccessAsync or IfErrorAsync, is a compile error (CS0619) that names the method to use, as in #197.
