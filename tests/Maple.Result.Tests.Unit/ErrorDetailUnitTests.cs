@@ -258,4 +258,110 @@ public class ErrorDetailUnitTests
     }
 
     #endregion
+
+    #region Pointer with an index of any integer type (issue #236)
+
+    [Fact]
+    public void Pointer_SByteIndex_IsWrittenInDecimal()
+    {
+        ErrorDetail.Pointer("items", sbyte.MaxValue).ShouldBe("/items/127");
+    }
+
+    [Fact]
+    public void Pointer_ByteIndex_IsWrittenInDecimal()
+    {
+        ErrorDetail.Pointer("items", byte.MaxValue).ShouldBe("/items/255");
+    }
+
+    [Fact]
+    public void Pointer_Int16Index_IsWrittenInDecimal()
+    {
+        ErrorDetail.Pointer("items", short.MaxValue).ShouldBe("/items/32767");
+    }
+
+    [Fact]
+    public void Pointer_UInt16Index_IsWrittenInDecimal()
+    {
+        ErrorDetail.Pointer("items", ushort.MaxValue).ShouldBe("/items/65535");
+    }
+
+    [Fact]
+    public void Pointer_UInt32Index_IsWrittenInDecimal()
+    {
+        ErrorDetail.Pointer("items", uint.MaxValue).ShouldBe("/items/4294967295");
+    }
+
+    [Fact]
+    public void Pointer_UInt64Index_IsWrittenInDecimal()
+    {
+        ErrorDetail.Pointer("items", ulong.MaxValue).ShouldBe("/items/18446744073709551615");
+    }
+
+    [Fact]
+    public void Pointer_NIntIndex_IsWrittenInDecimal()
+    {
+        ErrorDetail.Pointer("items", (nint)42).ShouldBe("/items/42");
+    }
+
+    [Fact]
+    public void Pointer_NUIntIndex_IsWrittenInDecimal()
+    {
+        ErrorDetail.Pointer("items", (nuint)42).ShouldBe("/items/42");
+    }
+
+    [Fact]
+    public void Pointer_NegativeSByteIndex_ThrowsArgumentOutOfRangeException()
+    {
+        var exception = Record.Exception(() => ErrorDetail.Pointer("items", (sbyte)-1));
+
+        exception.ShouldBeOfType<ArgumentOutOfRangeException>();
+    }
+
+    [Fact]
+    public void Pointer_NegativeInt16Index_ThrowsArgumentOutOfRangeException()
+    {
+        var exception = Record.Exception(() => ErrorDetail.Pointer("items", (short)-1));
+
+        exception.ShouldBeOfType<ArgumentOutOfRangeException>();
+    }
+
+    [Fact]
+    public void Pointer_NegativeNIntIndex_ThrowsArgumentOutOfRangeException()
+    {
+        var exception = Record.Exception(() => ErrorDetail.Pointer("items", (nint)(-1)));
+
+        exception.ShouldBeOfType<ArgumentOutOfRangeException>();
+    }
+
+    [Fact]
+    public void Pointer_CharSegment_ThrowsArgumentExceptionThatNamesTheType()
+    {
+        // Arrange
+        const string ExpectedMessage = "A segment of a JSON Pointer must be a string or an integer (e.g., an int or a long), not ‘System.Char’. "
+            + "(Parameter 'segments')";
+
+        // Act
+        var exception = Record.Exception(() => ErrorDetail.Pointer("items", '1'));
+
+        // Assert
+        exception.ShouldBeOfType<ArgumentException>().Message.ShouldBe(ExpectedMessage);
+    }
+
+    [Fact]
+    public void Pointer_EnumSegment_ThrowsArgumentException()
+    {
+        var exception = Record.Exception(() => ErrorDetail.Pointer("items", ErrorCategory.Validation));
+
+        exception.ShouldBeOfType<ArgumentException>();
+    }
+
+    [Fact]
+    public void Pointer_Int128Segment_ThrowsArgumentException()
+    {
+        var exception = Record.Exception(() => ErrorDetail.Pointer("items", (Int128)1));
+
+        exception.ShouldBeOfType<ArgumentException>();
+    }
+
+    #endregion
 }
