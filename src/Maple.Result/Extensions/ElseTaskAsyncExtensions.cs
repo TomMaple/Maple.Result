@@ -23,7 +23,7 @@ namespace Maple.Results.Extensions;
 /// </summary>
 /// <remarks>
 ///     A successful result is returned unchanged, and the function is not called. For a side effect that keeps the result unchanged, use
-///     <c>ElseAsync</c>.
+///     <c>IfErrorAsync</c>.
 /// </remarks>
 public static class ElseTaskAsyncExtensions
 {
