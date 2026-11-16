@@ -902,7 +902,7 @@ public static class ThenValueTaskAsyncExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ActionMessage, error: true)]
-    public static ValueTask<Result> ThenAsync(this Result result, Func<ValueTask> ifSuccessFunction, bool? continueOnCapturedContext = null)
+    public static ValueTask<Result> ThenAsync(this Result result, Func<ValueTask> ifSuccessAction, bool? continueOnCapturedContext = null)
     {
         throw new NotSupportedException(ActionMessage);
     }
@@ -912,18 +912,7 @@ public static class ThenValueTaskAsyncExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ActionMessage, error: true)]
-    public static ValueTask<Result<T>> ThenAsync<T>(this Result<T> result, Func<T, ValueTask> ifSuccessFunction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(ActionMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the function returns a task without a value; use <c>IfSuccessAsync</c> for a side effect.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(ActionMessage, error: true)]
-    [OverloadResolutionPriority(1)]
-    public static ValueTask<Result> ThenAsync(this ValueTask<Result> resultTask, Func<ValueTask> ifSuccessFunction, bool? continueOnCapturedContext = null)
+    public static ValueTask<Result<T>> ThenAsync<T>(this Result<T> result, Func<T, ValueTask> ifSuccessAction, bool? continueOnCapturedContext = null)
     {
         throw new NotSupportedException(ActionMessage);
     }
@@ -934,7 +923,18 @@ public static class ThenValueTaskAsyncExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ActionMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static ValueTask<Result<T>> ThenAsync<T>(this ValueTask<Result<T>> resultTask, Func<T, ValueTask> ifSuccessFunction, bool? continueOnCapturedContext = null)
+    public static ValueTask<Result> ThenAsync(this ValueTask<Result> resultTask, Func<ValueTask> ifSuccessAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(ActionMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the function returns a task without a value; use <c>IfSuccessAsync</c> for a side effect.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ActionMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static ValueTask<Result<T>> ThenAsync<T>(this ValueTask<Result<T>> resultTask, Func<T, ValueTask> ifSuccessAction, bool? continueOnCapturedContext = null)
     {
         throw new NotSupportedException(ActionMessage);
     }
@@ -1287,7 +1287,7 @@ public static class ThenValueTaskAsyncExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(OtherTaskMessage, error: true)]
-    public static ValueTask<Result> ThenAsync(this ValueTask<Result> resultTask, Func<Task> ifSuccessFunction, bool? continueOnCapturedContext = null)
+    public static ValueTask<Result> ThenAsync(this ValueTask<Result> resultTask, Func<Task> ifSuccessAction, bool? continueOnCapturedContext = null)
     {
         throw new NotSupportedException(OtherTaskMessage);
     }
@@ -1309,7 +1309,7 @@ public static class ThenValueTaskAsyncExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(OtherTaskMessage, error: true)]
     public static ValueTask<Result<T>> ThenAsync<T>(this ValueTask<Result<T>> resultTask,
-        Func<T, Task> ifSuccessFunction, bool? continueOnCapturedContext = null)
+        Func<T, Task> ifSuccessAction, bool? continueOnCapturedContext = null)
     {
         throw new NotSupportedException(OtherTaskMessage);
     }

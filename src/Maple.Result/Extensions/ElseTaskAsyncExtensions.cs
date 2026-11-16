@@ -479,7 +479,7 @@ public static class ElseTaskAsyncExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ActionMessage, error: true)]
-    public static Task<TResult> ElseAsync<TResult>([DisallowNull] this TResult result, Func<Error, Task> ifErrorFunction, bool? continueOnCapturedContext = null)
+    public static Task<TResult> ElseAsync<TResult>([DisallowNull] this TResult result, Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
         where TResult : IOperationResult
     {
         throw new NotSupportedException(ActionMessage);
@@ -491,7 +491,7 @@ public static class ElseTaskAsyncExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ActionMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Task<TResult> ElseAsync<TResult>(this Task<TResult> resultTask, Func<Error, Task> ifErrorFunction, bool? continueOnCapturedContext = null)
+    public static Task<TResult> ElseAsync<TResult>(this Task<TResult> resultTask, Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
         where TResult : IOperationResult
     {
         throw new NotSupportedException(ActionMessage);
@@ -581,7 +581,7 @@ public static class ElseTaskAsyncExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(OtherTaskMessage, error: true)]
     public static Task<TResult> ElseAsync<TResult>(this Task<TResult> resultTask,
-        Func<Error, ValueTask> ifErrorFunction, bool? continueOnCapturedContext = null)
+        Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
         where TResult : IOperationResult
     {
         throw new NotSupportedException(OtherTaskMessage);

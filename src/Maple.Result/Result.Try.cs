@@ -1577,7 +1577,7 @@ public sealed partial record Result
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(FunctionReturnsTaskMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result Try(Func<Task> function, Func<Exception, Error?> mapException)
+    public static Result Try(Func<Task> action, Func<Exception, Error?> mapException)
     {
         throw new NotSupportedException(FunctionReturnsTaskMessage);
     }
@@ -1587,7 +1587,7 @@ public sealed partial record Result
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(FunctionReturnsTaskMessage, error: true)]
-    public static Result Try(Func<ValueTask> function, Func<Exception, Error?> mapException)
+    public static Result Try(Func<ValueTask> action, Func<Exception, Error?> mapException)
     {
         throw new NotSupportedException(FunctionReturnsTaskMessage);
     }
@@ -1608,7 +1608,7 @@ public sealed partial record Result
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(FunctionReturnsTaskMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result Try<TException>(Func<Task> function, Func<TException, Error?> mapException)
+    public static Result Try<TException>(Func<Task> action, Func<TException, Error?> mapException)
         where TException : Exception
     {
         throw new NotSupportedException(FunctionReturnsTaskMessage);
@@ -1619,7 +1619,7 @@ public sealed partial record Result
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(FunctionReturnsTaskMessage, error: true)]
-    public static Result Try<TException>(Func<ValueTask> function, Func<TException, Error?> mapException)
+    public static Result Try<TException>(Func<ValueTask> action, Func<TException, Error?> mapException)
         where TException : Exception
     {
         throw new NotSupportedException(FunctionReturnsTaskMessage);

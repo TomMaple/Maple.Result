@@ -79,7 +79,7 @@ public static class ElseExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ElseTaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static TResult Else<TResult>([DisallowNull] this TResult result, Func<Error, Task> ifErrorFunction)
+    public static TResult Else<TResult>([DisallowNull] this TResult result, Func<Error, Task> ifErrorAction)
         where TResult : IOperationResult
     {
         throw new NotSupportedException(ElseTaskNotAwaitedMessage);
@@ -90,7 +90,7 @@ public static class ElseExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ElseTaskNotAwaitedMessage, error: true)]
-    public static TResult Else<TResult>([DisallowNull] this TResult result, Func<Error, ValueTask> ifErrorFunction)
+    public static TResult Else<TResult>([DisallowNull] this TResult result, Func<Error, ValueTask> ifErrorAction)
         where TResult : IOperationResult
     {
         throw new NotSupportedException(ElseTaskNotAwaitedMessage);
