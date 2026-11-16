@@ -118,6 +118,13 @@ var userTokenResult =
         .ThenAsync(user => _loginService.GetUserTokenAsync(user));
 ```
 
+The asynchronous methods also take synchronous delegates, so a synchronous step does not need `Task.FromResult` or an `await` first:
+```csharp
+var userNameResult = await _userService.GetUserAsync(userId)
+    .ThenAsync(user => user.Name)
+    .IfErrorAsync(error => _logger.LogWarning("{Title}", error.Title));
+```
+
 or chaining multiple asynchronous operations using the query syntax:
 ```csharp
 var userTokenResult =

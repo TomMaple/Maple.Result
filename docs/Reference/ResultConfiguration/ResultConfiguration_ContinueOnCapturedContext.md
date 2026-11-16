@@ -42,11 +42,7 @@ protected override void OnStartup(StartupEventArgs e)
 
 // The delegate now runs on the UI thread.
 await _service.LoadUserAsync()
-    .IfSuccessAsync(user =>
-    {
-        NameLabel.Content = user.Name;
-        return Task.CompletedTask;
-    });
+    .IfSuccessAsync(user => { NameLabel.Content = user.Name; });
 ```
 
 ## See Also

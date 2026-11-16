@@ -17,6 +17,7 @@ Inheritance [Object](https://learn.microsoft.com/dotnet/api/system.object) → I
 | ---- | ----------- |
 | [IfErrorAsync&lt;TResult&gt;(TResult, Func&lt;Error, ValueTask&gt;, Boolean)](IfErrorValueTaskAsyncExtensions_IfErrorAsync.md#iferrorasynctresulttresult-funcerror-valuetask-boolean)  | Executes the provided asynchronous action, if the `TResult` instance represents a failed operation, as an asynchronous operation. |
 | [IfErrorAsync&lt;TResult&gt;(ValueTask&lt;TResult&gt;, Func&lt;Error, ValueTask&gt;, Boolean)](IfErrorValueTaskAsyncExtensions_IfErrorAsync.md#iferrorasynctresultvaluetasktresult-funcerror-valuetask-boolean)  | Executes the provided asynchronous function, if the provided asynchronous operation returns a failed `TResult` instance, and returns its result as an asynchronous operation. |
+| [IfErrorAsync&lt;TResult&gt;(ValueTask&lt;TResult&gt;, Action&lt;Error&gt;, Boolean)](IfErrorValueTaskAsyncExtensions_IfErrorAsync.md#iferrorasynctresultvaluetasktresult-actionerror-boolean) | Runs the synchronous action if the result that the `resultTask` returns is failed, and returns the result unchanged. |
 
 ## See Also
 * [Error](../../Error/Error.md)
