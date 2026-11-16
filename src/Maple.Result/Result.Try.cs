@@ -19,7 +19,9 @@ namespace Maple.Results;
 // Result.Try and Result.TryAsync: run code that can throw and turn the exception into a failed result.
 //
 // The mapper is required: an Error needs a category, a type URI and a title, which the library cannot pick on its own, and the
-// exception message and stack trace are not meant for the clients that receive the error. An OperationCanceledException is never
+// exception message and stack trace are not meant for the clients that receive the error. The mapper may return null to decline an
+// exception (e.g., a type it does not handle): it is then rethrown with `throw;`, inside the catch block, so that it keeps its
+// stack trace (#195). An OperationCanceledException is never
 // mapped, unless the caller asks for it as the exception type: cancellation is not a failure.
 public sealed partial record Result
 {
@@ -45,13 +47,12 @@ public sealed partial record Result
     /// </remarks>
     /// <param name="action">The action to run. Must not be <see langword="null" />.</param>
     /// <param name="mapException">
-    ///     The function that creates the <see cref="Error" /> from the exception thrown by the <paramref name="action" />.
-    ///     Must not be <see langword="null" />, nor return <see langword="null" />.
+    ///     The function that creates the <see cref="Error" /> from the exception, or returns <see langword="null" /> to decline it:
+    ///     a declined exception is rethrown as it is. Must not be <see langword="null" />.
     /// </param>
     /// <returns>A successful <see cref="Result" /> if the <paramref name="action" /> completes; otherwise, a failed one with the mapped error.</returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="action" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
-    /// <exception cref="InvalidOperationException">If the <paramref name="mapException" /> function returns <see langword="null" />.</exception>
-    public static Result Try(Action action, Func<Exception, Error> mapException)
+    public static Result Try(Action action, Func<Exception, Error?> mapException)
     {
         return Try<Exception>(action, mapException);
     }
@@ -73,13 +74,12 @@ public sealed partial record Result
     /// <typeparam name="TException">The type of the exceptions to map; other exceptions propagate.</typeparam>
     /// <param name="action">The action to run. Must not be <see langword="null" />.</param>
     /// <param name="mapException">
-    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
-    ///     <see langword="null" />.
+    ///     The function that creates the <see cref="Error" /> from the exception, or returns <see langword="null" /> to decline it:
+    ///     a declined exception is rethrown as it is. Must not be <see langword="null" />.
     /// </param>
     /// <returns>A successful <see cref="Result" /> if the <paramref name="action" /> completes; otherwise, a failed one with the mapped error.</returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="action" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
-    /// <exception cref="InvalidOperationException">If the <paramref name="mapException" /> function returns <see langword="null" />.</exception>
-    public static Result Try<TException>(Action action, Func<TException, Error> mapException)
+    public static Result Try<TException>(Action action, Func<TException, Error?> mapException)
         where TException : Exception
     {
         ArgumentNullException.ThrowIfNull(action);
@@ -91,7 +91,10 @@ public sealed partial record Result
         }
         catch (TException exception) when (IsMapped(exception))
         {
-            var error = MapException(mapException, exception);
+            var error = mapException(exception);
+            if (error is null)
+                throw;
+
             return FromError(error);
         }
 
@@ -117,15 +120,14 @@ public sealed partial record Result
     /// <typeparam name="T">The type of the value.</typeparam>
     /// <param name="function">The function to run. Must not be <see langword="null" />; it may return <see langword="null" />.</param>
     /// <param name="mapException">
-    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
-    ///     <see langword="null" />.
+    ///     The function that creates the <see cref="Error" /> from the exception, or returns <see langword="null" /> to decline it:
+    ///     a declined exception is rethrown as it is. Must not be <see langword="null" />.
     /// </param>
     /// <returns>
     ///     A successful <see cref="Result{T}" /> with the value of the <paramref name="function" />; otherwise, a failed one with the mapped error.
     /// </returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
-    /// <exception cref="InvalidOperationException">If the <paramref name="mapException" /> function returns <see langword="null" />.</exception>
-    public static Result<T> Try<T>(Func<T> function, Func<Exception, Error> mapException)
+    public static Result<T> Try<T>(Func<T> function, Func<Exception, Error?> mapException)
     {
         return Try<T, Exception>(function, mapException);
     }
@@ -149,15 +151,14 @@ public sealed partial record Result
     /// <typeparam name="TException">The type of the exceptions to map; other exceptions propagate.</typeparam>
     /// <param name="function">The function to run. Must not be <see langword="null" />; it may return <see langword="null" />.</param>
     /// <param name="mapException">
-    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
-    ///     <see langword="null" />.
+    ///     The function that creates the <see cref="Error" /> from the exception, or returns <see langword="null" /> to decline it:
+    ///     a declined exception is rethrown as it is. Must not be <see langword="null" />.
     /// </param>
     /// <returns>
     ///     A successful <see cref="Result{T}" /> with the value of the <paramref name="function" />; otherwise, a failed one with the mapped error.
     /// </returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
-    /// <exception cref="InvalidOperationException">If the <paramref name="mapException" /> function returns <see langword="null" />.</exception>
-    public static Result<T> Try<T, TException>(Func<T> function, Func<TException, Error> mapException)
+    public static Result<T> Try<T, TException>(Func<T> function, Func<TException, Error?> mapException)
         where TException : Exception
     {
         ArgumentNullException.ThrowIfNull(function);
@@ -170,7 +171,10 @@ public sealed partial record Result
         }
         catch (TException exception) when (IsMapped(exception))
         {
-            var error = MapException(mapException, exception);
+            var error = mapException(exception);
+            if (error is null)
+                throw;
+
             return Result<T>.FromError(error);
         }
 
@@ -200,8 +204,8 @@ public sealed partial record Result
     /// </remarks>
     /// <param name="action">The asynchronous action to run. Must not be <see langword="null" />, nor return a <see langword="null" /> task.</param>
     /// <param name="mapException">
-    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
-    ///     <see langword="null" />.
+    ///     The function that creates the <see cref="Error" /> from the exception, or returns <see langword="null" /> to decline it:
+    ///     a declined exception is rethrown as it is. Must not be <see langword="null" />.
     /// </param>
     /// <param name="continueOnCapturedContext">
     ///     <see langword="true" /> to run the continuations, including the <paramref name="mapException" /> function when it runs after an
@@ -210,12 +214,9 @@ public sealed partial record Result
     /// </param>
     /// <returns>A task with a successful <see cref="Result" /> if the <paramref name="action" /> completes; otherwise, a failed one with the mapped error.</returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="action" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
-    /// <exception cref="InvalidOperationException">
-    ///     If the <paramref name="action" /> returns a <see langword="null" /> task, or the <paramref name="mapException" /> function returns
-    ///     <see langword="null" />.
-    /// </exception>
+    /// <exception cref="InvalidOperationException">If the <paramref name="action" /> returns a <see langword="null" /> task.</exception>
     [OverloadResolutionPriority(1)]
-    public static Task<Result> TryAsync(Func<Task> action, Func<Exception, Error> mapException, bool? continueOnCapturedContext = null)
+    public static Task<Result> TryAsync(Func<Task> action, Func<Exception, Error?> mapException, bool? continueOnCapturedContext = null)
     {
         return TryAsync<Exception>(action, mapException, continueOnCapturedContext);
     }
@@ -232,8 +233,8 @@ public sealed partial record Result
     /// <typeparam name="TException">The type of the exceptions to map; other exceptions propagate.</typeparam>
     /// <param name="action">The asynchronous action to run. Must not be <see langword="null" />, nor return a <see langword="null" /> task.</param>
     /// <param name="mapException">
-    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
-    ///     <see langword="null" />.
+    ///     The function that creates the <see cref="Error" /> from the exception, or returns <see langword="null" /> to decline it:
+    ///     a declined exception is rethrown as it is. Must not be <see langword="null" />.
     /// </param>
     /// <param name="continueOnCapturedContext">
     ///     <see langword="true" /> to run the continuations, including the <paramref name="mapException" /> function when it runs after an
@@ -242,14 +243,11 @@ public sealed partial record Result
     /// </param>
     /// <returns>A task with a successful <see cref="Result" /> if the <paramref name="action" /> completes; otherwise, a failed one with the mapped error.</returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="action" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
-    /// <exception cref="InvalidOperationException">
-    ///     If the <paramref name="action" /> returns a <see langword="null" /> task, or the <paramref name="mapException" /> function returns
-    ///     <see langword="null" />.
-    /// </exception>
+    /// <exception cref="InvalidOperationException">If the <paramref name="action" /> returns a <see langword="null" /> task.</exception>
     [OverloadResolutionPriority(1)]
     public static Task<Result> TryAsync<TException>(
         Func<Task> action,
-        Func<TException, Error> mapException,
+        Func<TException, Error?> mapException,
         bool? continueOnCapturedContext = null
     )
         where TException : Exception
@@ -259,7 +257,7 @@ public sealed partial record Result
 
         return Core(action, mapException, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
 
-        static async Task<Result> Core(Func<Task> action, Func<TException, Error> mapException, bool continueOnCapturedContext)
+        static async Task<Result> Core(Func<Task> action, Func<TException, Error?> mapException, bool continueOnCapturedContext)
         {
             Task task;
             try
@@ -268,7 +266,10 @@ public sealed partial record Result
             }
             catch (TException exception) when (IsMapped(exception))
             {
-                var error = MapException(mapException, exception);
+                var error = mapException(exception);
+                if (error is null)
+                    throw;
+
                 return FromError(error);
             }
 
@@ -280,7 +281,10 @@ public sealed partial record Result
             }
             catch (TException exception) when (IsMapped(exception))
             {
-                var error = MapException(mapException, exception);
+                var error = mapException(exception);
+                if (error is null)
+                    throw;
+
                 return FromError(error);
             }
 
@@ -303,8 +307,8 @@ public sealed partial record Result
     ///     task may be <see langword="null" />.
     /// </param>
     /// <param name="mapException">
-    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
-    ///     <see langword="null" />.
+    ///     The function that creates the <see cref="Error" /> from the exception, or returns <see langword="null" /> to decline it:
+    ///     a declined exception is rethrown as it is. Must not be <see langword="null" />.
     /// </param>
     /// <param name="continueOnCapturedContext">
     ///     <see langword="true" /> to run the continuations, including the <paramref name="mapException" /> function when it runs after an
@@ -316,12 +320,9 @@ public sealed partial record Result
     ///     mapped error.
     /// </returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
-    /// <exception cref="InvalidOperationException">
-    ///     If the <paramref name="function" /> returns a <see langword="null" /> task, or the <paramref name="mapException" /> function returns
-    ///     <see langword="null" />.
-    /// </exception>
+    /// <exception cref="InvalidOperationException">If the <paramref name="function" /> returns a <see langword="null" /> task.</exception>
     [OverloadResolutionPriority(1)]
-    public static Task<Result<T>> TryAsync<T>(Func<Task<T>> function, Func<Exception, Error> mapException, bool? continueOnCapturedContext = null)
+    public static Task<Result<T>> TryAsync<T>(Func<Task<T>> function, Func<Exception, Error?> mapException, bool? continueOnCapturedContext = null)
     {
         return TryAsync<T, Exception>(function, mapException, continueOnCapturedContext);
     }
@@ -342,8 +343,8 @@ public sealed partial record Result
     ///     task may be <see langword="null" />.
     /// </param>
     /// <param name="mapException">
-    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
-    ///     <see langword="null" />.
+    ///     The function that creates the <see cref="Error" /> from the exception, or returns <see langword="null" /> to decline it:
+    ///     a declined exception is rethrown as it is. Must not be <see langword="null" />.
     /// </param>
     /// <param name="continueOnCapturedContext">
     ///     <see langword="true" /> to run the continuations, including the <paramref name="mapException" /> function when it runs after an
@@ -355,14 +356,11 @@ public sealed partial record Result
     ///     mapped error.
     /// </returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
-    /// <exception cref="InvalidOperationException">
-    ///     If the <paramref name="function" /> returns a <see langword="null" /> task, or the <paramref name="mapException" /> function returns
-    ///     <see langword="null" />.
-    /// </exception>
+    /// <exception cref="InvalidOperationException">If the <paramref name="function" /> returns a <see langword="null" /> task.</exception>
     [OverloadResolutionPriority(1)]
     public static Task<Result<T>> TryAsync<T, TException>(
         Func<Task<T>> function,
-        Func<TException, Error> mapException,
+        Func<TException, Error?> mapException,
         bool? continueOnCapturedContext = null
     )
         where TException : Exception
@@ -372,7 +370,7 @@ public sealed partial record Result
 
         return Core(function, mapException, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
 
-        static async Task<Result<T>> Core(Func<Task<T>> function, Func<TException, Error> mapException, bool continueOnCapturedContext)
+        static async Task<Result<T>> Core(Func<Task<T>> function, Func<TException, Error?> mapException, bool continueOnCapturedContext)
         {
             Task<T> task;
             try
@@ -381,7 +379,10 @@ public sealed partial record Result
             }
             catch (TException exception) when (IsMapped(exception))
             {
-                var error = MapException(mapException, exception);
+                var error = mapException(exception);
+                if (error is null)
+                    throw;
+
                 return Result<T>.FromError(error);
             }
 
@@ -394,7 +395,10 @@ public sealed partial record Result
             }
             catch (TException exception) when (IsMapped(exception))
             {
-                var error = MapException(mapException, exception);
+                var error = mapException(exception);
+                if (error is null)
+                    throw;
+
                 return Result<T>.FromError(error);
             }
 
@@ -418,8 +422,8 @@ public sealed partial record Result
     /// </remarks>
     /// <param name="action">The asynchronous action to run. Must not be <see langword="null" />.</param>
     /// <param name="mapException">
-    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
-    ///     <see langword="null" />.
+    ///     The function that creates the <see cref="Error" /> from the exception, or returns <see langword="null" /> to decline it:
+    ///     a declined exception is rethrown as it is. Must not be <see langword="null" />.
     /// </param>
     /// <param name="continueOnCapturedContext">
     ///     <see langword="true" /> to run the continuations, including the <paramref name="mapException" /> function when it runs after an
@@ -428,8 +432,7 @@ public sealed partial record Result
     /// </param>
     /// <returns>A task with a successful <see cref="Result" /> if the <paramref name="action" /> completes; otherwise, a failed one with the mapped error.</returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="action" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
-    /// <exception cref="InvalidOperationException">If the <paramref name="mapException" /> function returns <see langword="null" />.</exception>
-    public static ValueTask<Result> TryAsync(Func<ValueTask> action, Func<Exception, Error> mapException, bool? continueOnCapturedContext = null)
+    public static ValueTask<Result> TryAsync(Func<ValueTask> action, Func<Exception, Error?> mapException, bool? continueOnCapturedContext = null)
     {
         return TryAsync<Exception>(action, mapException, continueOnCapturedContext);
     }
@@ -446,8 +449,8 @@ public sealed partial record Result
     /// <typeparam name="TException">The type of the exceptions to map; other exceptions propagate.</typeparam>
     /// <param name="action">The asynchronous action to run. Must not be <see langword="null" />.</param>
     /// <param name="mapException">
-    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
-    ///     <see langword="null" />.
+    ///     The function that creates the <see cref="Error" /> from the exception, or returns <see langword="null" /> to decline it:
+    ///     a declined exception is rethrown as it is. Must not be <see langword="null" />.
     /// </param>
     /// <param name="continueOnCapturedContext">
     ///     <see langword="true" /> to run the continuations, including the <paramref name="mapException" /> function when it runs after an
@@ -456,10 +459,9 @@ public sealed partial record Result
     /// </param>
     /// <returns>A task with a successful <see cref="Result" /> if the <paramref name="action" /> completes; otherwise, a failed one with the mapped error.</returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="action" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
-    /// <exception cref="InvalidOperationException">If the <paramref name="mapException" /> function returns <see langword="null" />.</exception>
     public static ValueTask<Result> TryAsync<TException>(
         Func<ValueTask> action,
-        Func<TException, Error> mapException,
+        Func<TException, Error?> mapException,
         bool? continueOnCapturedContext = null
     )
         where TException : Exception
@@ -469,7 +471,7 @@ public sealed partial record Result
 
         return Core(action, mapException, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
 
-        static async ValueTask<Result> Core(Func<ValueTask> action, Func<TException, Error> mapException, bool continueOnCapturedContext)
+        static async ValueTask<Result> Core(Func<ValueTask> action, Func<TException, Error?> mapException, bool continueOnCapturedContext)
         {
             try
             {
@@ -478,7 +480,10 @@ public sealed partial record Result
             }
             catch (TException exception) when (IsMapped(exception))
             {
-                var error = MapException(mapException, exception);
+                var error = mapException(exception);
+                if (error is null)
+                    throw;
+
                 return FromError(error);
             }
 
@@ -502,8 +507,8 @@ public sealed partial record Result
     ///     The asynchronous function to run. Must not be <see langword="null" />; the value of the task may be <see langword="null" />.
     /// </param>
     /// <param name="mapException">
-    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
-    ///     <see langword="null" />.
+    ///     The function that creates the <see cref="Error" /> from the exception, or returns <see langword="null" /> to decline it:
+    ///     a declined exception is rethrown as it is. Must not be <see langword="null" />.
     /// </param>
     /// <param name="continueOnCapturedContext">
     ///     <see langword="true" /> to run the continuations, including the <paramref name="mapException" /> function when it runs after an
@@ -515,8 +520,7 @@ public sealed partial record Result
     ///     mapped error.
     /// </returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
-    /// <exception cref="InvalidOperationException">If the <paramref name="mapException" /> function returns <see langword="null" />.</exception>
-    public static ValueTask<Result<T>> TryAsync<T>(Func<ValueTask<T>> function, Func<Exception, Error> mapException, bool? continueOnCapturedContext = null)
+    public static ValueTask<Result<T>> TryAsync<T>(Func<ValueTask<T>> function, Func<Exception, Error?> mapException, bool? continueOnCapturedContext = null)
     {
         return TryAsync<T, Exception>(function, mapException, continueOnCapturedContext);
     }
@@ -536,8 +540,8 @@ public sealed partial record Result
     ///     The asynchronous function to run. Must not be <see langword="null" />; the value of the task may be <see langword="null" />.
     /// </param>
     /// <param name="mapException">
-    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
-    ///     <see langword="null" />.
+    ///     The function that creates the <see cref="Error" /> from the exception, or returns <see langword="null" /> to decline it:
+    ///     a declined exception is rethrown as it is. Must not be <see langword="null" />.
     /// </param>
     /// <param name="continueOnCapturedContext">
     ///     <see langword="true" /> to run the continuations, including the <paramref name="mapException" /> function when it runs after an
@@ -549,10 +553,9 @@ public sealed partial record Result
     ///     mapped error.
     /// </returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
-    /// <exception cref="InvalidOperationException">If the <paramref name="mapException" /> function returns <see langword="null" />.</exception>
     public static ValueTask<Result<T>> TryAsync<T, TException>(
         Func<ValueTask<T>> function,
-        Func<TException, Error> mapException,
+        Func<TException, Error?> mapException,
         bool? continueOnCapturedContext = null
     )
         where TException : Exception
@@ -562,7 +565,7 @@ public sealed partial record Result
 
         return Core(function, mapException, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
 
-        static async ValueTask<Result<T>> Core(Func<ValueTask<T>> function, Func<TException, Error> mapException, bool continueOnCapturedContext)
+        static async ValueTask<Result<T>> Core(Func<ValueTask<T>> function, Func<TException, Error?> mapException, bool continueOnCapturedContext)
         {
             T value;
             try
@@ -572,7 +575,10 @@ public sealed partial record Result
             }
             catch (TException exception) when (IsMapped(exception))
             {
-                var error = MapException(mapException, exception);
+                var error = mapException(exception);
+                if (error is null)
+                    throw;
+
                 return Result<T>.FromError(error);
             }
 
@@ -603,13 +609,13 @@ public sealed partial record Result
     /// </remarks>
     /// <param name="function">The function to run. Must not be <see langword="null" />, nor return <see langword="null" />.</param>
     /// <param name="mapException">
-    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
-    ///     <see langword="null" />.
+    ///     The function that creates the <see cref="Error" /> from the exception, or returns <see langword="null" /> to decline it:
+    ///     a declined exception is rethrown as it is. Must not be <see langword="null" />.
     /// </param>
     /// <returns>The <see cref="Result" /> returned by the <paramref name="function" />, as it is; or a failed one with the mapped error.</returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
-    /// <exception cref="InvalidOperationException">If the <paramref name="function" /> or the <paramref name="mapException" /> function returns <see langword="null" />.</exception>
-    public static Result Try(Func<Result> function, Func<Exception, Error> mapException)
+    /// <exception cref="InvalidOperationException">If the <paramref name="function" /> returns <see langword="null" />.</exception>
+    public static Result Try(Func<Result> function, Func<Exception, Error?> mapException)
     {
         return Try<Exception>(function, mapException);
     }
@@ -634,13 +640,13 @@ public sealed partial record Result
     /// <typeparam name="TException">The type of the exceptions to map; other exceptions propagate.</typeparam>
     /// <param name="function">The function to run. Must not be <see langword="null" />, nor return <see langword="null" />.</param>
     /// <param name="mapException">
-    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
-    ///     <see langword="null" />.
+    ///     The function that creates the <see cref="Error" /> from the exception, or returns <see langword="null" /> to decline it:
+    ///     a declined exception is rethrown as it is. Must not be <see langword="null" />.
     /// </param>
     /// <returns>The <see cref="Result" /> returned by the <paramref name="function" />, as it is; or a failed one with the mapped error.</returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
-    /// <exception cref="InvalidOperationException">If the <paramref name="function" /> or the <paramref name="mapException" /> function returns <see langword="null" />.</exception>
-    public static Result Try<TException>(Func<Result> function, Func<TException, Error> mapException)
+    /// <exception cref="InvalidOperationException">If the <paramref name="function" /> returns <see langword="null" />.</exception>
+    public static Result Try<TException>(Func<Result> function, Func<TException, Error?> mapException)
         where TException : Exception
     {
         ArgumentNullException.ThrowIfNull(function);
@@ -653,7 +659,10 @@ public sealed partial record Result
         }
         catch (TException exception) when (IsMapped(exception))
         {
-            var error = MapException(mapException, exception);
+            var error = mapException(exception);
+            if (error is null)
+                throw;
+
             return FromError(error);
         }
 
@@ -681,13 +690,13 @@ public sealed partial record Result
     /// <typeparam name="T">The type of the value.</typeparam>
     /// <param name="function">The function to run. Must not be <see langword="null" />, nor return <see langword="null" />.</param>
     /// <param name="mapException">
-    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
-    ///     <see langword="null" />.
+    ///     The function that creates the <see cref="Error" /> from the exception, or returns <see langword="null" /> to decline it:
+    ///     a declined exception is rethrown as it is. Must not be <see langword="null" />.
     /// </param>
     /// <returns>The <see cref="Result{T}" /> returned by the <paramref name="function" />, as it is; or a failed one with the mapped error.</returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
-    /// <exception cref="InvalidOperationException">If the <paramref name="function" /> or the <paramref name="mapException" /> function returns <see langword="null" />.</exception>
-    public static Result<T> Try<T>(Func<Result<T>> function, Func<Exception, Error> mapException)
+    /// <exception cref="InvalidOperationException">If the <paramref name="function" /> returns <see langword="null" />.</exception>
+    public static Result<T> Try<T>(Func<Result<T>> function, Func<Exception, Error?> mapException)
     {
         return Try<T, Exception>(function, mapException);
     }
@@ -713,13 +722,13 @@ public sealed partial record Result
     /// <typeparam name="TException">The type of the exceptions to map; other exceptions propagate.</typeparam>
     /// <param name="function">The function to run. Must not be <see langword="null" />, nor return <see langword="null" />.</param>
     /// <param name="mapException">
-    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
-    ///     <see langword="null" />.
+    ///     The function that creates the <see cref="Error" /> from the exception, or returns <see langword="null" /> to decline it:
+    ///     a declined exception is rethrown as it is. Must not be <see langword="null" />.
     /// </param>
     /// <returns>The <see cref="Result{T}" /> returned by the <paramref name="function" />, as it is; or a failed one with the mapped error.</returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
-    /// <exception cref="InvalidOperationException">If the <paramref name="function" /> or the <paramref name="mapException" /> function returns <see langword="null" />.</exception>
-    public static Result<T> Try<T, TException>(Func<Result<T>> function, Func<TException, Error> mapException)
+    /// <exception cref="InvalidOperationException">If the <paramref name="function" /> returns <see langword="null" />.</exception>
+    public static Result<T> Try<T, TException>(Func<Result<T>> function, Func<TException, Error?> mapException)
         where TException : Exception
     {
         ArgumentNullException.ThrowIfNull(function);
@@ -732,7 +741,10 @@ public sealed partial record Result
         }
         catch (TException exception) when (IsMapped(exception))
         {
-            var error = MapException(mapException, exception);
+            var error = mapException(exception);
+            if (error is null)
+                throw;
+
             return Result<T>.FromError(error);
         }
 
@@ -759,13 +771,13 @@ public sealed partial record Result
     /// </remarks>
     /// <param name="function">The function to run. Must not be <see langword="null" />, nor return <see langword="null" />.</param>
     /// <param name="mapException">
-    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
-    ///     <see langword="null" />.
+    ///     The function that creates the <see cref="Error" /> from the exception, or returns <see langword="null" /> to decline it:
+    ///     a declined exception is rethrown as it is. Must not be <see langword="null" />.
     /// </param>
     /// <returns>A failed <see cref="Result" /> with the <see cref="Error" /> returned by the <paramref name="function" />, or with the mapped error.</returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
-    /// <exception cref="InvalidOperationException">If the <paramref name="function" /> or the <paramref name="mapException" /> function returns <see langword="null" />.</exception>
-    public static Result Try(Func<Error> function, Func<Exception, Error> mapException)
+    /// <exception cref="InvalidOperationException">If the <paramref name="function" /> returns <see langword="null" />.</exception>
+    public static Result Try(Func<Error> function, Func<Exception, Error?> mapException)
     {
         return Try<Exception>(function, mapException);
     }
@@ -790,13 +802,13 @@ public sealed partial record Result
     /// <typeparam name="TException">The type of the exceptions to map; other exceptions propagate.</typeparam>
     /// <param name="function">The function to run. Must not be <see langword="null" />, nor return <see langword="null" />.</param>
     /// <param name="mapException">
-    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
-    ///     <see langword="null" />.
+    ///     The function that creates the <see cref="Error" /> from the exception, or returns <see langword="null" /> to decline it:
+    ///     a declined exception is rethrown as it is. Must not be <see langword="null" />.
     /// </param>
     /// <returns>A failed <see cref="Result" /> with the <see cref="Error" /> returned by the <paramref name="function" />, or with the mapped error.</returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
-    /// <exception cref="InvalidOperationException">If the <paramref name="function" /> or the <paramref name="mapException" /> function returns <see langword="null" />.</exception>
-    public static Result Try<TException>(Func<Error> function, Func<TException, Error> mapException)
+    /// <exception cref="InvalidOperationException">If the <paramref name="function" /> returns <see langword="null" />.</exception>
+    public static Result Try<TException>(Func<Error> function, Func<TException, Error?> mapException)
         where TException : Exception
     {
         ArgumentNullException.ThrowIfNull(function);
@@ -809,7 +821,10 @@ public sealed partial record Result
         }
         catch (TException exception) when (IsMapped(exception))
         {
-            var error = MapException(mapException, exception);
+            var error = mapException(exception);
+            if (error is null)
+                throw;
+
             return FromError(error);
         }
 
@@ -843,8 +858,8 @@ public sealed partial record Result
     /// </remarks>
     /// <param name="function">The asynchronous function to run. Must not be <see langword="null" />, nor return a <see langword="null" /> task; its result must not be <see langword="null" />.</param>
     /// <param name="mapException">
-    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
-    ///     <see langword="null" />.
+    ///     The function that creates the <see cref="Error" /> from the exception, or returns <see langword="null" /> to decline it:
+    ///     a declined exception is rethrown as it is. Must not be <see langword="null" />.
     /// </param>
     /// <param name="continueOnCapturedContext">
     ///     <see langword="true" /> to run the continuations, including the <paramref name="mapException" /> function when it runs after an
@@ -854,11 +869,10 @@ public sealed partial record Result
     /// <returns>A task with the <see cref="Result" /> returned by the <paramref name="function" />, as it is; or a failed one with the mapped error.</returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
     /// <exception cref="InvalidOperationException">
-    ///     If the <paramref name="function" /> returns a <see langword="null" /> task or a <see langword="null" /> result, or the <paramref name="mapException" /> function returns
-    ///     <see langword="null" />.
+    ///     If the <paramref name="function" /> returns a <see langword="null" /> task or a <see langword="null" /> result.
     /// </exception>
     [OverloadResolutionPriority(1)]
-    public static Task<Result> TryAsync(Func<Task<Result>> function, Func<Exception, Error> mapException, bool? continueOnCapturedContext = null)
+    public static Task<Result> TryAsync(Func<Task<Result>> function, Func<Exception, Error?> mapException, bool? continueOnCapturedContext = null)
     {
         return TryAsync<Exception>(function, mapException, continueOnCapturedContext);
     }
@@ -884,8 +898,8 @@ public sealed partial record Result
     /// <typeparam name="TException">The type of the exceptions to map; other exceptions propagate.</typeparam>
     /// <param name="function">The asynchronous function to run. Must not be <see langword="null" />, nor return a <see langword="null" /> task; its result must not be <see langword="null" />.</param>
     /// <param name="mapException">
-    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
-    ///     <see langword="null" />.
+    ///     The function that creates the <see cref="Error" /> from the exception, or returns <see langword="null" /> to decline it:
+    ///     a declined exception is rethrown as it is. Must not be <see langword="null" />.
     /// </param>
     /// <param name="continueOnCapturedContext">
     ///     <see langword="true" /> to run the continuations, including the <paramref name="mapException" /> function when it runs after an
@@ -895,13 +909,12 @@ public sealed partial record Result
     /// <returns>A task with the <see cref="Result" /> returned by the <paramref name="function" />, as it is; or a failed one with the mapped error.</returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
     /// <exception cref="InvalidOperationException">
-    ///     If the <paramref name="function" /> returns a <see langword="null" /> task or a <see langword="null" /> result, or the <paramref name="mapException" /> function returns
-    ///     <see langword="null" />.
+    ///     If the <paramref name="function" /> returns a <see langword="null" /> task or a <see langword="null" /> result.
     /// </exception>
     [OverloadResolutionPriority(1)]
     public static Task<Result> TryAsync<TException>(
         Func<Task<Result>> function,
-        Func<TException, Error> mapException,
+        Func<TException, Error?> mapException,
         bool? continueOnCapturedContext = null
     )
         where TException : Exception
@@ -911,7 +924,7 @@ public sealed partial record Result
 
         return Core(function, mapException, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
 
-        static async Task<Result> Core(Func<Task<Result>> function, Func<TException, Error> mapException, bool continueOnCapturedContext)
+        static async Task<Result> Core(Func<Task<Result>> function, Func<TException, Error?> mapException, bool continueOnCapturedContext)
         {
             Task<Result> task;
             try
@@ -920,7 +933,10 @@ public sealed partial record Result
             }
             catch (TException exception) when (IsMapped(exception))
             {
-                var error = MapException(mapException, exception);
+                var error = mapException(exception);
+                if (error is null)
+                    throw;
+
                 return FromError(error);
             }
 
@@ -933,7 +949,10 @@ public sealed partial record Result
             }
             catch (TException exception) when (IsMapped(exception))
             {
-                var error = MapException(mapException, exception);
+                var error = mapException(exception);
+                if (error is null)
+                    throw;
+
                 return FromError(error);
             }
 
@@ -962,8 +981,8 @@ public sealed partial record Result
     /// <typeparam name="T">The type of the value.</typeparam>
     /// <param name="function">The asynchronous function to run. Must not be <see langword="null" />, nor return a <see langword="null" /> task; its result must not be <see langword="null" />.</param>
     /// <param name="mapException">
-    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
-    ///     <see langword="null" />.
+    ///     The function that creates the <see cref="Error" /> from the exception, or returns <see langword="null" /> to decline it:
+    ///     a declined exception is rethrown as it is. Must not be <see langword="null" />.
     /// </param>
     /// <param name="continueOnCapturedContext">
     ///     <see langword="true" /> to run the continuations, including the <paramref name="mapException" /> function when it runs after an
@@ -973,11 +992,10 @@ public sealed partial record Result
     /// <returns>A task with the <see cref="Result{T}" /> returned by the <paramref name="function" />, as it is; or a failed one with the mapped error.</returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
     /// <exception cref="InvalidOperationException">
-    ///     If the <paramref name="function" /> returns a <see langword="null" /> task or a <see langword="null" /> result, or the <paramref name="mapException" /> function returns
-    ///     <see langword="null" />.
+    ///     If the <paramref name="function" /> returns a <see langword="null" /> task or a <see langword="null" /> result.
     /// </exception>
     [OverloadResolutionPriority(1)]
-    public static Task<Result<T>> TryAsync<T>(Func<Task<Result<T>>> function, Func<Exception, Error> mapException, bool? continueOnCapturedContext = null)
+    public static Task<Result<T>> TryAsync<T>(Func<Task<Result<T>>> function, Func<Exception, Error?> mapException, bool? continueOnCapturedContext = null)
     {
         return TryAsync<T, Exception>(function, mapException, continueOnCapturedContext);
     }
@@ -1004,8 +1022,8 @@ public sealed partial record Result
     /// <typeparam name="TException">The type of the exceptions to map; other exceptions propagate.</typeparam>
     /// <param name="function">The asynchronous function to run. Must not be <see langword="null" />, nor return a <see langword="null" /> task; its result must not be <see langword="null" />.</param>
     /// <param name="mapException">
-    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
-    ///     <see langword="null" />.
+    ///     The function that creates the <see cref="Error" /> from the exception, or returns <see langword="null" /> to decline it:
+    ///     a declined exception is rethrown as it is. Must not be <see langword="null" />.
     /// </param>
     /// <param name="continueOnCapturedContext">
     ///     <see langword="true" /> to run the continuations, including the <paramref name="mapException" /> function when it runs after an
@@ -1015,13 +1033,12 @@ public sealed partial record Result
     /// <returns>A task with the <see cref="Result{T}" /> returned by the <paramref name="function" />, as it is; or a failed one with the mapped error.</returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
     /// <exception cref="InvalidOperationException">
-    ///     If the <paramref name="function" /> returns a <see langword="null" /> task or a <see langword="null" /> result, or the <paramref name="mapException" /> function returns
-    ///     <see langword="null" />.
+    ///     If the <paramref name="function" /> returns a <see langword="null" /> task or a <see langword="null" /> result.
     /// </exception>
     [OverloadResolutionPriority(1)]
     public static Task<Result<T>> TryAsync<T, TException>(
         Func<Task<Result<T>>> function,
-        Func<TException, Error> mapException,
+        Func<TException, Error?> mapException,
         bool? continueOnCapturedContext = null
     )
         where TException : Exception
@@ -1031,7 +1048,7 @@ public sealed partial record Result
 
         return Core(function, mapException, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
 
-        static async Task<Result<T>> Core(Func<Task<Result<T>>> function, Func<TException, Error> mapException, bool continueOnCapturedContext)
+        static async Task<Result<T>> Core(Func<Task<Result<T>>> function, Func<TException, Error?> mapException, bool continueOnCapturedContext)
         {
             Task<Result<T>> task;
             try
@@ -1040,7 +1057,10 @@ public sealed partial record Result
             }
             catch (TException exception) when (IsMapped(exception))
             {
-                var error = MapException(mapException, exception);
+                var error = mapException(exception);
+                if (error is null)
+                    throw;
+
                 return Result<T>.FromError(error);
             }
 
@@ -1053,7 +1073,10 @@ public sealed partial record Result
             }
             catch (TException exception) when (IsMapped(exception))
             {
-                var error = MapException(mapException, exception);
+                var error = mapException(exception);
+                if (error is null)
+                    throw;
+
                 return Result<T>.FromError(error);
             }
 
@@ -1081,8 +1104,8 @@ public sealed partial record Result
     /// </remarks>
     /// <param name="function">The asynchronous function to run. Must not be <see langword="null" />, nor return a <see langword="null" /> task; its result must not be <see langword="null" />.</param>
     /// <param name="mapException">
-    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
-    ///     <see langword="null" />.
+    ///     The function that creates the <see cref="Error" /> from the exception, or returns <see langword="null" /> to decline it:
+    ///     a declined exception is rethrown as it is. Must not be <see langword="null" />.
     /// </param>
     /// <param name="continueOnCapturedContext">
     ///     <see langword="true" /> to run the continuations, including the <paramref name="mapException" /> function when it runs after an
@@ -1092,11 +1115,10 @@ public sealed partial record Result
     /// <returns>A task with a failed <see cref="Result" /> with the <see cref="Error" /> returned by the <paramref name="function" />, or with the mapped error.</returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
     /// <exception cref="InvalidOperationException">
-    ///     If the <paramref name="function" /> returns a <see langword="null" /> task or a <see langword="null" /> error, or the <paramref name="mapException" /> function returns
-    ///     <see langword="null" />.
+    ///     If the <paramref name="function" /> returns a <see langword="null" /> task or a <see langword="null" /> error.
     /// </exception>
     [OverloadResolutionPriority(1)]
-    public static Task<Result> TryAsync(Func<Task<Error>> function, Func<Exception, Error> mapException, bool? continueOnCapturedContext = null)
+    public static Task<Result> TryAsync(Func<Task<Error>> function, Func<Exception, Error?> mapException, bool? continueOnCapturedContext = null)
     {
         return TryAsync<Exception>(function, mapException, continueOnCapturedContext);
     }
@@ -1122,8 +1144,8 @@ public sealed partial record Result
     /// <typeparam name="TException">The type of the exceptions to map; other exceptions propagate.</typeparam>
     /// <param name="function">The asynchronous function to run. Must not be <see langword="null" />, nor return a <see langword="null" /> task; its result must not be <see langword="null" />.</param>
     /// <param name="mapException">
-    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
-    ///     <see langword="null" />.
+    ///     The function that creates the <see cref="Error" /> from the exception, or returns <see langword="null" /> to decline it:
+    ///     a declined exception is rethrown as it is. Must not be <see langword="null" />.
     /// </param>
     /// <param name="continueOnCapturedContext">
     ///     <see langword="true" /> to run the continuations, including the <paramref name="mapException" /> function when it runs after an
@@ -1133,13 +1155,12 @@ public sealed partial record Result
     /// <returns>A task with a failed <see cref="Result" /> with the <see cref="Error" /> returned by the <paramref name="function" />, or with the mapped error.</returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
     /// <exception cref="InvalidOperationException">
-    ///     If the <paramref name="function" /> returns a <see langword="null" /> task or a <see langword="null" /> error, or the <paramref name="mapException" /> function returns
-    ///     <see langword="null" />.
+    ///     If the <paramref name="function" /> returns a <see langword="null" /> task or a <see langword="null" /> error.
     /// </exception>
     [OverloadResolutionPriority(1)]
     public static Task<Result> TryAsync<TException>(
         Func<Task<Error>> function,
-        Func<TException, Error> mapException,
+        Func<TException, Error?> mapException,
         bool? continueOnCapturedContext = null
     )
         where TException : Exception
@@ -1149,7 +1170,7 @@ public sealed partial record Result
 
         return Core(function, mapException, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
 
-        static async Task<Result> Core(Func<Task<Error>> function, Func<TException, Error> mapException, bool continueOnCapturedContext)
+        static async Task<Result> Core(Func<Task<Error>> function, Func<TException, Error?> mapException, bool continueOnCapturedContext)
         {
             Task<Error> task;
             try
@@ -1158,7 +1179,10 @@ public sealed partial record Result
             }
             catch (TException exception) when (IsMapped(exception))
             {
-                var error = MapException(mapException, exception);
+                var error = mapException(exception);
+                if (error is null)
+                    throw;
+
                 return FromError(error);
             }
 
@@ -1171,7 +1195,10 @@ public sealed partial record Result
             }
             catch (TException exception) when (IsMapped(exception))
             {
-                var error = MapException(mapException, exception);
+                var error = mapException(exception);
+                if (error is null)
+                    throw;
+
                 return FromError(error);
             }
 
@@ -1205,8 +1232,8 @@ public sealed partial record Result
     /// </remarks>
     /// <param name="function">The asynchronous function to run. Must not be <see langword="null" />; its result must not be <see langword="null" />.</param>
     /// <param name="mapException">
-    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
-    ///     <see langword="null" />.
+    ///     The function that creates the <see cref="Error" /> from the exception, or returns <see langword="null" /> to decline it:
+    ///     a declined exception is rethrown as it is. Must not be <see langword="null" />.
     /// </param>
     /// <param name="continueOnCapturedContext">
     ///     <see langword="true" /> to run the continuations, including the <paramref name="mapException" /> function when it runs after an
@@ -1215,11 +1242,8 @@ public sealed partial record Result
     /// </param>
     /// <returns>A task with the <see cref="Result" /> returned by the <paramref name="function" />, as it is; or a failed one with the mapped error.</returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
-    /// <exception cref="InvalidOperationException">
-    ///     If the <paramref name="function" /> returns a <see langword="null" /> result, or the <paramref name="mapException" /> function returns
-    ///     <see langword="null" />.
-    /// </exception>
-    public static ValueTask<Result> TryAsync(Func<ValueTask<Result>> function, Func<Exception, Error> mapException, bool? continueOnCapturedContext = null)
+    /// <exception cref="InvalidOperationException">If the <paramref name="function" /> returns a <see langword="null" /> result.</exception>
+    public static ValueTask<Result> TryAsync(Func<ValueTask<Result>> function, Func<Exception, Error?> mapException, bool? continueOnCapturedContext = null)
     {
         return TryAsync<Exception>(function, mapException, continueOnCapturedContext);
     }
@@ -1245,8 +1269,8 @@ public sealed partial record Result
     /// <typeparam name="TException">The type of the exceptions to map; other exceptions propagate.</typeparam>
     /// <param name="function">The asynchronous function to run. Must not be <see langword="null" />; its result must not be <see langword="null" />.</param>
     /// <param name="mapException">
-    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
-    ///     <see langword="null" />.
+    ///     The function that creates the <see cref="Error" /> from the exception, or returns <see langword="null" /> to decline it:
+    ///     a declined exception is rethrown as it is. Must not be <see langword="null" />.
     /// </param>
     /// <param name="continueOnCapturedContext">
     ///     <see langword="true" /> to run the continuations, including the <paramref name="mapException" /> function when it runs after an
@@ -1255,13 +1279,10 @@ public sealed partial record Result
     /// </param>
     /// <returns>A task with the <see cref="Result" /> returned by the <paramref name="function" />, as it is; or a failed one with the mapped error.</returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
-    /// <exception cref="InvalidOperationException">
-    ///     If the <paramref name="function" /> returns a <see langword="null" /> result, or the <paramref name="mapException" /> function returns
-    ///     <see langword="null" />.
-    /// </exception>
+    /// <exception cref="InvalidOperationException">If the <paramref name="function" /> returns a <see langword="null" /> result.</exception>
     public static ValueTask<Result> TryAsync<TException>(
         Func<ValueTask<Result>> function,
-        Func<TException, Error> mapException,
+        Func<TException, Error?> mapException,
         bool? continueOnCapturedContext = null
     )
         where TException : Exception
@@ -1271,7 +1292,7 @@ public sealed partial record Result
 
         return Core(function, mapException, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
 
-        static async ValueTask<Result> Core(Func<ValueTask<Result>> function, Func<TException, Error> mapException, bool continueOnCapturedContext)
+        static async ValueTask<Result> Core(Func<ValueTask<Result>> function, Func<TException, Error?> mapException, bool continueOnCapturedContext)
         {
             Result result;
             try
@@ -1281,7 +1302,10 @@ public sealed partial record Result
             }
             catch (TException exception) when (IsMapped(exception))
             {
-                var error = MapException(mapException, exception);
+                var error = mapException(exception);
+                if (error is null)
+                    throw;
+
                 return FromError(error);
             }
 
@@ -1311,8 +1335,8 @@ public sealed partial record Result
     /// <typeparam name="T">The type of the value.</typeparam>
     /// <param name="function">The asynchronous function to run. Must not be <see langword="null" />; its result must not be <see langword="null" />.</param>
     /// <param name="mapException">
-    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
-    ///     <see langword="null" />.
+    ///     The function that creates the <see cref="Error" /> from the exception, or returns <see langword="null" /> to decline it:
+    ///     a declined exception is rethrown as it is. Must not be <see langword="null" />.
     /// </param>
     /// <param name="continueOnCapturedContext">
     ///     <see langword="true" /> to run the continuations, including the <paramref name="mapException" /> function when it runs after an
@@ -1321,11 +1345,8 @@ public sealed partial record Result
     /// </param>
     /// <returns>A task with the <see cref="Result{T}" /> returned by the <paramref name="function" />, as it is; or a failed one with the mapped error.</returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
-    /// <exception cref="InvalidOperationException">
-    ///     If the <paramref name="function" /> returns a <see langword="null" /> result, or the <paramref name="mapException" /> function returns
-    ///     <see langword="null" />.
-    /// </exception>
-    public static ValueTask<Result<T>> TryAsync<T>(Func<ValueTask<Result<T>>> function, Func<Exception, Error> mapException, bool? continueOnCapturedContext = null)
+    /// <exception cref="InvalidOperationException">If the <paramref name="function" /> returns a <see langword="null" /> result.</exception>
+    public static ValueTask<Result<T>> TryAsync<T>(Func<ValueTask<Result<T>>> function, Func<Exception, Error?> mapException, bool? continueOnCapturedContext = null)
     {
         return TryAsync<T, Exception>(function, mapException, continueOnCapturedContext);
     }
@@ -1352,8 +1373,8 @@ public sealed partial record Result
     /// <typeparam name="TException">The type of the exceptions to map; other exceptions propagate.</typeparam>
     /// <param name="function">The asynchronous function to run. Must not be <see langword="null" />; its result must not be <see langword="null" />.</param>
     /// <param name="mapException">
-    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
-    ///     <see langword="null" />.
+    ///     The function that creates the <see cref="Error" /> from the exception, or returns <see langword="null" /> to decline it:
+    ///     a declined exception is rethrown as it is. Must not be <see langword="null" />.
     /// </param>
     /// <param name="continueOnCapturedContext">
     ///     <see langword="true" /> to run the continuations, including the <paramref name="mapException" /> function when it runs after an
@@ -1362,13 +1383,10 @@ public sealed partial record Result
     /// </param>
     /// <returns>A task with the <see cref="Result{T}" /> returned by the <paramref name="function" />, as it is; or a failed one with the mapped error.</returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
-    /// <exception cref="InvalidOperationException">
-    ///     If the <paramref name="function" /> returns a <see langword="null" /> result, or the <paramref name="mapException" /> function returns
-    ///     <see langword="null" />.
-    /// </exception>
+    /// <exception cref="InvalidOperationException">If the <paramref name="function" /> returns a <see langword="null" /> result.</exception>
     public static ValueTask<Result<T>> TryAsync<T, TException>(
         Func<ValueTask<Result<T>>> function,
-        Func<TException, Error> mapException,
+        Func<TException, Error?> mapException,
         bool? continueOnCapturedContext = null
     )
         where TException : Exception
@@ -1378,7 +1396,7 @@ public sealed partial record Result
 
         return Core(function, mapException, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
 
-        static async ValueTask<Result<T>> Core(Func<ValueTask<Result<T>>> function, Func<TException, Error> mapException, bool continueOnCapturedContext)
+        static async ValueTask<Result<T>> Core(Func<ValueTask<Result<T>>> function, Func<TException, Error?> mapException, bool continueOnCapturedContext)
         {
             Result<T> result;
             try
@@ -1388,7 +1406,10 @@ public sealed partial record Result
             }
             catch (TException exception) when (IsMapped(exception))
             {
-                var error = MapException(mapException, exception);
+                var error = mapException(exception);
+                if (error is null)
+                    throw;
+
                 return Result<T>.FromError(error);
             }
 
@@ -1417,8 +1438,8 @@ public sealed partial record Result
     /// </remarks>
     /// <param name="function">The asynchronous function to run. Must not be <see langword="null" />; its result must not be <see langword="null" />.</param>
     /// <param name="mapException">
-    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
-    ///     <see langword="null" />.
+    ///     The function that creates the <see cref="Error" /> from the exception, or returns <see langword="null" /> to decline it:
+    ///     a declined exception is rethrown as it is. Must not be <see langword="null" />.
     /// </param>
     /// <param name="continueOnCapturedContext">
     ///     <see langword="true" /> to run the continuations, including the <paramref name="mapException" /> function when it runs after an
@@ -1427,11 +1448,8 @@ public sealed partial record Result
     /// </param>
     /// <returns>A task with a failed <see cref="Result" /> with the <see cref="Error" /> returned by the <paramref name="function" />, or with the mapped error.</returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
-    /// <exception cref="InvalidOperationException">
-    ///     If the <paramref name="function" /> returns a <see langword="null" /> error, or the <paramref name="mapException" /> function returns
-    ///     <see langword="null" />.
-    /// </exception>
-    public static ValueTask<Result> TryAsync(Func<ValueTask<Error>> function, Func<Exception, Error> mapException, bool? continueOnCapturedContext = null)
+    /// <exception cref="InvalidOperationException">If the <paramref name="function" /> returns a <see langword="null" /> error.</exception>
+    public static ValueTask<Result> TryAsync(Func<ValueTask<Error>> function, Func<Exception, Error?> mapException, bool? continueOnCapturedContext = null)
     {
         return TryAsync<Exception>(function, mapException, continueOnCapturedContext);
     }
@@ -1457,8 +1475,8 @@ public sealed partial record Result
     /// <typeparam name="TException">The type of the exceptions to map; other exceptions propagate.</typeparam>
     /// <param name="function">The asynchronous function to run. Must not be <see langword="null" />; its result must not be <see langword="null" />.</param>
     /// <param name="mapException">
-    ///     The function that creates the <see cref="Error" /> from the exception. Must not be <see langword="null" />, nor return
-    ///     <see langword="null" />.
+    ///     The function that creates the <see cref="Error" /> from the exception, or returns <see langword="null" /> to decline it:
+    ///     a declined exception is rethrown as it is. Must not be <see langword="null" />.
     /// </param>
     /// <param name="continueOnCapturedContext">
     ///     <see langword="true" /> to run the continuations, including the <paramref name="mapException" /> function when it runs after an
@@ -1467,13 +1485,10 @@ public sealed partial record Result
     /// </param>
     /// <returns>A task with a failed <see cref="Result" /> with the <see cref="Error" /> returned by the <paramref name="function" />, or with the mapped error.</returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
-    /// <exception cref="InvalidOperationException">
-    ///     If the <paramref name="function" /> returns a <see langword="null" /> error, or the <paramref name="mapException" /> function returns
-    ///     <see langword="null" />.
-    /// </exception>
+    /// <exception cref="InvalidOperationException">If the <paramref name="function" /> returns a <see langword="null" /> error.</exception>
     public static ValueTask<Result> TryAsync<TException>(
         Func<ValueTask<Error>> function,
-        Func<TException, Error> mapException,
+        Func<TException, Error?> mapException,
         bool? continueOnCapturedContext = null
     )
         where TException : Exception
@@ -1483,7 +1498,7 @@ public sealed partial record Result
 
         return Core(function, mapException, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
 
-        static async ValueTask<Result> Core(Func<ValueTask<Error>> function, Func<TException, Error> mapException, bool continueOnCapturedContext)
+        static async ValueTask<Result> Core(Func<ValueTask<Error>> function, Func<TException, Error?> mapException, bool continueOnCapturedContext)
         {
             Error returnedError;
             try
@@ -1493,7 +1508,10 @@ public sealed partial record Result
             }
             catch (TException exception) when (IsMapped(exception))
             {
-                var error = MapException(mapException, exception);
+                var error = mapException(exception);
+                if (error is null)
+                    throw;
+
                 return FromError(error);
             }
 
@@ -1517,17 +1535,6 @@ public sealed partial record Result
     {
         return exception is not OperationCanceledException
                || typeof(TException).IsAssignableTo(typeof(OperationCanceledException));
-    }
-
-    /// <summary>
-    ///     Returns the <see cref="Error" /> that the <paramref name="mapException" /> function creates from the <paramref name="exception" />.
-    /// </summary>
-    /// <exception cref="InvalidOperationException">If the <paramref name="mapException" /> function returns <see langword="null" />.</exception>
-    private static Error MapException<TException>(Func<TException, Error> mapException, TException exception)
-        where TException : Exception
-    {
-        var error = mapException(exception);
-        return Guard.EnsureNotNullReturned(error, nameof(mapException));
     }
 
     #endregion
@@ -1554,7 +1561,7 @@ public sealed partial record Result
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(FunctionReturnsTaskMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result Try(Func<Task> function, Func<Exception, Error> mapException)
+    public static Result Try(Func<Task> function, Func<Exception, Error?> mapException)
     {
         throw new NotSupportedException(FunctionReturnsTaskMessage);
     }
@@ -1564,7 +1571,7 @@ public sealed partial record Result
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(FunctionReturnsTaskMessage, error: true)]
-    public static Result Try(Func<ValueTask> function, Func<Exception, Error> mapException)
+    public static Result Try(Func<ValueTask> function, Func<Exception, Error?> mapException)
     {
         throw new NotSupportedException(FunctionReturnsTaskMessage);
     }
@@ -1574,30 +1581,7 @@ public sealed partial record Result
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(FunctionReturnsTaskMessage, error: true)]
-    public static Result Try<TTaskResult>(Func<ValueTask<TTaskResult>> function, Func<Exception, Error> mapException)
-    {
-        throw new NotSupportedException(FunctionReturnsTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the function returns a task, which <c>Try</c> does not await; use <c>TryAsync</c>.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(FunctionReturnsTaskMessage, error: true)]
-    [OverloadResolutionPriority(1)]
-    public static Result Try<TException>(Func<Task> function, Func<TException, Error> mapException)
-        where TException : Exception
-    {
-        throw new NotSupportedException(FunctionReturnsTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the function returns a task, which <c>Try</c> does not await; use <c>TryAsync</c>.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(FunctionReturnsTaskMessage, error: true)]
-    public static Result Try<TException>(Func<ValueTask> function, Func<TException, Error> mapException)
-        where TException : Exception
+    public static Result Try<TTaskResult>(Func<ValueTask<TTaskResult>> function, Func<Exception, Error?> mapException)
     {
         throw new NotSupportedException(FunctionReturnsTaskMessage);
     }
@@ -1608,7 +1592,7 @@ public sealed partial record Result
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(FunctionReturnsTaskMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result Try<TTaskResult, TException>(Func<Task<TTaskResult>> function, Func<TException, Error> mapException)
+    public static Result Try<TException>(Func<Task> function, Func<TException, Error?> mapException)
         where TException : Exception
     {
         throw new NotSupportedException(FunctionReturnsTaskMessage);
@@ -1619,7 +1603,30 @@ public sealed partial record Result
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(FunctionReturnsTaskMessage, error: true)]
-    public static Result Try<TTaskResult, TException>(Func<ValueTask<TTaskResult>> function, Func<TException, Error> mapException)
+    public static Result Try<TException>(Func<ValueTask> function, Func<TException, Error?> mapException)
+        where TException : Exception
+    {
+        throw new NotSupportedException(FunctionReturnsTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the function returns a task, which <c>Try</c> does not await; use <c>TryAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(FunctionReturnsTaskMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static Result Try<TTaskResult, TException>(Func<Task<TTaskResult>> function, Func<TException, Error?> mapException)
+        where TException : Exception
+    {
+        throw new NotSupportedException(FunctionReturnsTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the function returns a task, which <c>Try</c> does not await; use <c>TryAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(FunctionReturnsTaskMessage, error: true)]
+    public static Result Try<TTaskResult, TException>(Func<ValueTask<TTaskResult>> function, Func<TException, Error?> mapException)
         where TException : Exception
     {
         throw new NotSupportedException(FunctionReturnsTaskMessage);

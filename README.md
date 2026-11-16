@@ -514,6 +514,19 @@ Result<int> number = Result.Try<int, FormatException>(
 
 An `OperationCanceledException` is rethrown: cancellation is not a failure.
 
+The mapper may return `null` to decline an exception, which is then rethrown as it is, so one mapper can handle several types:
+
+```csharp
+Result result = Result.Try(
+    () => _repository.Save(order),
+    ex => ex switch
+    {
+        DbUpdateConcurrencyException => Error.Conflict(ErrorUri.Tag("tag:exampleapp.com,2026:errors:orders:conflict"), "The order was changed."),
+        TimeoutException => Error.Timeout(ErrorUri.Tag("tag:exampleapp.com,2026:errors:database:timeout"), "The database did not respond."),
+        _ => null    // any other exception propagates
+    });
+```
+
 A function that returns a `Result`, a `Result<T>` or an `Error` is flattened: `Result.Try(() => _repository.Load(id), map)` is a `Result<Customer>` when `Load` returns a `Result<Customer>`, and an `Error` gives a failed result.
 
 See more: [Try](https://github.com/TomMaple/Maple.Result/blob/main/docs/Reference/Result/Result_Try.md), [TryAsync](https://github.com/TomMaple/Maple.Result/blob/main/docs/Reference/Result/Result_TryAsync.md)

@@ -13,6 +13,7 @@ using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Maple.Results.Tests.Unit.ResultTests;
@@ -36,6 +37,23 @@ public class ResultTryUnitTests
     private static T Fail<T>(Exception exception)
     {
         throw exception;
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static void ThrowFromNamedMethod(Exception exception)
+    {
+        throw exception;
+    }
+
+    // One mapper for several types: the others are declined (null) and rethrown.
+    private static Error? MapFormatOrArgument(Exception exception)
+    {
+        return exception switch
+        {
+            FormatException => MappedError,
+            ArgumentException => MappedError,
+            _ => null
+        };
     }
 
     #region Try(Action, Func<Exception, Error>)
@@ -139,17 +157,62 @@ public class ResultTryUnitTests
         exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("mapException");
     }
 
+    // A mapper that returns null declines the exception: it is rethrown as it is (#195).
     [Fact]
-    public void Try_ActionThrowsAndMapperReturnsNull_ThrowsInvalidOperationException()
+    public void Try_ActionThrowsAndMapperDeclines_RethrowsTheSameException()
     {
         // Arrange
-        const string ExpectedMessage = "The function ‘mapException’ returned null.";
+        var thrown = new TimeoutException();
 
         // Act
-        var exception = Record.Exception(() => Result.Try(() => Throw(new TimeoutException()), _ => null!));
+        var exception = Record.Exception(() => Result.Try(() => Throw(thrown), _ => null));
 
         // Assert
-        exception.ShouldBeOfType<InvalidOperationException>().Message.ShouldBe(ExpectedMessage);
+        exception.ShouldBeSameAs(thrown);
+    }
+
+    // `throw;` inside the catch block keeps the stack trace of the original exception.
+    [Fact]
+    public void Try_ActionThrowsAndMapperDeclines_KeepsTheStackTrace()
+    {
+        // Act
+        var exception = Record.Exception(() => Result.Try(() => ThrowFromNamedMethod(new TimeoutException()), _ => null));
+
+        // Assert
+        exception.ShouldNotBeNull().StackTrace.ShouldNotBeNull().ShouldContain(nameof(ThrowFromNamedMethod));
+    }
+
+    [Fact]
+    public void Try_MapperForSeveralTypes_MapsTheHandledTypes()
+    {
+        // Act
+        var result = Result.Try(() => Throw(new FormatException()), MapFormatOrArgument);
+
+        // Assert
+        result.Error.ShouldBe(MappedError);
+    }
+
+    [Fact]
+    public void Try_MapperForSeveralTypes_RethrowsTheOtherTypes()
+    {
+        // Act
+        var exception = Record.Exception(() => Result.Try(() => Throw(new TimeoutException()), MapFormatOrArgument));
+
+        // Assert
+        exception.ShouldBeOfType<TimeoutException>();
+    }
+
+    [Fact]
+    public void TryTyped_ActionThrowsAndMapperDeclines_RethrowsTheSameException()
+    {
+        // Arrange
+        var thrown = new FormatException();
+
+        // Act
+        var exception = Record.Exception(() => Result.Try<FormatException>(() => Throw(thrown), _ => null));
+
+        // Assert
+        exception.ShouldBeSameAs(thrown);
     }
 
     [Fact]
@@ -324,13 +387,16 @@ public class ResultTryUnitTests
     }
 
     [Fact]
-    public void Try_FunctionThrowsAndMapperReturnsNull_ThrowsInvalidOperationException()
+    public void Try_FunctionThrowsAndMapperDeclines_RethrowsTheSameException()
     {
+        // Arrange
+        var thrown = new TimeoutException();
+
         // Act
-        var exception = Record.Exception(() => Result.Try(() => Fail<int>(new TimeoutException()), _ => null!));
+        var exception = Record.Exception(() => Result.Try(() => Fail<int>(thrown), _ => null));
 
         // Assert
-        exception.ShouldBeOfType<InvalidOperationException>();
+        exception.ShouldBeSameAs(thrown);
     }
 
     #endregion

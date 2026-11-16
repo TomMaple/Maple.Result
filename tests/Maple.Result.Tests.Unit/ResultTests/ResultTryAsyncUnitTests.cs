@@ -10,6 +10,7 @@
 
 using Maple.Results.Tests.Unit.TestingInfrastructure.Fakes;
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -29,6 +30,19 @@ public class ResultTryAsyncUnitTests
     private static T Fail<T>(Exception exception)
     {
         throw exception;
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static void ThrowFromNamedMethod(Exception exception)
+    {
+        throw exception;
+    }
+
+    private static Error? MapTimeoutOnly(OperationCanceledException exception)
+    {
+        return exception.InnerException is TimeoutException
+            ? MappedError
+            : null;
     }
 
     #region TryAsync(Func<Task>, Func<Exception, Error>)
@@ -122,14 +136,84 @@ public class ResultTryAsyncUnitTests
         mapperCalls.ShouldBe(0);
     }
 
+    // A mapper that returns null declines the exception: it is rethrown as it is (#195).
     [Fact]
-    public async Task TryAsync_TaskFaultsAndMapperReturnsNull_ThrowsInvalidOperationException()
+    public async Task TryAsync_TaskFaultsAndMapperDeclines_RethrowsTheSameException()
     {
+        // Arrange
+        var thrown = new TimeoutException();
+
         // Act
-        var exception = await Record.ExceptionAsync(() => Result.TryAsync(() => Task.FromException(new TimeoutException()), _ => null!));
+        var exception = await Record.ExceptionAsync(() => Result.TryAsync(() => Task.FromException(thrown), _ => null));
 
         // Assert
-        exception.ShouldBeOfType<InvalidOperationException>();
+        exception.ShouldBeSameAs(thrown);
+    }
+
+    [Fact]
+    public async Task TryAsync_TaskFaultsAfterAwaitAndMapperDeclines_KeepsTheStackTrace()
+    {
+        // Act
+        var exception = await Record.ExceptionAsync(() => Result.TryAsync(async () =>
+        {
+            await Task.Yield();
+            ThrowFromNamedMethod(new TimeoutException());
+        }, _ => null));
+
+        // Assert
+        exception.ShouldNotBeNull().StackTrace.ShouldNotBeNull().ShouldContain(nameof(ThrowFromNamedMethod));
+    }
+
+    // A timeout of HttpClient is a TaskCanceledException with an inner TimeoutException; with OperationCanceledException as the type,
+    // the mapper sees both the timeout and real cancellations, and declines the latter.
+    [Fact]
+    public async Task TryAsyncTyped_HttpClientTimeout_ReturnsTheMappedError()
+    {
+        // Arrange
+        var timeout = new TaskCanceledException("The request was canceled due to the configured HttpClient.Timeout.", new TimeoutException());
+
+        // Act
+        var result = await Result.TryAsync<OperationCanceledException>(() => Task.FromException(timeout), MapTimeoutOnly);
+
+        // Assert
+        result.Error.ShouldBe(MappedError);
+    }
+
+    [Fact]
+    public async Task TryAsyncTyped_RealCancellationAndTimeoutMapper_Rethrows()
+    {
+        // Act
+        var exception = await Record.ExceptionAsync(() =>
+            Result.TryAsync<OperationCanceledException>(() => Task.FromCanceled(new CancellationToken(true)), MapTimeoutOnly));
+
+        // Assert
+        exception.ShouldBeAssignableTo<OperationCanceledException>();
+    }
+
+    [Fact]
+    public async Task TryAsync_ValueTaskFaultsAndMapperDeclines_RethrowsTheSameException()
+    {
+        // Arrange
+        var thrown = new TimeoutException();
+
+        // Act
+        var exception = await Record.ExceptionAsync(() => Result.TryAsync(() => ValueTask.FromException(thrown), _ => null).AsTask());
+
+        // Assert
+        exception.ShouldBeSameAs(thrown);
+    }
+
+    [Fact]
+    public async Task TryAsync_TaskOfValueFaultsAndMapperDeclines_RethrowsTheSameException()
+    {
+        // Arrange
+        var thrown = new TimeoutException();
+
+        // Act
+        var exception = await Record.ExceptionAsync(() => Result.TryAsync(() => Task.FromException<int>(thrown), _ => null));
+
+        // Assert
+        exception.ShouldBeSameAs(thrown);
     }
 
     // The arguments are checked when the method is called, not when the returned task is awaited.
