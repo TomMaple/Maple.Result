@@ -10,6 +10,7 @@
 
 using Maple.Results.Extensions;
 using Maple.Results.Tests.Unit.TestingInfrastructure.Fakes;
+using Maple.Results.Tests.Unit.TestingInfrastructure.Helpers;
 using Moq;
 using System;
 using System.ComponentModel;
@@ -31,7 +32,7 @@ public class ElseExtensionsUnitTests
         const Result? Sut = null;
 
         // Act
-        var exception = Record.Exception(() => Sut!.IfError(_ => Result.Success()));
+        var exception = Record.Exception(() => Sut!.Else(_ => Result.Success()));
 
         // Assert
         exception.ShouldNotBeNull();
@@ -48,7 +49,7 @@ public class ElseExtensionsUnitTests
         var sut = Result.Success();
 
         // Act
-        var exception = Record.Exception(() => sut.IfError(Function!));
+        var exception = Record.Exception(() => sut.Else(Function!));
 
         // Assert
         exception.ShouldNotBeNull();
@@ -65,7 +66,7 @@ public class ElseExtensionsUnitTests
         var sut = GetErrorResult();
 
         // Act
-        var exception = Record.Exception(() => sut.IfError(Function!));
+        var exception = Record.Exception(() => sut.Else(Function!));
 
         // Assert
         exception.ShouldNotBeNull();
@@ -82,7 +83,7 @@ public class ElseExtensionsUnitTests
         var sut = Result.Success();
 
         // Act
-        var result = sut.IfError(functionMock.Object);
+        var result = sut.Else(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(It.IsAny<Error>()), Times.Never);
@@ -96,7 +97,7 @@ public class ElseExtensionsUnitTests
         var sut = Result.Success();
 
         // Act
-        var result = sut.IfError(_ => Result.Success());
+        var result = sut.Else(_ => Result.Success());
 
         // Assert
         result.ShouldBeSameAs(sut);
@@ -111,7 +112,7 @@ public class ElseExtensionsUnitTests
         var sut = GetErrorResult();
 
         // Act
-        sut.IfError(functionMock.Object);
+        sut.Else(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(sut.Error!), Times.Once);
@@ -126,7 +127,7 @@ public class ElseExtensionsUnitTests
         var sut = GetErrorResult();
 
         // Act
-        var result = sut.IfError(_ => funcResult);
+        var result = sut.Else(_ => funcResult);
 
         // Assert
         result.ShouldBeSameAs(funcResult);
@@ -141,7 +142,7 @@ public class ElseExtensionsUnitTests
         var sut = GetErrorResult();
 
         // Act
-        var result = sut.IfError(_ => funcError);
+        var result = sut.Else(_ => funcError);
 
         // Assert
         result.ShouldNotBeNull();
@@ -160,7 +161,7 @@ public class ElseExtensionsUnitTests
         const Result<int>? Sut = null;
 
         // Act
-        var exception = Record.Exception(() => Sut!.IfError(_ => Result<int>.FromValue(1)));
+        var exception = Record.Exception(() => Sut!.Else(_ => Result<int>.FromValue(1)));
 
         // Assert
         exception.ShouldNotBeNull();
@@ -178,7 +179,7 @@ public class ElseExtensionsUnitTests
         Result<int> sut = InitialValue;
 
         // Act
-        var exception = Record.Exception(() => sut.IfError(Function!));
+        var exception = Record.Exception(() => sut.Else(Function!));
 
         // Assert
         exception.ShouldNotBeNull();
@@ -195,7 +196,7 @@ public class ElseExtensionsUnitTests
         var sut = GetErrorResult<int>();
 
         // Act
-        var exception = Record.Exception(() => sut.IfError(Function!));
+        var exception = Record.Exception(() => sut.Else(Function!));
 
         // Assert
         exception.ShouldNotBeNull();
@@ -213,7 +214,7 @@ public class ElseExtensionsUnitTests
         Result<int> sut = InitialValue;
 
         // Act
-        var result = sut.IfError(functionMock.Object);
+        var result = sut.Else(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(It.IsAny<Error>()), Times.Never);
@@ -230,7 +231,7 @@ public class ElseExtensionsUnitTests
         Result<int> sut = InitialValue;
 
         // Act
-        var result = sut.IfError(_ => Result<int>.FromValue(2));
+        var result = sut.Else(_ => Result<int>.FromValue(2));
 
         // Assert
         result.ShouldBeSameAs(sut);
@@ -246,7 +247,7 @@ public class ElseExtensionsUnitTests
         var sut = GetErrorResult<int>();
 
         // Act
-        sut.IfError(functionMock.Object);
+        sut.Else(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(sut.Error!), Times.Once);
@@ -261,7 +262,7 @@ public class ElseExtensionsUnitTests
         var sut = GetErrorResult<int>();
 
         // Act
-        var result = sut.IfError(_ => funcResult);
+        var result = sut.Else(_ => funcResult);
 
         // Assert
         result.ShouldBeSameAs(funcResult);
@@ -277,7 +278,7 @@ public class ElseExtensionsUnitTests
         var sut = GetErrorResult<int>();
 
         // Act
-        var result = sut.IfError(_ => funcError);
+        var result = sut.Else(_ => funcError);
 
         // Assert
         result.ShouldNotBeNull();
@@ -302,6 +303,64 @@ public class ElseExtensionsUnitTests
     private static Error GetReplacementError()
     {
         return Error.Failure(ErrorUri.None, "a73d2604-e540-4dd3-8db8-3e6a70f89d72", "Replacement error");
+    }
+
+    #endregion
+
+    #region Else with a function returning a task (overload trap, issue #123)
+
+    // The traps of IfError, copied to Else (#197): a function that returns a task points to ElseAsync.
+
+    [Fact]
+    public void Else_FunctionReturningTaskOverloads_AreHiddenCompileErrors()
+    {
+        // Act
+        var traps = typeof(ElseExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a task, which Else does not await"))
+            .ToList();
+
+        // Assert
+        traps.Count.ShouldBe(3);
+        traps.ShouldAllBe(m => m.Name == "Else"
+                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
+                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
+    }
+
+    [Fact]
+    public void Else_TaskTrapOverload_HasPriorityOne()
+    {
+        // Arrange
+        var overload = typeof(ElseExtensions).GetMethods()
+            .Single(m => OverloadTrapHelper.IsTrap(m, "The function returns a task, which Else")
+                         && m.GetParameters()[1].ParameterType == typeof(Func<Error, Task>));
+
+        // Act
+        var priority = overload.GetCustomAttribute<OverloadResolutionPriorityAttribute>()?.Priority;
+
+        // Assert
+        priority.ShouldBe(1);
+    }
+
+    #endregion
+
+    #region Else with an action (overload trap, issue #197)
+
+    // A function that returns nothing is a side effect: the transforming method reports it as a compile error (CS0619) that
+    // names the side-effect method (#197). The bindings are checked with a consumer project.
+
+    [Fact]
+    public void Else_ActionOverloads_AreHiddenCompileErrors()
+    {
+        // Act
+        var traps = typeof(ElseExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The action returns nothing. Else needs"))
+            .ToList();
+
+        // Assert
+        traps.Count.ShouldBe(1);
+        traps.ShouldAllBe(m => m.Name == "Else"
+                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
+                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
     }
 
     #endregion

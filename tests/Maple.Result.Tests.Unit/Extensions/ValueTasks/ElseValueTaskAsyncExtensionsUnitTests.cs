@@ -10,8 +10,12 @@
 
 using Maple.Results.Extensions.ValueTasks;
 using Maple.Results.Tests.Unit.TestingInfrastructure.Fakes;
+using Maple.Results.Tests.Unit.TestingInfrastructure.Helpers;
 using Moq;
 using System;
+using System.ComponentModel;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Maple.Results.Tests.Unit.Extensions.ValueTasks;
@@ -27,7 +31,7 @@ public class ElseValueTaskAsyncExtensionsUnitTests
         const Result? Sut = null;
 
         // Act
-        var exception = await Record.ExceptionAsync(() => Sut!.IfErrorAsync(_ => ValueTask.FromResult(Result.Success())).AsTask());
+        var exception = await Record.ExceptionAsync(() => Sut!.ElseAsync(_ => ValueTask.FromResult(Result.Success())).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -44,7 +48,7 @@ public class ElseValueTaskAsyncExtensionsUnitTests
         var sut = Result.Success();
 
         // Act
-        var exception = await Record.ExceptionAsync(() => sut.IfErrorAsync(Function!).AsTask());
+        var exception = await Record.ExceptionAsync(() => sut.ElseAsync(Function!).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -61,7 +65,7 @@ public class ElseValueTaskAsyncExtensionsUnitTests
         var sut = GetErrorResult();
 
         // Act
-        var exception = await Record.ExceptionAsync(() => sut.IfErrorAsync(Function!).AsTask());
+        var exception = await Record.ExceptionAsync(() => sut.ElseAsync(Function!).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -78,7 +82,7 @@ public class ElseValueTaskAsyncExtensionsUnitTests
         var sut = Result.Success();
 
         // Act
-        await sut.IfErrorAsync(functionMock.Object);
+        await sut.ElseAsync(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(It.IsAny<Error>()), Times.Never);
@@ -91,7 +95,7 @@ public class ElseValueTaskAsyncExtensionsUnitTests
         var sut = Result.Success();
 
         // Act
-        var result = await sut.IfErrorAsync(_ => ValueTask.FromResult(Result.Success()));
+        var result = await sut.ElseAsync(_ => ValueTask.FromResult(Result.Success()));
 
         // Assert
         result.ShouldNotBeNull();
@@ -108,7 +112,7 @@ public class ElseValueTaskAsyncExtensionsUnitTests
         var sut = GetErrorResult();
 
         // Act
-        await sut.IfErrorAsync(functionMock.Object);
+        await sut.ElseAsync(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(sut.Error!), Times.Once);
@@ -123,7 +127,7 @@ public class ElseValueTaskAsyncExtensionsUnitTests
         var sut = GetErrorResult();
 
         // Act
-        var result = await sut.IfErrorAsync(_ => ValueTask.FromResult(asyncFuncResult));
+        var result = await sut.ElseAsync(_ => ValueTask.FromResult(asyncFuncResult));
 
         // Assert
         result.ShouldNotBeNull();
@@ -139,7 +143,7 @@ public class ElseValueTaskAsyncExtensionsUnitTests
         var sut = GetErrorResult();
 
         // Act
-        var result = await sut.IfErrorAsync(_ => ValueTask.FromResult(Result.FromError(asyncFuncError)));
+        var result = await sut.ElseAsync(_ => ValueTask.FromResult(Result.FromError(asyncFuncError)));
 
         // Assert
         result.ShouldNotBeNull();
@@ -158,7 +162,7 @@ public class ElseValueTaskAsyncExtensionsUnitTests
         const Result<int>? Sut = null;
 
         // Act
-        var exception = await Record.ExceptionAsync(() => Sut!.IfErrorAsync(_ => ValueTask.FromResult(Result.FromValue(1))).AsTask());
+        var exception = await Record.ExceptionAsync(() => Sut!.ElseAsync(_ => ValueTask.FromResult(Result.FromValue(1))).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -176,7 +180,7 @@ public class ElseValueTaskAsyncExtensionsUnitTests
         Result<int> sut = InitialValue;
 
         // Act
-        var exception = await Record.ExceptionAsync(() => sut.IfErrorAsync(Function!).AsTask());
+        var exception = await Record.ExceptionAsync(() => sut.ElseAsync(Function!).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -193,7 +197,7 @@ public class ElseValueTaskAsyncExtensionsUnitTests
         var sut = GetErrorResult<int>();
 
         // Act
-        var exception = await Record.ExceptionAsync(() => sut.IfErrorAsync(Function!).AsTask());
+        var exception = await Record.ExceptionAsync(() => sut.ElseAsync(Function!).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -211,7 +215,7 @@ public class ElseValueTaskAsyncExtensionsUnitTests
         Result<int> sut = InitialValue;
 
         // Act
-        await sut.IfErrorAsync(functionMock.Object);
+        await sut.ElseAsync(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(It.IsAny<Error>()), Times.Never);
@@ -226,7 +230,7 @@ public class ElseValueTaskAsyncExtensionsUnitTests
         Result<int> sut = InitialValue;
 
         // Act
-        var result = await sut.IfErrorAsync(_ => ValueTask.FromResult(Result.FromValue(2)));
+        var result = await sut.ElseAsync(_ => ValueTask.FromResult(Result.FromValue(2)));
 
         // Assert
         result.ShouldNotBeNull();
@@ -243,7 +247,7 @@ public class ElseValueTaskAsyncExtensionsUnitTests
         var sut = GetErrorResult<int>();
 
         // Act
-        await sut.IfErrorAsync(functionMock.Object);
+        await sut.ElseAsync(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(sut.Error!), Times.Once);
@@ -258,7 +262,7 @@ public class ElseValueTaskAsyncExtensionsUnitTests
         var sut = GetErrorResult<int>();
 
         // Act
-        var result = await sut.IfErrorAsync(_ => ValueTask.FromResult(asyncFuncResult));
+        var result = await sut.ElseAsync(_ => ValueTask.FromResult(asyncFuncResult));
 
         // Assert
         result.ShouldNotBeNull();
@@ -275,7 +279,7 @@ public class ElseValueTaskAsyncExtensionsUnitTests
         var sut = GetErrorResult<int>();
 
         // Act
-        var result = await sut.IfErrorAsync(_ => ValueTask.FromResult(Result<int>.FromError(asyncFuncError)));
+        var result = await sut.ElseAsync(_ => ValueTask.FromResult(Result<int>.FromError(asyncFuncError)));
 
         // Assert
         result.ShouldNotBeNull();
@@ -296,7 +300,7 @@ public class ElseValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(Result.Success());
 
         // Act
-        var exception = await Record.ExceptionAsync(() => sut.IfErrorAsync(Function!).AsTask());
+        var exception = await Record.ExceptionAsync(() => sut.ElseAsync(Function!).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -313,7 +317,7 @@ public class ElseValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(GetErrorResult());
 
         // Act
-        var exception = await Record.ExceptionAsync(() => sut.IfErrorAsync(Function!).AsTask());
+        var exception = await Record.ExceptionAsync(() => sut.ElseAsync(Function!).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -330,7 +334,7 @@ public class ElseValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(Result.Success());
 
         // Act
-        await sut.IfErrorAsync(functionMock.Object);
+        await sut.ElseAsync(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(It.IsAny<Error>()), Times.Never);
@@ -344,7 +348,7 @@ public class ElseValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(successResult);
 
         // Act
-        var result = await sut.IfErrorAsync(_ => ValueTask.FromResult(Result.Success()));
+        var result = await sut.ElseAsync(_ => ValueTask.FromResult(Result.Success()));
 
         // Assert
         result.ShouldNotBeNull();
@@ -362,7 +366,7 @@ public class ElseValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(errorResult);
 
         // Act
-        await sut.IfErrorAsync(functionMock.Object);
+        await sut.ElseAsync(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(errorResult.Error!), Times.Once);
@@ -378,7 +382,7 @@ public class ElseValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(errorResult);
 
         // Act
-        var result = await sut.IfErrorAsync(_ => ValueTask.FromResult(asyncFuncResult));
+        var result = await sut.ElseAsync(_ => ValueTask.FromResult(asyncFuncResult));
 
         // Assert
         result.ShouldNotBeNull();
@@ -394,7 +398,7 @@ public class ElseValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(GetErrorResult());
 
         // Act
-        var result = await sut.IfErrorAsync(_ => ValueTask.FromResult(Result.FromError(asyncFuncError)));
+        var result = await sut.ElseAsync(_ => ValueTask.FromResult(Result.FromError(asyncFuncError)));
 
         // Assert
         result.ShouldNotBeNull();
@@ -416,7 +420,7 @@ public class ElseValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(Result.FromValue(InitialValue));
 
         // Act
-        var exception = await Record.ExceptionAsync(() => sut.IfErrorAsync(Function!).AsTask());
+        var exception = await Record.ExceptionAsync(() => sut.ElseAsync(Function!).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -433,7 +437,7 @@ public class ElseValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(GetErrorResult<int>());
 
         // Act
-        var exception = await Record.ExceptionAsync(() => sut.IfErrorAsync(Function!).AsTask());
+        var exception = await Record.ExceptionAsync(() => sut.ElseAsync(Function!).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -451,7 +455,7 @@ public class ElseValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(Result.FromValue(InitialValue));
 
         // Act
-        await sut.IfErrorAsync(functionMock.Object);
+        await sut.ElseAsync(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(It.IsAny<Error>()), Times.Never);
@@ -467,7 +471,7 @@ public class ElseValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(initialResult);
 
         // Act
-        var result = await sut.IfErrorAsync(_ => ValueTask.FromResult(Result.FromValue(2)));
+        var result = await sut.ElseAsync(_ => ValueTask.FromResult(Result.FromValue(2)));
 
         // Assert
         result.ShouldNotBeNull();
@@ -485,7 +489,7 @@ public class ElseValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(errorResult);
 
         // Act
-        await sut.IfErrorAsync(functionMock.Object);
+        await sut.ElseAsync(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(errorResult.Error!), Times.Once);
@@ -500,7 +504,7 @@ public class ElseValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(GetErrorResult<int>());
 
         // Act
-        var result = await sut.IfErrorAsync(_ => ValueTask.FromResult(asyncFuncResult));
+        var result = await sut.ElseAsync(_ => ValueTask.FromResult(asyncFuncResult));
 
         // Assert
         result.ShouldNotBeNull();
@@ -517,7 +521,7 @@ public class ElseValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(GetErrorResult<int>());
 
         // Act
-        var result = await sut.IfErrorAsync(_ => ValueTask.FromResult(Result<int>.FromError(asyncFuncError)));
+        var result = await sut.ElseAsync(_ => ValueTask.FromResult(Result<int>.FromError(asyncFuncError)));
 
         // Assert
         result.ShouldNotBeNull();
@@ -542,6 +546,28 @@ public class ElseValueTaskAsyncExtensionsUnitTests
     private static Error GetReplacementError()
     {
         return Error.Failure(ErrorUri.None, "53e1e02c-3e21-47c9-9e1a-93ba22f03ba8", "Replacement error");
+    }
+
+    #endregion
+
+    #region ElseAsync with a function returning a task without a value (overload trap, issue #197)
+
+    // A function that returns nothing is a side effect: the transforming method reports it as a compile error (CS0619) that
+    // names the side-effect method (#197). The bindings are checked with a consumer project.
+
+    [Fact]
+    public void ElseAsync_FunctionReturningTaskWithoutValueOverloads_AreHiddenCompileErrors()
+    {
+        // Act
+        var traps = typeof(ElseValueTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a task without a value. ElseAsync needs"))
+            .ToList();
+
+        // Assert
+        traps.Count.ShouldBe(2);
+        traps.ShouldAllBe(m => m.Name == "ElseAsync"
+                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
+                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
     }
 
     #endregion

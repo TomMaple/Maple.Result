@@ -10,6 +10,7 @@
 
 using Maple.Results.Extensions;
 using Maple.Results.Tests.Unit.TestingInfrastructure.Fakes;
+using Maple.Results.Tests.Unit.TestingInfrastructure.Helpers;
 using Moq;
 using System;
 using System.ComponentModel;
@@ -30,7 +31,7 @@ public class ThenExtensionsUnitTests
         const Result? Sut = null;
 
         // Act
-        var exception = Record.Exception(() => Sut!.IfSuccess(Result.Success));
+        var exception = Record.Exception(() => Sut!.Then(Result.Success));
 
         // Assert
         exception.ShouldNotBeNull();
@@ -47,7 +48,7 @@ public class ThenExtensionsUnitTests
         var sut = Result.Success();
 
         // Act
-        var exception = Record.Exception(() => sut.IfSuccess(Function!));
+        var exception = Record.Exception(() => sut.Then(Function!));
 
         // Assert
         exception.ShouldNotBeNull();
@@ -64,7 +65,7 @@ public class ThenExtensionsUnitTests
         var sut = GetErrorResult();
 
         // Act
-        var exception = Record.Exception(() => sut.IfSuccess(Function!));
+        var exception = Record.Exception(() => sut.Then(Function!));
 
         // Assert
         exception.ShouldNotBeNull();
@@ -81,7 +82,7 @@ public class ThenExtensionsUnitTests
         var sut = Result.Success();
 
         // Act
-        sut.IfSuccess(functionMock.Object);
+        sut.Then(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(), Times.Once);
@@ -96,7 +97,7 @@ public class ThenExtensionsUnitTests
         var sut = Result.Success();
 
         // Act
-        var result = sut.IfSuccess(() => funcResult);
+        var result = sut.Then(() => funcResult);
 
         // Assert
         result.ShouldNotBeNull();
@@ -114,7 +115,7 @@ public class ThenExtensionsUnitTests
         var sut = Result.Success();
 
         // Act
-        var result = sut.IfSuccess(() => funcError);
+        var result = sut.Then(() => funcError);
 
         // Assert
         result.ShouldNotBeNull();
@@ -131,7 +132,7 @@ public class ThenExtensionsUnitTests
         var sut = GetErrorResult();
 
         // Act
-        sut.IfSuccess(functionMock.Object);
+        sut.Then(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(), Times.Never);
@@ -144,7 +145,7 @@ public class ThenExtensionsUnitTests
         var sut = GetErrorResult();
 
         // Act
-        var result = sut.IfSuccess(Result.Success);
+        var result = sut.Then(Result.Success);
 
         // Assert
         result.ShouldNotBeNull();
@@ -164,7 +165,7 @@ public class ThenExtensionsUnitTests
         const Result? Sut = null;
 
         // Act
-        var exception = Record.Exception(() => Sut!.IfSuccess(() => 38));
+        var exception = Record.Exception(() => Sut!.Then(() => 38));
 
         // Assert
         exception.ShouldNotBeNull();
@@ -181,7 +182,7 @@ public class ThenExtensionsUnitTests
         var sut = Result.Success();
 
         // Act
-        var exception = Record.Exception(() => sut.IfSuccess(Function!));
+        var exception = Record.Exception(() => sut.Then(Function!));
 
         // Assert
         exception.ShouldNotBeNull();
@@ -198,7 +199,7 @@ public class ThenExtensionsUnitTests
         var sut = GetErrorResult();
 
         // Act
-        var exception = Record.Exception(() => sut.IfSuccess(Function!));
+        var exception = Record.Exception(() => sut.Then(Function!));
 
         // Assert
         exception.ShouldNotBeNull();
@@ -215,7 +216,7 @@ public class ThenExtensionsUnitTests
         var sut = Result.Success();
 
         // Act
-        sut.IfSuccess(functionMock.Object);
+        sut.Then(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(), Times.Once);
@@ -230,7 +231,7 @@ public class ThenExtensionsUnitTests
         var sut = Result.Success();
 
         // Act
-        var result = sut.IfSuccess(() => FuncValue);
+        var result = sut.Then(() => FuncValue);
 
         // Assert
         result.ShouldNotBeNull();
@@ -248,7 +249,7 @@ public class ThenExtensionsUnitTests
         var sut = GetErrorResult();
 
         // Act
-        sut.IfSuccess(functionMock.Object);
+        sut.Then(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(), Times.Never);
@@ -261,7 +262,7 @@ public class ThenExtensionsUnitTests
         var sut = GetErrorResult();
 
         // Act
-        var result = sut.IfSuccess(() => 2987);
+        var result = sut.Then(() => 2987);
 
         // Assert
         result.ShouldNotBeNull();
@@ -281,7 +282,7 @@ public class ThenExtensionsUnitTests
         const Result? Sut = null;
 
         // Act
-        var exception = Record.Exception(() => Sut!.IfSuccess(() => Result.FromValue(897)));
+        var exception = Record.Exception(() => Sut!.Then(() => Result.FromValue(897)));
 
         // Assert
         exception.ShouldNotBeNull();
@@ -298,7 +299,7 @@ public class ThenExtensionsUnitTests
         var sut = Result.Success();
 
         // Act
-        var exception = Record.Exception(() => sut.IfSuccess(Function!));
+        var exception = Record.Exception(() => sut.Then(Function!));
 
         // Assert
         exception.ShouldNotBeNull();
@@ -315,7 +316,7 @@ public class ThenExtensionsUnitTests
         var sut = GetErrorResult();
 
         // Act
-        var exception = Record.Exception(() => sut.IfSuccess(Function!));
+        var exception = Record.Exception(() => sut.Then(Function!));
 
         // Assert
         exception.ShouldNotBeNull();
@@ -332,7 +333,7 @@ public class ThenExtensionsUnitTests
         var sut = Result.Success();
 
         // Act
-        sut.IfSuccess(functionMock.Object);
+        sut.Then(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(), Times.Once);
@@ -347,7 +348,7 @@ public class ThenExtensionsUnitTests
         var sut = Result.Success();
 
         // Act
-        var result = sut.IfSuccess(() => Result.FromValue(FuncValue));
+        var result = sut.Then(() => Result.FromValue(FuncValue));
 
         // Assert
         result.ShouldNotBeNull();
@@ -365,7 +366,7 @@ public class ThenExtensionsUnitTests
         var sut = Result.Success();
 
         // Act
-        var result = sut.IfSuccess(() => Result<int>.FromError(funcError));
+        var result = sut.Then(() => Result<int>.FromError(funcError));
 
         // Assert
         result.ShouldNotBeNull();
@@ -383,7 +384,7 @@ public class ThenExtensionsUnitTests
         var sut = GetErrorResult();
 
         // Act
-        sut.IfSuccess(functionMock.Object);
+        sut.Then(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(), Times.Never);
@@ -396,7 +397,7 @@ public class ThenExtensionsUnitTests
         var sut = GetErrorResult();
 
         // Act
-        var result = sut.IfSuccess(() => Result.FromValue(321));
+        var result = sut.Then(() => Result.FromValue(321));
 
         // Assert
         result.ShouldNotBeNull();
@@ -416,7 +417,7 @@ public class ThenExtensionsUnitTests
         const Result<string>? Sut = null;
 
         // Act
-        var exception = Record.Exception(() => Sut!.IfSuccess(_ => Result.Success()));
+        var exception = Record.Exception(() => Sut!.Then(_ => Result.Success()));
 
         // Assert
         exception.ShouldNotBeNull();
@@ -434,7 +435,7 @@ public class ThenExtensionsUnitTests
         const Func<string, Result>? Function = null;
 
         // Act
-        var exception = Record.Exception(() => sut.IfSuccess(Function!));
+        var exception = Record.Exception(() => sut.Then(Function!));
 
         // Assert
         exception.ShouldNotBeNull();
@@ -451,7 +452,7 @@ public class ThenExtensionsUnitTests
         var sut = GetErrorResult<string>();
 
         // Act
-        var exception = Record.Exception(() => sut.IfSuccess(Function!));
+        var exception = Record.Exception(() => sut.Then(Function!));
 
         // Assert
         exception.ShouldNotBeNull();
@@ -469,7 +470,7 @@ public class ThenExtensionsUnitTests
         Result<string> sut = InitialValue;
 
         // Act
-        sut.IfSuccess(functionMock.Object);
+        sut.Then(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(InitialValue), Times.Once);
@@ -485,7 +486,7 @@ public class ThenExtensionsUnitTests
         Result<string> sut = InitialValue;
 
         // Act
-        var result = sut.IfSuccess(_ => expectedResult);
+        var result = sut.Then(_ => expectedResult);
 
         // Assert
         result.ShouldNotBeNull();
@@ -504,7 +505,7 @@ public class ThenExtensionsUnitTests
         Result<string> sut = Value;
 
         // Act
-        var result = sut.IfSuccess(_ => funcError);
+        var result = sut.Then(_ => funcError);
 
         // Assert
         result.ShouldNotBeNull();
@@ -522,7 +523,7 @@ public class ThenExtensionsUnitTests
         var sut = GetErrorResult<string>();
 
         // Act
-        sut.IfSuccess(functionMock.Object);
+        sut.Then(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(It.IsAny<string>()), Times.Never);
@@ -535,7 +536,7 @@ public class ThenExtensionsUnitTests
         var sut = GetErrorResult<string>();
 
         // Act
-        var result = sut.IfSuccess(_ => Result.Success());
+        var result = sut.Then(_ => Result.Success());
 
         // Assert
         result.ShouldNotBeNull();
@@ -555,7 +556,7 @@ public class ThenExtensionsUnitTests
         const Result<double>? Sut = null;
 
         // Act
-        var exception = Record.Exception(() => Sut!.IfSuccess(_ => 428));
+        var exception = Record.Exception(() => Sut!.Then(_ => 428));
 
         // Assert
         exception.ShouldNotBeNull();
@@ -573,7 +574,7 @@ public class ThenExtensionsUnitTests
         Result<double> sut = InitialValue;
 
         // Act
-        var exception = Record.Exception(() => sut.IfSuccess(Function!));
+        var exception = Record.Exception(() => sut.Then(Function!));
 
         // Assert
         exception.ShouldNotBeNull();
@@ -590,7 +591,7 @@ public class ThenExtensionsUnitTests
         var sut = GetErrorResult<double>();
 
         // Act
-        var exception = Record.Exception(() => sut.IfSuccess(Function!));
+        var exception = Record.Exception(() => sut.Then(Function!));
 
         // Assert
         exception.ShouldNotBeNull();
@@ -608,7 +609,7 @@ public class ThenExtensionsUnitTests
         Result<double> sut = InitialValue;
 
         // Act
-        sut.IfSuccess(functionMock.Object);
+        sut.Then(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(InitialValue), Times.Once);
@@ -624,7 +625,7 @@ public class ThenExtensionsUnitTests
         Result<double> sut = InitialValue;
 
         // Act
-        var result = sut.IfSuccess(x => (int)x - 1);
+        var result = sut.Then(x => (int)x - 1);
 
         // Assert
         result.ShouldNotBeNull();
@@ -642,7 +643,7 @@ public class ThenExtensionsUnitTests
         var sut = GetErrorResult<double>();
 
         // Act
-        sut.IfSuccess(functionMock.Object);
+        sut.Then(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(It.IsAny<double>()), Times.Never);
@@ -655,7 +656,7 @@ public class ThenExtensionsUnitTests
         var sut = GetErrorResult<double>();
 
         // Act
-        var result = sut.IfSuccess(_ => 4873);
+        var result = sut.Then(_ => 4873);
 
         // Assert
         result.ShouldNotBeNull();
@@ -675,7 +676,7 @@ public class ThenExtensionsUnitTests
         const Result<int>? Sut = null;
 
         // Act
-        var exception = Record.Exception(() => Sut!.IfSuccess(_ => Result.FromValue("new text value")));
+        var exception = Record.Exception(() => Sut!.Then(_ => Result.FromValue("new text value")));
 
         // Assert
         exception.ShouldNotBeNull();
@@ -693,7 +694,7 @@ public class ThenExtensionsUnitTests
         Result<int> sut = InitialValue;
 
         // Act
-        var exception = Record.Exception(() => sut.IfSuccess(Function!));
+        var exception = Record.Exception(() => sut.Then(Function!));
 
         // Assert
         exception.ShouldNotBeNull();
@@ -710,7 +711,7 @@ public class ThenExtensionsUnitTests
         var sut = GetErrorResult<int>();
 
         // Act
-        var exception = Record.Exception(() => sut.IfSuccess(Function!));
+        var exception = Record.Exception(() => sut.Then(Function!));
 
         // Assert
         exception.ShouldNotBeNull();
@@ -728,7 +729,7 @@ public class ThenExtensionsUnitTests
         Result<int> sut = InitialValue;
 
         // Act
-        sut.IfSuccess(functionMock.Object);
+        sut.Then(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(InitialValue), Times.Once);
@@ -744,7 +745,7 @@ public class ThenExtensionsUnitTests
         Result<int> sut = InitialValue;
 
         // Act
-        var result = sut.IfSuccess(x => Result.FromValue((x - 1).ToString()));
+        var result = sut.Then(x => Result.FromValue((x - 1).ToString()));
 
         // Assert
         result.ShouldNotBeNull();
@@ -763,7 +764,7 @@ public class ThenExtensionsUnitTests
         Result<int> sut = InitialValue;
 
         // Act
-        var result = sut.IfSuccess(_ => funcErrorResult);
+        var result = sut.Then(_ => funcErrorResult);
 
         // Assert
         result.ShouldNotBeNull();
@@ -781,7 +782,7 @@ public class ThenExtensionsUnitTests
         var sut = GetErrorResult<int>();
 
         // Act
-        sut.IfSuccess(functionMock.Object);
+        sut.Then(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(It.IsAny<int>()), Times.Never);
@@ -794,7 +795,7 @@ public class ThenExtensionsUnitTests
         var sut = GetErrorResult<int>();
 
         // Act
-        var result = sut.IfSuccess(_ => Result.FromValue("new text value"));
+        var result = sut.Then(_ => Result.FromValue("new text value"));
 
         // Assert
         result.ShouldNotBeNull();
@@ -816,7 +817,7 @@ public class ThenExtensionsUnitTests
         var sut = Result.Success();
 
         // Act
-        Result result = sut.IfSuccess(() => TrapError);
+        Result result = sut.Then(() => TrapError);
 
         // Assert
         result.IsSuccess.ShouldBeFalse();
@@ -831,7 +832,7 @@ public class ThenExtensionsUnitTests
         var called = false;
 
         // Act
-        var result = sut.IfSuccess(() =>
+        var result = sut.Then(() =>
         {
             called = true;
             return TrapError;
@@ -849,7 +850,7 @@ public class ThenExtensionsUnitTests
         var sut = Result.Success();
 
         // Act
-        var exception = Record.Exception(() => sut.IfSuccess(() => (Error)null!));
+        var exception = Record.Exception(() => sut.Then(() => (Error)null!));
 
         // Assert
         exception.ShouldBeOfType<InvalidOperationException>().Message.ShouldBe("The function ‘ifSuccessFunction’ returned null.");
@@ -862,7 +863,7 @@ public class ThenExtensionsUnitTests
         var sut = Result.Success();
 
         // Act
-        Result<Error> result = sut.IfSuccess<Error>(() => TrapError);
+        Result<Error> result = sut.Then<Error>(() => TrapError);
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
@@ -877,7 +878,7 @@ public class ThenExtensionsUnitTests
         var passedValue = 0;
 
         // Act
-        Result result = sut.IfSuccess(x =>
+        Result result = sut.Then(x =>
         {
             passedValue = x;
             return TrapError;
@@ -898,7 +899,7 @@ public class ThenExtensionsUnitTests
         var called = false;
 
         // Act
-        Result result = sut.IfSuccess(_ =>
+        Result result = sut.Then(_ =>
         {
             called = true;
             return TrapError;
@@ -916,7 +917,7 @@ public class ThenExtensionsUnitTests
         var sut = Result<int>.FromValue(5);
 
         // Act
-        var exception = Record.Exception(() => sut.IfSuccess(_ => (Error)null!));
+        var exception = Record.Exception(() => sut.Then(_ => (Error)null!));
 
         // Assert
         exception.ShouldBeOfType<InvalidOperationException>().Message.ShouldBe("The function ‘ifSuccessFunction’ returned null.");
@@ -929,7 +930,7 @@ public class ThenExtensionsUnitTests
         var sut = Result<int>.FromValue(5);
 
         // Act
-        Result<Error> result = sut.IfSuccess<int, Error>(_ => TrapError);
+        Result<Error> result = sut.Then<int, Error>(_ => TrapError);
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
@@ -953,6 +954,97 @@ public class ThenExtensionsUnitTests
     private static Result<T> GetErrorResult<T>()
     {
         return Error.Failure(ErrorUri.None, "a3ef9d52-c18d-4707-8ef3-f7e25072224f", "Error title 4");
+    }
+
+    #endregion
+
+    #region Then with a function returning a task (overload trap, issue #119)
+
+    // The traps of IfSuccess, copied to Then (#197): a function that returns a task points to ThenAsync, and explicit type
+    // arguments keep the task on purpose.
+
+    [Fact]
+    public void Then_FunctionReturningTaskOverloads_AreHiddenCompileErrors()
+    {
+        // Act
+        var traps = typeof(ThenExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a task, which Then does not await"))
+            .ToList();
+
+        // Assert
+        traps.Count.ShouldBe(8);
+        traps.ShouldAllBe(m => m.Name == "Then"
+                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
+                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
+    }
+
+    // The Task traps win over the ValueTask ones for an async lambda, which converts to both (no CS0121).
+    [Fact]
+    public void Then_FunctionReturningTaskTraps_HavePriorityOne()
+    {
+        // Act
+        var priorities = typeof(ThenExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a task") && OverloadTrapHelper.IsTaskFunction(m.GetParameters()[1].ParameterType))
+            .Select(OverloadTrapHelper.Priority)
+            .ToList();
+
+        // Assert
+        priorities.Count.ShouldBe(4);
+        priorities.ShouldAllBe(p => p == 1);
+    }
+
+    [Fact]
+    public void Then_SuccessfulResultWithTaskFunctionAndExplicitTypeArgument_ReturnsResultWithTaskNotAwaited()
+    {
+        // Arrange
+        var sut = Result.Success();
+        var taskSource = new TaskCompletionSource();
+
+        // Act
+        Result<Task> result = sut.Then<Task>(() => taskSource.Task);
+
+        // Assert
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldBeSameAs(taskSource.Task);
+        result.Value.IsCompleted.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void Then_SuccessfulResultOfTWithTaskFunctionAndExplicitTypeArguments_ReturnsResultWithTaskNotAwaited()
+    {
+        // Arrange
+        var sut = Result<int>.FromValue(5);
+        var taskSource = new TaskCompletionSource();
+
+        // Act
+        Result<Task> result = sut.Then<int, Task>(_ => taskSource.Task);
+
+        // Assert
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldBeSameAs(taskSource.Task);
+        result.Value.IsCompleted.ShouldBeFalse();
+    }
+
+    #endregion
+
+    #region Then with an action (overload trap, issue #197)
+
+    // A function that returns nothing is a side effect: the transforming method reports it as a compile error (CS0619) that
+    // names the side-effect method (#197). The bindings are checked with a consumer project.
+
+    [Fact]
+    public void Then_ActionOverloads_AreHiddenCompileErrors()
+    {
+        // Act
+        var traps = typeof(ThenExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The action returns nothing. Then needs"))
+            .ToList();
+
+        // Assert
+        traps.Count.ShouldBe(2);
+        traps.ShouldAllBe(m => m.Name == "Then"
+                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
+                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
     }
 
     #endregion

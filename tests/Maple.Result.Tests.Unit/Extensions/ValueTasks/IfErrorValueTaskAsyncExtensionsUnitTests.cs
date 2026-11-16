@@ -10,8 +10,12 @@
 
 using Maple.Results.Extensions.ValueTasks;
 using Maple.Results.Tests.Unit.TestingInfrastructure.Fakes;
+using Maple.Results.Tests.Unit.TestingInfrastructure.Helpers;
 using Moq;
 using System;
+using System.ComponentModel;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Maple.Results.Tests.Unit.Extensions.ValueTasks;
@@ -475,6 +479,28 @@ public class IfErrorValueTaskAsyncExtensionsUnitTests
     private static Error GetReplacementError()
     {
         return Error.Failure(ErrorUri.None, "53e1e02c-3e21-47c9-9e1a-93ba22f03ba8", "Replacement error");
+    }
+
+    #endregion
+
+    #region IfErrorAsync with a function returning a value (overload trap, issue #197)
+
+    // A function that returns a value is a transformation: the side-effect method reports it as a compile error (CS0619) that
+    // names the transforming method, instead of discarding the value (#197). The bindings are checked with a consumer project.
+
+    [Fact]
+    public void IfErrorAsync_FunctionReturningValueOverloads_AreHiddenCompileErrors()
+    {
+        // Act
+        var traps = typeof(IfErrorValueTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a value in a task, which IfErrorAsync discards"))
+            .ToList();
+
+        // Assert
+        traps.Count.ShouldBe(2);
+        traps.ShouldAllBe(m => m.Name == "IfErrorAsync"
+                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
+                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
     }
 
     #endregion

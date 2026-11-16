@@ -10,6 +10,7 @@
 
 using Maple.Results.Extensions;
 using Maple.Results.Tests.Unit.TestingInfrastructure.Fakes;
+using Maple.Results.Tests.Unit.TestingInfrastructure.Helpers;
 using Moq;
 using System;
 using System.ComponentModel;
@@ -262,7 +263,7 @@ public class IfErrorExtensionsUnitTests
     {
         // Arrange
         var overloads = typeof(IfErrorExtensions).GetMethods()
-            .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is not null)
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The error action returns a task"))
             .ToArray();
 
         // Act & Assert
@@ -277,7 +278,8 @@ public class IfErrorExtensionsUnitTests
     {
         // Arrange
         var overload = typeof(IfErrorExtensions).GetMethods()
-            .Single(m => m.GetCustomAttribute<ObsoleteAttribute>() is not null && m.GetParameters()[1].ParameterType == typeof(Func<Error, Task>));
+            .Single(m => OverloadTrapHelper.IsTrap(m, "The error action returns a task")
+                         && m.GetParameters()[1].ParameterType == typeof(Func<Error, Task>));
 
         // Act
         var priority = overload.GetCustomAttribute<OverloadResolutionPriorityAttribute>()?.Priority;
@@ -323,6 +325,28 @@ public class IfErrorExtensionsUnitTests
     private static Error GetReplacementError()
     {
         return Error.Failure(ErrorUri.None, "a73d2604-e540-4dd3-8db8-3e6a70f89d72", "Replacement error");
+    }
+
+    #endregion
+
+    #region IfError with a function returning a value (overload trap, issue #197)
+
+    // A function that returns a value is a transformation: the side-effect method reports it as a compile error (CS0619) that
+    // names the transforming method, instead of discarding the value (#197). The bindings are checked with a consumer project.
+
+    [Fact]
+    public void IfError_FunctionReturningValueOverloads_AreHiddenCompileErrors()
+    {
+        // Act
+        var traps = typeof(IfErrorExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a value, which IfError discards. Use Else"))
+            .ToList();
+
+        // Assert
+        traps.Count.ShouldBe(1);
+        traps.ShouldAllBe(m => m.Name == "IfError"
+                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
+                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
     }
 
     #endregion

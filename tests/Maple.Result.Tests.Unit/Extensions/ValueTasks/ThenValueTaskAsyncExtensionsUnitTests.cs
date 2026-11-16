@@ -10,8 +10,12 @@
 
 using Maple.Results.Extensions.ValueTasks;
 using Maple.Results.Tests.Unit.TestingInfrastructure.Fakes;
+using Maple.Results.Tests.Unit.TestingInfrastructure.Helpers;
 using Moq;
 using System;
+using System.ComponentModel;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Maple.Results.Tests.Unit.Extensions.ValueTasks;
@@ -27,7 +31,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         const Result? Sut = null;
 
         // Act
-        var exception = await Record.ExceptionAsync(() => Sut!.IfSuccessAsync(() => ValueTask.FromResult(Result.Success())).AsTask());
+        var exception = await Record.ExceptionAsync(() => Sut!.ThenAsync(() => ValueTask.FromResult(Result.Success())).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -44,7 +48,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = Result.Success();
 
         // Act
-        var exception = await Record.ExceptionAsync(() => sut.IfSuccessAsync(Function!).AsTask());
+        var exception = await Record.ExceptionAsync(() => sut.ThenAsync(Function!).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -61,7 +65,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = GetErrorResult();
 
         // Act
-        var exception = await Record.ExceptionAsync(() => sut.IfSuccessAsync(Function!).AsTask());
+        var exception = await Record.ExceptionAsync(() => sut.ThenAsync(Function!).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -78,7 +82,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = Result.Success();
 
         // Act
-        await sut.IfSuccessAsync(functionMock.Object);
+        await sut.ThenAsync(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(), Times.Once);
@@ -93,7 +97,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = Result.Success();
 
         // Act
-        var result = await sut.IfSuccessAsync(() => ValueTask.FromResult(funcResult));
+        var result = await sut.ThenAsync(() => ValueTask.FromResult(funcResult));
 
         // Assert
         result.ShouldNotBeNull();
@@ -111,7 +115,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = Result.Success();
 
         // Act
-        var result = await sut.IfSuccessAsync(() => ValueTask.FromResult(funcError));
+        var result = await sut.ThenAsync(() => ValueTask.FromResult(funcError));
 
         // Assert
         result.ShouldNotBeNull();
@@ -128,7 +132,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = GetErrorResult();
 
         // Act
-        await sut.IfSuccessAsync(functionMock.Object);
+        await sut.ThenAsync(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(), Times.Never);
@@ -141,7 +145,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = GetErrorResult();
 
         // Act
-        var result = await sut.IfSuccessAsync(() => ValueTask.FromResult(Result.Success()));
+        var result = await sut.ThenAsync(() => ValueTask.FromResult(Result.Success()));
 
         // Assert
         result.ShouldNotBeNull();
@@ -161,7 +165,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         const Result? Sut = null;
 
         // Act
-        var exception = await Record.ExceptionAsync(() => Sut!.IfSuccessAsync(() => ValueTask.FromResult(456)).AsTask());
+        var exception = await Record.ExceptionAsync(() => Sut!.ThenAsync(() => ValueTask.FromResult(456)).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -178,7 +182,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = Result.Success();
 
         // Act
-        var exception = await Record.ExceptionAsync(() => sut.IfSuccessAsync(Function!).AsTask());
+        var exception = await Record.ExceptionAsync(() => sut.ThenAsync(Function!).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -195,7 +199,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = GetErrorResult();
 
         // Act
-        var exception = await Record.ExceptionAsync(() => sut.IfSuccessAsync(Function!).AsTask());
+        var exception = await Record.ExceptionAsync(() => sut.ThenAsync(Function!).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -212,7 +216,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = Result.Success();
 
         // Act
-        await sut.IfSuccessAsync(functionMock.Object);
+        await sut.ThenAsync(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(), Times.Once);
@@ -227,7 +231,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = Result.Success();
 
         // Act
-        var result = await sut.IfSuccessAsync(() => ValueTask.FromResult(FuncValue));
+        var result = await sut.ThenAsync(() => ValueTask.FromResult(FuncValue));
 
         // Assert
         result.ShouldNotBeNull();
@@ -245,7 +249,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = GetErrorResult();
 
         // Act
-        await sut.IfSuccessAsync(functionMock.Object);
+        await sut.ThenAsync(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(), Times.Never);
@@ -258,7 +262,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = GetErrorResult();
 
         // Act
-        var result = await sut.IfSuccessAsync(() => ValueTask.FromResult(234));
+        var result = await sut.ThenAsync(() => ValueTask.FromResult(234));
 
         // Assert
         result.ShouldNotBeNull();
@@ -279,7 +283,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
 
         // Act
         var exception =
-            await Record.ExceptionAsync(() => Sut!.IfSuccessAsync(() => ValueTask.FromResult(Result.FromValue(123))).AsTask());
+            await Record.ExceptionAsync(() => Sut!.ThenAsync(() => ValueTask.FromResult(Result.FromValue(123))).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -296,7 +300,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = Result.Success();
 
         // Act
-        var exception = await Record.ExceptionAsync(() => sut.IfSuccessAsync(Function!).AsTask());
+        var exception = await Record.ExceptionAsync(() => sut.ThenAsync(Function!).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -313,7 +317,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = GetErrorResult();
 
         // Act
-        var exception = await Record.ExceptionAsync(() => sut.IfSuccessAsync(Function!).AsTask());
+        var exception = await Record.ExceptionAsync(() => sut.ThenAsync(Function!).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -330,7 +334,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = Result.Success();
 
         // Act
-        await sut.IfSuccessAsync(functionMock.Object);
+        await sut.ThenAsync(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(), Times.Once);
@@ -345,7 +349,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = Result.Success();
 
         // Act
-        var result = await sut.IfSuccessAsync(() => ValueTask.FromResult(Result.FromValue(FuncValue)));
+        var result = await sut.ThenAsync(() => ValueTask.FromResult(Result.FromValue(FuncValue)));
 
         // Assert
         result.ShouldNotBeNull();
@@ -363,7 +367,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = Result.Success();
 
         // Act
-        var result = await sut.IfSuccessAsync(() => ValueTask.FromResult(Result<int>.FromError(funcError)));
+        var result = await sut.ThenAsync(() => ValueTask.FromResult(Result<int>.FromError(funcError)));
 
         // Assert
         result.ShouldNotBeNull();
@@ -381,7 +385,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = GetErrorResult();
 
         // Act
-        await sut.IfSuccessAsync(functionMock.Object);
+        await sut.ThenAsync(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(), Times.Never);
@@ -394,7 +398,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = GetErrorResult();
 
         // Act
-        var result = await sut.IfSuccessAsync(() => ValueTask.FromResult(Result.FromValue(678)));
+        var result = await sut.ThenAsync(() => ValueTask.FromResult(Result.FromValue(678)));
 
         // Assert
         result.ShouldNotBeNull();
@@ -414,7 +418,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         const Result<string>? Sut = null;
 
         // Act
-        var exception = await Record.ExceptionAsync(() => Sut!.IfSuccessAsync(_ => ValueTask.FromResult(Result.Success())).AsTask());
+        var exception = await Record.ExceptionAsync(() => Sut!.ThenAsync(_ => ValueTask.FromResult(Result.Success())).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -432,7 +436,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         Result<string> sut = InitialValue;
 
         // Act
-        var exception = await Record.ExceptionAsync(() => sut.IfSuccessAsync(Function!).AsTask());
+        var exception = await Record.ExceptionAsync(() => sut.ThenAsync(Function!).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -449,7 +453,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = GetErrorResult<string>();
 
         // Act
-        var exception = await Record.ExceptionAsync(() => sut.IfSuccessAsync(Function!).AsTask());
+        var exception = await Record.ExceptionAsync(() => sut.ThenAsync(Function!).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -467,7 +471,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         Result<string> sut = InitialValue;
 
         // Act
-        await sut.IfSuccessAsync(functionMock.Object);
+        await sut.ThenAsync(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(InitialValue), Times.Once);
@@ -482,7 +486,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         Result<string> sut = InitialValue;
 
         // Act
-        var result = await sut.IfSuccessAsync(_ => ValueTask.FromResult(Result.Success()));
+        var result = await sut.ThenAsync(_ => ValueTask.FromResult(Result.Success()));
 
         // Assert
         result.ShouldNotBeNull();
@@ -500,7 +504,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         Result<string> sut = InitialValue;
 
         // Act
-        var result = await sut.IfSuccessAsync(_ => ValueTask.FromResult(errorResult));
+        var result = await sut.ThenAsync(_ => ValueTask.FromResult(errorResult));
 
         // Assert
         result.ShouldNotBeNull();
@@ -518,7 +522,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = GetErrorResult<string>();
 
         // Act
-        await sut.IfSuccessAsync(functionMock.Object);
+        await sut.ThenAsync(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(It.IsAny<string>()), Times.Never);
@@ -531,7 +535,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = GetErrorResult<string>();
 
         // Act
-        var result = await sut.IfSuccessAsync(_ => ValueTask.FromResult(Result.Success()));
+        var result = await sut.ThenAsync(_ => ValueTask.FromResult(Result.Success()));
 
         // Assert
         result.ShouldNotBeNull();
@@ -551,7 +555,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         const Result<double>? Sut = null;
 
         // Act
-        var exception = await Record.ExceptionAsync(() => Sut!.IfSuccessAsync(_ => ValueTask.FromResult(12.34)).AsTask());
+        var exception = await Record.ExceptionAsync(() => Sut!.ThenAsync(_ => ValueTask.FromResult(12.34)).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -569,7 +573,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         Result<double> sut = InitialValue;
 
         // Act
-        var exception = await Record.ExceptionAsync(() => sut.IfSuccessAsync(Function!).AsTask());
+        var exception = await Record.ExceptionAsync(() => sut.ThenAsync(Function!).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -586,7 +590,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = GetErrorResult<double>();
 
         // Act
-        var exception = await Record.ExceptionAsync(() => sut.IfSuccessAsync(Function!).AsTask());
+        var exception = await Record.ExceptionAsync(() => sut.ThenAsync(Function!).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -604,7 +608,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         Result<double> sut = InitialValue;
 
         // Act
-        await sut.IfSuccessAsync(functionMock.Object);
+        await sut.ThenAsync(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(InitialValue), Times.Once);
@@ -620,7 +624,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         Result<double> sut = InitialValue;
 
         // Act
-        var result = await sut.IfSuccessAsync(x => ValueTask.FromResult((int)x + 1));
+        var result = await sut.ThenAsync(x => ValueTask.FromResult((int)x + 1));
 
         // Assert
         result.ShouldNotBeNull();
@@ -638,7 +642,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = GetErrorResult<double>();
 
         // Act
-        await sut.IfSuccessAsync(functionMock.Object);
+        await sut.ThenAsync(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(It.IsAny<double>()), Times.Never);
@@ -651,7 +655,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = GetErrorResult<double>();
 
         // Act
-        var result = await sut.IfSuccessAsync(_ => ValueTask.FromResult(9827));
+        var result = await sut.ThenAsync(_ => ValueTask.FromResult(9827));
 
         // Assert
         result.ShouldNotBeNull();
@@ -672,7 +676,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
 
         // Act
         var exception = await Record.ExceptionAsync(
-            () => Sut!.IfSuccessAsync(x => ValueTask.FromResult(Result.FromValue(x.ToString()))).AsTask());
+            () => Sut!.ThenAsync(x => ValueTask.FromResult(Result.FromValue(x.ToString()))).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -690,7 +694,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         Result<int> sut = InitialValue;
 
         // Act
-        var exception = await Record.ExceptionAsync(() => sut.IfSuccessAsync(Function!).AsTask());
+        var exception = await Record.ExceptionAsync(() => sut.ThenAsync(Function!).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -707,7 +711,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = GetErrorResult<int>();
 
         // Act
-        var exception = await Record.ExceptionAsync(() => sut.IfSuccessAsync(Function!).AsTask());
+        var exception = await Record.ExceptionAsync(() => sut.ThenAsync(Function!).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -725,7 +729,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         Result<int> sut = InitialValue;
 
         // Act
-        await sut.IfSuccessAsync(functionMock.Object);
+        await sut.ThenAsync(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(InitialValue), Times.Once);
@@ -741,7 +745,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         Result<int> sut = InitialValue;
 
         // Act
-        var result = await sut.IfSuccessAsync(x => ValueTask.FromResult(Result.FromValue((x + 1).ToString())));
+        var result = await sut.ThenAsync(x => ValueTask.FromResult(Result.FromValue((x + 1).ToString())));
 
         // Assert
         result.ShouldNotBeNull();
@@ -760,7 +764,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         Result<int> sut = InitialValue;
 
         // Act
-        var result = await sut.IfSuccessAsync(_ => ValueTask.FromResult(funcError));
+        var result = await sut.ThenAsync(_ => ValueTask.FromResult(funcError));
 
         // Assert
         result.ShouldNotBeNull();
@@ -778,7 +782,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = GetErrorResult<int>();
 
         // Act
-        await sut.IfSuccessAsync(functionMock.Object);
+        await sut.ThenAsync(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(It.IsAny<int>()), Times.Never);
@@ -791,7 +795,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = GetErrorResult<int>();
 
         // Act
-        var result = await sut.IfSuccessAsync(x => ValueTask.FromResult(Result.FromValue(x.ToString())));
+        var result = await sut.ThenAsync(x => ValueTask.FromResult(Result.FromValue(x.ToString())));
 
         // Assert
         result.ShouldNotBeNull();
@@ -813,7 +817,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(Result.Success());
 
         // Act
-        var exception = await Record.ExceptionAsync(() => sut.IfSuccessAsync(Function!).AsTask());
+        var exception = await Record.ExceptionAsync(() => sut.ThenAsync(Function!).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -830,7 +834,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = GetErrorResult();
 
         // Act
-        var exception = await Record.ExceptionAsync(() => sut.IfSuccessAsync(Function!).AsTask());
+        var exception = await Record.ExceptionAsync(() => sut.ThenAsync(Function!).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -847,7 +851,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(Result.Success());
 
         // Act
-        await sut.IfSuccessAsync(functionMock.Object);
+        await sut.ThenAsync(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(), Times.Once);
@@ -862,7 +866,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(Result.Success());
 
         // Act
-        var result = await sut.IfSuccessAsync(() => ValueTask.FromResult(funcResult));
+        var result = await sut.ThenAsync(() => ValueTask.FromResult(funcResult));
 
         // Assert
         result.ShouldNotBeNull();
@@ -880,7 +884,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(Result.Success());
 
         // Act
-        var result = await sut.IfSuccessAsync(() => ValueTask.FromResult(funcError));
+        var result = await sut.ThenAsync(() => ValueTask.FromResult(funcError));
 
         // Assert
         result.ShouldNotBeNull();
@@ -897,7 +901,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(GetErrorResult());
 
         // Act
-        await sut.IfSuccessAsync(functionMock.Object);
+        await sut.ThenAsync(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(), Times.Never);
@@ -911,7 +915,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(errorResult);
 
         // Act
-        var result = await sut.IfSuccessAsync(() => ValueTask.FromResult(Result.Success()));
+        var result = await sut.ThenAsync(() => ValueTask.FromResult(Result.Success()));
 
         // Assert
         result.ShouldNotBeNull();
@@ -933,7 +937,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(Result.Success());
 
         // Act
-        var exception = await Record.ExceptionAsync(() => sut.IfSuccessAsync(Function!).AsTask());
+        var exception = await Record.ExceptionAsync(() => sut.ThenAsync(Function!).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -950,7 +954,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(GetErrorResult());
 
         // Act
-        var exception = await Record.ExceptionAsync(() => sut.IfSuccessAsync(Function!).AsTask());
+        var exception = await Record.ExceptionAsync(() => sut.ThenAsync(Function!).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -967,7 +971,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(Result.Success());
 
         // Act
-        await sut.IfSuccessAsync(functionMock.Object);
+        await sut.ThenAsync(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(), Times.Once);
@@ -982,7 +986,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(Result.Success());
 
         // Act
-        var result = await sut.IfSuccessAsync(() => ValueTask.FromResult(FuncValue));
+        var result = await sut.ThenAsync(() => ValueTask.FromResult(FuncValue));
 
         // Assert
         result.ShouldNotBeNull();
@@ -1000,7 +1004,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(GetErrorResult());
 
         // Act
-        await sut.IfSuccessAsync(functionMock.Object);
+        await sut.ThenAsync(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(), Times.Never);
@@ -1014,7 +1018,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(errorResult);
 
         // Act
-        var result = await sut.IfSuccessAsync(() => ValueTask.FromResult(234));
+        var result = await sut.ThenAsync(() => ValueTask.FromResult(234));
 
         // Assert
         result.ShouldNotBeNull();
@@ -1036,7 +1040,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(Result.Success());
 
         // Act
-        var exception = await Record.ExceptionAsync(() => sut.IfSuccessAsync(Function!).AsTask());
+        var exception = await Record.ExceptionAsync(() => sut.ThenAsync(Function!).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -1053,7 +1057,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(GetErrorResult());
 
         // Act
-        var exception = await Record.ExceptionAsync(() => sut.IfSuccessAsync(Function!).AsTask());
+        var exception = await Record.ExceptionAsync(() => sut.ThenAsync(Function!).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -1070,7 +1074,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(Result.Success());
 
         // Act
-        await sut.IfSuccessAsync(functionMock.Object);
+        await sut.ThenAsync(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(), Times.Once);
@@ -1085,7 +1089,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(Result.Success());
 
         // Act
-        var result = await sut.IfSuccessAsync(() => ValueTask.FromResult(Result.FromValue(FuncValue)));
+        var result = await sut.ThenAsync(() => ValueTask.FromResult(Result.FromValue(FuncValue)));
 
         // Assert
         result.ShouldNotBeNull();
@@ -1103,7 +1107,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(Result.Success());
 
         // Act
-        var result = await sut.IfSuccessAsync(() => ValueTask.FromResult(Result<int>.FromError(funcError)));
+        var result = await sut.ThenAsync(() => ValueTask.FromResult(Result<int>.FromError(funcError)));
 
         // Assert
         result.ShouldNotBeNull();
@@ -1121,7 +1125,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(GetErrorResult());
 
         // Act
-        await sut.IfSuccessAsync(functionMock.Object);
+        await sut.ThenAsync(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(), Times.Never);
@@ -1135,7 +1139,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(errorResult);
 
         // Act
-        var result = await sut.IfSuccessAsync(() => ValueTask.FromResult(Result.FromValue(678)));
+        var result = await sut.ThenAsync(() => ValueTask.FromResult(Result.FromValue(678)));
 
         // Assert
         result.ShouldNotBeNull();
@@ -1158,7 +1162,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(Result.FromValue(InitialValue));
 
         // Act
-        var exception = await Record.ExceptionAsync(() => sut.IfSuccessAsync(Function!).AsTask());
+        var exception = await Record.ExceptionAsync(() => sut.ThenAsync(Function!).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -1175,7 +1179,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(GetErrorResult<string>());
 
         // Act
-        var exception = await Record.ExceptionAsync(() => sut.IfSuccessAsync(Function!).AsTask());
+        var exception = await Record.ExceptionAsync(() => sut.ThenAsync(Function!).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -1193,7 +1197,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(Result.FromValue(InitialValue));
 
         // Act
-        await sut.IfSuccessAsync(functionMock.Object);
+        await sut.ThenAsync(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(InitialValue), Times.Once);
@@ -1208,7 +1212,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(Result.FromValue(InitialValue));
 
         // Act
-        var result = await sut.IfSuccessAsync(_ => ValueTask.FromResult(Result.Success()));
+        var result = await sut.ThenAsync(_ => ValueTask.FromResult(Result.Success()));
 
         // Assert
         result.ShouldNotBeNull();
@@ -1226,7 +1230,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(Result.FromValue(InitialValue));
 
         // Act
-        var result = await sut.IfSuccessAsync(_ => ValueTask.FromResult(errorResult));
+        var result = await sut.ThenAsync(_ => ValueTask.FromResult(errorResult));
 
         // Assert
         result.ShouldNotBeNull();
@@ -1244,7 +1248,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(GetErrorResult<string>());
 
         // Act
-        await sut.IfSuccessAsync(functionMock.Object);
+        await sut.ThenAsync(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(It.IsAny<string>()), Times.Never);
@@ -1258,7 +1262,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(errorResult);
 
         // Act
-        var result = await sut.IfSuccessAsync(_ => ValueTask.FromResult(Result.Success()));
+        var result = await sut.ThenAsync(_ => ValueTask.FromResult(Result.Success()));
 
         // Assert
         result.ShouldNotBeNull();
@@ -1281,7 +1285,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(Result.FromValue(InitialValue));
 
         // Act
-        var exception = await Record.ExceptionAsync(() => sut.IfSuccessAsync(Function!).AsTask());
+        var exception = await Record.ExceptionAsync(() => sut.ThenAsync(Function!).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -1298,7 +1302,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(GetErrorResult<double>());
 
         // Act
-        var exception = await Record.ExceptionAsync(() => sut.IfSuccessAsync(Function!).AsTask());
+        var exception = await Record.ExceptionAsync(() => sut.ThenAsync(Function!).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -1316,7 +1320,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(Result.FromValue(InitialValue));
 
         // Act
-        await sut.IfSuccessAsync(functionMock.Object);
+        await sut.ThenAsync(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(InitialValue), Times.Once);
@@ -1332,7 +1336,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(Result.FromValue(InitialValue));
 
         // Act
-        var result = await sut.IfSuccessAsync(x => ValueTask.FromResult((int)x + 1));
+        var result = await sut.ThenAsync(x => ValueTask.FromResult((int)x + 1));
 
         // Assert
         result.ShouldNotBeNull();
@@ -1350,7 +1354,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(GetErrorResult<double>());
 
         // Act
-        await sut.IfSuccessAsync(functionMock.Object);
+        await sut.ThenAsync(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(It.IsAny<double>()), Times.Never);
@@ -1364,7 +1368,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(errorResult);
 
         // Act
-        var result = await sut.IfSuccessAsync(_ => ValueTask.FromResult(9827));
+        var result = await sut.ThenAsync(_ => ValueTask.FromResult(9827));
 
         // Assert
         result.ShouldNotBeNull();
@@ -1387,7 +1391,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(Result.FromValue(InitialValue));
 
         // Act
-        var exception = await Record.ExceptionAsync(() => sut.IfSuccessAsync(Function!).AsTask());
+        var exception = await Record.ExceptionAsync(() => sut.ThenAsync(Function!).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -1404,7 +1408,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(GetErrorResult<int>());
 
         // Act
-        var exception = await Record.ExceptionAsync(() => sut.IfSuccessAsync(Function!).AsTask());
+        var exception = await Record.ExceptionAsync(() => sut.ThenAsync(Function!).AsTask());
 
         // Assert
         exception.ShouldNotBeNull();
@@ -1422,7 +1426,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(Result.FromValue(InitialValue));
 
         // Act
-        await sut.IfSuccessAsync(functionMock.Object);
+        await sut.ThenAsync(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(InitialValue), Times.Once);
@@ -1438,7 +1442,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(Result.FromValue(InitialValue));
 
         // Act
-        var result = await sut.IfSuccessAsync(x => ValueTask.FromResult(Result.FromValue((x + 1).ToString())));
+        var result = await sut.ThenAsync(x => ValueTask.FromResult(Result.FromValue((x + 1).ToString())));
 
         // Assert
         result.ShouldNotBeNull();
@@ -1457,7 +1461,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(Result.FromValue(InitialValue));
 
         // Act
-        var result = await sut.IfSuccessAsync(_ => ValueTask.FromResult(funcError));
+        var result = await sut.ThenAsync(_ => ValueTask.FromResult(funcError));
 
         // Assert
         result.ShouldNotBeNull();
@@ -1475,7 +1479,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(GetErrorResult<int>());
 
         // Act
-        await sut.IfSuccessAsync(functionMock.Object);
+        await sut.ThenAsync(functionMock.Object);
 
         // Assert
         functionMock.Verify(x => x.Invoke(It.IsAny<int>()), Times.Never);
@@ -1489,7 +1493,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(errorResult);
 
         // Act
-        var result = await sut.IfSuccessAsync(x => ValueTask.FromResult(Result.FromValue(x.ToString())));
+        var result = await sut.ThenAsync(x => ValueTask.FromResult(Result.FromValue(x.ToString())));
 
         // Assert
         result.ShouldNotBeNull();
@@ -1511,7 +1515,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = Result.Success();
 
         // Act
-        Result result = await sut.IfSuccessAsync(() => ValueTask.FromResult(TrapError));
+        Result result = await sut.ThenAsync(() => ValueTask.FromResult(TrapError));
 
         // Assert
         result.IsSuccess.ShouldBeFalse();
@@ -1526,7 +1530,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var called = false;
 
         // Act
-        var result = await sut.IfSuccessAsync(() =>
+        var result = await sut.ThenAsync(() =>
         {
             called = true;
             return ValueTask.FromResult(TrapError);
@@ -1544,7 +1548,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = Result.Success();
 
         // Act
-        var exception = await Record.ExceptionAsync(async () => await sut.IfSuccessAsync(() => ValueTask.FromResult((Error)null!)));
+        var exception = await Record.ExceptionAsync(async () => await sut.ThenAsync(() => ValueTask.FromResult((Error)null!)));
 
         // Assert
         exception.ShouldBeOfType<InvalidOperationException>().Message.ShouldBe("The function ‘ifSuccessFunction’ returned null.");
@@ -1557,7 +1561,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = Result<int>.FromValue(5);
 
         // Act
-        Result result = await sut.IfSuccessAsync(_ => ValueTask.FromResult(TrapError));
+        Result result = await sut.ThenAsync(_ => ValueTask.FromResult(TrapError));
 
         // Assert
         result.IsSuccess.ShouldBeFalse();
@@ -1572,7 +1576,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = Result<int>.FromError(error);
 
         // Act
-        Result result = await sut.IfSuccessAsync(_ => ValueTask.FromResult(TrapError));
+        Result result = await sut.ThenAsync(_ => ValueTask.FromResult(TrapError));
 
         // Assert
         result.Error.ShouldBeSameAs(error);
@@ -1585,7 +1589,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = Result<int>.FromValue(5);
 
         // Act
-        Result<Error> result = await sut.IfSuccessAsync<int, Error>(_ => ValueTask.FromResult(TrapError));
+        Result<Error> result = await sut.ThenAsync<int, Error>(_ => ValueTask.FromResult(TrapError));
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
@@ -1599,7 +1603,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(Result.Success());
 
         // Act
-        Result result = await sut.IfSuccessAsync(() => ValueTask.FromResult(TrapError));
+        Result result = await sut.ThenAsync(() => ValueTask.FromResult(TrapError));
 
         // Assert
         result.IsSuccess.ShouldBeFalse();
@@ -1614,7 +1618,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(Result.FromError(error));
 
         // Act
-        Result result = await sut.IfSuccessAsync(() => ValueTask.FromResult(TrapError));
+        Result result = await sut.ThenAsync(() => ValueTask.FromResult(TrapError));
 
         // Assert
         result.Error.ShouldBeSameAs(error);
@@ -1627,7 +1631,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(Result<int>.FromValue(5));
 
         // Act
-        Result result = await sut.IfSuccessAsync(_ => ValueTask.FromResult(TrapError));
+        Result result = await sut.ThenAsync(_ => ValueTask.FromResult(TrapError));
 
         // Assert
         result.IsSuccess.ShouldBeFalse();
@@ -1642,7 +1646,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         var sut = ValueTask.FromResult(Result<int>.FromError(error));
 
         // Act
-        Result result = await sut.IfSuccessAsync(_ => ValueTask.FromResult(TrapError));
+        Result result = await sut.ThenAsync(_ => ValueTask.FromResult(TrapError));
 
         // Assert
         result.Error.ShouldBeSameAs(error);
@@ -1665,6 +1669,28 @@ public class ThenValueTaskAsyncExtensionsUnitTests
     private static Result<T> GetErrorResult<T>()
     {
         return Error.Failure(ErrorUri.None, "a3ef9d52-c18d-4707-8ef3-f7e25072224f", "Error title 4");
+    }
+
+    #endregion
+
+    #region ThenAsync with a function returning a task without a value (overload trap, issue #197)
+
+    // A function that returns nothing is a side effect: the transforming method reports it as a compile error (CS0619) that
+    // names the side-effect method (#197). The bindings are checked with a consumer project.
+
+    [Fact]
+    public void ThenAsync_FunctionReturningTaskWithoutValueOverloads_AreHiddenCompileErrors()
+    {
+        // Act
+        var traps = typeof(ThenValueTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a task without a value. ThenAsync needs"))
+            .ToList();
+
+        // Assert
+        traps.Count.ShouldBe(4);
+        traps.ShouldAllBe(m => m.Name == "ThenAsync"
+                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
+                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
     }
 
     #endregion

@@ -10,6 +10,7 @@
 
 using Maple.Results.Extensions;
 using Maple.Results.Tests.Unit.TestingInfrastructure.Fakes;
+using Maple.Results.Tests.Unit.TestingInfrastructure.Helpers;
 using Moq;
 using System;
 using System.ComponentModel;
@@ -281,7 +282,7 @@ public class IfSuccessExtensionsUnitTests
     {
         // Arrange
         var overloads = typeof(IfSuccessExtensions).GetMethods()
-            .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is not null)
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a task"))
             .ToArray();
 
         // Act & Assert
@@ -291,36 +292,26 @@ public class IfSuccessExtensionsUnitTests
                                    && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
     }
 
-    [Fact]
-    public void IfSuccess_SuccessfulResultWithTaskFunctionAndExplicitTypeArgument_ReturnsResultWithTaskNotAwaited()
-    {
-        // Arrange
-        var sut = Result.Success();
-        var taskSource = new TaskCompletionSource();
+    #endregion
 
-        // Act
-        Result<Task> result = sut.IfSuccess<Task>(() => taskSource.Task);
+    #region IfSuccess with a function returning a value (overload trap, issue #197)
 
-        // Assert
-        result.IsSuccess.ShouldBeTrue();
-        result.Value.ShouldBeSameAs(taskSource.Task);
-        result.Value.IsCompleted.ShouldBeFalse();
-    }
+    // A function that returns a value is a transformation: the side-effect method reports it as a compile error (CS0619) that
+    // names the transforming method, instead of discarding the value (#197). The bindings are checked with a consumer project.
 
     [Fact]
-    public void IfSuccess_SuccessfulResultOfTWithTaskFunctionAndExplicitTypeArguments_ReturnsResultWithTaskNotAwaited()
+    public void IfSuccess_FunctionReturningValueOverloads_AreHiddenCompileErrors()
     {
-        // Arrange
-        var sut = Result<int>.FromValue(5);
-        var taskSource = new TaskCompletionSource();
-
         // Act
-        Result<Task> result = sut.IfSuccess<int, Task>(_ => taskSource.Task);
+        var traps = typeof(IfSuccessExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a value, which IfSuccess discards. Use Then"))
+            .ToList();
 
         // Assert
-        result.IsSuccess.ShouldBeTrue();
-        result.Value.ShouldBeSameAs(taskSource.Task);
-        result.Value.IsCompleted.ShouldBeFalse();
+        traps.Count.ShouldBe(2);
+        traps.ShouldAllBe(m => m.Name == "IfSuccess"
+                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
+                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
     }
 
     #endregion

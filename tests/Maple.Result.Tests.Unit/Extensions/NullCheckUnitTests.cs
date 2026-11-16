@@ -110,7 +110,7 @@ public class NullCheckUnitTests
         var sut = Result<int>.FromValue(1);
 
         // Act
-        var result = await sut.IfSuccessAsync(_ => Task.FromResult<string?>(null));
+        var result = await sut.ThenAsync(_ => Task.FromResult<string?>(null));
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
