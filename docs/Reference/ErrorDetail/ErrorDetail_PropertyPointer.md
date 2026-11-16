@@ -30,13 +30,13 @@ var error = Error.Validation(
                 "Invalid data to register a new user.");
 
 error = error.WithErrorDetail(
-    "#/username",
+    "/username",
     "The username is already taken.",
     "error:user:create:username-taken",
     ("username", "john_doe"));
 
 error = error.WithErrorDetail(
-    "#/email",
+    "/email",
     "The email address is required.",
     "error:user:create:email-required",
     ("email", ""));

@@ -19,7 +19,7 @@ The record is immutable: its properties are get-only, and `with` expressions can
 ## Examples
 ```csharp
 var error = Error.Validation(ErrorUri.Tag("tag:test.com,2024:SignupErrors-InvalidData"), "Provided data is invalid.")
-    .WithErrorDetail("#/email", "Email is invalid", "errors-email-invalid",
+    .WithErrorDetail("/email", "Email is invalid", "errors-email-invalid",
         ("required_format", "address@domain.com"), ("min_length", 9));
 ```
 

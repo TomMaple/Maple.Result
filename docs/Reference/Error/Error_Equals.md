@@ -40,12 +40,12 @@ This override is consistent with [GetHashCode()](Error_GetHashCode.md): equal [E
 var first = Error.Validation(
                 ErrorUri.Tag("tag:exampleapp.com,2026:errors:user:create:invalid"),
                 "Invalid data to register a new user.")
-            .WithErrorDetail("#/email", "The email address is required.");
+            .WithErrorDetail("/email", "The email address is required.");
 
 var second = Error.Validation(
                 ErrorUri.Tag("tag:exampleapp.com,2026:errors:user:create:invalid"),
                 "Invalid data to register a new user.")
-            .WithErrorDetail("#/email", "The email address is required.");
+            .WithErrorDetail("/email", "The email address is required.");
 
 // true — the errors are compared by value, including their details.
 var areEqual = first == second;

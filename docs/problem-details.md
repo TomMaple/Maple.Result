@@ -82,7 +82,7 @@ Each `ErrorDetail` is one object of the `errors` array:
 | `detail`          | string    | `Detail`               | always           | `ProblemDetailsMembers.ErrorDetail` |
 | `detailTemplated` | object    | `DetailTemplated`      | when not `null`  | `ProblemDetailsMembers.ErrorDetailTemplated` |
 
-The `pointer` is a JSON Pointer ([RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901)) to the invalid part of the request, as in the `errors` example of RFC 9457 (appendix A).
+The `pointer` is a JSON Pointer ([RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901)) to the invalid part of the request, as in the `errors` example of RFC 9457 (section 3).
 
 ## Templated messages (`detailTemplated`)
 A `TemplatedMessage` (of the error or of an error detail) is an object:

@@ -118,13 +118,13 @@ In 3.0, `Error` is immutable. Use one of:
 ```csharp
 // 2.x
 var error = Error.Validation(typeUri, "Invalid data to register a new user.");
-error.AddDetail("#/email", "The email address is required.");
-error.AddDetail("#/username", "The username is too short.", "errors.username.length", ("min", 3));
+error.AddDetail("/email", "The email address is required.");
+error.AddDetail("/username", "The username is too short.", "errors.username.length", ("min", 3));
 
 // 3.0, a few details: WithErrorDetail returns a copy, so assign the result
 var error = Error.Validation(typeUri, "Invalid data to register a new user.")
-    .WithErrorDetail("#/email", "The email address is required.")
-    .WithErrorDetail("#/username", "The username is too short.", "errors.username.length", ("min", 3));
+    .WithErrorDetail("/email", "The email address is required.")
+    .WithErrorDetail("/username", "The username is too short.", "errors.username.length", ("min", 3));
 
 // 3.0, details collected in a loop: use a builder
 var builder = ErrorBuilder.Validation(typeUri, "Invalid data to register a new user.");
@@ -212,7 +212,7 @@ These values were accepted in 2.x and now throw:
 | An empty or white-space-only `detailTemplateId` / `TemplatedMessage` template id | `ArgumentException` |
 | A repeated named-value name, e.g., `("min", 3), ("min", 4)` (was an exception from LINQ's `ToDictionary`, now with a clear message) | `ArgumentException` |
 | A `null` named-value name | `ArgumentNullException` |
-| Named values without a template id, e.g., `WithErrorDetail("#/name", "Too short.", null, ("min", 3))` (2.x **silently dropped** them) | `ArgumentException` |
+| Named values without a template id, e.g., `WithErrorDetail("/name", "Too short.", null, ("min", 3))` (2.x **silently dropped** them) | `ArgumentException` |
 | A `null` `TemplatedMessage.TemplateId` | `ArgumentNullException` |
 | A `null` `ErrorDetail.Detail` | `ArgumentNullException` |
 | `about:blank` as an instance *URI*, e.g., `instanceUri: ErrorUri.None` (factory methods, `ErrorBuilder.WithInstanceUri`); pass `null` instead | `ArgumentException` |

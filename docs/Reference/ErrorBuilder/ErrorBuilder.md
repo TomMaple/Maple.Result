@@ -21,10 +21,10 @@ public Result<User> CreateUser(NewUser newUser)
         "Invalid data to register a new user.");
 
     if (string.IsNullOrWhiteSpace(newUser.Email))
-        builder.AddErrorDetail("#/email", "The email address is required.", "error:user:create:email-required");
+        builder.AddErrorDetail("/email", "The email address is required.", "error:user:create:email-required");
 
     if (newUser.UserName.Length < 3)
-        builder.AddErrorDetail("#/username", "The username is too short.", "error:user:create:username-length", ("min", 3));
+        builder.AddErrorDetail("/username", "The username is too short.", "error:user:create:username-length", ("min", 3));
 
     var error = builder.Build();
     if (error.ErrorDetails.Count > 0)

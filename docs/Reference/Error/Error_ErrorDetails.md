@@ -35,12 +35,12 @@ var error = ErrorBuilder.Validation(
                 ErrorUri.Tag("tag:exampleapp.com,2026:errors:user:create:invalid"),
                 "Invalid data to register a new user.")
             .AddErrorDetail(
-                "#/username",
+                "/username",
                 "The username is already taken.",
                 "error:user:create:username-taken",
                 ("username", "john_doe"))
             .AddErrorDetail(
-                "#/email",
+                "/email",
                 "The email address is required.",
                 "error:user:create:email-required",
                 ("email", ""))

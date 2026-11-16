@@ -95,12 +95,12 @@ var error = ErrorBuilder.Validation(
                 ErrorUri.Tag("tag:exampleapp.com,2026:errors:user:create:invalid"),
                 "Invalid data to register a new user.")
             .AddErrorDetail(
-                "#/username",
+                "/username",
                 "The username needs to be at least 3 characters long.",
                 "error:user:create:username-length",
                 ("username", "j"), ("minLength", 3))
             .AddErrorDetail(
-                "#/email",
+                "/email",
                 "The email address is required.",
                 "error:user:create:email-required")
             .Build();

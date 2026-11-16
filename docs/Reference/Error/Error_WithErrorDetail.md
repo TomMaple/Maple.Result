@@ -42,7 +42,7 @@ The `errorDetail` is `null`.
 
 ### Examples
 ```csharp
-var errorDetail = new ErrorDetail("#/username", "The username is already taken.");
+var errorDetail = new ErrorDetail("/username", "The username is already taken.");
 
 var error = Error.Validation(
                 ErrorUri.Tag("tag:exampleapp.com,2026:errors:user:create:invalid"),
@@ -97,7 +97,7 @@ var error = Error.Validation(
                 ErrorUri.Tag("tag:exampleapp.com,2026:errors:user:create:invalid"),
                 "Invalid data to register a new user.")
             .WithErrorDetail(
-                "#/username",
+                "/username",
                 "The username is already taken.",
                 "error:user:create:username-taken",
                 ("username", "john_doe"));
