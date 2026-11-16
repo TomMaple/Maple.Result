@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L414" target="_blank">Error.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L416" target="_blank">Error.cs</a>
 
 Determines whether the specified [Error](Error.md) is equal to the current [Error](Error.md), comparing the [ErrorDetails](Error_ErrorDetails.md) collection and the [Metadata](Error_Metadata.md) dictionary by their content rather than by reference.
 
@@ -40,12 +40,12 @@ This override is consistent with [GetHashCode()](Error_GetHashCode.md): equal [E
 var first = Error.Validation(
                 ErrorUri.Tag("tag:exampleapp.com,2026:errors:user:create:invalid"),
                 "Invalid data to register a new user.")
-            .WithErrorDetail("#/email", "The email address is required.");
+            .WithErrorDetail("/email", "The email address is required.");
 
 var second = Error.Validation(
                 ErrorUri.Tag("tag:exampleapp.com,2026:errors:user:create:invalid"),
                 "Invalid data to register a new user.")
-            .WithErrorDetail("#/email", "The email address is required.");
+            .WithErrorDetail("/email", "The email address is required.");
 
 // true — the errors are compared by value, including their details.
 var areEqual = first == second;

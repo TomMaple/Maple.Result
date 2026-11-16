@@ -278,8 +278,8 @@ var error = Error.Validation(
         ErrorUri.Locator("https://exampleapp.com/errors/7894375839"),
         "errors.signup.validation"
     )
-    .WithErrorDetail("#/email", "Email is required.", "errors.signup.validation.email.required")
-    .WithErrorDetail("#/firstName", "At least 3 characters are required.", "errors.signup.validation.email.minLength", ("minLength", 3));
+    .WithErrorDetail("/email", "Email is required.", "errors.signup.validation.email.required")
+    .WithErrorDetail("/firstName", "At least 3 characters are required.", "errors.signup.validation.email.minLength", ("minLength", 3));
 ```
 
 ### Error Categories
@@ -313,7 +313,7 @@ Although, mapping to HTTP responses is not part of this library and can be done 
 | `Detail` | `string` | The human-readable explanation specific to this occurrence of the problem. | No | Special character `/` is not allowed in the email address. |
 | `DetailTemplated` | `TemplatedMessage` | A structure to generate a localized detail message. | No | `{ "templateId": "errors.signup.email.specialcharacters", "params": { "invalidCharacter": "/" }}` |
 | `InstanceUri` | `string` | A *URI* that identifies the specific occurrence of the problem. | No | `https://api.exampleapp.com/errors/8783927589734857/details` |
-| `ErrorDetails` | `IReadOnlyList<ErrorDetail>` | The collection of additional error details. | No | `[{ "propertyPointer": "#/email", "detail": "Invalid format", "detailTemplated": { "templateId": "errors.signup.email.invalidFormat" }}]` |
+| `ErrorDetails` | `IReadOnlyList<ErrorDetail>` | The collection of additional error details. | No | `[{ "propertyPointer": "/email", "detail": "Invalid format", "detailTemplated": { "templateId": "errors.signup.email.invalidFormat" }}]` |
 | `Metadata` | `IReadOnlyDictionary<string, object?>` | Additional, machine-readable members of the problem (RFC 9457 *extension members*). | No | `{ "limit": 100, "resetAt": "2026-12-01T00:00:00Z" }` |
 
 ### Type URI
@@ -344,14 +344,14 @@ var builder = ErrorBuilder.Validation(
 if (string.IsNullOrWhiteSpace(userInput.email))
 {
     builder.AddErrorDetail(
-        "#/email",
+        "/email",
         "The email is required.",
         "errors.user.input.email.required");
 }
 else if (userInput.email.Length < 8)
 {
     builder.AddErrorDetail(
-        "#/email",
+        "/email",
         "The email must be at least 8 characters long.",
         "errors.user.input.email.minLength",
         ("minLength", 8));
@@ -366,7 +366,7 @@ where the parameters are:
 
 | Parameter | Type | Description | Required | Example |
 | --------- | ---- | ----------- | -------- | ------- |
-| `propertyPointer` | `string` | JSON Pointer to the input data. | no | `#/firstName` |
+| `propertyPointer` | `string` | JSON Pointer to the input data. | no | `/firstName` |
 | `detail` | `string` | A human-readable explanation of this error detail. | yes | `Mininum 5 characters are required.` |
 | `detailTemplateId` | `string` | A message template ID. | no | `errors.signup.validation.firstName.minLength` |
 | `detailNamedValues` | `(string, object?)[]` | The named values for the message template; names must be unique, and values require `detailTemplateId`. | no | `("minLength", 5)` |
@@ -582,9 +582,9 @@ Check:
 * **`AddDetail()` has been removed.** Use `error.WithErrorDetail(...)`, which returns a copy instead of changing the error, or an `ErrorBuilder` and its `AddErrorDetail(...)` to add several details:
   ```csharp
   // before
-  error.AddDetail("#/email", "The email is required.");
+  error.AddDetail("/email", "The email is required.");
   // after
-  error = error.WithErrorDetail("#/email", "The email is required.");
+  error = error.WithErrorDetail("/email", "The email is required.");
   ```
 * **`with { … }` no longer changes an `Error`, `ErrorDetail` or `TemplatedMessage`.** All their properties are get-only. Use `ToBuilder()`:
   ```csharp

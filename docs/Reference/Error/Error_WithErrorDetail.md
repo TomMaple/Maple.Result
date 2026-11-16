@@ -42,7 +42,7 @@ The `errorDetail` is `null`.
 
 ### Examples
 ```csharp
-var errorDetail = new ErrorDetail("#/username", "The username is already taken.");
+var errorDetail = new ErrorDetail("/username", "The username is already taken.");
 
 var error = Error.Validation(
                 ErrorUri.Tag("tag:exampleapp.com,2026:errors:user:create:invalid"),
@@ -52,7 +52,7 @@ var error = Error.Validation(
 
 
 ## WithErrorDetail(String, String, String, (String, Object)[])
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L267" target="_blank">Error.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L269" target="_blank">Error.cs</a>
 
 Returns a copy of the current error with a new individual error occurrence appended to the [ErrorDetails](Error_ErrorDetails.md).
 
@@ -66,7 +66,7 @@ public Error WithErrorDetail(
 
 ### Parameters
 #### `propertyPointer` [String](https://learn.microsoft.com/dotnet/api/system.string)
-An optional [JSON Pointer](https://datatracker.ietf.org/doc/html/rfc6901) to the specific part of the request that caused the error.
+An optional [JSON Pointer](https://datatracker.ietf.org/doc/html/rfc6901) to the specific part of the request that caused the error: `null`, empty (the whole input), a pointer that starts with `/` (e.g., `/email`), or its URI fragment form (e.g., `#/email`). See [PropertyPointer](../ErrorDetail/ErrorDetail_PropertyPointer.md).
 
 #### `detail` [String](https://learn.microsoft.com/dotnet/api/system.string)
 A mandatory human-readable message that describes the specific error occurrence.
@@ -89,7 +89,7 @@ The `detail` or a name in `detailNamedValues` is `null`.
 
 [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception)
 
-The `detailTemplateId` is empty or consists only of white-space characters, a name in `detailNamedValues` is repeated, or `detailNamedValues` are passed without a `detailTemplateId`.
+The `propertyPointer` is not a *JSON Pointer* (e.g., `Email` or `Items[0].Name`; the parameter name of the exception is `PropertyPointer`), the `detailTemplateId` is empty or consists only of white-space characters, a name in `detailNamedValues` is repeated, or `detailNamedValues` are passed without a `detailTemplateId`.
 
 ### Examples
 ```csharp
@@ -97,7 +97,7 @@ var error = Error.Validation(
                 ErrorUri.Tag("tag:exampleapp.com,2026:errors:user:create:invalid"),
                 "Invalid data to register a new user.")
             .WithErrorDetail(
-                "#/username",
+                "/username",
                 "The username is already taken.",
                 "error:user:create:username-taken",
                 ("username", "john_doe"));

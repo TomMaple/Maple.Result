@@ -48,7 +48,7 @@ foreach (var errorDetail in validationResult.ErrorDetails)
 
 
 ## AddErrorDetail(String, String, String, (String, Object)[])
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L369" target="_blank">ErrorBuilder.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L371" target="_blank">ErrorBuilder.cs</a>
 
 Appends a new individual error occurrence.
 
@@ -62,7 +62,7 @@ public ErrorBuilder AddErrorDetail(
 
 ### Parameters
 #### `propertyPointer` [String](https://learn.microsoft.com/dotnet/api/system.string)
-An optional [JSON Pointer](https://datatracker.ietf.org/doc/html/rfc6901) to the specific part of the request that caused the error.
+An optional [JSON Pointer](https://datatracker.ietf.org/doc/html/rfc6901) to the specific part of the request that caused the error: `null`, empty (the whole input), a pointer that starts with `/` (e.g., `/email`), or its URI fragment form (e.g., `#/email`). See [PropertyPointer](../ErrorDetail/ErrorDetail_PropertyPointer.md).
 
 #### `detail` [String](https://learn.microsoft.com/dotnet/api/system.string)
 A mandatory human-readable message that describes the specific error occurrence.
@@ -85,7 +85,7 @@ The `detail` or a name in `detailNamedValues` is `null`.
 
 [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception)
 
-The `detailTemplateId` is empty or consists only of white-space characters, a name in `detailNamedValues` is repeated, or `detailNamedValues` are passed without a `detailTemplateId`.
+The `propertyPointer` is not a *JSON Pointer* (e.g., `Email` or `Items[0].Name`; the parameter name of the exception is `PropertyPointer`), the `detailTemplateId` is empty or consists only of white-space characters, a name in `detailNamedValues` is repeated, or `detailNamedValues` are passed without a `detailTemplateId`.
 
 In both cases nothing is appended.
 
@@ -95,12 +95,12 @@ var error = ErrorBuilder.Validation(
                 ErrorUri.Tag("tag:exampleapp.com,2026:errors:user:create:invalid"),
                 "Invalid data to register a new user.")
             .AddErrorDetail(
-                "#/username",
+                "/username",
                 "The username needs to be at least 3 characters long.",
                 "error:user:create:username-length",
                 ("username", "j"), ("minLength", 3))
             .AddErrorDetail(
-                "#/email",
+                "/email",
                 "The email address is required.",
                 "error:user:create:email-required")
             .Build();

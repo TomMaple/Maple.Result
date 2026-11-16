@@ -82,7 +82,28 @@ Each `ErrorDetail` is one object of the `errors` array:
 | `detail`          | string    | `Detail`               | always           | `ProblemDetailsMembers.ErrorDetail` |
 | `detailTemplated` | object    | `DetailTemplated`      | when not `null`  | `ProblemDetailsMembers.ErrorDetailTemplated` |
 
-The `pointer` is a JSON Pointer ([RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901)) to the invalid part of the request, as in the `errors` example of RFC 9457 (appendix A).
+The `pointer` is a JSON Pointer ([RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901)) to the invalid part of the request, as in the `errors` example of RFC 9457 (section 3). `PropertyPointer` is `null` (no `pointer` member) or a pointer in one of two forms; the constructor of `ErrorDetail` throws an `ArgumentException` for any other value (e.g., `Email` or `Items[0].Name`):
+
+* the **string form** (RFC 6901, section 5): empty (the whole input), or it starts with `/`, e.g., `/email` or `/items/0/name`. In a name, `~` is written as `~0` and `/` as `~1`. The examples of this library use this form.
+* the **URI fragment form** (RFC 6901, section 6): `#` followed by the percent-encoded string form, e.g., `#/email` (as `#/age` in the example of RFC 9457) or `#/first%20name`.
+
+The pointer is written as it was given: `/email` and `#/email` are not turned into one form. Whether the pointer leads to anything in the input is not checked.
+
+### What the pointer points to
+RFC 9457 leaves the `errors` member to the problem type (its example scopes the pointer to "the request's content"), so this format defines it: the pointer addresses **the input that was validated, as the client sent it**, whatever the transport. JSON Pointer is used as a path syntax (names and indexes separated by `/`); the input does not have to be a JSON body.
+
+| What was validated | Example | Pointer |
+| --- | --- | --- |
+| A JSON body | `{"address":{"street":""}}` | `/address/street` |
+| The query string of a GET | `?page=-1` | `/page` |
+| A repeated parameter | `?ids=1&ids=x` | `/ids/1` |
+| A message from a queue or a gRPC call | the second item has no `sku` | `/items/1/sku` |
+| Headers | `Idempotency-Key` is missing | `/Idempotency-Key` |
+| A rule across several fields | the start date is after the end date | `null` |
+
+The pointer does not say which part of the request it refers to (query string, header or body); the problem type or the request makes that clear. A problem about a single header can also be its own problem type, or have a `null` pointer and a metadata entry.
+
+A name taken from the input has to be escaped: `~` as `~0` first, then `/` as `~1` (e.g., the member `a/b` is `/a~1b`). Otherwise, a name with a `~` makes the constructor throw, and a name with a `/` gives a wrong pointer.
 
 ## Templated messages (`detailTemplated`)
 A `TemplatedMessage` (of the error or of an error detail) is an object:
@@ -128,6 +149,7 @@ Problem details written by other services do not always follow this format. The 
 * **`type`**: read with `ErrorUri.Parse()`; a missing `type` is `about:blank` (RFC 9457, section 3.1.1). A relative reference (e.g., `out-of-credit`) is resolved against the URI of the request (RFC 3986, section 5). Other schemes (e.g., `mailto:`) are kept as `ErrorUri.Other()`.
 * **`instance`**: read like `type`; a missing `instance` stays `null`.
 * **`title`**: a missing or blank `title` is replaced by the phrase of the HTTP status code (e.g., "Not Found", RFC 9457, section 3.1.3).
+* **`pointer`** of an `errors` item: RFC 6901 (section 7) asks an application to state what it does with an invalid pointer. An invalid `pointer` is dropped and the `detail` of the item is kept, because the core rejects it; a reader may convert the keys of a known other syntax into a pointer (e.g., `Items[0].Name` of ASP.NET Core into `/items/0/name`).
 * **Other members**: every member that is not a reserved member becomes a metadata entry with its key as written (e.g., `traceId`).
 
 ## See Also

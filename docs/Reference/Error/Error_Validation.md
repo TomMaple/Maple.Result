@@ -18,7 +18,7 @@ It relates to `400` HTTP status code (Bad Request), but can also be used in othe
 
 
 ## Validation(ErrorUri, String, String, ErrorUri, String, (String, Object)[])
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L910" target="_blank">Error.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L912" target="_blank">Error.cs</a>
 
 Creates a new instance of the [Error](Error.md) object of the *Validation* category with specified parameters.
 
@@ -80,13 +80,13 @@ var error = Error.Validation(
                 ("entity", "user"), ("canRetry", true));
 
 error = error.WithErrorDetail(
-    "#/username",
+    "/username",
     "The username needs to be at least 3 characters long.",
     "error:user:create:username-length",
     ("username", "j"), ("minlength", 3));
 
 error = error.WithErrorDetail(
-    "#/email",
+    "/email",
     "The email address is required.",
     "error:user:create:email-required",
     ("email", ""));
@@ -94,7 +94,7 @@ error = error.WithErrorDetail(
 
 
 ## Validation(ErrorUri, String, String, ErrorUri, String, IEnumerable&lt;KeyValuePair&lt;String, Object&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L926" target="_blank">Error.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L928" target="_blank">Error.cs</a>
 
 Creates a new instance of the [Error](Error.md) object of the *Validation* category with specified parameters.
 
@@ -157,13 +157,13 @@ var error = Error.Validation(
                 new Dictionary<string, object?> { ["entity"] = "user", ["canRetry"] = true });
 
 error = error.WithErrorDetail(
-    "#/username",
+    "/username",
     "The username needs to be at least 3 characters long.",
     "error:user:create:username-length",
     ("username", "j"), ("minlength", 3));
 
 error = error.WithErrorDetail(
-    "#/email",
+    "/email",
     "The email address is required.",
     "error:user:create:email-required",
     ("email", ""));

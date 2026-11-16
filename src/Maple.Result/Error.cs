@@ -261,7 +261,9 @@ public sealed record Error
     ///     If the <paramref name="detail" /> or a parameter name in <paramref name="detailNamedValues" /> is <see langword="null" />.
     /// </exception>
     /// <exception cref="ArgumentException">
-    ///     If the <paramref name="detailTemplateId" /> is empty or whitespace-only, a parameter name is repeated,
+    ///     If the <paramref name="propertyPointer" /> is not a JSON Pointer (e.g., <c>Email</c> or <c>Items[0].Name</c>; the parameter name
+    ///     of the exception is <c>PropertyPointer</c>), the <paramref name="detailTemplateId" /> is empty or whitespace-only, a parameter
+    ///     name is repeated,
     ///     or <paramref name="detailNamedValues" /> are passed without a <paramref name="detailTemplateId" />.
     /// </exception>
     public Error WithErrorDetail(string? propertyPointer, string detail, string? detailTemplateId = null,

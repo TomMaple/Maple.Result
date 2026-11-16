@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorDetail.cs#L28" target="_blank">ErrorDetail.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorDetail.cs#L47" target="_blank">ErrorDetail.cs</a>
 
 Initializes a new instance of the [ErrorDetail](ErrorDetail.md) record.
 
@@ -18,6 +18,10 @@ public sealed record ErrorDetail(string? PropertyPointer, string Detail, Templat
 [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
 
 The `Detail` is `null`.
+
+[ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception)
+
+The `PropertyPointer` is not `null` and not a *JSON Pointer*, e.g., `Email`, `Items[0].Name` or `/a~2b` (see [PropertyPointer](ErrorDetail_PropertyPointer.md)).
 
 ## See also
 * [Error](../Error/Error.md)

@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L531" target="_blank">ErrorBuilder.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L533" target="_blank">ErrorBuilder.cs</a>
 
 Returns a new [Error](../Error/Error.md) with the current members of the builder.
 
@@ -29,7 +29,7 @@ var builder = ErrorBuilder.Validation(
     "Invalid data to register a new user.");
 
 foreach (var field in invalidFields)
-    builder.AddErrorDetail($"#/{field}", $"The {field} is invalid.");
+    builder.AddErrorDetail($"/{field}", $"The {field} is invalid.");
 
 Error error = builder.Build();
 ```
