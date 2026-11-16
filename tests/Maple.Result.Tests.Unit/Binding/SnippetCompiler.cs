@@ -25,14 +25,18 @@ namespace Maple.Results.Tests.Unit.Binding;
 /// </summary>
 internal static class SnippetCompiler
 {
-    private const string Prelude = """
+    private const string Usings = """
         using System;
+        using System.Collections.Generic;
         using System.IO;
         using System.Linq;
+        using System.Threading;
         using System.Threading.Tasks;
         using Maple.Results;
-        using Maple.Results.Extensions;
-        using Maple.Results.Extensions.ValueTasks;
+
+        """;
+
+    private const string ClassStart = """
 
         public static class Snippet
         {
@@ -45,6 +49,10 @@ internal static class SnippetCompiler
             static Result<int> GetResultOfInt() => Result.FromValue(1);
             static Error GetError() => err;
             static Result<int> ok = Result.FromValue(1);
+
+        """;
+
+    private const string RunStart = """
 
             static void Run()
             {
@@ -59,11 +67,23 @@ internal static class SnippetCompiler
     private static readonly ImmutableArray<MetadataReference> References = BuildReferences();
 
     /// <summary>Compiles the statements as the body of a method and returns the semantic model and the error diagnostics.</summary>
-    public static SnippetResult Compile(string statements)
+    /// <param name="statements">The statements of the method body.</param>
+    /// <param name="imports">
+    ///     The extension namespaces to import; the default imports both, which makes an <c>async</c> lambda ambiguous where both
+    ///     declare the method.
+    /// </param>
+    /// <param name="members">Members of the snippet class (e.g., helper methods, fields or a nested record), placed before the method.</param>
+    public static SnippetResult Compile(string statements, SnippetImports imports = SnippetImports.Both, string members = "")
     {
-        var tree = CSharpSyntaxTree.ParseText(
-            Prelude + statements + Postlude,
-            new CSharpParseOptions(LanguageVersion.Latest));
+        var extensionUsings = imports switch
+        {
+            SnippetImports.Task => "using Maple.Results.Extensions;\n",
+            SnippetImports.ValueTask => "using Maple.Results.Extensions.ValueTasks;\n",
+            _ => "using Maple.Results.Extensions;\nusing Maple.Results.Extensions.ValueTasks;\n"
+        };
+
+        var source = Usings + extensionUsings + ClassStart + members + RunStart + statements + Postlude;
+        var tree = CSharpSyntaxTree.ParseText(source, new CSharpParseOptions(LanguageVersion.Latest));
 
         var compilation = CSharpCompilation.Create(
             "Snippet",
@@ -92,6 +112,19 @@ internal static class SnippetCompiler
         references.Add(MetadataReference.CreateFromFile(typeof(Result).Assembly.Location));
         return [.. references];
     }
+}
+
+/// <summary>The extension namespaces that a snippet imports.</summary>
+internal enum SnippetImports
+{
+    /// <summary><c>Maple.Results.Extensions</c> and <c>Maple.Results.Extensions.ValueTasks</c>.</summary>
+    Both,
+
+    /// <summary><c>Maple.Results.Extensions</c> only (the <see cref="System.Threading.Tasks.Task" />-based methods).</summary>
+    Task,
+
+    /// <summary><c>Maple.Results.Extensions.ValueTasks</c> only (the <see cref="System.Threading.Tasks.ValueTask" />-based methods).</summary>
+    ValueTask
 }
 
 internal sealed class SnippetResult(CSharpCompilation compilation, SyntaxTree tree, Diagnostic[] errors)
