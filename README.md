@@ -10,6 +10,16 @@
 # Result
 An abstraction of the operation result which can be either successful (with or without a value) or failed (with an error).
 
+Check also:
+* [![Maple.Result.Extensions.AspNetCore](https://img.shields.io/nuget/v/Maple.Result.Extensions.AspNetCore?label=Maple.Result.Extensions.AspNetCore%20%E2%80%94%20nuget)](https://www.nuget.org/packages/Maple.Result.Extensions.AspNetCore/)
+* [![Maple.Result.Extensions.MinimalApi](https://img.shields.io/nuget/v/Maple.Result.Extensions.MinimalApi?label=Maple.Result.Extensions.MinimalApi%20%E2%80%94%20nuget)](https://www.nuget.org/packages/Maple.Result.Extensions.MinimalApi/)
+* [![Maple.Result.Extensions.Functions.Worker](https://img.shields.io/nuget/v/Maple.Result.Extensions.Functions.Worker?label=Maple.Result.Extensions.Functions.Worker%20%E2%80%94%20nuget)](https://www.nuget.org/packages/Maple.Result.Extensions.Functions.Worker/)
+* [![Maple.Result.Extensions.Functions.Worker.AspNetCore](https://img.shields.io/nuget/v/Maple.Result.Extensions.Functions.Worker.AspNetCore?label=Maple.Result.Extensions.Functions.Worker.AspNetCore%20%E2%80%94%20nuget)](https://www.nuget.org/packages/Maple.Result.Extensions.Functions.Worker.AspNetCore/)
+* [![Maple.Result.Extensions.HttpClient](https://img.shields.io/nuget/v/Maple.Result.Extensions.HttpClient?label=Maple.Result.Extensions.HttpClient%20%E2%80%94%20nuget)](https://www.nuget.org/packages/Maple.Result.Extensions.HttpClient/)
+* [![Maple.Result.Extensions.Resilience](https://img.shields.io/badge/Maple.Result.Extensions.Resilience%20%E2%80%94%20nuget-coming%20soon-lightgrey)](https://github.com/TomMaple/Maple.Result.Extensions.Resilience)
+* [![Maple.Result.Serialization.SystemTextJson](https://img.shields.io/badge/Maple.Result.Serialization.SystemTextJson%20%E2%80%94%20nuget-coming%20soon-lightgrey)](https://github.com/TomMaple/Maple.Result.Serialization.SystemTextJson)
+* [![Maple.Result.Serialization.NewtonsoftJson](https://img.shields.io/badge/Maple.Result.Serialization.NewtonsoftJson%20%E2%80%94%20nuget-coming%20soon-lightgrey)](https://github.com/TomMaple/Maple.Result.Serialization.NewtonsoftJson)
+
 > [!IMPORTANT]
 > **Version 3.0 is a major release with breaking changes**, and this README describes it. `Result`, `Result<T>` and `Error` are immutable (with a new `ErrorBuilder`), the namespace is `Maple.Results`, the transforming `IfSuccess` / `IfError` are `Then` / `Else`, and the types can no longer be read from JSON without the converter packages. Read the [migration guide from 2.x to 3.0](https://github.com/TomMaple/Maple.Result/blob/main/docs/migration-v2-to-v3.md) before you upgrade, and upgrade the [related packages](https://github.com/TomMaple/Maple.Result#related-packages) together with `Maple.Result`.
 
