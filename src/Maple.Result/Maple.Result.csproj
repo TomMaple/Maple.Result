@@ -43,7 +43,8 @@
   <ItemGroup>
     <None Include="..\..\.resources\icon.png" Pack="true" PackagePath="" />
     <None Include="..\..\LICENSE" Pack="true" PackagePath="" />
-    <None Include="..\..\README.md" Pack="true" PackagePath="" />
+    <!-- The package README for nuget.org (absolute links, no GitHub alerts); the README.md of the repository is for GitHub. -->
+    <None Include="README.md" Pack="true" PackagePath="" />
   </ItemGroup>
 
 </Project>
