@@ -9,24 +9,17 @@ Runs a specific action or function depending on whether the instance of [Result]
 | Name | Description |
 | ---- | ----------- |
 | [Match(Result, Action, Action&lt;Error&gt;)](#matchresult-action-actionerror) | Executes one of the specified actions depending on whether the [Result](../Result/Result.md) represents a success or a failure. |
-| [Match(Result, Func&lt;Result&gt;, Action&lt;Error&gt;)](#matchresult-funcresult-actionerror) | Executes the specified function or action depending on whether the [Result](../Result/Result.md) represents a success or a failure. |
 | [Match(Result, Func&lt;Result&gt;, Func&lt;Error, Result&gt;)](#matchresult-funcresult-funcerror-result) | Executes one of the specified functions depending on whether the [Result](../Result/Result.md) represents a success or a failure. |
-| [Match(Result, Func&lt;Error&gt;, Action&lt;Error&gt;)](#matchresult-funcerror-actionerror) | Executes the specified function or action depending on whether the [Result](../Result/Result.md) represents a success or a failure, and returns a failed [Result](../Result/Result.md). |
-| [Match&lt;T&gt;(Result, Func&lt;T&gt;, Action&lt;Error&gt;)](#matchtresult-funct-actionerror) | Executes the specified function or action depending on whether the [Result](../Result/Result.md) represents a success or a failure. |
 | [Match&lt;T&gt;(Result, Func&lt;T&gt;, Func&lt;Error, T&gt;)](#matchtresult-funct-funcerror-t) | Executes one of the specified functions depending on whether the [Result](../Result/Result.md) represents a success or a failure. |
-| [Match&lt;T&gt;(Result, Func&lt;Result&lt;T&gt;&gt;, Action&lt;Error&gt;)](#matchtresult-funcresultt-actionerror) | Executes the specified function or action depending on whether the [Result](../Result/Result.md) represents a success or a failure. |
 | [Match&lt;T&gt;(Result, Func&lt;Result&lt;T&gt;&gt;, Func&lt;Error, Result&lt;T&gt;&gt;)](#matchtresult-funcresultt-funcerror-resultt) | Executes one of the specified functions depending on whether the [Result](../Result/Result.md) represents a success or a failure. |
 | [Match&lt;T&gt;(Result&lt;T&gt;, Action&lt;T&gt;, Action&lt;Error&gt;)](#matchtresultt-actiont-actionerror) |  Executes one of the specified actions depending on whether the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a success or a failure. |
-| [Match&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, Error&gt;, Action&lt;Error&gt;)](#matchtresultt-funct-error-actionerror) | Executes the specified function or action depending on whether the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a success or a failure, and returns a failed [Result](../Result/Result.md). |
-| [Match&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, TNext&gt;, Action&lt;Error&gt;)](#matcht-tnextresultt-funct-tnext-actionerror) |  Executes the specified function or action depending on whether the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a success or a failure. |
 | [Match&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, TNext&gt;, Func&lt;Error, TNext&gt;)](#matcht-tnextresultt-funct-tnext-funcerror-tnext) |  Executes one of the specified functions depending on whether the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a success or a failure. |
-| [Match&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, Result&lt;TNext&gt;&gt;, Action&lt;Error&gt;)](#matcht-tnextresultt-funct-resulttnext-actionerror) |  Executes the specified function or action depending on whether the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a success or a failure. |
 | [Match&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, Result&lt;TNext&gt;&gt;, Func&lt;Error, Result&lt;TNext&gt;&gt;)](#matcht-tnextresultt-funct-resulttnext-funcerror-resulttnext) |  Executes one of the specified functions depending on whether the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a success or a failure. |
 
 ## Remarks
-A success function that returns an [Error](../Error/Error.md) makes the result fail: see [Match(Result, Func&lt;Error&gt;, Action&lt;Error&gt;)](#matchresult-funcerror-actionerror) and [Match&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, Error&gt;, Action&lt;Error&gt;)](#matchtresultt-funct-error-actionerror).
+A success function with an error action (e.g., `Match(x => Map(x), e => Log(e))`) is a compile error (CS0619) since 3.0: it transformed the result, and the same call with a statement lambda tapped it, by the return type of the lambda. Use [Then](ThenExtensions_Then.md)`(…).`[IfError](IfErrorExtensions_IfError.md)`(…)` to transform the result, two actions for a side effect, or two functions for a value.
 
-A success function that returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>` is not supported in the overloads that wrap its value in a result (the ones with an `Action<Error>`): `Match` does not await it, so such a call is a compile error. Use [MatchAsync](MatchTaskAsyncExtensions_MatchAsync.md) instead, or specify the type arguments (e.g., `Match<Task>(…)` or `Match<T, Task>(…)`) to keep the task in the result on purpose.
+A success function that returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>` with an `Action<Error>` is a compile error with its own message: `Match` does not await it. Use [MatchAsync](MatchTaskAsyncExtensions_MatchAsync.md) instead.
 
 The overloads in which both functions return a value return that value directly, so `await result.Match(() => SaveAsync(), error => LogAsync(error))` awaits the task of the function that ran.
 
@@ -69,49 +62,8 @@ createUserResult.Match(
 ```
 
 
-## Match(Result, Func&lt;Result&gt;, Action&lt;Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchExtensions.cs#L87" target="_blank">MatchExtensions.cs</a>
-
-Executes the provided `ifSuccessFunction`, only if the instance of [Result](../Result/Result.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), or the provided `ifErrorAction` otherwise.
-
-```csharp
-public static Result Match(this Result result, Func<Result> ifSuccessFunction, Action<Error> ifErrorAction);
-```
-
-### Parameters
-#### `result` [Result](../Result/Result.md)
-The instance of [Result](../Result/Result.md) record that represents the result of the operation to be evaluated.
-
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[Result](../Result/Result.md)&gt;
-The function to be executed, only if the current instance of [Result](../Result/Result.md) represents a successful operation.
-
-#### `ifErrorAction` [Action](https://learn.microsoft.com/dotnet/api/system.action-1)&lt;[Error](../Error/Error.md)&gt;
-The action to be executed, only if the current instance of [Result](../Result/Result.md) represents a failed operation. The [Error](../Error/Error.md) instance contained in the `result` will be passed as a parameter to this action.
-
-### Returns
-#### [Result](../Result/Result.md)
-If the `result` is successful, the [Result](../Result/Result.md) record returned by the `ifSuccessFunction`; otherwise, the original failed [Result](../Result/Result.md) record with the original error.
-
-
-### Exceptions
-#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
-The `result` or `ifSuccessFunction` or `ifErrorAction` parameter is `null`.
-
-#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
-The `ifSuccessFunction` function returns `null`.
-
-### Examples
-```csharp
-var createUserResult = _userService.CreateUser(userData);
-
-var userAddedResult = createUserResult.Match(
-    () => _companyService.AddUser(userData),
-    error => _auditService.LogError(error));
-```
-
-
 ## Match(Result, Func&lt;Result&gt;, Func&lt;Error, Result&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchExtensions.cs#L127" target="_blank">MatchExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchExtensions.cs#L89" target="_blank">MatchExtensions.cs</a>
 
 Executes the provided `ifSuccessFunction`, only if the instance of [Result](../Result/Result.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), or the provided `ifErrorFunction` otherwise.
 
@@ -155,91 +107,8 @@ var userAddedResult = authenticationResult.Match(
 ```
 
 
-## Match(Result, Func&lt;Error&gt;, Action&lt;Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchExtensions.cs#L215" target="_blank">MatchExtensions.cs</a>
-
-Executes the provided `ifSuccessFunction` only if the instance of [Result](../Result/Result.md) represents a successful operation, and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) returned by the function; or executes the provided `ifErrorAction` otherwise.
-
-```csharp
-public static Result Match(this Result result, Func<Error> ifSuccessFunction, Action<Error> ifErrorAction);
-```
-
-### Parameters
-#### `result` [Result](../Result/Result.md)
-The instance of [Result](../Result/Result.md) record that represents the result of the operation to be evaluated.
-
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[Error](../Error/Error.md)&gt;
-The function to be executed only if the `result` represents a successful operation. It returns the [Error](../Error/Error.md) of the failed result.
-
-#### `ifErrorAction` [Action](https://learn.microsoft.com/dotnet/api/system.action-1)&lt;[Error](../Error/Error.md)&gt;
-The action to be executed only if the `result` represents a failed operation. The [Error](../Error/Error.md) instance contained in the `result` will be passed as a parameter to this action.
-
-### Returns
-#### [Result](../Result/Result.md)
-A failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) returned by `ifSuccessFunction` if the `result` is successful; otherwise, the original `result`. The returned result is always failed.
-
-### Exceptions
-#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
-The `result`, `ifSuccessFunction` or `ifErrorAction` parameter is `null`.
-
-#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
-The `ifSuccessFunction` function returns `null`.
-
-### Remarks
-Without this overload, a function returning an [Error](../Error/Error.md) would bind to [Match&lt;T&gt;(Result, Func&lt;T&gt;, Action&lt;Error&gt;)](#matchtresult-funct-actionerror) and return a **successful** `Result<Error>`. To get that on purpose, specify the type argument: `Match<Error>(…)`.
-
-### Examples
-```csharp
-var result = _userService.DeleteUser(userId)
-    .Match(
-        () => Error.Conflict(typeUri, "The user cannot be deleted."),
-        error => _auditService.LogError(error));
-```
-
-
-## Match&lt;T&gt;(Result, Func&lt;T&gt;, Action&lt;Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchExtensions.cs#L167" target="_blank">MatchExtensions.cs</a>
-
-Executes the provided `ifSuccessFunction`, only if the instance of [Result](../Result/Result.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), or the provided `ifErrorAction` otherwise.
-
-```csharp
-public static Result<T> Match<T>(this Result result, Func<T> ifSuccessFunction, Action<Error> ifErrorAction);
-```
-
-### Type Parameters
-#### `T`
-The type of the value returned by the `ifSuccessFunction`.
-
-### Parameters
-#### `result` [Result](../Result/Result.md)
-The instance of [Result](../Result/Result.md) record that represents the result of the operation to be evaluated.
-
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;T&gt;
-The function to be executed, only if the current instance of [Result](../Result/Result.md) represents a successful operation.
-
-#### `ifErrorAction` [Action](https://learn.microsoft.com/dotnet/api/system.action-1)&lt;[Error](../Error/Error.md)&gt;
-The action to be executed, only if the current instance of [Result](../Result/Result.md) represents a failed operation. The [Error](../Error/Error.md) instance contained in the `result` will be passed as a parameter to this action.
-
-### Returns
-#### [Result](../ResultT/ResultT.md)&lt;T&gt;
-The [Result](../ResultT/ResultT.md) with the value returned by the `ifSuccessFunction`, if the `result` is successful, or the [Result](../ResultT/ResultT.md) with the original [Error](../Error/Error.md) otherwise.
-
-### Exceptions
-#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
-The `result` or `ifSuccessFunction` or `ifErrorAction` parameter is `null`.
-
-### Examples
-```csharp
-var createUserResult = _userService.CreateUser(userData);
-
-var companyResult = createUserResult.Match(
-    user => _loginService.GetUserToken(user),
-    error => _auditService.LogError(error));
-```
-
-
 ## Match&lt;T&gt;(Result, Func&lt;T&gt;, Func&lt;Error, T&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchExtensions.cs#L257" target="_blank">MatchExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchExtensions.cs#L129" target="_blank">MatchExtensions.cs</a>
 
 Executes the provided `ifSuccessFunction`, only if the instance of [Result](../Result/Result.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), or the provided `ifErrorFunction` otherwise.
 
@@ -283,53 +152,8 @@ var viewModel = createUserResult.Match(
 ```
 
 
-## Match&lt;T&gt;(Result, Func&lt;Result&lt;T&gt;&gt;, Action&lt;Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchExtensions.cs#L292" target="_blank">MatchExtensions.cs</a>
-
-Executes the provided `ifSuccessFunction`, only if the instance of [Result](../Result/Result.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), or the provided `ifErrorAction` otherwise.
-
-```csharp
-public static Result<T> Match<T>(this Result result, Func<Result<T>> ifSuccessFunction,
-    Action<Error> ifErrorAction);
-```
-
-### Type Parameters
-#### `T`
-The type of the [Result&lt;T&gt;](../ResultT/ResultT.md) value returned by the `ifSuccessFunction`.
-
-### Parameters
-#### `result` [Result](../Result/Result.md)
-The instance of [Result](../Result/Result.md) record that represents the result of the operation to be evaluated.
-
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[Result](../ResultT/ResultT.md)&lt;T&gt;&gt;
-The function to be executed, only if the current instance of [Result](../Result/Result.md) represents a successful operation.
-
-#### `ifErrorAction` [Action](https://learn.microsoft.com/dotnet/api/system.action-1)&lt;[Error](../Error/Error.md)&gt;
-The action to be executed, only if the current instance of [Result](../Result/Result.md) represents a failed operation. The [Error](../Error/Error.md) instance contained in the `result` will be passed as a parameter to this action.
-
-### Returns
-#### [Result](../ResultT/ResultT.md)&lt;T&gt;
-The value returned by the `ifSuccessFunction`, if the `result` is successful, or the [Result](../ResultT/ResultT.md)&lt;T&gt; with the original error otherwise.
-
-### Exceptions
-#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
-The `result` or `ifSuccessFunction` or `ifErrorAction` parameter is `null`.
-
-#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
-The `ifSuccessFunction` function returns `null`.
-
-### Examples
-```csharp
-var createUserResult = _userService.CreateUser(userData);
-
-var userDetailsResult = createUserResult.Match(
-    user => _userService.GetUserDetails(user),
-    error => _userMapper.MapErrorViewModel(error));
-```
-
-
 ## Match&lt;T&gt;(Result, Func&lt;Result&lt;T&gt;&gt;, Func&lt;Error, Result&lt;T&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchExtensions.cs#L335" target="_blank">MatchExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchExtensions.cs#L166" target="_blank">MatchExtensions.cs</a>
 
 Executes the provided `ifSuccessFunction`, only if the instance of [Result](../Result/Result.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), or the provided `ifErrorFunction` otherwise.
 
@@ -374,7 +198,7 @@ var userDetailsResult = createUserResult.Match(
 
 
 ## Match&lt;T&gt;(Result&lt;T&gt;, Action&lt;T&gt;, Action&lt;Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchExtensions.cs#L380" target="_blank">MatchExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchExtensions.cs#L211" target="_blank">MatchExtensions.cs</a>
 
 Executes the provided `ifSuccessAction`, only if the instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), or the provided `ifErrorAction` otherwise.
 
@@ -414,99 +238,8 @@ userResult.Match(
 ```
 
 
-## Match&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, Error&gt;, Action&lt;Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchExtensions.cs#L469" target="_blank">MatchExtensions.cs</a>
-
-Executes the provided `ifSuccessFunction` only if the instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) returned by the function; or executes the provided `ifErrorAction` otherwise.
-
-```csharp
-public static Result Match<T>(this Result<T> result, Func<T, Error> ifSuccessFunction, Action<Error> ifErrorAction);
-```
-
-### Type Parameters
-#### `T`
-The type of the value of the `result`, passed to the `ifSuccessFunction`.
-
-### Parameters
-#### `result` [Result&lt;T&gt;](../ResultT/ResultT.md)
-The instance of [Result&lt;T&gt;](../ResultT/ResultT.md) record that represents the result of the operation to be evaluated.
-
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [Error](../Error/Error.md)&gt;
-The function to be executed only if the `result` represents a successful operation. The value of the `result` is passed as a parameter. It returns the [Error](../Error/Error.md) of the failed result.
-
-#### `ifErrorAction` [Action](https://learn.microsoft.com/dotnet/api/system.action-1)&lt;[Error](../Error/Error.md)&gt;
-The action to be executed only if the `result` represents a failed operation. The [Error](../Error/Error.md) instance contained in the `result` will be passed as a parameter to this action.
-
-### Returns
-#### [Result](../Result/Result.md)
-A failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) returned by `ifSuccessFunction` if the `result` is successful; otherwise, a failed [Result](../Result/Result.md) with the original [Error](../Error/Error.md). The returned result is always failed.
-
-### Exceptions
-#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
-The `result`, `ifSuccessFunction` or `ifErrorAction` parameter is `null`.
-
-#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
-The `ifSuccessFunction` function returns `null`.
-
-### Remarks
-Without this overload, a function returning an [Error](../Error/Error.md) would bind to [Match&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, TNext&gt;, Action&lt;Error&gt;)](#matcht-tnextresultt-funct-tnext-actionerror) and return a **successful** `Result<Error>`. To get that on purpose, specify the type arguments: `Match<T, Error>(…)`.
-
-### Examples
-```csharp
-var result = _userService.GetUser(userId)
-    .Match(
-        user => Error.Conflict(typeUri, $"The user {user.Name} already exists."),
-        error => _auditService.LogError(error));
-```
-
-
-## Match&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, TNext&gt;, Action&lt;Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchExtensions.cs#L419" target="_blank">MatchExtensions.cs</a>
-
-Executes the provided `ifSuccessFunction`, only if the instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), or the provided `ifErrorAction` otherwise.
-
-```csharp
-public static Result<TNext> Match<T, TNext>(this Result<T> result, Func<T, TNext> ifSuccessFunction,
-    Action<Error> ifErrorAction);
-```
-
-### Type Parameters
-#### `T`
-The type of the value associated with successful `result` and passed to the `ifSuccessFunction`.
-
-#### `TNext`
-The type of the value returned by the `ifSuccessFunction`.
-
-### Parameters
-#### `result` [Result&lt;T&gt;](../ResultT/ResultT.md)
-The instance of [Result&lt;T&gt;](../ResultT/ResultT.md) record that represents the result of the operation with a value to be evaluated.
-
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, TNext&gt;
-The function to be executed, only if the current instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation. The value of type `T` contained in the [Result&lt;T&gt;](../ResultT/ResultT.md) instance will be passed as a parameter to this function.
-
-#### `ifErrorAction` [Action](https://learn.microsoft.com/dotnet/api/system.action-1)&lt;[Error](../Error/Error.md)&gt;
-The action to be executed, only if the current instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a failed operation. The [Error](../Error/Error.md) instance contained in the `result` will be passed as a parameter to this action.
-
-### Returns
-#### [Result](../Result/Result.md)&lt;TNext&gt;
-The [Result](../Result/Result.md)&lt;TNext&gt; with the value returned by the `ifSuccessFunction`, if the `result` is successful, or the [Result](../Result/Result.md)&lt;TNext&gt; with the original [Error](../Error/Error.md) otherwise.
-
-### Exceptions
-#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
-The `result` or `ifSuccessFunction` or `ifErrorAction` parameter is `null`.
-
-### Examples
-```csharp
-var createUserResult = _userService.CreateUser(userData);
-
-var userAddedResult = createUserResult.Match(
-    user => _companyService.AddUser(user),
-    error => _auditService.LogError(error));
-```
-
-
 ## Match&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, TNext&gt;, Func&lt;Error, TNext&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchExtensions.cs#L513" target="_blank">MatchExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchExtensions.cs#L250" target="_blank">MatchExtensions.cs</a>
 
 Executes the provided `ifSuccessFunction`, only if the instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), or the provided `ifErrorFunction` otherwise.
 
@@ -554,56 +287,8 @@ var companyResult = createUserResult.Match(
 ```
 
 
-## Match&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, Result&lt;TNext&gt;&gt;, Action&lt;Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchExtensions.cs#L550" target="_blank">MatchExtensions.cs</a>
-
-Executes the provided `ifSuccessFunction`, only if the instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), or the provided `ifErrorAction` otherwise.
-
-```csharp
-public static Result<TNext> Match<T, TNext>(this Result<T> result, Func<T, Result<TNext>> ifSuccessFunction,
-    Action<Error> ifErrorAction);
-```
-
-### Type Parameters
-#### `T`
-The type of the value associated with successful `result` and passed to the `ifSuccessFunction`.
-
-#### `TNext`
-The type of the [Result&lt;TNext&gt;](../ResultT/ResultT.md) value returned by the `ifSuccessFunction`.
-
-### Parameters
-#### `result` [Result&lt;T&gt;](../ResultT/ResultT.md)
-The instance of [Result&lt;T&gt;](../ResultT/ResultT.md) record that represents the result of the operation to be evaluated.
-
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[Result](../ResultT/ResultT.md)&lt;TNext&gt;&gt;
-The function to be executed, only if the current instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation. The value of type `T` contained in the [Result&lt;T&gt;](../ResultT/ResultT.md) instance will be passed as a parameter to this function.
-
-#### `ifErrorAction` [Action](https://learn.microsoft.com/dotnet/api/system.action-1)&lt;[Error](../Error/Error.md)&gt;
-The action to be executed, only if the current instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a failed operation. The [Error](../Error/Error.md) instance contained in the `result` will be passed as a parameter to this action.
-
-### Returns
-#### [Result](../ResultT/ResultT.md)&lt;TNext&gt;
-The [Result](../ResultT/ResultT.md)&lt;TNext&gt; with the value returned by the `ifSuccessFunction`, if the `result` is successful, or the [Result](../ResultT/ResultT.md)&lt;TNext&gt; with the original [Error](../Error/Error.md) otherwise.
-
-### Exceptions
-#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
-The `result` or `ifSuccessFunction` or `ifErrorAction` parameter is `null`.
-
-#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
-The `ifSuccessFunction` function returns `null`.
-
-### Examples
-```csharp
-var createUserResult = _userService.CreateUser(userData);
-
-var companyResult = createUserResult.Match(
-    user => _companyService.GetCompanyById(user.CompanyId),
-    error => _auditService.LogError(error));
-```
-
-
 ## Match&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, Result&lt;TNext&gt;&gt;, Func&lt;Error, Result&lt;TNext&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchExtensions.cs#L595" target="_blank">MatchExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchExtensions.cs#L289" target="_blank">MatchExtensions.cs</a>
 
 Executes the provided `ifSuccessFunction`, only if the instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), or the provided `ifErrorFunction` otherwise.
 

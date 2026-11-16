@@ -93,9 +93,9 @@ public async Task<Result> DeleteContactAsync(Guid id)
 * `Else()` and `ElseAsync()`: replace a failed result (e.g., recover with a value, or return another error),
 * `IfSuccess()` and `IfSuccessAsync()`: run a side effect on a successful result and return it unchanged,
 * `IfError()` and `IfErrorAsync()`: run a side effect on a failed result and return it unchanged,
-* `Match()` and `MatchAsync()`: handle both cases.
+* `Match()` and `MatchAsync()`: handle both cases, with two functions that return a value (e.g., `int count = result.Match(x => x.Count, e => 0)`) or two actions for a side effect.
 
-A function that returns a value passed to `IfSuccess()` or `IfError()` is a compile error that names `Then()` or `Else()`, so that its value is not discarded by mistake; an action passed to `Then()` or `Else()` is a compile error that names `IfSuccess()` or `IfError()`.
+A function that returns a value passed to `IfSuccess()` or `IfError()` is a compile error that names `Then()` or `Else()`, so that its value is not discarded by mistake; an action passed to `Then()` or `Else()` is a compile error that names `IfSuccess()` or `IfError()`. `Match()` with a success function and an error action is a compile error that names `Then(…).IfError(…)`.
 
 #### Examples
 ```csharp
@@ -475,17 +475,16 @@ var userAddedResult = await userResult.ThenAsync(async (user) =>
     return await _companyService.AddUserAsync(user);
 });
 
-var userTokenResult = await userAddedResult.MatchAsync(
-    user => _loginService.GetUserTokenAsync(user),
-    error => _auditService.LogErrorAsync(error));
+var userTokenResult = await userAddedResult
+    .ThenAsync(user => _loginService.GetUserTokenAsync(user))
+    .IfErrorAsync(error => _auditService.LogErrorAsync(error));
 ```
 or chaining multiple asynchronous operations:
 ```csharp
 var userTokenResult = await _userService.GetUserAsync(userData)
     .ThenAsync(user => _companyService.AddUserAsync(user))
-    .MatchAsync(
-        user => _loginService.GetUserTokenAsync(user),
-        error => _auditService.LogErrorAsync(error));
+    .ThenAsync(user => _loginService.GetUserTokenAsync(user))
+    .IfErrorAsync(error => _auditService.LogErrorAsync(error));
 ```
 
 There is also available a query syntax for chaining multiple synchronous and asynchronous operations that return `Result<T>`:

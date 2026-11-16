@@ -84,18 +84,11 @@ public class SyncDelegatesOnTaskResultsBindingUnitTests
     [InlineData("Task<Result<int>> r = GetUser().ThenAsync(u => u.Name).ThenAsync(n => GetLengthAsync(n)).IfErrorAsync(e => LogError(e));")]
     [InlineData("Task<string> r = GetUser().MatchAsync(u => u.Name, e => \"unknown\");")]
     [InlineData("Task<Result<User>> r = GetUser().MatchAsync(u => Log(u), e => LogError(e));")]
-    [InlineData("Task<Result<string>> r = GetUser().MatchAsync(u => u.Name, e => LogError(e));")]
-    [InlineData("Task<Result> r = GetUser().MatchAsync(u => Error.Conflict(ErrorUri.None, \"x\"), e => LogError(e));")]
-    [InlineData("Task<Result<string>> r = GetUser().MatchAsync(u => Result<string>.FromValue(u.Name), e => LogError(e));")]
     [InlineData("Task<Result<string>> r = GetUser().MatchAsync(u => Result<string>.FromValue(u.Name), e => Result<string>.FromValue(\"x\"));")]
     [InlineData("Task<Result<User>> r = GetUser().MatchAsync(Log, LogError);")]
     [InlineData("Task<Result> r = GetOk().MatchAsync(() => Log(null!), e => LogError(e));")]
     [InlineData("Task<int> r = GetOk().MatchAsync(() => 5, e => 0);")]
     [InlineData("Task<Result> r = GetOk().MatchAsync(() => Result.Success(), e => Result.Success());")]
-    [InlineData("Task<Result<int>> r = GetOk().MatchAsync(() => 5, e => LogError(e));")]
-    [InlineData("Task<Result> r = GetOk().MatchAsync(() => Error.Conflict(ErrorUri.None, \"x\"), e => LogError(e));")]
-    [InlineData("Task<Result<string>> r = GetUser().MatchAsync(u => GetNameAsync(u), e => LogAsync(e));")]
-    [InlineData("Task<Result<string>> r = GetUser().MatchAsync(async u => await GetNameAsync(u), async e => await LogAsync(e));")]
     [InlineData("Task<Result<User>> r = GetUser().MatchAsync(u => SaveAsync(u), e => LogAsync(e));")]
     [InlineData("Task<string> r = GetUser().MatchAsync(u => GetNameAsync(u), e => Task.FromResult(\"x\"));")]
     [InlineData("Task<Result> r = GetOk().MatchAsync(() => SaveAsync(null!), e => LogAsync(e));")]
@@ -146,6 +139,14 @@ public class SyncDelegatesOnTaskResultsBindingUnitTests
     [InlineData("_ = GetUser().MatchAsync(u => SaveOtherAsync(u), e => LogError(e));")]
     [InlineData("_ = GetUser().MatchAsync(u => Log(u), e => LogOtherAsync(e));")]
     [InlineData("_ = GetUser().MatchAsync(u => GetNameOtherAsync(u), e => ValueTask.FromResult(\"x\"));")]
+    // A success function with an error action (#227).
+    [InlineData("Task<Result<string>> r = GetUser().MatchAsync(u => u.Name, e => LogError(e));")]
+    [InlineData("Task<Result> r = GetUser().MatchAsync(u => Error.Conflict(ErrorUri.None, \"x\"), e => LogError(e));")]
+    [InlineData("Task<Result<string>> r = GetUser().MatchAsync(u => Result<string>.FromValue(u.Name), e => LogError(e));")]
+    [InlineData("Task<Result<int>> r = GetOk().MatchAsync(() => 5, e => LogError(e));")]
+    [InlineData("Task<Result> r = GetOk().MatchAsync(() => Error.Conflict(ErrorUri.None, \"x\"), e => LogError(e));")]
+    [InlineData("Task<Result<string>> r = GetUser().MatchAsync(u => GetNameAsync(u), e => LogAsync(e));")]
+    [InlineData("Task<Result<string>> r = GetUser().MatchAsync(async u => await GetNameAsync(u), async e => await LogAsync(e));")]
     public void Call_UnsupportedShape_ReportsOnlyCS0619(string statements)
     {
         // Act

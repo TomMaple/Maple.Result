@@ -13,7 +13,7 @@ using System;
 namespace Maple.Results.Tests.Unit.Binding;
 
 /// <summary>
-///     A function that returns an <see cref="Error" /> gives a failed <see cref="Result" /> in <c>Then</c>, <c>Match</c>, their
+///     A function that returns an <see cref="Error" /> gives a failed <see cref="Result" /> in <c>Then</c>, a <c>Match</c> with two functions, their
 ///     asynchronous forms and a query (#120); explicit type arguments keep a successful <c>Result&lt;Error&gt;</c>. Each shape is
 ///     assigned to a variable of the expected type.
 /// </summary>
@@ -30,9 +30,6 @@ public class ErrorFunctionBindingUnitTests
     [InlineData("Result r = ok.Then(x => GetError());")]
     [InlineData("Result r = GetResult().Then(() => GetError());")]
     [InlineData("Result r = ok.Then(ToError);")]
-    [InlineData("Result r = ok.Match(x => GetError(), e => { });")]
-    [InlineData("Result r = GetResult().Match(() => GetError(), e => { });")]
-    [InlineData("Result r = ok.Match(ToError, LogError);")]
     [InlineData("Result r = from x in ok from y in GetResultOfInt() select GetError();")]
     public void Synchronous_FunctionReturningError_GivesFailedResult(string statements)
     {
@@ -47,8 +44,6 @@ public class ErrorFunctionBindingUnitTests
     [InlineData("Task<Result> r = ok.ThenAsync(x => Task.FromResult(GetError()));")]
     [InlineData("Task<Result> r = ok.ThenAsync(async x => { await Task.Yield(); return GetError(); });")]
     [InlineData("Task<Result> r = GetOkAsync().ThenAsync(x => Task.FromResult(GetError()));")]
-    [InlineData("Task<Result> r = ok.MatchAsync(x => Task.FromResult(GetError()), e => Task.CompletedTask);")]
-    [InlineData("Task<Result> r = GetOkAsync().MatchAsync(x => Task.FromResult(GetError()), e => Task.CompletedTask);")]
     [InlineData("Task<Result> r = from x in GetOkAsync() select GetError();")]
     [InlineData("Task<Result> r = from x in ok from y in GetOkAsync() select GetError();")]
     [InlineData("Task<Result> r = from x in GetOkAsync() from y in GetResultOfInt() select GetError();")]
@@ -63,7 +58,6 @@ public class ErrorFunctionBindingUnitTests
 
     [Theory]
     [InlineData("ValueTask<Result> r = ok.ThenAsync(x => new ValueTask<Error>(GetError()));")]
-    [InlineData("ValueTask<Result> r = ok.MatchAsync(x => new ValueTask<Error>(GetError()), e => ValueTask.CompletedTask);")]
     [InlineData("ValueTask<Result> r = from x in GetOkValueTask() select GetError();")]
     [InlineData("ValueTask<Result> r = from x in GetOkValueTask() from y in GetResultOfInt() select GetError();")]
     public void ValueTaskBased_FunctionReturningError_GivesFailedResult(string statements)
@@ -78,7 +72,6 @@ public class ErrorFunctionBindingUnitTests
     [Theory]
     [InlineData("Result<Error> r = GetResult().Then<Error>(() => GetError());")]
     [InlineData("Result<Error> r = ok.Then<int, Error>(x => GetError());")]
-    [InlineData("Result<Error> r = ok.Match<int, Error>(x => GetError(), e => { });")]
     [InlineData("Result<Error> r = ok.Select<int, Error>(x => GetError());")]
     public void ExplicitTypeArguments_FunctionReturningError_KeepsSuccessfulResultOfError(string statements)
     {

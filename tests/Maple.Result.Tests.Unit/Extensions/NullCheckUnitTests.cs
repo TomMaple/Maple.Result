@@ -117,20 +117,6 @@ public class NullCheckUnitTests
         result.Value.ShouldBeNull();
     }
 
-    [Fact]
-    public void Match_FunctionReturningNullValue_ReturnsSuccessfulResultWithNullValue()
-    {
-        // Arrange
-        var sut = Result.Success();
-
-        // Act
-        var result = sut.Match(() => (string?)null, _ => { });
-
-        // Assert
-        result.IsSuccess.ShouldBeTrue();
-        result.Value.ShouldBeNull();
-    }
-
     #endregion
 
     #region helper methods

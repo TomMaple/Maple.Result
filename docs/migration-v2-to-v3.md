@@ -24,6 +24,7 @@ Version 3.0 makes `Result`, `Result<T>` and `Error` **immutable** and **always v
   * [`ErrorUri.None()` is a property](#errorurinone-is-a-property)
   * [`Result<T>.Value` throws on a failed result](#resulttvalue-throws-on-a-failed-result)
   * [Transforming `IfSuccess` and `IfError` renamed to `Then` and `Else`](#transforming-ifsuccess-and-iferror-renamed-to-then-and-else)
+  * [`Match` with a success function and an error action](#match-with-a-success-function-and-an-error-action)
   * [`Then` and `Match` with an `Error` or a task](#then-and-match-with-an-error-or-a-task)
   * [`IfError` and `Match` with an error action that returns a task](#iferror-and-match-with-an-error-action-that-returns-a-task)
   * [LINQ queries that select a task](#linq-queries-that-select-a-task)
@@ -42,7 +43,7 @@ Version 3.0 makes `Result`, `Result<T>` and `Error` **immutable** and **always v
 6. If you **read** `Result`, `Result<T>` or `Error` from JSON (e.g., Azure Durable Functions, message queues, caches, HTTP clients), see [No JSON deserialization without converters](#no-json-deserialization-without-converters).
 7. If you compare or snapshot the **written** JSON, see [Changed JSON output](#changed-json-output).
 8. Make sure error titles are never `null` or blank, detail texts are `null` or not blank, metadata keys, template ids and template parameter names do not start or end with white space, and the pointers of error details are JSON Pointers (`/email`, not `Email`), and pass `null` instead of `ErrorUri.None()` as an instance *URI* (see [Stricter validation](#stricter-validation)).
-9. Rename the calls of `IfSuccess`, `IfSuccessAsync`, `IfError` and `IfErrorAsync` that transform or replace the result to `Then`, `ThenAsync`, `Else` and `ElseAsync`; the compiler reports each of them (see [Transforming `IfSuccess` and `IfError` renamed to `Then` and `Else`](#transforming-ifsuccess-and-iferror-renamed-to-then-and-else)).
+9. Rename the calls of `IfSuccess`, `IfSuccessAsync`, `IfError` and `IfErrorAsync` that transform or replace the result to `Then`, `ThenAsync`, `Else` and `ElseAsync`; the compiler reports each of them (see [Transforming `IfSuccess` and `IfError` renamed to `Then` and `Else`](#transforming-ifsuccess-and-iferror-renamed-to-then-and-else)); the same for `Match` and `MatchAsync` with a success function and an error action (see [`Match` with a success function and an error action](#match-with-a-success-function-and-an-error-action)).
 10. Fix the calls of `Then`, `Match` and the LINQ queries that no longer compile or that now return a failed result (see [`Then` and `Match` with an `Error` or a task](#then-and-match-with-an-error-or-a-task)).
 11. Replace the error actions of `IfError` and `Match` that return a task with the asynchronous methods (see [`IfError` and `Match` with an error action that returns a task](#iferror-and-match-with-an-error-action-that-returns-a-task)).
 12. Replace the LINQ queries whose `select` returns a task with an asynchronous `from` clause or `ThenAsync` (see [LINQ queries that select a task](#linq-queries-that-select-a-task)), and check the queries whose `select` returns a result (see [LINQ queries that select a result](#linq-queries-that-select-a-result)).
@@ -379,16 +380,31 @@ var guestResult = userResult.Else(error => Result<User>.FromValue(User.Guest));
 userResult.IfSuccess(user => { seenIds.Add(user.Id); });
 ```
 
+### `Match` with a success function and an error action
+`Match` and `MatchAsync` with a **success function** and an **error action** (e.g., `Match(user => CreateOrder(user), error => Log(error))`) transformed the result, as `Then(…).IfError(…)` does, and the same call with a statement lambda tapped it: which one ran depended on the return type of the lambda, as for `IfSuccess` above (`Match(x => set.Add(x), e => { })` was a `Result<bool>`). In 3.0 such a call is a compile error (CS0619) whose message names the replacement, in every form (`Match`, `MatchAsync` on a `Result`, a `Task` or a `ValueTask`, with synchronous or asynchronous delegates). `Match` keeps two meanings: two **functions** that return a value of the same type, and two **actions** for a side effect.
+
+```csharp
+// 2.x: a Result<Order>; 3.0: a compile error
+var orderResult = userResult.Match(user => CreateOrder(user), error => Log(error));
+
+// 3.0: transform, then run the side effect
+var orderResult = userResult.Then(user => CreateOrder(user)).IfError(error => Log(error));
+var tokenResult = await userResult.ThenAsync(user => GetTokenAsync(user)).IfErrorAsync(error => LogAsync(error));
+
+// unchanged: two functions (a value) and two actions (a side effect)
+string name = userResult.Match(user => user.Name, error => "unknown");
+userResult.Match(user => Log(user), error => Log(error));
+```
+
 ### `Then` and `Match` with an `Error` or a task
 Two kinds of calls compiled in 2.x but did not do what they looked like:
 
-* **A function that returns an `Error`** bound to the generic overload and returned a **successful** `Result<Error>`. In 3.0, `Then`, `ThenAsync`, `Match` and `MatchAsync` (the overloads with an error action) have overloads for such functions that return a **failed** `Result` with that error. The same applies to a LINQ query that selects an `Error` (`from user in GetUser(id) select Error…`). Code that read `.Value` of the `Result<Error>` no longer compiles; if you need it, specify the type arguments.
+* **A function that returns an `Error`** bound to the generic overload and returned a **successful** `Result<Error>`. In 3.0, `Then` and `ThenAsync` have overloads for such functions that return a **failed** `Result` with that error (in `Match`, a success function with an error action is a compile error; see [`Match` with a success function and an error action](#match-with-a-success-function-and-an-error-action)). The same applies to a LINQ query that selects an `Error` (`from user in GetUser(id) select Error…`). Code that read `.Value` of the `Result<Error>` no longer compiles; if you need it, specify the type arguments.
 * **A function that returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>`** passed to `IfSuccess` (now `Then`), or to the `Match` overloads with an `Action<Error>`, was wrapped in a `Result<Task>` and **never awaited**. In 3.0 such a call is a compile error (CS0619); use the asynchronous method, or specify the type argument to keep the task on purpose.
 
 ```csharp
 // 2.x (IfSuccess): a successful Result<Error>; 3.0: a failed Result with the error
 var result = userResult.Then(user => Error.Conflict(typeUri, "The user already exists."));
-var result = userResult.Match(user => Error.Conflict(typeUri, "The user already exists."), error => Log(error));
 var result = from user in userResult select Error.Conflict(typeUri, "The user already exists.");
 
 // 2.x: the task was never awaited; 3.0: a compile error
@@ -502,11 +518,12 @@ The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an
 | `result.IfSuccess(x => set.Add(x))` (a side effect whose expression returns a value) | `result.IfSuccess(x => { set.Add(x); })` |
 | `result.IfSuccess(() => SaveAsync())` (a function returning a task) | `await result.IfSuccessAsync(() => SaveAsync())` |
 | `result.IfError(e => LogAsync(e))` (an error action returning a task) | `await result.IfErrorAsync(e => LogAsync(e))` |
-| `result.Match(…, e => LogAsync(e))` (an error action returning a task) | `await result.MatchAsync(…, e => LogAsync(e))` |
+| `result.Match(x => Log(x), e => LogAsync(e))` (an error action returning a task) | `await result.MatchAsync(x => LogAsync(x), e => LogAsync(e))` |
 | `from x in result select SaveAsync(x)` (a selector returning a task) | `await result.ThenAsync(x => SaveAsync(x))` |
 | `result.IfSuccess(x => Error…)` relied on as a `Result<Error>` | `result.Then<T, Error>(x => Error…)` |
 | `from x in result select Save(x)` relied on as a `Result<Result<T>>` | `result.Select<T, Result<TNext>>(x => Save(x))` |
-| `result.Match(x => Error…, e => …)` relied on as a `Result<Error>` | `result.Match<T, Error>(x => Error…, e => …)` |
+| `result.Match(x => …, e => Log(e))` (a success function and an error action) | `result.Then(x => …).IfError(e => Log(e))` |
+| `await result.MatchAsync(x => …, e => LogAsync(e))` (a success function and an error action) | `await result.ThenAsync(x => …).IfErrorAsync(e => LogAsync(e))` |
 | `WithErrorDetail("Email", …)` / `AddErrorDetail(nameof(request.Email), …)` (a pointer that is not a JSON Pointer) | `WithErrorDetail("/email", …)` / `AddErrorDetail("/email", …)` |
 | `Dictionary<string, object>` passed as named values | `Dictionary<string, object?>` |
 | `using Maple.Result;` | `using Maple.Results;` |
@@ -534,3 +551,4 @@ The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an
 * [Issue #203: Reject empty or whitespace-only detail texts and names padded with white space](https://github.com/TomMaple/Maple.Result/issues/203)
 * [Issue #205: The default `ErrorCategory` and the status codes read as `Failure`](https://github.com/TomMaple/Maple.Result/issues/205)
 * [Issue #217: The non-generic `Result` in LINQ `from` clauses, and a selected result](https://github.com/TomMaple/Maple.Result/issues/217)
+* [Issue #227: `Match` with a success function and an error action](https://github.com/TomMaple/Maple.Result/issues/227)
