@@ -146,7 +146,7 @@ public static class ElseValueTaskAsyncExtensions
     /// <exception cref="ArgumentNullException">
     ///     If any of the <paramref name="result" /> or <paramref name="ifErrorFunction" /> parameters are <see langword="null" />.
     /// </exception>
-    /// <inheritdoc cref="ElseTaskAsyncExtensions.ElseAsync{T}(Result{T}, Func{Error, Task{T}}, bool?)" />
+    /// <inheritdoc cref="ElseTaskAsyncExtensions.ElseAsync{T}(Result{T}, Func{Error, Task{T}}, bool?)" path="/*[not(self::exception)]" />
     public static ValueTask<Result<T>> ElseAsync<T>(this Result<T> result, Func<Error, ValueTask<T>> ifErrorFunction,
         bool? continueOnCapturedContext = null)
     {
@@ -160,8 +160,8 @@ public static class ElseValueTaskAsyncExtensions
             if (result.IsSuccess)
                 return result;
 
-            var valueTask = ifErrorFunction(result.Error);
-            var value = await valueTask.ConfigureAwait(continueOnCapturedContext);
+            var recoveryTask = ifErrorFunction(result.Error);
+            var value = await recoveryTask.ConfigureAwait(continueOnCapturedContext);
 
             return Result<T>.FromValue(value);
         }
@@ -230,7 +230,7 @@ public static class ElseValueTaskAsyncExtensions
     /// <exception cref="InvalidOperationException">
     ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />.
     /// </exception>
-    /// <inheritdoc cref="ElseTaskAsyncExtensions.ElseAsync{T}(Task{Result{T}}, Func{Error, Task{T}}, bool?)" />
+    /// <inheritdoc cref="ElseTaskAsyncExtensions.ElseAsync{T}(Task{Result{T}}, Func{Error, Task{T}}, bool?)" path="/*[not(self::exception)]" />
     [OverloadResolutionPriority(1)]
     public static ValueTask<Result<T>> ElseAsync<T>(this ValueTask<Result<T>> resultTask, Func<Error, ValueTask<T>> ifErrorFunction,
         bool? continueOnCapturedContext = null)
@@ -247,8 +247,8 @@ public static class ElseValueTaskAsyncExtensions
             if (result.IsSuccess)
                 return result;
 
-            var valueTask = ifErrorFunction(result.Error);
-            var value = await valueTask.ConfigureAwait(continueOnCapturedContext);
+            var recoveryTask = ifErrorFunction(result.Error);
+            var value = await recoveryTask.ConfigureAwait(continueOnCapturedContext);
 
             return Result<T>.FromValue(value);
         }

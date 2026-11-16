@@ -199,9 +199,9 @@ public static class ElseTaskAsyncExtensions
             if (result.IsSuccess)
                 return result;
 
-            var errorTask = ifErrorFunction(result.Error);
-            var valueTask = Guard.EnsureNotNullTask(errorTask, nameof(ifErrorFunction));
-            var value = await valueTask.ConfigureAwait(continueOnCapturedContext);
+            var recoveryTask = ifErrorFunction(result.Error);
+            var checkedTask = Guard.EnsureNotNullTask(recoveryTask, nameof(ifErrorFunction));
+            var value = await checkedTask.ConfigureAwait(continueOnCapturedContext);
 
             return Result<T>.FromValue(value);
         }
@@ -213,7 +213,8 @@ public static class ElseTaskAsyncExtensions
     /// </summary>
     /// <remarks>
     ///     Use it to replace an error with another one, e.g., <c>result.ElseAsync(async error =&gt; await TranslateAsync(error))</c>, as
-    ///     <c>Else(error =&gt; error.WithMetadata(…))</c> does.
+    ///     <c>Else(error =&gt; error.WithMetadata(…))</c> does. When <typeparamref name="T" /> is <see cref="Error" />, a returned
+    ///     <see cref="Error" /> is the error of a failed result too; return <c>Result&lt;Error&gt;.FromValue(…)</c> for a successful one.
     /// </remarks>
     /// <typeparam name="T">The type of the value of the <paramref name="result" />.</typeparam>
     /// <param name="result">The <see cref="Result{T}" /> to evaluate for an error. Must not be <see langword="null" />.</param>
@@ -348,9 +349,9 @@ public static class ElseTaskAsyncExtensions
             if (result.IsSuccess)
                 return result;
 
-            var errorTask = ifErrorFunction(result.Error);
-            var valueTask = Guard.EnsureNotNullTask(errorTask, nameof(ifErrorFunction));
-            var value = await valueTask.ConfigureAwait(continueOnCapturedContext);
+            var recoveryTask = ifErrorFunction(result.Error);
+            var checkedTask = Guard.EnsureNotNullTask(recoveryTask, nameof(ifErrorFunction));
+            var value = await checkedTask.ConfigureAwait(continueOnCapturedContext);
 
             return Result<T>.FromValue(value);
         }
@@ -363,7 +364,8 @@ public static class ElseTaskAsyncExtensions
     /// </summary>
     /// <remarks>
     ///     Use it to replace an error with another one, e.g., <c>resultTask.ElseAsync(async error =&gt; await TranslateAsync(error))</c>, as
-    ///     <c>Else(error =&gt; error.WithMetadata(…))</c> does.
+    ///     <c>Else(error =&gt; error.WithMetadata(…))</c> does. When <typeparamref name="T" /> is <see cref="Error" />, a returned
+    ///     <see cref="Error" /> is the error of a failed result too; return <c>Result&lt;Error&gt;.FromValue(…)</c> for a successful one.
     /// </remarks>
     /// <typeparam name="T">The type of the value of the result.</typeparam>
     /// <param name="resultTask">The asynchronous operation that returns the result to inspect. Must not be <see langword="null" />.</param>
