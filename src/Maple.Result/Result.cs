@@ -68,7 +68,7 @@ public interface IOperationResult
 /// </remarks>
 /// <inheritdoc cref="IOperationResult" />
 [DebuggerDisplay("{DebuggerDisplay,nq}")]
-public sealed record Result : IOperationResult
+public sealed partial record Result : IOperationResult
 {
     private static readonly Result SuccessResult = new(null);
 

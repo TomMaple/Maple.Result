@@ -449,6 +449,7 @@ See more: [Error](https://github.com/TomMaple/Maple.Result/blob/main/docs/Refere
 You can use:
 * the `IsSuccess` and `IsError` properties of the `Result` (e.g., the early return `if (result.IsError) return result.Error;`),
 * the `TryGetValue` and `TryGetError` methods (e.g., `if (!GetUser(id).TryGetValue(out var user, out var error)) return error;`),
+* `Result.Try()` and `Result.TryAsync()` to turn an exception of code you call into a failed result (see below),
 * extension methods:
   * `IfSuccess()`, `IfSuccessAsync()`,
   * `IfError()`, `IfErrorAsync()`,
@@ -494,6 +495,26 @@ var userTokenResult =
 
 > [!NOTE]
 > The query syntax needs a value in every `from` clause, so it works with `Result<T>` (and its `Task` and `ValueTask`) but not with the non-generic `Result`. Chain operations that return a `Result` with `IfSuccess()` / `IfSuccessAsync()` instead. Mixing a `Task` and a `ValueTask` in one query is not supported. A `select` that returns a task is a compile error, because the query would not await it: chain the operation in a `from` clause (with a function that returns `Task<Result<T>>`) or use `IfSuccessAsync()`.
+
+### Turning exceptions into results
+`Result.Try()` and `Result.TryAsync()` run code that can throw (e.g., a library or a database call) and return a failed result instead of the exception. The mapper from the exception to the `Error` is required: the library cannot pick the category, the type *URI* and the title, and it never copies the exception message into the error, which is meant for clients.
+
+```csharp
+Result<Customer> customer = await Result.TryAsync(
+    () => _repository.LoadAsync(id, cancellationToken),
+    ex => ErrorBuilder.Unavailable(ErrorUri.Locator("https://exampleapp.com/docs/errors/database"), "The database is unavailable.")
+        .WithMetadata("exceptionType", ex.GetType().Name)
+        .Build());
+
+// Only a FormatException is mapped; other exceptions propagate.
+Result<int> number = Result.Try<int, FormatException>(
+    () => int.Parse(text),
+    _ => Error.Validation(ErrorUri.None, "The value is not a number."));
+```
+
+An `OperationCanceledException` is rethrown: cancellation is not a failure.
+
+See more: [Try](https://github.com/TomMaple/Maple.Result/blob/main/docs/Reference/Result/Result_Try.md), [TryAsync](https://github.com/TomMaple/Maple.Result/blob/main/docs/Reference/Result/Result_TryAsync.md)
 
 ### Asynchronous methods in UI applications
 The asynchronous extension methods that take a `Task` or `ValueTask` of a result await it with `ConfigureAwait(false)` by default, so the delegates you pass run on a thread-pool thread. That is the right choice for ASP.NET Core, console applications, Azure Functions and background services.
