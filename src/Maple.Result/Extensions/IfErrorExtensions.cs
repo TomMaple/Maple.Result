@@ -113,11 +113,12 @@ public static class IfErrorExtensions
     // or a method that returns nothing is a side effect and binds to the action overload.
 
     private const string ValueDiscardedMessage =
-        "The function returns a value, which IfError discards. Use Else to replace the result with it, or a statement " +
-        "lambda (e.g., e => { titles.Add(e.Title); }) for a side effect.";
+        "The function returns a value, which IfError discards; an assignment or an increment (e.g., e => last = e or e => count++) has a value too. " +
+        "Use Else to replace the result with the value, or a statement lambda (e.g., e => { titles.Add(e.Title); } or e => { count++; }) for a side effect.";
 
     /// <summary>
-    ///     Not supported: the function returns a value, which <c>IfError</c> discards; use <c>Else</c>, or a statement lambda.
+    ///     Not supported: the function returns a value (an assignment or an increment has one too), which <c>IfError</c> discards;
+    ///     use <c>Else</c>, or a statement lambda.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ValueDiscardedMessage, error: true)]

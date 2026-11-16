@@ -23,7 +23,7 @@ namespace Maple.Results.Extensions.ValueTasks;
 /// </summary>
 /// <remarks>
 ///     A successful result is returned unchanged, and the function is not called. For a side effect that keeps the result unchanged, use
-///     <c>ElseAsync</c>.
+///     <c>IfErrorAsync</c>.
 ///     <para>
 ///         These methods are declared in the <c>Maple.Results.Extensions.ValueTasks</c> namespace, separately from their
 ///         <see cref="System.Threading.Tasks.Task" />-based counterparts in <c>Maple.Results.Extensions</c>, because both sets declare the same

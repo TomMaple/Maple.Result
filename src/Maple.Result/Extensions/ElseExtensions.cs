@@ -23,7 +23,7 @@ namespace Maple.Results.Extensions;
 /// </summary>
 /// <remarks>
 ///     A successful result is returned unchanged, and the function is not called. For a side effect that keeps the result unchanged, use
-///     <c>Else</c>.
+///     <c>IfError</c>.
 /// </remarks>
 public static class ElseExtensions
 {
@@ -74,7 +74,7 @@ public static class ElseExtensions
         "The function returns a task, which Else does not await. Use ElseAsync.";
 
     /// <summary>
-    ///     Not supported: the error action returns a task, which <c>Else</c> does not await; use <c>ElseAsync</c>.
+    ///     Not supported: the function returns a task, which <c>Else</c> does not await; use <c>ElseAsync</c>.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ElseTaskNotAwaitedMessage, error: true)]
@@ -86,7 +86,7 @@ public static class ElseExtensions
     }
 
     /// <summary>
-    ///     Not supported: the error action returns a task, which <c>Else</c> does not await; use <c>ElseAsync</c>.
+    ///     Not supported: the function returns a task, which <c>Else</c> does not await; use <c>ElseAsync</c>.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ElseTaskNotAwaitedMessage, error: true)]
@@ -97,7 +97,7 @@ public static class ElseExtensions
     }
 
     /// <summary>
-    ///     Not supported: the error action returns a task, which <c>Else</c> does not await; use <c>ElseAsync</c>.
+    ///     Not supported: the function returns a task, which <c>Else</c> does not await; use <c>ElseAsync</c>.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ElseTaskNotAwaitedMessage, error: true)]

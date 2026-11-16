@@ -23,7 +23,7 @@ namespace Maple.Results.Extensions;
 /// <remarks>
 ///     A failed result is returned unchanged, and the function is not called. A returned <see cref="Result" /> or <see cref="Result{T}" /> is
 ///     flattened, and a returned <see cref="Error" /> gives a failed result. For a side effect that keeps the result unchanged, use
-///     <c>Then</c>.
+///     <c>IfSuccess</c>.
 /// </remarks>
 public static class ThenExtensions
 {

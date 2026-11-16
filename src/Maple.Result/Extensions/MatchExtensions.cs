@@ -104,8 +104,8 @@ public static class MatchExtensions
     }
 
     /// <summary>
-    ///     Invokes one of the provided functions depending on whether the <paramref name="result" /> is successful and returns their value as
-    ///     a <see cref="Result{T}" /> instance.
+    ///     Invokes one of the provided functions depending on whether the <paramref name="result" /> is successful and returns the value that the
+    ///     invoked function returns.
     /// </summary>
     /// <typeparam name="T">The return type produced by either branch.</typeparam>
     /// <param name="result">
@@ -223,8 +223,8 @@ public static class MatchExtensions
     }
 
     /// <summary>
-    ///     Invokes one of the provided functions depending on whether the <paramref name="result" /> is successful and returns their output as
-    ///     a <see cref="Result{TNext}" /> instance.
+    ///     Invokes one of the provided functions depending on whether the <paramref name="result" /> is successful and returns the value that the
+    ///     invoked function returns.
     /// </summary>
     /// <typeparam name="T">The type wrapped by the source <see cref="Result{T}" />.</typeparam>
     /// <typeparam name="TNext">The type produced by either branch.</typeparam>
@@ -711,8 +711,9 @@ public static class MatchExtensions
     // Then(…).IfError(…). Match keeps two meanings: two functions (a value) and two actions (a side effect).
 
     private const string SuccessFunctionAndErrorActionMessage =
-        "Match with a success function and an error action transforms the result, as Then does. Use Then(…).IfError(…) " +
-        "to transform it, a statement lambda (e.g., x => { list.Add(x); }) for a side effect, or two functions that " +
+        "Match with a success function and an error action transforms the result, as Then does; an assignment or an increment " +
+        "(e.g., x => last = x) is a function too. " +
+        "Use Then(…).IfError(…) to transform it, a statement lambda (e.g., x => { last = x; }) for a side effect, or two functions that " +
         "return the same type for a value.";
 
     /// <summary>
