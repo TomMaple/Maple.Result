@@ -42,7 +42,7 @@ Version 3.0 makes `Result`, `Result<T>` and `Error` **immutable** and **always v
 5. Replace `new Result()`, `new Result<T>()`, `new Error()` and `new ErrorUri(...)` with the factory methods.
 6. If you **read** `Result`, `Result<T>` or `Error` from JSON (e.g., Azure Durable Functions, message queues, caches, HTTP clients), see [No JSON deserialization without converters](#no-json-deserialization-without-converters).
 7. If you compare or snapshot the **written** JSON, see [Changed JSON output](#changed-json-output).
-8. Make sure error titles are never `null` or blank, detail texts are `null` or not blank, metadata keys, template ids and template parameter names do not start or end with white space, and the pointers of error details are JSON Pointers (`/email`, not `Email`), and pass `null` instead of `ErrorUri.None()` as an instance *URI* (see [Stricter validation](#stricter-validation)).
+8. Make sure error titles are never `null` or blank, detail texts are `null` or not blank, metadata keys, template ids and template parameter names do not start or end with white space, two parameter names of one message do not differ only in case, and the pointers of error details are JSON Pointers (`/email`, not `Email`), and pass `null` instead of `ErrorUri.None()` as an instance *URI* (see [Stricter validation](#stricter-validation)).
 9. Rename the calls of `IfSuccess`, `IfSuccessAsync`, `IfError` and `IfErrorAsync` that transform or replace the result to `Then`, `ThenAsync`, `Else` and `ElseAsync`; the compiler reports each of them (see [Transforming `IfSuccess` and `IfError` renamed to `Then` and `Else`](#transforming-ifsuccess-and-iferror-renamed-to-then-and-else)); the same for `Match` and `MatchAsync` with a success function and an error action (see [`Match` with a success function and an error action](#match-with-a-success-function-and-an-error-action)).
 10. Fix the calls of `Then`, `Match` and the LINQ queries that no longer compile or that now return a failed result (see [`Then` and `Match` with an `Error` or a task](#then-and-match-with-an-error-or-a-task)).
 11. Replace the error actions of `IfError` and `Match` that return a task with the asynchronous methods (see [`IfError` and `Match` with an error action that returns a task](#iferror-and-match-with-an-error-action-that-returns-a-task)).
@@ -217,6 +217,7 @@ These values were accepted in 2.x and now throw:
 | An undefined `ErrorCategory` value, e.g., `(ErrorCategory)42` (`ErrorBuilder`) | `ArgumentOutOfRangeException` |
 | An empty or white-space-only `detailTemplateId` / `TemplatedMessage` template id | `ArgumentException` |
 | A repeated named-value name, e.g., `("min", 3), ("min", 4)` (was an exception from LINQ's `ToDictionary`, now with a clear message) | `ArgumentException` |
+| Template parameter names that differ only in case, e.g., `("Min", 3), ("min", 5)`: one of the values was ignored by a template engine that ignores case, and a naming policy wrote both as the same member of `params` (the rule of the metadata keys) | `ArgumentException` |
 | A `null` named-value name | `ArgumentNullException` |
 | Named values without a template id, e.g., `WithErrorDetail("/name", "Too short.", null, ("min", 3))` (2.x **silently dropped** them) | `ArgumentException` |
 | A `null` `TemplatedMessage.TemplateId` | `ArgumentNullException` |
@@ -262,7 +263,7 @@ var message = new TemplatedMessage("errors.length", ("min", 3));
 Changes that can break existing code:
 * **The parameter names** changed from `TemplateId` / `Params` to `templateId` / `parameters`. Update calls that use named arguments.
 * **`Deconstruct` is gone.** `var (id, parameters) = message;` and positional patterns such as `message is ("errors.length", var p)` no longer compile; use a property pattern instead: `message is { TemplateId: "errors.length", Params: var p }`.
-* **Repeated or `null` parameter names throw** (see [Stricter validation](#stricter-validation)).
+* **Repeated or `null` parameter names, and names that differ only in case, throw** (see [Stricter validation](#stricter-validation)).
 
 The named values of the factory methods (`detailNamedValues`), `WithErrorDetail`, `ErrorBuilder.AddErrorDetail` and `ErrorBuilder.WithDetailTemplated` are now `params ReadOnlySpan<(string Key, object? Value)>` instead of `params (string Key, object? Value)[]`, so a call no longer allocates an array:
 * inline values, arrays and collection expressions still compile; recompile the calling code (the signatures changed);
@@ -552,3 +553,4 @@ The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an
 * [Issue #205: The default `ErrorCategory` and the status codes read as `Failure`](https://github.com/TomMaple/Maple.Result/issues/205)
 * [Issue #217: The non-generic `Result` in LINQ `from` clauses, and a selected result](https://github.com/TomMaple/Maple.Result/issues/217)
 * [Issue #227: `Match` with a success function and an error action](https://github.com/TomMaple/Maple.Result/issues/227)
+* [Issue #235: Reject template parameter names that differ only in case](https://github.com/TomMaple/Maple.Result/issues/235)

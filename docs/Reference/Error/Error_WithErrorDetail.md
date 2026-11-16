@@ -89,7 +89,7 @@ The `detail` or a name in `detailNamedValues` is `null`.
 
 [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception)
 
-The `propertyPointer` is not a *JSON Pointer* (e.g., `Email` or `Items[0].Name`; the parameter name of the exception is `PropertyPointer`), the `detail` is empty or consists only of white-space characters (the parameter name of the exception is `Detail`), the `detailTemplateId` is empty, consists only of white-space characters or starts or ends with white space, a name in `detailNamedValues` is empty, starts or ends with white space, or is repeated, or `detailNamedValues` are passed without a `detailTemplateId`.
+The `propertyPointer` is not a *JSON Pointer* (e.g., `Email` or `Items[0].Name`; the parameter name of the exception is `PropertyPointer`), the `detail` is empty or consists only of white-space characters (the parameter name of the exception is `Detail`), the `detailTemplateId` is empty, consists only of white-space characters or starts or ends with white space, a name in `detailNamedValues` is empty, starts or ends with white space, is repeated, or differs only in case from another name (e.g., `Min` and `min`), or `detailNamedValues` are passed without a `detailTemplateId`.
 
 ### Examples
 ```csharp

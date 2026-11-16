@@ -16,7 +16,7 @@ Sets the [DetailTemplated](../Error/Error_DetailTemplated.md) of the error to bu
 
 
 ## WithDetailTemplated(TemplatedMessage)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L297" target="_blank">ErrorBuilder.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L296" target="_blank">ErrorBuilder.cs</a>
 
 Sets the [DetailTemplated](../Error/Error_DetailTemplated.md) of the error to build.
 
@@ -43,7 +43,7 @@ var withoutTemplate = error.ToBuilder()
 
 
 ## WithDetailTemplated(String, (String, Object)[])
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L318" target="_blank">ErrorBuilder.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L317" target="_blank">ErrorBuilder.cs</a>
 
 Sets the [DetailTemplated](../Error/Error_DetailTemplated.md) of the error to build to a new [TemplatedMessage](../TemplatedMessage/TemplatedMessage.md).
 
@@ -70,7 +70,7 @@ The `templateId` or a parameter name is `null`.
 
 [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception)
 
-The `templateId` is empty, consists only of white-space characters or starts or ends with white space, or a parameter name is empty, starts or ends with white space, or is repeated.
+The `templateId` is empty, consists only of white-space characters or starts or ends with white space, or a parameter name is empty, starts or ends with white space, is repeated, or differs only in case from another name (e.g., `Min` and `min`).
 
 In both cases the builder is unchanged.
 
