@@ -56,7 +56,7 @@ The `Maple.Result` package contains all the types and the core functionality of 
 
 ```csharp
 using Maple.Results;
-using Maple.Results.Extensions;  // extension methods: IfSuccess, Match, LINQ, …
+using Maple.Results.Extensions;  // extension methods: Then, Else, IfSuccess, Match, LINQ, …
 ```
 
 ## Using the *Result*
@@ -89,12 +89,13 @@ public async Task<Result> DeleteContactAsync(Guid id)
 
 ## Chaining operations
 ### Available extension methods
-* `IfSuccess()`
-* `IfSuccessAsync()`
-* `IfError()`
-* `IfErrorAsync()`
-* `Match()`
-* `MatchAsync()`
+* `Then()` and `ThenAsync()`: transform or chain a successful result (a function that returns a value, a `Result`, a `Result<T>` or an `Error`),
+* `Else()` and `ElseAsync()`: replace a failed result (e.g., recover with a value, or return another error),
+* `IfSuccess()` and `IfSuccessAsync()`: run a side effect on a successful result and return it unchanged,
+* `IfError()` and `IfErrorAsync()`: run a side effect on a failed result and return it unchanged,
+* `Match()` and `MatchAsync()`: handle both cases.
+
+A function that returns a value passed to `IfSuccess()` or `IfError()` is a compile error that names `Then()` or `Else()`, so that its value is not discarded by mistake; an action passed to `Then()` or `Else()` is a compile error that names `IfSuccess()` or `IfError()`.
 
 #### Examples
 ```csharp
@@ -104,7 +105,7 @@ await createUserResult.MatchAsync(
     error => _auditService.LogErrorAsync(error));
 
 var companyResult = createUserResult
-    .IfSuccess(() => _companyService.GetCompanyById(userData.CompanyId))
+    .Then(() => _companyService.GetCompanyById(userData.CompanyId))
     .Match(
         company => _mapper.Map(company),
         error => _mapper.Map(error));
@@ -113,8 +114,8 @@ or chaining multiple asynchronous operations:
 ```csharp
 var userTokenResult =
     await _validationService.ValidateUserDataAsync(userRequest)
-        .IfSuccessAsync(userData => _userService.GetUserAsync(userData))
-        .IfSuccessAsync(user => _loginService.GetUserTokenAsync(user));
+        .ThenAsync(userData => _userService.GetUserAsync(userData))
+        .ThenAsync(user => _loginService.GetUserTokenAsync(user));
 ```
 
 or chaining multiple asynchronous operations using the query syntax:
@@ -134,7 +135,7 @@ var displayNameResult =
 ```
 
 > [!NOTE]
-> The asynchronous extension methods (`IfSuccessAsync()`, `IfErrorAsync()`, `MatchAsync()`, `ToResultAsync()` and the LINQ `Select()` and `SelectMany()`) support both `Task` and `ValueTask`, so you can chain and `await` results regardless of which one your methods return.
+> The asynchronous extension methods (`ThenAsync()`, `ElseAsync()`, `IfSuccessAsync()`, `IfErrorAsync()`, `MatchAsync()`, `ToResultAsync()` and the LINQ `Select()` and `SelectMany()`) support both `Task` and `ValueTask`, so you can chain and `await` results regardless of which one your methods return.
 
 > [!IMPORTANT]
 > The `Task`-based methods live in the `Maple.Results.Extensions` namespace and the `ValueTask`-based ones in `Maple.Results.Extensions.ValueTasks`—import the one matching the style you use, as having both in scope makes a call with an `async` lambda ambiguous.
@@ -451,6 +452,8 @@ You can use:
 * the `TryGetValue` and `TryGetError` methods (e.g., `if (!GetUser(id).TryGetValue(out var user, out var error)) return error;`),
 * `Result.Try()` and `Result.TryAsync()` to turn an exception of code you call into a failed result (see below),
 * extension methods:
+  * `Then()`, `ThenAsync()`,
+  * `Else()`, `ElseAsync()`,
   * `IfSuccess()`, `IfSuccessAsync()`,
   * `IfError()`, `IfErrorAsync()`,
   * `Match()`, `MatchAsync()`.
@@ -458,7 +461,7 @@ You can use:
 ```csharp
 var userResult = await _userService.GetUserAsync(userData);
 
-var userAddedResult = await userResult.IfSuccessAsync(async (user) =>
+var userAddedResult = await userResult.ThenAsync(async (user) =>
 {
     return await _companyService.AddUserAsync(user);
 });
@@ -470,7 +473,7 @@ var userTokenResult = await userAddedResult.MatchAsync(
 or chaining multiple asynchronous operations:
 ```csharp
 var userTokenResult = await _userService.GetUserAsync(userData)
-    .IfSuccessAsync(user => _companyService.AddUserAsync(user))
+    .ThenAsync(user => _companyService.AddUserAsync(user))
     .MatchAsync(
         user => _loginService.GetUserTokenAsync(user),
         error => _auditService.LogErrorAsync(error));
@@ -494,7 +497,7 @@ var userTokenResult =
 ```
 
 > [!NOTE]
-> The query syntax needs a value in every `from` clause, so it works with `Result<T>` (and its `Task` and `ValueTask`) but not with the non-generic `Result`. Chain operations that return a `Result` with `IfSuccess()` / `IfSuccessAsync()` instead. Mixing a `Task` and a `ValueTask` in one query is not supported. A `select` that returns a task is a compile error, because the query would not await it: chain the operation in a `from` clause (with a function that returns `Task<Result<T>>`) or use `IfSuccessAsync()`.
+> The query syntax needs a value in every `from` clause, so it works with `Result<T>` (and its `Task` and `ValueTask`) but not with the non-generic `Result`. Chain operations that return a `Result` with `Then()` / `ThenAsync()` instead. Mixing a `Task` and a `ValueTask` in one query is not supported. A `select` that returns a task is a compile error, because the query would not await it: chain the operation in a `from` clause (with a function that returns `Task<Result<T>>`) or use `ThenAsync()`.
 
 ### Turning exceptions into results
 `Result.Try()` and `Result.TryAsync()` run code that can throw (e.g., a library or a database call) and return a failed result instead of the exception. The mapper from the exception to the `Error` is required: the library cannot pick the category, the type *URI* and the title, and it never copies the exception message into the error, which is meant for clients.
@@ -625,13 +628,12 @@ By the *HTTP* reference from *Mozilla* [[link](https://developer.mozilla.org/en-
 ## What is the difference between a Critical Error and an Exception?
 It is to a developer to draw a line between the errors that are critical and are handled in one way or another, and the ones that are unhandled and disrupt the normal program flow and bubbles up the call stack.
 
-## Why do methods like `Bind()`, `Else()`, `Map()`, `Switch`, `Then()` and others are not available?
+## Why are methods like `Bind()`, `Map()` and `Switch()` not available?
 This library minimizes the amount of extension methods:
-* `Bind()`can be replaced with e.g., `IfSuccess<T, TNext>(Result<T>, Func<T, TNext>)`,
-* `Else()` can be replaced with e.g., `IfError<TResult>(TResult, Func<Error, TResult>)`,
-* `Map()` can be replaced with e.g., `IfSuccess<T, TNext>(Result<T>, Func<T, TNext>)`,
-* `Switch()` can be replaced with e.g., `Match<T>(Result<T>, Action<T>, Action<Error>)`,
-* `Then()` can be replaced with e.g., `IfSuccess<T, TNext>(Result<T>, Func<T, TNext>)`.
+* `Bind()` and `Map()` are both `Then()`: a function that returns a value maps it (e.g., `Then<T, TNext>(Result<T>, Func<T, TNext>)`), and a function that returns a `Result<TNext>` binds it (e.g., `Then<T, TNext>(Result<T>, Func<T, Result<TNext>>)`),
+* `Tap()` is `IfSuccess()`, and `TapError()` is `IfError()`,
+* `Recover()` is `Else()` (e.g., `Else<TResult>(TResult, Func<Error, TResult>)`),
+* `Switch()` is `Match()` with actions (e.g., `Match<T>(Result<T>, Action<T>, Action<Error>)`).
 
 # Learn More
 ## Documentation

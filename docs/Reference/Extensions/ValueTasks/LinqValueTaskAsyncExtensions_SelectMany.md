@@ -18,7 +18,7 @@ Enables the LINQ query syntax with more than one `from` clause for [Result&lt;T&
 ## Remarks
 A result selector that returns an [Error](../../Error/Error.md) makes the query fail: such a query returns a failed [Result](../../Result/Result.md) instead of a **successful** `Result<Error>`.
 
-A result selector that returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>` is not supported: the query does not await it, so such a query is a compile error. Await the operation with [IfSuccessAsync](IfSuccessValueTaskAsyncExtensions_IfSuccessAsync.md) instead, or chain it in a `from` clause whose function returns a `ValueTask<Result<T>>`. To keep the task in the result on purpose, call `SelectMany<T, TMiddle, Task>(…)` with explicit type arguments.
+A result selector that returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>` is not supported: the query does not await it, so such a query is a compile error. Await the operation with [ThenAsync](ThenValueTaskAsyncExtensions_ThenAsync.md) instead, or chain it in a `from` clause whose function returns a `ValueTask<Result<T>>`. To keep the task in the result on purpose, call `SelectMany<T, TMiddle, Task>(…)` with explicit type arguments.
 
 The query syntax needs a value in every `from` clause, so it works with [Result&lt;T&gt;](../../ResultT/ResultT.md) but not with the non-generic [Result](../../Result/Result.md). A `ValueTask` and a `Task` cannot be mixed in one query.
 
