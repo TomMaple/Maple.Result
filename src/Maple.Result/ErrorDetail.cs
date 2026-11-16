@@ -99,7 +99,10 @@ public sealed record ErrorDetail(string? PropertyPointer, string Detail, Templat
                 case null:
                     throw new ArgumentNullException(nameof(segments), "A segment of a JSON Pointer must not be null.");
                 case string name:
-                    builder.Append(name.Replace("~", "~0", StringComparison.Ordinal).Replace("/", "~1", StringComparison.Ordinal));
+                    var escapedName = name
+                        .Replace("~", "~0", StringComparison.Ordinal)
+                        .Replace("/", "~1", StringComparison.Ordinal);
+                    builder.Append(escapedName);
                     break;
                 case int index when index >= 0:
                     builder.Append(index.ToString(CultureInfo.InvariantCulture));
