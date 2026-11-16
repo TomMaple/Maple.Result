@@ -3,41 +3,29 @@
 Namespace: [Maple.Results.Extensions.ValueTasks](namespace.md)<br>
 Assembly: Maple.Result.dll<br>
 
-Runs a specific asynchronous action or function depending on whether the instance of [Result](../../Result/Result.md) and [Result&lt;T&gt;](../../ResultT/ResultT.md) represents a successful or a failed operation, as an asynchronous operation.
+Awaits a [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1) of a [Result](../../Result/Result.md) or a [Result&lt;T&gt;](../../ResultT/ResultT.md) and folds it into one value: runs the function for the success or the function for the error, and returns what it returns, as an asynchronous operation.
 
 ## Overloads
 | Name | Description |
 | ---- | ----------- |
-| [MatchAsync(Result, Func&lt;ValueTask&gt;, Func&lt;Error, ValueTask&gt;, Boolean)](#matchasyncresult-funcvaluetask-funcerror-valuetask-boolean) | Executes one of the specified asynchronous actions as an asynchronous operation depending on whether the [Result](../../Result/Result.md) represents a success or a failure. |
-| [MatchAsync(Result, Func&lt;ValueTask&lt;Result&gt;&gt;, Func&lt;Error, ValueTask&lt;Result&gt;&gt;, Boolean)](#matchasyncresult-funcvaluetaskresult-funcerror-valuetaskresult-boolean) | Executes one of the specified asynchronous functions as an asynchronous operation depending on whether the [Result](../../Result/Result.md) represents a success or a failure. |
-| [MatchAsync&lt;T&gt;(Result, Func&lt;ValueTask&lt;T&gt;&gt;, Func&lt;Error, ValueTask&lt;T&gt;&gt;, Boolean)](#matchasynctresult-funcvaluetaskt-funcerror-valuetaskt-boolean) | Executes one of the specified asynchronous functions as an asynchronous operation depending on whether the [Result](../../Result/Result.md) represents a success or a failure. |
-| [MatchAsync&lt;T&gt;(Result, Func&lt;ValueTask&lt;Result&lt;T&gt;&gt;&gt;, Func&lt;Error, ValueTask&lt;Result&lt;T&gt;&gt;&gt;, Boolean)](#matchasynctresult-funcvaluetaskresultt-funcerror-valuetaskresultt-boolean) | Executes one of the specified asynchronous functions as an asynchronous operation depending on whether the [Result](../../Result/Result.md) represents a success or a failure. |
-| [MatchAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&gt;, Func&lt;Error, ValueTask&gt;, Boolean)](#matchasynctresultt-funct-valuetask-funcerror-valuetask-boolean) |  Executes one of the specified asynchronous actions as an asynchronous operation depending on whether the [Result&lt;T&gt;](../../ResultT/ResultT.md) represents a success or a failure. |
-| [MatchAsync&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;TNext&gt;&gt;, Func&lt;Error, ValueTask&lt;TNext&gt;&gt;, Boolean)](#matchasynct-tnextresultt-funct-valuetasktnext-funcerror-valuetasktnext-boolean) |  Executes one of the specified asynchronous functions as an asynchronous operation depending on whether the [Result&lt;T&gt;](../../ResultT/ResultT.md) represents a success or a failure. |
-| [MatchAsync&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Result&lt;TNext&gt;&gt;&gt;, Func&lt;Error, ValueTask&lt;Result&lt;TNext&gt;&gt;&gt;, Boolean)](#matchasynct-tnextresultt-funct-valuetaskresulttnext-funcerror-valuetaskresulttnext-boolean) |  Executes one of the specified asynchronous functions as an asynchronous operation depending on whether the [Result&lt;T&gt;](../../ResultT/ResultT.md) represents a success or a failure. |
-| [MatchAsync(ValueTask&lt;Result&gt;, Func&lt;ValueTask&gt;, Func&lt;Error, ValueTask&gt;, Boolean)](#matchasyncvaluetaskresult-funcvaluetask-funcerror-valuetask-boolean) | Executes one of the specified asynchronous actions as an asynchronous operation depending on whether the [Result](../../Result/Result.md) represents a success or a failure. |
-| [MatchAsync(ValueTask&lt;Result&gt;, Func&lt;ValueTask&lt;Result&gt;&gt;, Func&lt;Error, ValueTask&lt;Result&gt;&gt;, Boolean)](#matchasyncvaluetaskresult-funcvaluetaskresult-funcerror-valuetaskresult-boolean) | Executes one of the specified asynchronous functions as an asynchronous operation depending on whether the [Result](../../Result/Result.md) represents a success or a failure. |
-| [MatchAsync&lt;T&gt;(ValueTask&lt;Result&gt;, Func&lt;ValueTask&lt;T&gt;&gt;, Func&lt;Error, ValueTask&lt;T&gt;&gt;, Boolean)](#matchasynctvaluetaskresult-funcvaluetaskt-funcerror-valuetaskt-boolean) | Executes one of the specified asynchronous functions as an asynchronous operation depending on whether the [Result](../../Result/Result.md) represents a success or a failure. |
-| [MatchAsync&lt;T&gt;(ValueTask&lt;Result&gt;, Func&lt;ValueTask&lt;Result&lt;T&gt;&gt;&gt;, Func&lt;Error, ValueTask&lt;Result&lt;T&gt;&gt;&gt;, Boolean)](#matchasynctvaluetaskresult-funcvaluetaskresultt-funcerror-valuetaskresultt-boolean) | Executes one of the specified asynchronous functions as an asynchronous operation depending on whether the [Result](../../Result/Result.md) represents a success or a failure. |
-| [MatchAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&gt;, Func&lt;Error, ValueTask&gt;, Boolean)](#matchasynctvaluetaskresultt-funct-valuetask-funcerror-valuetask-boolean) |  Executes one of the specified asynchronous actions as an asynchronous operation depending on whether the [Result&lt;T&gt;](../../ResultT/ResultT.md) represents a success or a failure. |
-| [MatchAsync&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;TNext&gt;&gt;, Func&lt;Error, ValueTask&lt;TNext&gt;&gt;, Boolean)](#matchasynct-tnextvaluetaskresultt-funct-valuetasktnext-funcerror-valuetasktnext-boolean) |  Executes one of the specified asynchronous functions as an asynchronous operation depending on whether the [Result&lt;T&gt;](../../ResultT/ResultT.md) represents a success or a failure. |
-| [MatchAsync&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&lt;TNext&gt;&gt;&gt;, Func&lt;Error, ValueTask&lt;Result&lt;TNext&gt;&gt;&gt;, Boolean)](#matchasynct-tnextvaluetaskresultt-funct-valuetaskresulttnext-funcerror-valuetaskresulttnext-boolean) |  Executes one of the specified asynchronous functions as an asynchronous operation depending on whether the [Result&lt;T&gt;](../../ResultT/ResultT.md) represents a success or a failure. |
-| [MatchAsync(ValueTask&lt;Result&gt;, Action, Action&lt;Error&gt;, Boolean)](#matchasyncvaluetaskresult-action-actionerror-boolean) | Awaits the `resultTask` and runs one of the synchronous delegates: the first one if the result is successful, the second one with the [Error](../../Error/Error.md) if it is failed. |
-| [MatchAsync(ValueTask&lt;Result&gt;, Func&lt;Result&gt;, Func&lt;Error, Result&gt;, Boolean)](#matchasyncvaluetaskresult-funcresult-funcerror-result-boolean) | Awaits the `resultTask` and runs one of the synchronous delegates: the first one if the result is successful, the second one with the [Error](../../Error/Error.md) if it is failed. |
-| [MatchAsync&lt;T&gt;(ValueTask&lt;Result&gt;, Func&lt;T&gt;, Func&lt;Error, T&gt;, Boolean)](#matchasynctvaluetaskresult-funct-funcerror-t-boolean) | Awaits the `resultTask` and runs one of the synchronous delegates: the first one if the result is successful, the second one with the [Error](../../Error/Error.md) if it is failed. |
-| [MatchAsync&lt;T&gt;(ValueTask&lt;Result&gt;, Func&lt;Result&lt;T&gt;&gt;, Func&lt;Error, Result&lt;T&gt;&gt;, Boolean)](#matchasynctvaluetaskresult-funcresultt-funcerror-resultt-boolean) | Awaits the `resultTask` and runs one of the synchronous delegates: the first one if the result is successful, the second one with the [Error](../../Error/Error.md) if it is failed. |
-| [MatchAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Action&lt;T&gt;, Action&lt;Error&gt;, Boolean)](#matchasynctvaluetaskresultt-actiont-actionerror-boolean) | Awaits the `resultTask` and runs one of the synchronous delegates: the first one if the result is successful, the second one with the [Error](../../Error/Error.md) if it is failed. |
-| [MatchAsync&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, TNext&gt;, Func&lt;Error, TNext&gt;, Boolean)](#matchasynct-tnextvaluetaskresultt-funct-tnext-funcerror-tnext-boolean) | Awaits the `resultTask` and runs one of the synchronous delegates: the first one if the result is successful, the second one with the [Error](../../Error/Error.md) if it is failed. |
-| [MatchAsync&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&lt;TNext&gt;&gt;, Func&lt;Error, Result&lt;TNext&gt;&gt;, Boolean)](#matchasynct-tnextvaluetaskresultt-funct-resulttnext-funcerror-resulttnext-boolean) | Awaits the `resultTask` and runs one of the synchronous delegates: the first one if the result is successful, the second one with the [Error](../../Error/Error.md) if it is failed. |
-
+| [MatchAsync&lt;TOut&gt;(ValueTask&lt;Result&gt;, Func&lt;TOut&gt;, Func&lt;Error, TOut&gt;, Boolean)](#matchasynctoutvaluetaskresult-functout-funcerror-tout-boolean) | Awaits the `resultTask`, invokes one of the specified synchronous functions depending on whether the [Result](../../Result/Result.md) is successful and returns the value that it returns. |
+| [MatchAsync&lt;TOut&gt;(ValueTask&lt;Result&gt;, Func&lt;ValueTask&lt;TOut&gt;&gt;, Func&lt;Error, ValueTask&lt;TOut&gt;&gt;, Boolean)](#matchasynctoutvaluetaskresult-funcvaluetasktout-funcerror-valuetasktout-boolean) | Awaits the `resultTask`, invokes one of the specified asynchronous functions depending on whether the [Result](../../Result/Result.md) is successful, awaits it and returns the value that it returns. |
+| [MatchAsync(ValueTask&lt;Result&gt;, Func&lt;ValueTask&gt;, Func&lt;Error, ValueTask&gt;, Boolean)](#matchasyncvaluetaskresult-funcvaluetask-funcerror-valuetask-boolean) | Awaits the `resultTask`, invokes one of the specified asynchronous functions depending on whether the [Result](../../Result/Result.md) is successful, and awaits it. |
+| [MatchAsync&lt;T, TOut&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, TOut&gt;, Func&lt;Error, TOut&gt;, Boolean)](#matchasynct-toutvaluetaskresultt-funct-tout-funcerror-tout-boolean) | Awaits the `resultTask`, invokes one of the specified synchronous functions depending on whether the [Result&lt;T&gt;](../../ResultT/ResultT.md) is successful and returns the value that it returns. |
+| [MatchAsync&lt;T, TOut&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;TOut&gt;&gt;, Func&lt;Error, ValueTask&lt;TOut&gt;&gt;, Boolean)](#matchasynct-toutvaluetaskresultt-funct-valuetasktout-funcerror-valuetasktout-boolean) | Awaits the `resultTask`, invokes one of the specified asynchronous functions depending on whether the [Result&lt;T&gt;](../../ResultT/ResultT.md) is successful, awaits it and returns the value that it returns. |
+| [MatchAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&gt;, Func&lt;Error, ValueTask&gt;, Boolean)](#matchasynctvaluetaskresultt-funct-valuetask-funcerror-valuetask-boolean) | Awaits the `resultTask`, invokes one of the specified asynchronous functions depending on whether the [Result&lt;T&gt;](../../ResultT/ResultT.md) is successful, and awaits it. |
 
 ## Remarks
-A success function with an error action (e.g., `MatchAsync(x => MapAsync(x), e => LogAsync(e))`) is a compile error (CS0619) since 3.0: it transformed the result, and the same call with a delegate without a value tapped it. Use `ThenAsync(…).IfErrorAsync(…)` to transform the result, two actions for a side effect, or two functions for a value.
+`MatchAsync` is the fold of [Match](../MatchExtensions_Match.md) on a task of a result: two functions that return one type. The functions are both synchronous (they run after the task completes), or both return a `ValueTask<TOut>` or a `ValueTask`, which is awaited. The value is returned as the function returns it, `null` included: a function that returns a `null` result gives `null`.
 
-The overloads with two synchronous delegates (e.g., `MatchAsync(user => user.Name, error => "unknown")`) run one of them after the task completes. One synchronous and one asynchronous delegate are a compile error (CS0619). A delegate that returns a `Task` is a compile error too: this page is for the `ValueTask` namespace; import `Maple.Results.Extensions` for the other one.
+There is no `MatchAsync` on a [Result](../../Result/Result.md) or a [Result&lt;T&gt;](../../ResultT/ResultT.md): [Match](../MatchExtensions_Match.md) returns the task of the function that ran (e.g., `await result.Match(x => CountAsync(x), e => CountAsync(0))`).
+
+Two actions (e.g., `MatchAsync(x => Log(x), e => Log(e))`) are a compile error (CS0619) that names [SwitchAsync](SwitchValueTaskAsyncExtensions_SwitchAsync.md), which runs one of two actions after the task completes. To transform the value and handle the error, use `ThenAsync(…).IfErrorAsync(…)`. A call whose functions have no common return type (e.g., one synchronous and one asynchronous function) is rejected by the compiler.
+
+Two functions that return a `Task` are a compile error (CS0619) too: this page is for the `ValueTask` namespace, and until the `Task`-based and the `ValueTask`-based methods share one namespace, such a call would return the `Task` without awaiting it. Wrap them in a `ValueTask` (e.g., `new ValueTask<T>(task)`), or import `Maple.Results.Extensions` for a `Task` of a result.
 
 > [!NOTE]
-> When an asynchronous method awaits a [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask) directly, continuation usually occurs in the same thread that created the task, depending on the async context. This behavior can be costly in terms of performance and can result in a deadlock on the UI thread. To avoid these problems, `ConfigureAwait(false)` is used by default, so in the methods that take a `ValueTask` of a result the passed delegates run on a thread-pool thread. When the delegates need the original context (e.g., to update UI elements), set the `continueOnCapturedContext` parameter to `true`, or set [ResultConfiguration.ContinueOnCapturedContext](../../ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md) to `true` once at startup.
+> When an asynchronous method awaits a [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask) directly, continuation usually occurs in the same thread that created the task, depending on the async context. This behavior can be costly in terms of performance and can result in a deadlock on the UI thread. To avoid these problems, `ConfigureAwait(false)` is used by default, so the passed functions run on a thread-pool thread. When the functions need the original context (e.g., to update UI elements), set the `continueOnCapturedContext` parameter to `true`, or set [ResultConfiguration.ContinueOnCapturedContext](../../ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md) to `true` once at startup.
 > 
 > For more information, see <a href="https://devblogs.microsoft.com/dotnet/configureawait-faq/" target="_blank">ConfigureAwait FAQ</a>.
 
@@ -45,1100 +33,307 @@ The overloads with two synchronous delegates (e.g., `MatchAsync(user => user.Nam
 > A [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask) can only be awaited once. Because of this, the overloads accepting `this ValueTask<Result> resultTask` / `this ValueTask<Result<T>> resultTask` consume the passed operation as part of evaluating its result, and they do not perform a `null` check on it (a `ValueTask<TResult>` is a non-nullable value type).
 
 
-## MatchAsync(Result, Func&lt;ValueTask&gt;, Func&lt;Error, ValueTask&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/MatchValueTaskAsyncExtensions.cs#L42" target="_blank">MatchValueTaskAsyncExtensions.cs</a>
+## MatchAsync&lt;TOut&gt;(ValueTask&lt;Result&gt;, Func&lt;TOut&gt;, Func&lt;Error, TOut&gt;, Boolean)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/MatchValueTaskAsyncExtensions.cs#L67" target="_blank">MatchValueTaskAsyncExtensions.cs</a>
 
-Executes the provided asynchronous `ifSuccessAction`, only if the instance of [Result](../../Result/Result.md) represents a successful operation (i.e., does not contain an [Error](../../Error/Error.md)), or the provided asynchronous `ifErrorAction` otherwise, as an asynchronous operation.
+Awaits the `resultTask` and invokes the provided synchronous `ifSuccessFunction` if the [Result](../../Result/Result.md) represents a successful operation, or the provided `ifErrorFunction` otherwise, and returns the value that the invoked function returns.
 
 ```csharp
-public static ValueTask<Result> MatchAsync(this Result result, Func<ValueTask> ifSuccessAction,
-    Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null);
+public static ValueTask<TOut> MatchAsync<TOut>(this ValueTask<Result> resultTask, Func<TOut> ifSuccessFunction, Func<Error, TOut> ifErrorFunction,
+    bool? continueOnCapturedContext = null);
 ```
 
+### Type Parameters
+#### `TOut`
+The type that both functions return.
+
 ### Parameters
-#### `result` [Result](../../Result/Result.md)
-The instance of [Result](../../Result/Result.md) record that represents the result of the operation to be evaluated.
+#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+The asynchronous operation that returns the [Result](../../Result/Result.md) to fold.
 
-#### `ifSuccessAction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask)&gt;
-The asynchronous action to be executed, only if the current instance of [Result](../../Result/Result.md) represents a successful operation, as an asynchronous operation.
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;TOut&gt;
+The function to be invoked, only if the result represents a successful operation.
 
-#### `ifErrorAction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Error](../../Error/Error.md), [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask)&gt;
-The asynchronous action to be executed, only if the current instance of [Result](../../Result/Result.md) represents a failed operation, as an asynchronous operation. The [Error](../../Error/Error.md) instance contained in the `result` will be passed as a parameter to this action.
+#### `ifErrorFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Error](../../Error/Error.md), TOut&gt;
+The function to be invoked, only if the result represents a failed operation. The [Error](../../Error/Error.md) instance contained in the result is passed as a parameter to this function.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
-`true` to run the continuations, including the passed delegates when they run after an `await`, on the captured context (e.g., the UI thread); `false` to run them on any thread; `null` to use [ResultConfiguration.ContinueOnCapturedContext](../../ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md) (`false` unless changed).
+`true` to run the continuation, including the passed functions, on the captured context (e.g., the UI thread); `false` to run them on any thread; `null` to use [ResultConfiguration.ContinueOnCapturedContext](../../ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md) (`false` unless changed).
 
 The default value is: `null`.
 
 ### Returns
-#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask)&lt;[Result](../../Result/Result.md)&gt;
-The task object representing the asynchronous operation.
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;TOut&gt;
+The task of the value that `ifSuccessFunction` or `ifErrorFunction` returns.
 
 ### Exceptions
 #### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
-The `result` or `ifSuccessAction` or `ifErrorAction` parameter is `null`.
-
-### Examples
-```csharp
-var createUserResult = await _userService.CreateUserAsync(userData);
-
-await createUserResult.MatchAsync(
-    () => _auditService.LogUserAddedAsync(userData),
-    error => _auditService.LogError(error));
-```
-
-
-## MatchAsync(Result, Func&lt;ValueTask&lt;Result&gt;&gt;, Func&lt;Error, ValueTask&lt;Result&gt;&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/MatchValueTaskAsyncExtensions.cs#L75" target="_blank">MatchValueTaskAsyncExtensions.cs</a>
-
-Executes the provided asynchronous `ifSuccessFunction`, only if the instance of [Result](../../Result/Result.md) represents a successful operation (i.e., does not contain an [Error](../../Error/Error.md)), or the provided asynchronous `ifErrorFunction` otherwise, as an asynchronous operation.
-
-```csharp
-public static ValueTask<Result> MatchAsync(this Result result, Func<ValueTask<Result>> ifSuccessFunction,
-    Func<Error, ValueTask<Result>> ifErrorFunction, bool? continueOnCapturedContext = null);
-```
-
-### Parameters
-#### `result` [Result](../../Result/Result.md)
-The instance of [Result](../../Result/Result.md) record that represents the result of the operation to be evaluated.
-
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[ValueTask](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;&gt;
-The asynchronous function to be executed, only if the current instance of [Result](../../Result/Result.md) represents a successful operation, as an asynchronous operation.
-
-#### `ifErrorFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Error](../../Error/Error.md), [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;&gt;
-The asynchronous function to be executed, only if the current instance of [Result](../../Result/Result.md) represents a failed operation, as an asynchronous operation. The [Error](../../Error/Error.md) instance contained in the `result` will be passed as a parameter to this function.
-
-#### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
-`true` to run the continuations, including the passed delegates when they run after an `await`, on the captured context (e.g., the UI thread); `false` to run them on any thread; `null` to use [ResultConfiguration.ContinueOnCapturedContext](../../ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md) (`false` unless changed).
-
-The default value is: `null`.
-
-### Returns
-#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask)&lt;[Result](../../Result/Result.md)&gt;
-The task object representing the asynchronous operation.
-
-### Exceptions
-#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
-The `result` or `ifSuccessFunction` or `ifErrorFunction` parameter is `null`.
+The `ifSuccessFunction` or `ifErrorFunction` parameter is `null`.
 
 #### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
-The `ifSuccessFunction` function returns a value task with a `null` result, or the `ifErrorFunction` function returns a value task with a `null` result.
+The asynchronous operation represented by `resultTask` returns `null`.
 
 ### Examples
 ```csharp
-var authenticationResult = await _loginService.AuthenticateAsync(loginData);
+var message = await _userService.DeleteUserAsync(id).MatchAsync(
+    () => "The user was deleted.",
+    error => $"The user was not deleted: {error.Title}");
+```
 
-var userAddedResult = await authenticationResult.MatchAsync(
-    async () => await _companyService.AddUserAsync(userData),
+
+## MatchAsync&lt;TOut&gt;(ValueTask&lt;Result&gt;, Func&lt;ValueTask&lt;TOut&gt;&gt;, Func&lt;Error, ValueTask&lt;TOut&gt;&gt;, Boolean)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/MatchValueTaskAsyncExtensions.cs#L111" target="_blank">MatchValueTaskAsyncExtensions.cs</a>
+
+Awaits the `resultTask` and invokes the provided asynchronous `ifSuccessFunction` if the [Result](../../Result/Result.md) represents a successful operation, or the provided asynchronous `ifErrorFunction` otherwise, awaits it and returns the value that it returns.
+
+```csharp
+public static ValueTask<TOut> MatchAsync<TOut>(this ValueTask<Result> resultTask, Func<ValueTask<TOut>> ifSuccessFunction,
+    Func<Error, ValueTask<TOut>> ifErrorFunction, bool? continueOnCapturedContext = null);
+```
+
+### Type Parameters
+#### `TOut`
+The type of the value of the tasks that both functions return.
+
+### Parameters
+#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+The asynchronous operation that returns the [Result](../../Result/Result.md) to fold.
+
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;TOut&gt;&gt;
+The asynchronous function to be invoked, only if the result represents a successful operation.
+
+#### `ifErrorFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Error](../../Error/Error.md), [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;TOut&gt;&gt;
+The asynchronous function to be invoked, only if the result represents a failed operation. The [Error](../../Error/Error.md) instance contained in the result is passed as a parameter to this function.
+
+#### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
+`true` to run the continuations, including the passed functions when they run after an `await`, on the captured context (e.g., the UI thread); `false` to run them on any thread; `null` to use [ResultConfiguration.ContinueOnCapturedContext](../../ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md) (`false` unless changed).
+
+The default value is: `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;TOut&gt;
+The task of the value that `ifSuccessFunction` or `ifErrorFunction` returns.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+The `ifSuccessFunction` or `ifErrorFunction` parameter is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+The asynchronous operation represented by `resultTask` returns `null`.
+
+### Examples
+```csharp
+var remainingUsers = await _userService.DeleteUserAsync(id).MatchAsync(
+    () => _userService.CountUsersAsync(),
     async error =>
     {
         await _auditService.LogErrorAsync(error);
-        return await _loginService.LockAccountAsync(loginData.Username);
-    });
-```
-
-
-## MatchAsync&lt;T&gt;(Result, Func&lt;ValueTask&lt;T&gt;&gt;, Func&lt;Error, ValueTask&lt;T&gt;&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/MatchValueTaskAsyncExtensions.cs#L107" target="_blank">MatchValueTaskAsyncExtensions.cs</a>
-
-Executes the provided asynchronous `ifSuccessFunction`, only if the instance of [Result](../../Result/Result.md) represents a successful operation (i.e., does not contain an [Error](../../Error/Error.md)), or the provided asynchronous `ifErrorFunction` otherwise, as an asynchronous operation.
-
-```csharp
-public static ValueTask<T> MatchAsync<T>(this Result result, Func<ValueTask<T>> ifSuccessFunction,
-    Func<Error, ValueTask<T>> ifErrorFunction, bool? continueOnCapturedContext = null);
-```
-
-### Type Parameters
-#### `T`
-The type of the value returned by the asynchronous `ifSuccessFunction` and `ifErrorFunction`.
-
-### Parameters
-#### `result` [Result](../../Result/Result.md)
-The instance of [Result](../../Result/Result.md) record that represents the result of the operation to be evaluated.
-
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[ValueTask](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.valuetask-1)&lt;T&gt;&gt;
-The asynchronous function to be executed, only if the current instance of [Result](../../Result/Result.md) represents a successful operation, as an asynchronous operation.
-
-#### `ifErrorFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Error](../../Error/Error.md), [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask)&lt;T&gt;&gt;
-The asynchronous function to be executed, only if the current instance of [Result](../../Result/Result.md) represents a failed operation, as an asynchronous operation. The [Error](../../Error/Error.md) instance contained in the `result` will be passed as a parameter to this function.
-
-#### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
-`true` to run the continuations, including the passed delegates when they run after an `await`, on the captured context (e.g., the UI thread); `false` to run them on any thread; `null` to use [ResultConfiguration.ContinueOnCapturedContext](../../ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md) (`false` unless changed).
-
-The default value is: `null`.
-
-### Returns
-#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask)&lt;T&gt;
-The task object representing the asynchronous operation.
-
-### Exceptions
-#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
-The `result` or `ifSuccessFunction` or `ifErrorFunction` parameter is `null`.
-
-### Examples
-```csharp
-var createUserResult = await _userService.CreateUserAsync(userData);
-
-var viewModel = await createUserResult.MatchAsync(
-    async (user) =>
-    {
-        var userDetails = await _userService.GetUserDetailsAsync(user);
-        return _userMapper.Map(userDetails);
-    },
-    async (error) => return _userMapper.MapErrorViewModel(error));
-```
-
-
-## MatchAsync&lt;T&gt;(Result, Func&lt;ValueTask&lt;Result&lt;T&gt;&gt;&gt;, Func&lt;Error, ValueTask&lt;Result&lt;T&gt;&gt;&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/MatchValueTaskAsyncExtensions.cs#L137" target="_blank">MatchValueTaskAsyncExtensions.cs</a>
-
-Executes the provided asynchronous `ifSuccessFunction`, only if the instance of [Result](../../Result/Result.md) represents a successful operation (i.e., does not contain an [Error](../../Error/Error.md)), or the provided asynchronous `ifErrorFunction` otherwise, as an asynchronous operation.
-
-```csharp
-public static ValueTask<Result<T>> MatchAsync<T>(this Result result, Func<ValueTask<Result<T>>> ifSuccessFunction,
-    Func<Error, ValueTask<Result<T>>> ifErrorFunction, bool? continueOnCapturedContext = null);
-```
-
-### Type Parameters
-#### `T`
-The type of the [Result&lt;T&gt;](../../ResultT/ResultT.md) value returned by the asynchronous `ifSuccessFunction` and `ifErrorFunction`.
-
-### Parameters
-#### `result` [Result](../../Result/Result.md)
-The instance of [Result](../../Result/Result.md) record that represents the result of the operation to be evaluated.
-
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[ValueTask](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;T&gt;&gt;&gt;
-The asynchronous function to be executed, only if the current instance of [Result](../../Result/Result.md) represents a successful operation, as an asynchronous operation.
-
-#### `ifErrorFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Error](../../Error/Error.md), [ValueTask](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;T&gt;&gt;&gt;
-The asynchronous function to be executed, only if the current instance of [Result](../../Result/Result.md) represents a failed operation, as an asynchronous operation. The [Error](../../Error/Error.md) instance contained in the `result` will be passed as a parameter to this function.
-
-#### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
-`true` to run the continuations, including the passed delegates when they run after an `await`, on the captured context (e.g., the UI thread); `false` to run them on any thread; `null` to use [ResultConfiguration.ContinueOnCapturedContext](../../ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md) (`false` unless changed).
-
-The default value is: `null`.
-
-### Returns
-#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask)&lt;[Result](../../ResultT/ResultT.md)&lt;T&gt;&gt;
-The task object representing the asynchronous operation.
-
-### Exceptions
-#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
-The `result` or `ifSuccessFunction` or `ifErrorFunction` parameter is `null`.
-
-#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
-The `ifSuccessFunction` function returns a value task with a `null` result, or the `ifErrorFunction` function returns a value task with a `null` result.
-
-### Examples
-```csharp
-var createUserResult = await _userService.CreateUserAsync(userData);
-
-var userDetailsResult = await createUserResult.MatchAsync(
-    user => _userService.GetUserDetailsAsync(user),
-    error => _userMapper.MapErrorViewModel(error));
-```
-
-
-## MatchAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&gt;, Func&lt;Error, ValueTask&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/MatchValueTaskAsyncExtensions.cs#L172" target="_blank">MatchValueTaskAsyncExtensions.cs</a>
-
-Executes the provided asynchronous `ifSuccessAction`, only if the instance of [Result&lt;T&gt;](../../ResultT/ResultT.md) represents a successful operation (i.e., does not contain an [Error](../../Error/Error.md)), or the provided asynchronous `ifErrorAction` otherwise, as an asynchronous operation.
-
-```csharp
-public static ValueTask<Result<T>> MatchAsync<T>(this Result<T> result, Func<T, ValueTask> ifSuccessAction,
-    Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null);
-```
-
-### Type Parameters
-#### `T`
-The type of the value associated with successful `result` and passed to the asynchronous `ifSuccessAction`.
-
-### Parameters
-#### `result` [Result&lt;T&gt;](../../ResultT/ResultT.md)
-The instance of [Result&lt;T&gt;](../../ResultT/ResultT.md) record that represents the result of the operation with a value to be evaluated.
-
-#### `ifSuccessAction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask)&gt;
-The asynchronous action to be executed, only if the current instance of [Result&lt;T&gt;](../../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. The value of type `T` contained in the [Result&lt;T&gt;](../../ResultT/ResultT.md) instance will be passed as a parameter to this action.
-
-#### `ifErrorAction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Error](../../Error/Error.md), [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask)&gt;
-The asynchronous action to be executed, only if the current instance of [Result&lt;T&gt;](../../ResultT/ResultT.md) represents a failed operation, as an asynchronous operation. The [Error](../../Error/Error.md) instance contained in the `result` will be passed as a parameter to this action.
-
-#### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
-`true` to run the continuations, including the passed delegates when they run after an `await`, on the captured context (e.g., the UI thread); `false` to run them on any thread; `null` to use [ResultConfiguration.ContinueOnCapturedContext](../../ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md) (`false` unless changed).
-
-The default value is: `null`.
-
-### Returns
-#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask)&lt;[Result](../../ResultT/ResultT.md)&lt;T&gt;&gt;
-The task object representing the asynchronous operation.
-
-### Exceptions
-#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
-The `result` or `ifSuccessAction` or `ifErrorAction` parameter is `null`.
-
-### Examples
-```csharp
-var userResult = await _userService.CreateUserAsync(userData);
-
-await userResult.MatchAsync(
-    user => _auditService.LogUserAddedAsync(user),
-    error => _auditService.LogErrorAsync(error));
-```
-
-
-## MatchAsync&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;TNext&gt;&gt;, Func&lt;Error, ValueTask&lt;TNext&gt;&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/MatchValueTaskAsyncExtensions.cs#L201" target="_blank">MatchValueTaskAsyncExtensions.cs</a>
-
-Executes the provided asynchronous `ifSuccessFunction`, only if the instance of [Result&lt;T&gt;](../../ResultT/ResultT.md) represents a successful operation (i.e., does not contain an [Error](../../Error/Error.md)), or the provided asynchronous `ifErrorFunction` otherwise, as an asynchronous operation.
-
-```csharp
-public static ValueTask<TNext> MatchAsync<T, TNext>(
-    this Result<T> result,
-    Func<T, ValueTask<TNext>> ifSuccessFunction,
-    Func<Error, ValueTask<TNext>> ifErrorFunction,
-    bool? continueOnCapturedContext = null);
-```
-
-### Type Parameters
-#### `T`
-The type of the value associated with successful `result` and passed to the asynchronous `ifSuccessFunction`.
-
-#### `TNext`
-The type of the value returned by the asynchronous `ifSuccessFunction` and `ifErrorFunction`.
-
-### Parameters
-#### `result` [Result&lt;T&gt;](../../ResultT/ResultT.md)
-The instance of [Result&lt;T&gt;](../../ResultT/ResultT.md) record that represents the result of the operation with a value to be evaluated.
-
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [ValueTask](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.valuetask-1)&lt;TNext&gt;&gt;
-The asynchronous function to be executed, only if the current instance of [Result&lt;T&gt;](../../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. The value of type `T` contained in the [Result&lt;T&gt;](../../ResultT/ResultT.md) instance will be passed as a parameter to this function.
-
-#### `ifErrorFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Error](../../Error/Error.md), [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;TNext&gt;&gt;
-The asynchronous function to be executed, only if the current instance of [Result&lt;T&gt;](../../ResultT/ResultT.md) represents a failed operation, as an asynchronous operation. The [Error](../../Error/Error.md) instance contained in the `result` will be passed as a parameter to this function.
-
-#### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
-`true` to run the continuations, including the passed delegates when they run after an `await`, on the captured context (e.g., the UI thread); `false` to run them on any thread; `null` to use [ResultConfiguration.ContinueOnCapturedContext](../../ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md) (`false` unless changed).
-
-The default value is: `null`.
-
-### Returns
-#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask)&lt;TNext&gt;
-The task object representing the asynchronous operation.
-
-### Exceptions
-#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
-The `result` or `ifSuccessFunction` or `ifErrorFunction` parameter is `null`.
-
-### Examples
-```csharp
-var createUserResult = await _userService.CreateUserAsync(userData);
-
-var companyResult = await createUserResult.MatchAsync(
-    async (user) =>
-    {
-        await _companyService.GetCompanyByIdAsync(user.CompanyId);
-        return _mapper.Map(user);
-    },
-    async (error) => ValueTask.FromResult(_mapper.Map(error));
-```
-
-
-## MatchAsync&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Result&lt;TNext&gt;&gt;&gt;, Func&lt;Error, ValueTask&lt;Result&lt;TNext&gt;&gt;&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/MatchValueTaskAsyncExtensions.cs#L234" target="_blank">MatchValueTaskAsyncExtensions.cs</a>
-
-Executes the provided asynchronous `ifSuccessFunction`, only if the instance of [Result&lt;T&gt;](../../ResultT/ResultT.md) represents a successful operation (i.e., does not contain an [Error](../../Error/Error.md)), or the provided asynchronous `ifErrorFunction` otherwise, as an asynchronous operation.
-
-```csharp
-public static ValueTask<Result<TNext>> MatchAsync<T, TNext>(
-    this Result<T> result,
-    Func<T, ValueTask<Result<TNext>>> ifSuccessFunction,
-    Func<Error, ValueTask<Result<TNext>>> ifErrorFunction,
-    bool? continueOnCapturedContext = null);
-```
-
-### Type Parameters
-#### `T`
-The type of the value associated with successful `result` and passed to the asynchronous `ifSuccessFunction`.
-
-#### `TNext`
-The type of the [Result&lt;TNext&gt;](../../ResultT/ResultT.md) value returned by the asynchronous `ifSuccessFunction` and `ifErrorFunction`.
-
-### Parameters
-#### `result` [Result&lt;T&gt;](../../ResultT/ResultT.md)
-The instance of [Result&lt;T&gt;](../../ResultT/ResultT.md) record that represents the result of the operation to be evaluated.
-
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [ValueTask](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;&gt;
-The asynchronous function to be executed, only if the current instance of [Result&lt;T&gt;](../../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. The value of type `T` contained in the [Result&lt;T&gt;](../../ResultT/ResultT.md) instance will be passed as a parameter to this function.
-
-#### `ifErrorFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Error](../../Error/Error.md), [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;&gt;
-The asynchronous function to be executed, only if the current instance of [Result&lt;T&gt;](../../ResultT/ResultT.md) represents a failed operation, as an asynchronous operation. The [Error](../../Error/Error.md) instance contained in the `result` will be passed as a parameter to this function.
-
-#### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
-`true` to run the continuations, including the passed delegates when they run after an `await`, on the captured context (e.g., the UI thread); `false` to run them on any thread; `null` to use [ResultConfiguration.ContinueOnCapturedContext](../../ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md) (`false` unless changed).
-
-The default value is: `null`.
-
-### Returns
-#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask)&lt;[Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;
-The task object representing the asynchronous operation.
-
-### Exceptions
-#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
-The `result` or `ifSuccessFunction` or `ifErrorAction` parameter is `null`.
-
-#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
-The `ifSuccessFunction` function returns a value task with a `null` result, or the `ifErrorFunction` function returns a value task with a `null` result.
-
-### Examples
-```csharp
-var createUserResult = await _userService.CreateUserAsync(userData);
-
-var viewModel = await createUserResult.MatchAsync(
-    user => _companyService.GetCompanyByIdAsync(user.CompanyId),
-    async (error) =>
-    {
-        await _auditService.LogErrorAsync(error);
-        return _mapper.Map(error);
+        return -1;
     });
 ```
 
 
 ## MatchAsync(ValueTask&lt;Result&gt;, Func&lt;ValueTask&gt;, Func&lt;Error, ValueTask&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/MatchValueTaskAsyncExtensions.cs#L305" target="_blank">MatchValueTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/MatchValueTaskAsyncExtensions.cs#L160" target="_blank">MatchValueTaskAsyncExtensions.cs</a>
 
-Executes the provided asynchronous `ifSuccessAction`, only if the asynchronous operation `resultTask` represents a successful instance of [Result](../../Result/Result.md); or the provided asynchronous `ifErrorAction`, otherwise.
+Awaits the `resultTask` and invokes the provided asynchronous `ifSuccessFunction` if the [Result](../../Result/Result.md) represents a successful operation, or the provided asynchronous `ifErrorFunction` otherwise, and awaits it.
 
 ```csharp
-public static ValueTask<Result> MatchAsync(this ValueTask<Result> resultTask, Func<ValueTask> ifSuccessAction,
-    Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null);
+public static ValueTask MatchAsync(this ValueTask<Result> resultTask, Func<ValueTask> ifSuccessFunction, Func<Error, ValueTask> ifErrorFunction,
+    bool? continueOnCapturedContext = null);
 ```
 
 ### Parameters
 #### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
-The asynchronous operation that represents an instance of [Result](../../Result/Result.md) record to be evaluated.
+The asynchronous operation that returns the [Result](../../Result/Result.md) to fold.
 
-#### `ifSuccessAction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask)&gt;
-The asynchronous action to be executed, only if the `resultTask` represents a successful operation.
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask)&gt;
+The asynchronous function to be invoked, only if the result represents a successful operation.
 
-#### `ifErrorAction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Error](../../Error/Error.md), [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask)&gt;
-The asynchronous action to be executed, only if the `resultTask` represents a failed operation. The [Error](../../Error/Error.md) instance contained in the outcome of the `resultTask` will be passed as a parameter to this action.
+#### `ifErrorFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Error](../../Error/Error.md), [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask)&gt;
+The asynchronous function to be invoked, only if the result represents a failed operation. The [Error](../../Error/Error.md) instance contained in the result is passed as a parameter to this function.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
-`true` to run the continuations, including the passed delegates when they run after an `await`, on the captured context (e.g., the UI thread); `false` to run them on any thread; `null` to use [ResultConfiguration.ContinueOnCapturedContext](../../ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md) (`false` unless changed).
+`true` to run the continuations, including the passed functions when they run after an `await`, on the captured context (e.g., the UI thread); `false` to run them on any thread; `null` to use [ResultConfiguration.ContinueOnCapturedContext](../../ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md) (`false` unless changed).
 
 The default value is: `null`.
 
 ### Returns
-#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask)&lt;[Result](../../Result/Result.md)&gt;
-The task object representing the asynchronous operation.
-
-### Exceptions
-#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
-The `ifSuccessAction` or `ifErrorAction` parameter is `null`.
-
-#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
-The asynchronous operation represented by `resultTask` returns `null`.
-
-### Remarks
-The `MatchAsync` method executes the provided asynchronous operation represented by `resultTask` to evaluate its result. This enables chaining multiple asynchronous operations that return `ValueTask<TResult>`.
-
-### Examples
-```csharp
-var createUserResult = await _userService.CreateUserAsync(userData)
-    .MatchAsync(
-        () => _auditService.LogUserAddedAsync(userData),
-        error => _auditService.LogError(error));
-```
-
-
-## MatchAsync(ValueTask&lt;Result&gt;, Func&lt;ValueTask&lt;Result&gt;&gt;, Func&lt;Error, ValueTask&lt;Result&gt;&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/MatchValueTaskAsyncExtensions.cs#L365" target="_blank">MatchValueTaskAsyncExtensions.cs</a>
-
-Executes the provided asynchronous `ifSuccessFunction`, only if the asynchronous operation `resultTask` represents a successful instance of [Result](../../Result/Result.md); or the provided asynchronous `ifErrorFunction`, otherwise.
-
-```csharp
-public static ValueTask<Result> MatchAsync(this ValueTask<Result> resultTask, Func<ValueTask<Result>> ifSuccessFunction,
-    Func<Error, ValueTask<Result>> ifErrorFunction, bool? continueOnCapturedContext = null);
-```
-
-### Parameters
-#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
-The asynchronous operation that represents an instance of [Result](../../Result/Result.md) record to be evaluated.
-
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[ValueTask](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;&gt;
-The asynchronous function to be executed, only if the `resultTask` represents a successful operation.
-
-#### `ifErrorFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Error](../../Error/Error.md), [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;&gt;
-The asynchronous function to be executed, only if the `resultTask` represents a failed operation. The [Error](../../Error/Error.md) instance contained in the outcome of the `resultTask` will be passed as a parameter to this function.
-
-#### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
-`true` to run the continuations, including the passed delegates when they run after an `await`, on the captured context (e.g., the UI thread); `false` to run them on any thread; `null` to use [ResultConfiguration.ContinueOnCapturedContext](../../ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md) (`false` unless changed).
-
-The default value is: `null`.
-
-### Returns
-#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask)&lt;[Result](../../Result/Result.md)&gt;
-The task object representing the asynchronous operation.
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask)
+The task that completes when the invoked function completes.
 
 ### Exceptions
 #### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
 The `ifSuccessFunction` or `ifErrorFunction` parameter is `null`.
 
 #### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
-The asynchronous operation represented by `resultTask` returns `null`, the `ifSuccessFunction` function returns a value task with a `null` result, or the `ifErrorFunction` function returns a value task with a `null` result.
-
-### Remarks
-The `MatchAsync` method executes the provided asynchronous operation represented by `resultTask` to evaluate its result. This enables chaining multiple asynchronous operations that return `ValueTask<TResult>`.
-
-### Examples
-```csharp
-var authenticationResult = await _loginService.AuthenticateAsync(loginData)
-    .MatchAsync(
-        async () => await _companyService.AddUserAsync(userData),
-        async error =>
-        {
-            await _auditService.LogErrorAsync(error);
-            return await _loginService.LockAccountAsync(loginData.Username);
-        });
-```
-
-
-## MatchAsync&lt;T&gt;(ValueTask&lt;Result&gt;, Func&lt;ValueTask&lt;T&gt;&gt;, Func&lt;Error, ValueTask&lt;T&gt;&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/MatchValueTaskAsyncExtensions.cs#L427" target="_blank">MatchValueTaskAsyncExtensions.cs</a>
-
-Executes the provided asynchronous `ifSuccessFunction`, only if the asynchronous operation `resultTask` represents a successful instance of [Result](../../Result/Result.md); or the provided asynchronous `ifErrorFunction`, otherwise.
-
-```csharp
-public static ValueTask<T> MatchAsync<T>(this ValueTask<Result> resultTask, Func<ValueTask<T>> ifSuccessFunction,
-    Func<Error, ValueTask<T>> ifErrorFunction, bool? continueOnCapturedContext = null);
-```
-
-### Type Parameters
-#### `T`
-The type of the value returned by the asynchronous `ifSuccessFunction` and `ifErrorFunction`.
-
-### Parameters
-#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
-The asynchronous operation that represents an instance of [Result](../../Result/Result.md) record to be evaluated.
-
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[ValueTask](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.valuetask-1)&lt;T&gt;&gt;
-The asynchronous function to be executed, only if the `resultTask` represents a successful operation.
-
-#### `ifErrorFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Error](../../Error/Error.md), [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask)&lt;T&gt;&gt;
-The asynchronous function to be executed, only if the `resultTask` represents a failed operation. The [Error](../../Error/Error.md) instance contained in the outcome of the `resultTask` will be passed as a parameter to this function.
-
-#### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
-`true` to run the continuations, including the passed delegates when they run after an `await`, on the captured context (e.g., the UI thread); `false` to run them on any thread; `null` to use [ResultConfiguration.ContinueOnCapturedContext](../../ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md) (`false` unless changed).
-
-The default value is: `null`.
-
-### Returns
-#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask)&lt;T&gt;
-The task object representing the asynchronous operation.
-
-### Exceptions
-#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
-The `ifSuccessFunction` or `ifErrorAction` parameter is `null`.
-
-#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
 The asynchronous operation represented by `resultTask` returns `null`.
 
-### Remarks
-The `MatchAsync` method executes the provided asynchronous operation represented by `resultTask` to evaluate its result. This enables chaining multiple asynchronous operations that return `ValueTask<TResult>`.
-
 ### Examples
 ```csharp
-var createUserResult = await _userService.CreateUserAsync(userData)
-    .MatchAsync(
-        async (user) =>
-        {
-            var userDetails = await _userService.GetUserDetailsAsync(user);
-            return _userMapper.Map(userDetails);
-        },
-        async (error) => return _userMapper.MapErrorViewModel(error));
+await _userService.DeleteUserAsync(id).MatchAsync(
+    () => _auditService.LogUserDeletedAsync(id),
+    error => _auditService.LogErrorAsync(error));
 ```
 
 
-## MatchAsync&lt;T&gt;(ValueTask&lt;Result&gt;, Func&lt;ValueTask&lt;Result&lt;T&gt;&gt;&gt;, Func&lt;Error, ValueTask&lt;Result&lt;T&gt;&gt;&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/MatchValueTaskAsyncExtensions.cs#L485" target="_blank">MatchValueTaskAsyncExtensions.cs</a>
+## MatchAsync&lt;T, TOut&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, TOut&gt;, Func&lt;Error, TOut&gt;, Boolean)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/MatchValueTaskAsyncExtensions.cs#L219" target="_blank">MatchValueTaskAsyncExtensions.cs</a>
 
-Executes the provided asynchronous `ifSuccessFunction`, only if the asynchronous operation `resultTask` represents a successful instance of [Result](../../Result/Result.md); or the provided asynchronous `ifErrorFunction`, otherwise.
+Awaits the `resultTask` and invokes the provided synchronous `ifSuccessFunction` with the value if the [Result&lt;T&gt;](../../ResultT/ResultT.md) represents a successful operation, or the provided `ifErrorFunction` otherwise, and returns the value that the invoked function returns.
 
 ```csharp
-public static ValueTask<Result<T>> MatchAsync<T>(
-    this ValueTask<Result> resultTask, Func<ValueTask<Result<T>>> ifSuccessFunction,
-    Func<Error, ValueTask<Result<T>>> ifErrorFunction, bool? continueOnCapturedContext = null);
+public static ValueTask<TOut> MatchAsync<T, TOut>(this ValueTask<Result<T>> resultTask, Func<T, TOut> ifSuccessFunction,
+    Func<Error, TOut> ifErrorFunction, bool? continueOnCapturedContext = null);
 ```
 
 ### Type Parameters
 #### `T`
-The type of the [Result&lt;T&gt;](../../ResultT/ResultT.md) value returned by the asynchronous `ifSuccessFunction` and `ifErrorFunction`.
+The type of the value of the result.
+
+#### `TOut`
+The type that both functions return.
 
 ### Parameters
-#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
-The asynchronous operation that represents an instance of [Result](../../Result/Result.md) record to be evaluated.
+#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result&lt;T&gt;](../../ResultT/ResultT.md)&gt;
+The asynchronous operation that returns the [Result&lt;T&gt;](../../ResultT/ResultT.md) to fold.
 
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[ValueTask](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;T&gt;&gt;&gt;
-The asynchronous function to be executed, only if the `resultTask` represents a successful operation.
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, TOut&gt;
+The function to be invoked, only if the result represents a successful operation. The value of the result is passed as a parameter to this function.
 
-#### `ifErrorFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Error](../../Error/Error.md), [ValueTask](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;T&gt;&gt;&gt;
-The asynchronous function to be executed, only if the `resultTask` represents a failed operation. The [Error](../../Error/Error.md) instance contained in the outcome of the `resultTask` will be passed as a parameter to this function.
+#### `ifErrorFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Error](../../Error/Error.md), TOut&gt;
+The function to be invoked, only if the result represents a failed operation. The [Error](../../Error/Error.md) instance contained in the result is passed as a parameter to this function.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
-`true` to run the continuations, including the passed delegates when they run after an `await`, on the captured context (e.g., the UI thread); `false` to run them on any thread; `null` to use [ResultConfiguration.ContinueOnCapturedContext](../../ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md) (`false` unless changed).
+`true` to run the continuation, including the passed functions, on the captured context (e.g., the UI thread); `false` to run them on any thread; `null` to use [ResultConfiguration.ContinueOnCapturedContext](../../ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md) (`false` unless changed).
 
 The default value is: `null`.
 
 ### Returns
-#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask)&lt;[Result](../../ResultT/ResultT.md)&lt;T&gt;&gt;
-The task object representing the asynchronous operation.
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;TOut&gt;
+The task of the value that `ifSuccessFunction` or `ifErrorFunction` returns.
 
 ### Exceptions
 #### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
 The `ifSuccessFunction` or `ifErrorFunction` parameter is `null`.
 
 #### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
-The asynchronous operation represented by `resultTask` returns `null`, the `ifSuccessFunction` function returns a value task with a `null` result, or the `ifErrorFunction` function returns a value task with a `null` result.
-
-### Remarks
-The `MatchAsync` method executes the provided asynchronous operation represented by `resultTask` to evaluate its result. This enables chaining multiple asynchronous operations that return `ValueTask<TResult>`.
+The asynchronous operation represented by `resultTask` returns `null`.
 
 ### Examples
 ```csharp
-var createUserResult = await _userService.CreateUserAsync(userData)
-    .MatchAsync(
-        user => _userService.GetUserDetailsAsync(user),
-        error => _userMapper.MapErrorViewModel(error));
+var name = await _userService.GetUserAsync(id).MatchAsync(
+    user => user.Name,
+    error => "unknown");
+
+// A Result<Address>: the error function returns the Error.
+var addressResult = await _userService.GetUserAsync(id).MatchAsync(
+    user => _addressBook.Find(user.Id),
+    error => error);
+```
+
+
+## MatchAsync&lt;T, TOut&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;TOut&gt;&gt;, Func&lt;Error, ValueTask&lt;TOut&gt;&gt;, Boolean)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/MatchValueTaskAsyncExtensions.cs#L264" target="_blank">MatchValueTaskAsyncExtensions.cs</a>
+
+Awaits the `resultTask` and invokes the provided asynchronous `ifSuccessFunction` with the value if the [Result&lt;T&gt;](../../ResultT/ResultT.md) represents a successful operation, or the provided asynchronous `ifErrorFunction` otherwise, awaits it and returns the value that it returns.
+
+```csharp
+public static ValueTask<TOut> MatchAsync<T, TOut>(this ValueTask<Result<T>> resultTask, Func<T, ValueTask<TOut>> ifSuccessFunction,
+    Func<Error, ValueTask<TOut>> ifErrorFunction, bool? continueOnCapturedContext = null);
+```
+
+### Type Parameters
+#### `T`
+The type of the value of the result.
+
+#### `TOut`
+The type of the value of the tasks that both functions return.
+
+### Parameters
+#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result&lt;T&gt;](../../ResultT/ResultT.md)&gt;
+The asynchronous operation that returns the [Result&lt;T&gt;](../../ResultT/ResultT.md) to fold.
+
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;TOut&gt;&gt;
+The asynchronous function to be invoked, only if the result represents a successful operation. The value of the result is passed as a parameter to this function.
+
+#### `ifErrorFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Error](../../Error/Error.md), [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;TOut&gt;&gt;
+The asynchronous function to be invoked, only if the result represents a failed operation. The [Error](../../Error/Error.md) instance contained in the result is passed as a parameter to this function.
+
+#### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
+`true` to run the continuations, including the passed functions when they run after an `await`, on the captured context (e.g., the UI thread); `false` to run them on any thread; `null` to use [ResultConfiguration.ContinueOnCapturedContext](../../ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md) (`false` unless changed).
+
+The default value is: `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;TOut&gt;
+The task of the value that `ifSuccessFunction` or `ifErrorFunction` returns.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+The `ifSuccessFunction` or `ifErrorFunction` parameter is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+The asynchronous operation represented by `resultTask` returns `null`.
+
+### Examples
+```csharp
+var orderCount = await _userService.GetUserAsync(id).MatchAsync(
+    user => _orderService.CountOrdersAsync(user.Id),
+    error => ValueTask.FromResult(0));
 ```
 
 
 ## MatchAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&gt;, Func&lt;Error, ValueTask&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/MatchValueTaskAsyncExtensions.cs#L558" target="_blank">MatchValueTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/MatchValueTaskAsyncExtensions.cs#L314" target="_blank">MatchValueTaskAsyncExtensions.cs</a>
 
-Executes the provided asynchronous `ifSuccessAction`, only if the asynchronous operation `resultTask` represents a successful instance of [Result&lt;T&gt;](../../ResultT/ResultT.md); or the provided asynchronous `ifErrorAction`, otherwise.
-
-```csharp
-public static ValueTask<Result<T>> MatchAsync<T>(this ValueTask<Result<T>> resultTask, Func<T, ValueTask> ifSuccessAction,
-    Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null);
-```
-
-### Type Parameters
-#### `T`
-The type of the value associated with successful `resultTask` and passed to the asynchronous `ifSuccessAction`.
-
-### Parameters
-#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
-The asynchronous operation that represents an instance of [Result](../../Result/Result.md) record to be evaluated.
-
-#### `ifSuccessAction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask)&gt;
-The asynchronous action to be executed, only if the `resultTask` represents a successful operation.
-The value of type `T` contained in the [Result&lt;T&gt;](../../ResultT/ResultT.md) outcome of `resultTask` will be passed as a parameter to this action.
-
-#### `ifErrorAction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Error](../../Error/Error.md), [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask)&gt;
-The asynchronous action to be executed, only if the `resultTask` represents a failed operation. The [Error](../../Error/Error.md) instance contained in the outcome of the `resultTask` will be passed as a parameter to this action.
-
-#### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
-`true` to run the continuations, including the passed delegates when they run after an `await`, on the captured context (e.g., the UI thread); `false` to run them on any thread; `null` to use [ResultConfiguration.ContinueOnCapturedContext](../../ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md) (`false` unless changed).
-
-The default value is: `null`.
-
-### Returns
-#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask)&lt;[Result](../../ResultT/ResultT.md)&lt;T&gt;&gt;
-The task object representing the asynchronous operation.
-
-### Exceptions
-#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
-The `ifSuccessAction` or `ifErrorAction` parameter is `null`.
-
-#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
-The asynchronous operation represented by `resultTask` returns `null`.
-
-### Remarks
-The `MatchAsync` method executes the provided asynchronous operation represented by `resultTask` to evaluate its result. This enables chaining multiple asynchronous operations that return `ValueTask<TResult>`.
-
-### Examples
-```csharp
-var userResult = await _userService.CreateUserAsync(userData)
-    .MatchAsync(
-        user => _auditService.LogUserAddedAsync(user),
-        error => _auditService.LogErrorAsync(error));
-```
-
-
-## MatchAsync&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;TNext&gt;&gt;, Func&lt;Error, ValueTask&lt;TNext&gt;&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/MatchValueTaskAsyncExtensions.cs#L620" target="_blank">MatchValueTaskAsyncExtensions.cs</a>
-
-Executes the provided asynchronous `ifSuccessFunction`, only if the instance of [Result&lt;T&gt;](../../ResultT/ResultT.md) represents a successful operation (i.e., does not contain an [Error](../../Error/Error.md)), or the provided asynchronous `ifErrorFunction` otherwise, as an asynchronous operation.
+Awaits the `resultTask` and invokes the provided asynchronous `ifSuccessFunction` with the value if the [Result&lt;T&gt;](../../ResultT/ResultT.md) represents a successful operation, or the provided asynchronous `ifErrorFunction` otherwise, and awaits it.
 
 ```csharp
-public static ValueTask<TNext> MatchAsync<T, TNext>(
-    this ValueTask<Result<T>> resultTask,
-    Func<T, ValueTask<TNext>> ifSuccessFunction,
-    Func<Error, ValueTask<TNext>> ifErrorFunction,
+public static ValueTask MatchAsync<T>(this ValueTask<Result<T>> resultTask, Func<T, ValueTask> ifSuccessFunction, Func<Error, ValueTask> ifErrorFunction,
     bool? continueOnCapturedContext = null);
 ```
 
 ### Type Parameters
 #### `T`
-The type of the value associated with successful `resultTask` and passed to the asynchronous `ifSuccessFunction`.
-
-#### `TNext`
-The type of the value returned by the asynchronous `ifSuccessFunction` and `ifErrorFunction`.
+The type of the value of the result.
 
 ### Parameters
-#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
-The asynchronous operation that represents an instance of [Result](../../Result/Result.md) record to be evaluated.
+#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result&lt;T&gt;](../../ResultT/ResultT.md)&gt;
+The asynchronous operation that returns the [Result&lt;T&gt;](../../ResultT/ResultT.md) to fold.
 
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [ValueTask](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.valuetask-1)&lt;TNext&gt;&gt;
-The asynchronous function to be executed, only if the `resultTask` represents a successful operation.
-The value of type `T` contained in the [Result&lt;T&gt;](../../ResultT/ResultT.md) outcome of `resultTask` will be passed as a parameter to this function.
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask)&gt;
+The asynchronous function to be invoked, only if the result represents a successful operation. The value of the result is passed as a parameter to this function.
 
-#### `ifErrorFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Error](../../Error/Error.md), [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;TNext&gt;&gt;
-The asynchronous function to be executed, only if the `resultTask` represents a failed operation. The [Error](../../Error/Error.md) instance contained in the outcome of the `resultTask` will be passed as a parameter to this function.
+#### `ifErrorFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Error](../../Error/Error.md), [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask)&gt;
+The asynchronous function to be invoked, only if the result represents a failed operation. The [Error](../../Error/Error.md) instance contained in the result is passed as a parameter to this function.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
-`true` to run the continuations, including the passed delegates when they run after an `await`, on the captured context (e.g., the UI thread); `false` to run them on any thread; `null` to use [ResultConfiguration.ContinueOnCapturedContext](../../ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md) (`false` unless changed).
+`true` to run the continuations, including the passed functions when they run after an `await`, on the captured context (e.g., the UI thread); `false` to run them on any thread; `null` to use [ResultConfiguration.ContinueOnCapturedContext](../../ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md) (`false` unless changed).
 
 The default value is: `null`.
 
 ### Returns
-#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask)&lt;TNext&gt;
-The task object representing the asynchronous operation.
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask)
+The task that completes when the invoked function completes.
 
 ### Exceptions
 #### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
-The `ifSuccessAction` or `ifErrorAction` parameter is `null`.
+The `ifSuccessFunction` or `ifErrorFunction` parameter is `null`.
 
 #### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
 The asynchronous operation represented by `resultTask` returns `null`.
 
-### Remarks
-The `MatchAsync` method executes the provided asynchronous operation represented by `resultTask` to evaluate its result. This enables chaining multiple asynchronous operations that return `ValueTask<TResult>`.
-
 ### Examples
 ```csharp
-var createUserResult = await _userService.CreateUserAsync(userData)
-    .MatchAsync(
-        async (user) =>
-        {
-            await _companyService.GetCompanyByIdAsync(user.CompanyId);
-            return _mapper.Map(user);
-        },
-        async (error) => ValueTask.FromResult(_mapper.Map(error));
+await _userService.GetUserAsync(id).MatchAsync(
+    user => _mailService.SendWelcomeAsync(user),
+    error => _auditService.LogErrorAsync(error));
 ```
 
-
-## MatchAsync&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&lt;TNext&gt;&gt;&gt;, Func&lt;Error, ValueTask&lt;Result&lt;TNext&gt;&gt;&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/MatchValueTaskAsyncExtensions.cs#L683" target="_blank">MatchValueTaskAsyncExtensions.cs</a>
-
-Executes the provided asynchronous `ifSuccessFunction`, only if the asynchronous operation `resultTask` represents a successful instance of [Result&lt;T&gt;](../../ResultT/ResultT.md); or the provided asynchronous `ifErrorFunction`, otherwise.
-
-```csharp
-public static ValueTask<Result<TNext>> MatchAsync<T, TNext>(
-    this ValueTask<Result<T>> resultTask,
-    Func<T, ValueTask<Result<TNext>>> ifSuccessFunction,
-    Func<Error, ValueTask<Result<TNext>>> ifErrorFunction,
-    bool? continueOnCapturedContext = null);
-```
-
-### Type Parameters
-#### `T`
-The type of the value associated with successful `resultTask` and passed to the asynchronous `ifSuccessFunction`.
-
-#### `TNext`
-The type of the [Result&lt;TNext&gt;](../../ResultT/ResultT.md) value returned by the asynchronous `ifSuccessFunction` and `ifErrorFunction`.
-
-### Parameters
-#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
-The asynchronous operation that represents an instance of [Result](../../Result/Result.md) record to be evaluated.
-
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [ValueTask](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;&gt;
-The asynchronous function to be executed, only if the `resultTask` represents a successful operation.
-The value of type `T` contained in the [Result&lt;T&gt;](../../ResultT/ResultT.md) outcome of `resultTask` will be passed as a parameter to this function.
-
-#### `ifErrorFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Error](../../Error/Error.md), [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;&gt;
-The asynchronous function to be executed, only if the `resultTask` represents a failed operation. The [Error](../../Error/Error.md) instance contained in the outcome of the `resultTask` will be passed as a parameter to this function.
-
-#### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
-`true` to run the continuations, including the passed delegates when they run after an `await`, on the captured context (e.g., the UI thread); `false` to run them on any thread; `null` to use [ResultConfiguration.ContinueOnCapturedContext](../../ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md) (`false` unless changed).
-
-The default value is: `null`.
-
-### Returns
-#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask)&lt;[Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;
-The task object representing the asynchronous operation.
-
-### Exceptions
-#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
-The `ifSuccessAction` or `ifErrorAction` parameter is `null`.
-
-#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
-The asynchronous operation represented by `resultTask` returns `null`, the `ifSuccessFunction` function returns a value task with a `null` result, or the `ifErrorFunction` function returns a value task with a `null` result.
-
-### Remarks
-The `MatchAsync` method executes the provided asynchronous operation represented by `resultTask` to evaluate its result. This enables chaining multiple asynchronous operations that return `ValueTask<TResult>`.
-
-### Examples
-```csharp
-var createUserResult = await _userService.CreateUserAsync(userData)
-    .MatchAsync(
-        user => _companyService.GetCompanyByIdAsync(user.CompanyId),
-        async (error) =>
-        {
-            await _auditService.LogErrorAsync(error);
-            return _mapper.Map(error);
-        });
-```
-
-
-## MatchAsync(ValueTask&lt;Result&gt;, Action, Action&lt;Error&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/MatchValueTaskAsyncExtensions.cs#L742" target="_blank">MatchValueTaskAsyncExtensions.cs</a>
-
-Awaits the `resultTask` and runs one of the synchronous delegates: the first one if the result is successful, the second one with the [Error](../../Error/Error.md) if it is failed.
-
-```csharp
-public static ValueTask<Result> MatchAsync(this ValueTask<Result> resultTask, Action ifSuccessAction, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null);
-```
-
-### Parameters
-#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
-The asynchronous operation that returns the result to match.
-
-#### `ifSuccessAction` [Action](https://learn.microsoft.com/dotnet/api/system.action)
-The synchronous action to run on a successful result. Must not be `null`.
-
-#### `ifErrorAction` [Action](https://learn.microsoft.com/dotnet/api/system.action-1)&lt;[Error](../../Error/Error.md)&gt;
-The synchronous action to run on a failed result, with its error. Must not be `null`.
-
-#### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
-`true` to run the continuation, including the passed delegate, on the captured context (e.g., the UI thread); `false` to run it on any thread; `null` to use [ResultConfiguration.ContinueOnCapturedContext](../../ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md) (`false` unless changed).
-
-The default value is: `null`.
-
-### Returns
-#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
-The result of the match, as the synchronous `Match` returns it.
-
-### Exceptions
-#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
-If the `ifSuccessAction` or the `ifErrorAction` is `null`.
-
-#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
-If the asynchronous operation represented by `resultTask` returns `null`, or a function returns `null` where a result or an error is required.
-
-### Remarks
-The delegates are synchronous: they run after the `resultTask` completes. Pass two asynchronous delegates for asynchronous work; one synchronous and one asynchronous delegate are not supported.
-
-### Examples
-```csharp
-var result = await _service.DeleteAsync(id).MatchAsync(
-    () => _logger.LogInformation("Deleted"),
-    error => _logger.LogWarning("{Title}", error.Title));
-```
-
-
-## MatchAsync(ValueTask&lt;Result&gt;, Func&lt;Result&gt;, Func&lt;Error, Result&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/MatchValueTaskAsyncExtensions.cs#L786" target="_blank">MatchValueTaskAsyncExtensions.cs</a>
-
-Awaits the `resultTask` and runs one of the synchronous delegates: the first one if the result is successful, the second one with the [Error](../../Error/Error.md) if it is failed.
-
-```csharp
-public static ValueTask<Result> MatchAsync(this ValueTask<Result> resultTask, Func<Result> ifSuccessFunction, Func<Error, Result> ifErrorFunction, bool? continueOnCapturedContext = null);
-```
-
-### Parameters
-#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
-The asynchronous operation that returns the result to match.
-
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[Result](../../Result/Result.md)&gt;
-The synchronous function to run on a successful result; it returns the next result. Must not be `null`.
-
-#### `ifErrorFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Error](../../Error/Error.md), [Result](../../Result/Result.md)&gt;
-The synchronous function to run on a failed result, with its error; it returns the value of the match. Must not be `null`.
-
-#### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
-`true` to run the continuation, including the passed delegate, on the captured context (e.g., the UI thread); `false` to run it on any thread; `null` to use [ResultConfiguration.ContinueOnCapturedContext](../../ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md) (`false` unless changed).
-
-The default value is: `null`.
-
-### Returns
-#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
-The result of the match, as the synchronous `Match` returns it.
-
-### Exceptions
-#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
-If the `ifSuccessFunction` or the `ifErrorFunction` is `null`.
-
-#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
-If the asynchronous operation represented by `resultTask` returns `null`, or a function returns `null` where a result or an error is required.
-
-### Remarks
-The delegates are synchronous: they run after the `resultTask` completes. Pass two asynchronous delegates for asynchronous work; one synchronous and one asynchronous delegate are not supported.
-
-### Examples
-```csharp
-var result = await _service.DeleteAsync(id).MatchAsync(
-    () => _audit.Record(id),
-    error => Result.Success());
-```
-
-
-## MatchAsync&lt;T&gt;(ValueTask&lt;Result&gt;, Func&lt;T&gt;, Func&lt;Error, T&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/MatchValueTaskAsyncExtensions.cs#L835" target="_blank">MatchValueTaskAsyncExtensions.cs</a>
-
-Awaits the `resultTask` and runs one of the synchronous delegates: the first one if the result is successful, the second one with the [Error](../../Error/Error.md) if it is failed.
-
-```csharp
-public static ValueTask<T> MatchAsync<T>(this ValueTask<Result> resultTask, Func<T> ifSuccessFunction, Func<Error, T> ifErrorFunction, bool? continueOnCapturedContext = null);
-```
-
-### Type Parameters
-#### `T`
-The type of the value of the result, or of the value that the delegates return.
-
-### Parameters
-#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
-The asynchronous operation that returns the result to match.
-
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;T&gt;
-The synchronous function to run on a successful result; it returns the value. Must not be `null`.
-
-#### `ifErrorFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Error](../../Error/Error.md), T&gt;
-The synchronous function to run on a failed result, with its error; it returns the value of the match. Must not be `null`.
-
-#### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
-`true` to run the continuation, including the passed delegate, on the captured context (e.g., the UI thread); `false` to run it on any thread; `null` to use [ResultConfiguration.ContinueOnCapturedContext](../../ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md) (`false` unless changed).
-
-The default value is: `null`.
-
-### Returns
-#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;T&gt;
-The value that the delegate returns.
-
-### Exceptions
-#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
-If the `ifSuccessFunction` or the `ifErrorFunction` is `null`.
-
-#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
-If the asynchronous operation represented by `resultTask` returns `null`, or a function returns `null` where a result or an error is required.
-
-### Remarks
-The delegates are synchronous: they run after the `resultTask` completes. Pass two asynchronous delegates for asynchronous work; one synchronous and one asynchronous delegate are not supported.
-
-### Examples
-```csharp
-var result = await _service.DeleteAsync(id).MatchAsync(
-    () => "deleted",
-    error => "not deleted");
-```
-
-
-## MatchAsync&lt;T&gt;(ValueTask&lt;Result&gt;, Func&lt;Result&lt;T&gt;&gt;, Func&lt;Error, Result&lt;T&gt;&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/MatchValueTaskAsyncExtensions.cs#L880" target="_blank">MatchValueTaskAsyncExtensions.cs</a>
-
-Awaits the `resultTask` and runs one of the synchronous delegates: the first one if the result is successful, the second one with the [Error](../../Error/Error.md) if it is failed.
-
-```csharp
-public static ValueTask<Result<T>> MatchAsync<T>(this ValueTask<Result> resultTask, Func<Result<T>> ifSuccessFunction, Func<Error, Result<T>> ifErrorFunction, bool? continueOnCapturedContext = null);
-```
-
-### Type Parameters
-#### `T`
-The type of the value of the result, or of the value that the delegates return.
-
-### Parameters
-#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
-The asynchronous operation that returns the result to match.
-
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[Result](../../ResultT/ResultT.md)&lt;T&gt;&gt;
-The synchronous function to run on a successful result; it returns the next result. Must not be `null`.
-
-#### `ifErrorFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Error](../../Error/Error.md), [Result](../../ResultT/ResultT.md)&lt;T&gt;&gt;
-The synchronous function to run on a failed result, with its error; it returns the value of the match. Must not be `null`.
-
-#### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
-`true` to run the continuation, including the passed delegate, on the captured context (e.g., the UI thread); `false` to run it on any thread; `null` to use [ResultConfiguration.ContinueOnCapturedContext](../../ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md) (`false` unless changed).
-
-The default value is: `null`.
-
-### Returns
-#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;T&gt;&gt;
-The result of the match, as the synchronous `Match` returns it.
-
-### Exceptions
-#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
-If the `ifSuccessFunction` or the `ifErrorFunction` is `null`.
-
-#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
-If the asynchronous operation represented by `resultTask` returns `null`, or a function returns `null` where a result or an error is required.
-
-### Remarks
-The delegates are synchronous: they run after the `resultTask` completes. Pass two asynchronous delegates for asynchronous work; one synchronous and one asynchronous delegate are not supported.
-
-### Examples
-```csharp
-var result = await _service.DeleteAsync(id).MatchAsync(
-    () => _cache.Get(id),
-    error => _cache.Get(id));
-```
-
-
-## MatchAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Action&lt;T&gt;, Action&lt;Error&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/MatchValueTaskAsyncExtensions.cs#L924" target="_blank">MatchValueTaskAsyncExtensions.cs</a>
-
-Awaits the `resultTask` and runs one of the synchronous delegates: the first one if the result is successful, the second one with the [Error](../../Error/Error.md) if it is failed.
-
-```csharp
-public static ValueTask<Result<T>> MatchAsync<T>(this ValueTask<Result<T>> resultTask, Action<T> ifSuccessAction, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null);
-```
-
-### Type Parameters
-#### `T`
-The type of the value of the result.
-
-### Parameters
-#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;T&gt;&gt;
-The asynchronous operation that returns the result to match.
-
-#### `ifSuccessAction` [Action](https://learn.microsoft.com/dotnet/api/system.action-1)&lt;T&gt;
-The synchronous action to run on a successful result, with its value. Must not be `null`.
-
-#### `ifErrorAction` [Action](https://learn.microsoft.com/dotnet/api/system.action-1)&lt;[Error](../../Error/Error.md)&gt;
-The synchronous action to run on a failed result, with its error. Must not be `null`.
-
-#### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
-`true` to run the continuation, including the passed delegate, on the captured context (e.g., the UI thread); `false` to run it on any thread; `null` to use [ResultConfiguration.ContinueOnCapturedContext](../../ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md) (`false` unless changed).
-
-The default value is: `null`.
-
-### Returns
-#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;T&gt;&gt;
-The result of the match, as the synchronous `Match` returns it.
-
-### Exceptions
-#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
-If the `ifSuccessAction` or the `ifErrorAction` is `null`.
-
-#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
-If the asynchronous operation represented by `resultTask` returns `null`, or a function returns `null` where a result or an error is required.
-
-### Remarks
-The delegates are synchronous: they run after the `resultTask` completes. Pass two asynchronous delegates for asynchronous work; one synchronous and one asynchronous delegate are not supported.
-
-### Examples
-```csharp
-var result = await _userService.GetUserAsync(id).MatchAsync(
-    user => _logger.LogInformation("{Name}", user.Name),
-    error => _logger.LogWarning("{Title}", error.Title));
-```
-
-
-## MatchAsync&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, TNext&gt;, Func&lt;Error, TNext&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/MatchValueTaskAsyncExtensions.cs#L974" target="_blank">MatchValueTaskAsyncExtensions.cs</a>
-
-Awaits the `resultTask` and runs one of the synchronous delegates: the first one if the result is successful, the second one with the [Error](../../Error/Error.md) if it is failed.
-
-```csharp
-public static ValueTask<TNext> MatchAsync<T, TNext>(this ValueTask<Result<T>> resultTask, Func<T, TNext> ifSuccessFunction, Func<Error, TNext> ifErrorFunction, bool? continueOnCapturedContext = null);
-```
-
-### Type Parameters
-#### `T`
-The type of the value of the result.
-
-#### `TNext`
-The type of the value that the delegates return.
-
-### Parameters
-#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;T&gt;&gt;
-The asynchronous operation that returns the result to match.
-
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, TNext&gt;
-The synchronous function to run on a successful result, with its value; it returns the value. Must not be `null`.
-
-#### `ifErrorFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Error](../../Error/Error.md), TNext&gt;
-The synchronous function to run on a failed result, with its error; it returns the value of the match. Must not be `null`.
-
-#### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
-`true` to run the continuation, including the passed delegate, on the captured context (e.g., the UI thread); `false` to run it on any thread; `null` to use [ResultConfiguration.ContinueOnCapturedContext](../../ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md) (`false` unless changed).
-
-The default value is: `null`.
-
-### Returns
-#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;TNext&gt;
-The value that the delegate returns.
-
-### Exceptions
-#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
-If the `ifSuccessFunction` or the `ifErrorFunction` is `null`.
-
-#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
-If the asynchronous operation represented by `resultTask` returns `null`, or a function returns `null` where a result or an error is required.
-
-### Remarks
-The delegates are synchronous: they run after the `resultTask` completes. Pass two asynchronous delegates for asynchronous work; one synchronous and one asynchronous delegate are not supported.
-
-### Examples
-```csharp
-var result = await _userService.GetUserAsync(id).MatchAsync(
-    user => user.Name,
-    error => "unknown");
-```
-
-
-## MatchAsync&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&lt;TNext&gt;&gt;, Func&lt;Error, Result&lt;TNext&gt;&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/MatchValueTaskAsyncExtensions.cs#L1024" target="_blank">MatchValueTaskAsyncExtensions.cs</a>
-
-Awaits the `resultTask` and runs one of the synchronous delegates: the first one if the result is successful, the second one with the [Error](../../Error/Error.md) if it is failed.
-
-```csharp
-public static ValueTask<Result<TNext>> MatchAsync<T, TNext>(this ValueTask<Result<T>> resultTask, Func<T, Result<TNext>> ifSuccessFunction, Func<Error, Result<TNext>> ifErrorFunction, bool? continueOnCapturedContext = null);
-```
-
-### Type Parameters
-#### `T`
-The type of the value of the result.
-
-#### `TNext`
-The type of the value that the delegates return.
-
-### Parameters
-#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;T&gt;&gt;
-The asynchronous operation that returns the result to match.
-
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;
-The synchronous function to run on a successful result, with its value; it returns the next result. Must not be `null`.
-
-#### `ifErrorFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Error](../../Error/Error.md), [Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;
-The synchronous function to run on a failed result, with its error; it returns the value of the match. Must not be `null`.
-
-#### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
-`true` to run the continuation, including the passed delegate, on the captured context (e.g., the UI thread); `false` to run it on any thread; `null` to use [ResultConfiguration.ContinueOnCapturedContext](../../ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md) (`false` unless changed).
-
-The default value is: `null`.
-
-### Returns
-#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;TNext&gt;&gt;
-The result of the match, as the synchronous `Match` returns it.
-
-### Exceptions
-#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
-If the `ifSuccessFunction` or the `ifErrorFunction` is `null`.
-
-#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
-If the asynchronous operation represented by `resultTask` returns `null`, or a function returns `null` where a result or an error is required.
-
-### Remarks
-The delegates are synchronous: they run after the `resultTask` completes. Pass two asynchronous delegates for asynchronous work; one synchronous and one asynchronous delegate are not supported.
-
-### Examples
-```csharp
-var result = await _userService.GetUserAsync(id).MatchAsync(
-    user => _addressBook.Find(user.Id),
-    error => Result.FromValue(Address.Unknown));
-```
 
 ## See Also
+* [SwitchAsync](SwitchValueTaskAsyncExtensions_SwitchAsync.md)
 * [Error](../../Error/Error.md)
 * [Result](../../Result/Result.md)
 * [Result&lt;T&gt;](../../ResultT/ResultT.md)

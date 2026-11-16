@@ -14,13 +14,14 @@ How to chain operations that return results with the extension methods and the L
 * `Else()` and `ElseAsync()`: replace a failed result (e.g., recover with a value, or return another error),
 * `IfSuccess()` and `IfSuccessAsync()`: run a side effect on a successful result and return it unchanged,
 * `IfError()` and `IfErrorAsync()`: run a side effect on a failed result and return it unchanged,
-* `Match()` and `MatchAsync()`: handle both cases, with two functions that return a value (e.g., `int count = result.Match(x => x.Count, e => 0)`) or two actions for a side effect.
+* `Match()` and `MatchAsync()`: fold both cases into one value, with two functions that return the same type (e.g., `int count = result.Match(x => x.Count, e => 0)`); the value can be a result or a task, which the caller awaits,
+* `Switch()` and `SwitchAsync()`: handle both cases with two actions for a side effect, and return nothing.
 
-A function that returns a value passed to `IfSuccess()` or `IfError()` is a compile error that names `Then()` or `Else()`, so that its value is not discarded by mistake; an action passed to `Then()` or `Else()` is a compile error that names `IfSuccess()` or `IfError()`. `Match()` with a success function and an error action is a compile error that names `Then(…).IfError(…)`.
+A function that returns a value passed to `IfSuccess()` or `IfError()` is a compile error that names `Then()` or `Else()`, so that its value is not discarded by mistake; an action passed to `Then()` or `Else()` is a compile error that names `IfSuccess()` or `IfError()`. `Match()` with two actions is a compile error that names `Switch()`, and an action that returns a task passed to `Switch()` is a compile error that names `Match()`.
 
 ```csharp
 var createUserResult = _userService.CreateUser(userData);
-createUserResult.Match(
+createUserResult.Switch(
     user => _auditService.LogUserAdded(user),
     error => _auditService.LogError(error));
 
@@ -31,7 +32,7 @@ var companyModel = createUserResult
         error => _mapper.Map(error));
 ```
 
-The library has no `Bind()`, `Map()` or `Switch()`: see [the FAQ](../../README.md#why-are-methods-like-bind-map-and-switch-not-available) for their equivalents.
+The library has no `Bind()`, `Map()` or `Tap()`: see [the FAQ](../../README.md#why-are-methods-like-bind-map-and-tap-not-available) for their equivalents.
 
 ## Asynchronous operations
 ```csharp
@@ -58,7 +59,7 @@ var userResult = await _userService.GetUserAsync(id)
 ```
 
 > [!NOTE]
-> The asynchronous extension methods (`ThenAsync()`, `ElseAsync()`, `IfSuccessAsync()`, `IfErrorAsync()`, `MatchAsync()`, `ToResultAsync()` and the LINQ `Select()` and `SelectMany()`) support both `Task` and `ValueTask`, so you can chain and `await` results regardless of which one your methods return.
+> The asynchronous extension methods (`ThenAsync()`, `ElseAsync()`, `IfSuccessAsync()`, `IfErrorAsync()`, `MatchAsync()`, `SwitchAsync()`, `ToResultAsync()` and the LINQ `Select()` and `SelectMany()`) support both `Task` and `ValueTask`, so you can chain and `await` results regardless of which one your methods return.
 
 > [!IMPORTANT]
 > The `Task`-based methods live in the `Maple.Results.Extensions` namespace and the `ValueTask`-based ones in `Maple.Results.Extensions.ValueTasks`—import the one matching the style you use, as having both in scope makes a call with an `async` lambda ambiguous.

@@ -4,7 +4,7 @@ Namespace: [Maple.Results.Extensions](namespace.md)<br>
 Assembly: Maple.Result.dll<br>
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchExtensions.cs" target="_blank">MatchExtensions.cs</a>
 
-Provides extension methods for the [Result](../Result/Result.md) and [Result&lt;T&gt;](../ResultT/ResultT.md) records to handle both successful and failure scenarios.
+Provides extension methods for the [Result](../Result/Result.md) and [Result&lt;T&gt;](../ResultT/ResultT.md) records that fold a result into one value: a function for the success and a function for the error, which return the same type.
 
 ```csharp
 public static class MatchExtensions
@@ -15,15 +15,11 @@ Inheritance [Object](https://learn.microsoft.com/dotnet/api/system.object) → M
 ## Methods
 | Name | Description |
 | ---- | ----------- |
-| [Match(Result, Action, Action&lt;Error&gt;)](MatchExtensions_Match.md#matchresult-action-actionerror) | Executes one of the specified actions depending on whether the [Result](../Result/Result.md) represents a success or a failure. |
-| [Match(Result, Func&lt;Result&gt;, Func&lt;Error, Result&gt;)](MatchExtensions_Match.md#matchresult-funcresult-funcerror-result) | Executes one of the specified functions depending on whether the [Result](../Result/Result.md) represents a success or a failure. |
-| [Match&lt;T&gt;(Result, Func&lt;T&gt;, Func&lt;Error, T&gt;)](MatchExtensions_Match.md#matchtresult-funct-funcerror-t) | Executes one of the specified functions depending on whether the [Result](../Result/Result.md) represents a success or a failure. |
-| [Match&lt;T&gt;(Result, Func&lt;Result&lt;T&gt;&gt;, Func&lt;Error, Result&lt;T&gt;&gt;)](MatchExtensions_Match.md#matchtresult-funcresultt-funcerror-resultt) | Executes one of the specified functions depending on whether the [Result](../Result/Result.md) represents a success or a failure. |
-| [Match&lt;T&gt;(Result&lt;T&gt;, Action&lt;T&gt;, Action&lt;Error&gt;)](MatchExtensions_Match.md#matchtresultt-actiont-actionerror) |  Executes one of the specified actions depending on whether the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a success or a failure. |
-| [Match&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, TNext&gt;, Func&lt;Error, TNext&gt;)](MatchExtensions_Match.md#matcht-tnextresultt-funct-tnext-funcerror-tnext) |  Executes one of the specified functions depending on whether the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a success or a failure. |
-| [Match&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, Result&lt;TNext&gt;&gt;, Func&lt;Error, Result&lt;TNext&gt;&gt;)](MatchExtensions_Match.md#matcht-tnextresultt-funct-resulttnext-funcerror-resulttnext) |  Executes one of the specified functions depending on whether the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a success or a failure. |
+| [Match&lt;TOut&gt;(Result, Func&lt;TOut&gt;, Func&lt;Error, TOut&gt;)](MatchExtensions_Match.md#matchtoutresult-functout-funcerror-tout) | Invokes one of the specified functions depending on whether the [Result](../Result/Result.md) is successful and returns the value that it returns. |
+| [Match&lt;T, TOut&gt;(Result&lt;T&gt;, Func&lt;T, TOut&gt;, Func&lt;Error, TOut&gt;)](MatchExtensions_Match.md#matcht-toutresultt-funct-tout-funcerror-tout) | Invokes one of the specified functions depending on whether the [Result&lt;T&gt;](../ResultT/ResultT.md) is successful and returns the value that it returns. |
 
 ## See Also
+* [SwitchExtensions](SwitchExtensions.md)
 * [Error](../Error/Error.md)
 * [Result](../Result/Result.md)
 * [Result&lt;T&gt;](../ResultT/ResultT.md)
