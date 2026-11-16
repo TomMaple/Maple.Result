@@ -304,7 +304,7 @@ public class IfSuccessExtensionsUnitTests
     {
         // Act
         var traps = typeof(IfSuccessExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a value, which IfSuccess discards. Use Then"))
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a value, which IfSuccess discards; an assignment or an increment"))
             .ToList();
 
         // Assert

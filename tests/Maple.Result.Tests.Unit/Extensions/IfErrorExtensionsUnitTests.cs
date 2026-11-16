@@ -339,7 +339,7 @@ public class IfErrorExtensionsUnitTests
     {
         // Act
         var traps = typeof(IfErrorExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a value, which IfError discards. Use Else"))
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a value, which IfError discards; an assignment or an increment"))
             .ToList();
 
         // Assert
