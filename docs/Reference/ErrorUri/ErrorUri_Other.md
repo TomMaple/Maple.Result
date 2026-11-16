@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorUri.cs#L218" target="_blank">ErrorUri.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorUri.cs#L224" target="_blank">ErrorUri.cs</a>
 
 Creates a new instance of the [ErrorUri](ErrorUri.md) record with an absolute *URI* whose scheme has no factory method of its own (e.g., `mailto:`, `ftp:` or a custom scheme).
 
@@ -38,6 +38,9 @@ The method validates the value against the *RFC 3986* syntax of an absolute *URI
 The value is stored as passed, without normalization, so white space (including a trailing new line), invalid percent-encoding (e.g., `%zz`) and literal non-ASCII characters are rejected. Values are compared character by character, so `MAILTO:a` and `mailto:a` are different.
 
 [Parse(String)](ErrorUri_Parse.md) and [TryParse(String, ErrorUri)](ErrorUri_TryParse.md) use this method for the schemes without a factory method of their own.
+
+> [!WARNING]
+> Any other scheme is accepted, including `javascript:`, `vbscript:`, `data:` and `file:`: *RFC 3986* and *RFC 9457* do not restrict the scheme, and the values of other services must be kept. Treat such a value as untrusted: a consumer that shows a type or an instance *URI* as a link (e.g., in HTML) or opens it has to check the scheme first, e.g., allow only `http` and `https`. *RFC 9457* (section 3.1.1) also says that consumers should not dereference the type *URI* automatically.
 
 ## Examples
 ```csharp

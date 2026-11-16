@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorUri.cs#L279" target="_blank">ErrorUri.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorUri.cs#L288" target="_blank">ErrorUri.cs</a>
 
 Tries to create a new instance of the [ErrorUri](ErrorUri.md) record of the kind that the value has, with the rules of [Parse(String)](ErrorUri_Parse.md).
 
@@ -25,7 +25,7 @@ The [ErrorUri](ErrorUri.md) with the specified value, if it is valid; otherwise,
 ## Remarks
 The method never throws, and a rejected value is checked without throwing an exception internally, so it suits values that are often invalid.
 
-The validation runs in linear time in the length of the value (the patterns use `RegexOptions.NonBacktracking`), so a long or crafted value from an untrusted source cannot make it slow.
+The validation runs in linear time in the length of the value (the patterns use `RegexOptions.NonBacktracking`), so a long or crafted value from an untrusted source cannot make it slow. Any scheme is accepted (see [Other(String)](ErrorUri_Other.md)), e.g., `javascript:`: check the scheme before showing the value as a link.
 
 On failure, `result` is the default [ErrorUri](ErrorUri.md), whose [Value](ErrorUri_Value.md) is `about:blank`; check the return value rather than `result`.
 

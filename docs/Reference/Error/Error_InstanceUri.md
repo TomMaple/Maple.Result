@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L163" target="_blank">Error.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L173" target="_blank">Error.cs</a>
 
 Gets a *URI* that identifies the specific occurrence of the problem.
 
@@ -16,7 +16,7 @@ public string? InstanceUri { get; }
 A text value of a *URI* that identifies the specific occurrence of the problem.
 
 ## Remarks
-This is an optional property that contains a text value of a *URI* that identifies the type of the problem.
+This is an optional property that contains a text value of a *URI* that identifies the specific occurrence of the problem.
 
 > [!NOTE]
 > [Error](Error.md) is immutable, so this property is set when the error is created: by the factory methods (e.g., [Validation](Error_Validation.md)) or an [ErrorBuilder](../ErrorBuilder/ErrorBuilder.md). To change it, use [ToBuilder()](Error_ToBuilder.md).
@@ -30,7 +30,10 @@ If the value is a *URI Locator*, it is a *URL* (with an “http” or “https�
 > [!NOTE]
 > It is **RECOMMENDED** that absolute *URI*s be used when possible, and that when relative *URI*s are used, they include the full path (e.g., `/instances/123`).
 
-If the value is a *URI Tag*, it is not dereferenceable and serves as a unique identifier for the problem occurrence that may be of significance to the server but is opaque to the client..
+If the value is a *URI Tag*, it is not dereferenceable and serves as a unique identifier for the problem occurrence that may be of significance to the server but is opaque to the client.
+
+> [!WARNING]
+> The scheme is not restricted: a value read from another service can be, e.g., `javascript:` or `file:` ([ErrorUri.Other](../ErrorUri/ErrorUri_Other.md)). Treat it as untrusted: a consumer that shows it as a link (e.g., in HTML) or opens it has to check the scheme first, e.g., allow only `http` and `https`.
 
 ## Examples
 ```csharp

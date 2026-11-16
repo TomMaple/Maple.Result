@@ -21,7 +21,7 @@ A key that already exists is never an error: its value is replaced, so code that
 
 
 ## WithMetadata(String, Object)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L327" target="_blank">Error.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L337" target="_blank">Error.cs</a>
 
 Returns a copy of the current error with the specified metadata entry added, or replaced if the key already exists.
 
@@ -61,7 +61,7 @@ var error = Error.LimitExceeded(
 
 
 ## WithMetadata(IEnumerable&lt;KeyValuePair&lt;String, Object&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L349" target="_blank">Error.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L359" target="_blank">Error.cs</a>
 
 Returns a copy of the current error with the specified metadata entries added. Entries with existing keys are replaced; the other existing entries are kept.
 
@@ -101,7 +101,7 @@ var error = Error.LimitExceeded(
 
 
 ## WithMetadata(ReadOnlySpan&lt;(String, Object)&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L371" target="_blank">Error.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L381" target="_blank">Error.cs</a>
 
 Returns a copy of the current error with the specified metadata entries, given as key-value tuples, added. Entries with existing keys are replaced; the other existing entries are kept.
 
