@@ -515,6 +515,8 @@ Result<int> number = Result.Try<int, FormatException>(
     _ => Error.Validation(ErrorUri.None, "The value is not a number."));
 ```
 
+To map only one exception type, pass both type arguments (as above) or type the parameter of the mapper (`(FormatException e) => …`). Do not pass the exception type alone: C# infers all type arguments or none, so `Result.Try<FormatException>(() => int.Parse(text), …)` discards the number and returns a non-generic `Result`.
+
 An `OperationCanceledException` is rethrown: cancellation is not a failure.
 
 The mapper may return `null` to decline an exception, which is then rethrown as it is, so one mapper can handle several types:
