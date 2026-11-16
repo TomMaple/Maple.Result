@@ -9,6 +9,8 @@
  */
 
 using System;
+using System.Globalization;
+using System.Linq;
 
 namespace Maple.Results.Tests.Unit.Binding;
 
@@ -74,5 +76,21 @@ public class QuerySelectingTaskBindingUnitTests
 
         // Assert
         snippet.ErrorIds.ShouldBeEmpty(string.Join(Environment.NewLine, snippet.Errors));
+    }
+
+    // Since #197, IfSuccessAsync rejects a function whose task returns a value, so the message names ThenAsync first (#224).
+    [Theory]
+    [InlineData("var q = from x in ok select GetIntAsync();")]
+    [InlineData("var q = from x in GetOkAsync() select GetIntAsync();")]
+    [InlineData("var q = from x in GetOkValueTask() select GetIntValueTask();")]
+    [InlineData("var q = from x in ok from y in GetOkAsync() select GetIntAsync();")]
+    public void Query_SelectingTask_MessageNamesThenAsync(string statements)
+    {
+        // Act
+        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Both, Members);
+
+        // Assert
+        var message = snippet.Errors.Single(d => d.Id == "CS0619").GetMessage(CultureInfo.InvariantCulture);
+        message.ShouldContain("Use ThenAsync (or IfSuccessAsync for a task without a value)");
     }
 }

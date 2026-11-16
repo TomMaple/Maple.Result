@@ -223,11 +223,13 @@ public static class LinqExtensions
     // which would be ambiguous (CS0121).
 
     private const string SelectorTaskNotAwaitedMessage =
-        "The selector returns a task, which the query does not await. Use IfSuccessAsync, or a from clause whose function returns " +
-        "a Task<Result<T>>, or specify the type arguments (e.g., Select<T, Task>(…)) to keep the task.";
+        "The selector returns a task, which the query does not await. " +
+        "Use ThenAsync (or IfSuccessAsync for a task without a value), or a from clause whose function returns a Task<Result<T>>, " +
+        "or specify the type arguments (e.g., Select<T, Task>(…)) to keep the task.";
 
     /// <summary>
-    ///     Not supported: the selector returns a task, which the query does not await; use <c>IfSuccessAsync</c>.
+    ///     Not supported: the selector returns a task, which the query does not await;
+    ///     use <c>ThenAsync</c> (or <c>IfSuccessAsync</c> for a task without a value).
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
@@ -238,7 +240,8 @@ public static class LinqExtensions
     }
 
     /// <summary>
-    ///     Not supported: the selector returns a task, which the query does not await; use <c>IfSuccessAsync</c>.
+    ///     Not supported: the selector returns a task, which the query does not await;
+    ///     use <c>ThenAsync</c> (or <c>IfSuccessAsync</c> for a task without a value).
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
@@ -249,7 +252,8 @@ public static class LinqExtensions
     }
 
     /// <summary>
-    ///     Not supported: the selector returns a task, which the query does not await; use <c>IfSuccessAsync</c>.
+    ///     Not supported: the selector returns a task, which the query does not await;
+    ///     use <c>ThenAsync</c> (or <c>IfSuccessAsync</c> for a task without a value).
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
@@ -259,7 +263,8 @@ public static class LinqExtensions
     }
 
     /// <summary>
-    ///     Not supported: the selector returns a task, which the query does not await; use <c>IfSuccessAsync</c>.
+    ///     Not supported: the selector returns a task, which the query does not await;
+    ///     use <c>ThenAsync</c> (or <c>IfSuccessAsync</c> for a task without a value).
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
@@ -269,7 +274,8 @@ public static class LinqExtensions
     }
 
     /// <summary>
-    ///     Not supported: the selector returns a task, which the query does not await; use <c>IfSuccessAsync</c>.
+    ///     Not supported: the selector returns a task, which the query does not await;
+    ///     use <c>ThenAsync</c> (or <c>IfSuccessAsync</c> for a task without a value).
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
@@ -280,7 +286,8 @@ public static class LinqExtensions
     }
 
     /// <summary>
-    ///     Not supported: the selector returns a task, which the query does not await; use <c>IfSuccessAsync</c>.
+    ///     Not supported: the selector returns a task, which the query does not await;
+    ///     use <c>ThenAsync</c> (or <c>IfSuccessAsync</c> for a task without a value).
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
@@ -294,7 +301,8 @@ public static class LinqExtensions
     }
 
     /// <summary>
-    ///     Not supported: the selector returns a task, which the query does not await; use <c>IfSuccessAsync</c>.
+    ///     Not supported: the selector returns a task, which the query does not await;
+    ///     use <c>ThenAsync</c> (or <c>IfSuccessAsync</c> for a task without a value).
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
@@ -304,7 +312,8 @@ public static class LinqExtensions
     }
 
     /// <summary>
-    ///     Not supported: the selector returns a task, which the query does not await; use <c>IfSuccessAsync</c>.
+    ///     Not supported: the selector returns a task, which the query does not await;
+    ///     use <c>ThenAsync</c> (or <c>IfSuccessAsync</c> for a task without a value).
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
