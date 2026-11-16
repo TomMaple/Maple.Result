@@ -920,7 +920,7 @@ public class LinqTaskAsyncExtensionsUnitTests
             .ToArray();
 
         // Act & Assert
-        overloads.Length.ShouldBe(4);
+        overloads.Length.ShouldBe(8);
         overloads.ShouldAllBe(m => m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
                                    && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
     }
@@ -934,7 +934,7 @@ public class LinqTaskAsyncExtensionsUnitTests
             .ToArray();
 
         // Act & Assert
-        overloads.Length.ShouldBe(12);
+        overloads.Length.ShouldBe(48);
         overloads.ShouldAllBe(m => m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
                                    && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
     }
@@ -949,7 +949,7 @@ public class LinqTaskAsyncExtensionsUnitTests
             .ToArray();
 
         // Act & Assert
-        overloads.Length.ShouldBe(8);
+        overloads.Length.ShouldBe(28);
         overloads.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 1);
     }
 
@@ -963,7 +963,7 @@ public class LinqTaskAsyncExtensionsUnitTests
             .ToArray();
 
         // Act & Assert
-        overloads.Length.ShouldBe(8);
+        overloads.Length.ShouldBe(28);
         overloads.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 0);
     }
 
@@ -981,6 +981,157 @@ public class LinqTaskAsyncExtensionsUnitTests
         result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldBeSameAs(taskSource.Task);
         result.Value.IsCompleted.ShouldBeFalse();
+    }
+
+    #endregion
+
+    #region non-generic results and selected results (issue #217)
+
+    private static readonly Error QuerySourceError = Error.NotFound(ErrorUri.None, "Query source error");
+    private static readonly Error QueryCheckError = Error.Conflict(ErrorUri.None, "Query check error");
+    private static readonly Error QuerySelectedError = Error.Failure(ErrorUri.None, "Query selected error");
+
+    [Fact]
+    public async Task SelectMany_TaskResultAndTaskNonGenericClause_ReturnsSelectedValue()
+    {
+        // Arrange
+        var sut = Task.FromResult(Result.FromValue(5));
+
+        // Act
+        var result = await (from value in sut from _ in Task.FromResult(Result.Success()) select value * 2);
+
+        // Assert
+        result.Value.ShouldBe(10);
+    }
+
+    [Fact]
+    public async Task SelectMany_TaskResultAndFailedTaskNonGenericClause_ReturnsClauseError()
+    {
+        // Arrange
+        var sut = Task.FromResult(Result.FromValue(5));
+
+        // Act
+        var result = await (from value in sut from _ in Task.FromResult(Result.FromError(QueryCheckError)) select value * 2);
+
+        // Assert
+        result.Error.ShouldBeSameAs(QueryCheckError);
+    }
+
+    [Fact]
+    public async Task SelectMany_FailedTaskResultAndTaskNonGenericClause_ReturnsSourceError()
+    {
+        // Arrange
+        var sut = Task.FromResult(Result<int>.FromError(QuerySourceError));
+
+        // Act
+        var result = await (from value in sut from _ in Task.FromResult(Result.Success()) select value * 2);
+
+        // Assert
+        result.Error.ShouldBeSameAs(QuerySourceError);
+    }
+
+    [Fact]
+    public async Task SelectMany_TaskResultAndNonGenericClause_ReturnsSelectedValue()
+    {
+        // Arrange
+        var sut = Task.FromResult(Result.FromValue(5));
+
+        // Act
+        var result = await (from value in sut from _ in Result.Success() select value * 2);
+
+        // Assert
+        result.Value.ShouldBe(10);
+    }
+
+    [Fact]
+    public async Task SelectMany_ResultAndTaskNonGenericClause_ReturnsSelectedValue()
+    {
+        // Arrange
+        var sut = Result.FromValue(5);
+
+        // Act
+        var result = await (from value in sut from _ in Task.FromResult(Result.Success()) select value * 2);
+
+        // Assert
+        result.Value.ShouldBe(10);
+    }
+
+    [Fact]
+    public async Task SelectMany_TaskNonGenericFirstClause_ReturnsSelectedValue()
+    {
+        // Arrange
+        var sut = Task.FromResult(Result.Success());
+
+        // Act
+        var result = await (from _ in sut from value in Task.FromResult(Result.FromValue(5)) select value * 2);
+
+        // Assert
+        result.Value.ShouldBe(10);
+    }
+
+    [Fact]
+    public async Task SelectMany_FailedTaskNonGenericFirstClause_ReturnsItsError()
+    {
+        // Arrange
+        var sut = Task.FromResult(Result.FromError(QueryCheckError));
+
+        // Act
+        var result = await (from _ in sut from value in Task.FromResult(Result.FromValue(5)) select value * 2);
+
+        // Assert
+        result.Error.ShouldBeSameAs(QueryCheckError);
+    }
+
+    [Fact]
+    public async Task SelectMany_TaskNonGenericFirstClauseAndSynchronousNextClause_ReturnsSelectedValue()
+    {
+        // Arrange
+        var sut = Task.FromResult(Result.Success());
+
+        // Act
+        var result = await (from _ in sut from value in Result.FromValue(5) select value * 2);
+
+        // Assert
+        result.Value.ShouldBe(10);
+    }
+
+    [Fact]
+    public async Task Select_TaskNonGenericResult_ReturnsSelectedValue()
+    {
+        // Arrange
+        var sut = Task.FromResult(Result.Success());
+
+        // Act
+        var result = await (from _ in sut select 7);
+
+        // Assert
+        result.Value.ShouldBe(7);
+    }
+
+    [Fact]
+    public async Task Select_TaskResultSelectingResultOfT_ReturnsSelectedResultNotNested()
+    {
+        // Arrange
+        var sut = Task.FromResult(Result.FromValue(5));
+
+        // Act
+        var result = await (from value in sut select Result.FromValue(value.ToString()));
+
+        // Assert
+        result.Value.ShouldBe("5");
+    }
+
+    [Fact]
+    public async Task SelectMany_TaskClausesSelectingResult_ReturnsSelectedResult()
+    {
+        // Arrange
+        var sut = Task.FromResult(Result.FromValue(5));
+
+        // Act
+        var result = await (from value in sut from other in Task.FromResult(Result.FromValue(5)) select Result.FromError(QuerySelectedError));
+
+        // Assert
+        result.Error.ShouldBeSameAs(QuerySelectedError);
     }
 
     #endregion
