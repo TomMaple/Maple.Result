@@ -64,44 +64,6 @@ public static class MatchExtensions
     }
 
     /// <summary>
-    ///     Invokes the provided function and returns its <see cref="Result" /> output if the <paramref name="result" /> is successful,
-    ///     or the provided action and returns <see cref="Result" /> with the original error.
-    /// </summary>
-    /// <param name="result">The <see cref="Result" /> whose outcome is inspected. Must not be <see langword="null" />.</param>
-    /// <param name="ifSuccessFunction">
-    ///     The function invoked when the <paramref name="result" /> represents success. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="ifErrorAction">
-    ///     The action invoked when the <paramref name="result" /> represents failure.
-    ///     The <see cref="Error" /> associated with the <paramref name="result" /> is passed to this function. Must not be <see langword="null" />.
-    /// </param>
-    /// <returns>
-    ///     The <see cref="Result" /> returned by either <paramref name="ifSuccessFunction" /> if <paramref name="result" /> is successful,
-    ///     or the original <paramref name="result" /> after invoking <paramref name="ifErrorAction" />.
-    /// </returns>
-    /// <exception cref="ArgumentNullException">
-    ///     If any of the <paramref name="result" />, <paramref name="ifSuccessFunction" />,
-    ///     or <paramref name="ifErrorAction" /> parameters are <see langword="null" />.
-    /// </exception>
-    /// <exception cref="InvalidOperationException">If <paramref name="ifSuccessFunction" /> returns <see langword="null" />.</exception>
-    public static Result Match(this Result result, Func<Result> ifSuccessFunction, Action<Error> ifErrorAction)
-    {
-        ArgumentNullException.ThrowIfNull(result);
-        ArgumentNullException.ThrowIfNull(ifSuccessFunction);
-        ArgumentNullException.ThrowIfNull(ifErrorAction);
-
-        if (result.IsSuccess)
-        {
-            var successResult = ifSuccessFunction();
-            return Guard.EnsureNotNullReturned(successResult, nameof(ifSuccessFunction));
-        }
-
-        ifErrorAction(result.Error);
-
-        return result;
-    }
-
-    /// <summary>
     ///     Invokes one of the provided functions depending on whether the <paramref name="result" /> is successful and
     ///     returns the produced <see cref="Result" />.
     /// </summary>
@@ -142,96 +104,6 @@ public static class MatchExtensions
     }
 
     /// <summary>
-    ///     Invokes the provided function and returns its value as a <see cref="Result{T}" /> instance if the <paramref name="result" /> is successful,
-    ///     or the provided action and returns <see cref="Result{T}" /> with the original error.
-    /// </summary>
-    /// <typeparam name="T">The return type produced by the successful branch.</typeparam>
-    /// <param name="result">
-    ///     The <see cref="Result" /> whose outcome dictates which function is invoked. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="ifSuccessFunction">
-    ///     The function invoked when the <paramref name="result" /> represents success. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="ifErrorAction">
-    ///     The action invoked when the <paramref name="result" /> represents failure.
-    ///     The <see cref="Error" /> associated with the <paramref name="result" /> is passed to this action. Must not be <see langword="null" />.
-    /// </param>
-    /// <returns>
-    ///     The <see cref="Result{T}" /> with the value returned by either the <paramref name="ifSuccessFunction" /> if <paramref name="result" /> is
-    ///     successful, or the <see cref="Result{T}" /> with the original <paramref name="result" /> after invoking <paramref name="ifErrorAction" />.
-    /// </returns>
-    /// <exception cref="ArgumentNullException">
-    ///     If any of the <paramref name="result" />, <paramref name="ifSuccessFunction" />,
-    ///     or <paramref name="ifErrorAction" /> parameters are <see langword="null" />.
-    /// </exception>
-    public static Result<T> Match<T>(this Result result, Func<T> ifSuccessFunction, Action<Error> ifErrorAction)
-    {
-        ArgumentNullException.ThrowIfNull(result);
-        ArgumentNullException.ThrowIfNull(ifSuccessFunction);
-        ArgumentNullException.ThrowIfNull(ifErrorAction);
-
-        if (result.IsSuccess)
-            return ifSuccessFunction();
-
-        ifErrorAction(result.Error);
-
-        return result.Error;
-    }
-
-    /// <summary>
-    ///     Invokes the provided function if the <paramref name="result" /> is successful and returns a failed <see cref="Result" /> with
-    ///     the <see cref="Error" /> it returns; otherwise, invokes the provided action and returns the original <paramref name="result" />.
-    /// </summary>
-    /// <remarks>
-    ///     <para>
-    ///         Use it to turn a successful <see cref="Result" /> into a failure, e.g., <c>result.Match(() => Error.Conflict(…), e => Log(e))</c>.
-    ///         The returned <see cref="Result" /> is always failed.
-    ///     </para>
-    ///     <para>
-    ///         Without this overload, such a call would bind to <see cref="Match{T}(Result, Func{T}, Action{Error})" /> and return
-    ///         a <b>successful</b> <c>Result&lt;Error&gt;</c>. To get that on purpose, specify the type argument: <c>Match&lt;Error&gt;(…)</c>.
-    ///     </para>
-    /// </remarks>
-    /// <param name="result">
-    ///     The <see cref="Result" /> whose outcome dictates which delegate is invoked. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="ifSuccessFunction">
-    ///     The function invoked when the <paramref name="result" /> represents success.
-    ///     It returns the <see cref="Error" /> of the failed <see cref="Result" />. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="ifErrorAction">
-    ///     The action invoked when the <paramref name="result" /> represents failure.
-    ///     The <see cref="Error" /> associated with the <paramref name="result" /> is passed to this action. Must not be <see langword="null" />.
-    /// </param>
-    /// <returns>
-    ///     A failed <see cref="Result" /> with the <see cref="Error" /> returned by <paramref name="ifSuccessFunction" /> if <paramref name="result" /> is
-    ///     successful; otherwise, the original <paramref name="result" /> after invoking <paramref name="ifErrorAction" />.
-    /// </returns>
-    /// <exception cref="ArgumentNullException">
-    ///     If any of the <paramref name="result" />, <paramref name="ifSuccessFunction" />, or <paramref name="ifErrorAction" /> parameters are <see
-    ///     langword="null" />.
-    /// </exception>
-    /// <exception cref="InvalidOperationException">If <paramref name="ifSuccessFunction" /> returns <see langword="null" />.</exception>
-    public static Result Match(this Result result, Func<Error> ifSuccessFunction, Action<Error> ifErrorAction)
-    {
-        ArgumentNullException.ThrowIfNull(result);
-        ArgumentNullException.ThrowIfNull(ifSuccessFunction);
-        ArgumentNullException.ThrowIfNull(ifErrorAction);
-
-        if (result.IsSuccess)
-        {
-            var returnedError = ifSuccessFunction();
-            var error = Guard.EnsureNotNullReturned(returnedError, nameof(ifSuccessFunction));
-
-            return Result.FromError(error);
-        }
-
-        ifErrorAction(result.Error);
-
-        return result;
-    }
-
-    /// <summary>
     ///     Invokes one of the provided functions depending on whether the <paramref name="result" /> is successful and returns their value as
     ///     a <see cref="Result{T}" /> instance.
     /// </summary>
@@ -263,47 +135,6 @@ public static class MatchExtensions
         return result.IsSuccess
             ? ifSuccessFunction()
             : ifErrorFunction(result.Error);
-    }
-
-    /// <summary>
-    ///     Invokes the provided function and returns its <see cref="Result{T}" /> output if the <paramref name="result" /> is successful,
-    ///     or the provided action and returns <see cref="Result{T}" /> with the original error.
-    /// </summary>
-    /// <typeparam name="T">The type of the <see cref="Result{T}" /> returned by the matching branch.</typeparam>
-    /// <param name="result">
-    ///     The <see cref="Result" /> whose state determines which function is invoked. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="ifSuccessFunction">
-    ///     The function invoked when the <paramref name="result" /> represents success. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="ifErrorAction">
-    ///     The action invoked when the <paramref name="result" /> represents failure.
-    ///     The <see cref="Error" /> associated with the <paramref name="result" /> is passed to this function. Must not be <see langword="null" />.
-    /// </param>
-    /// <returns>
-    ///     The <see cref="Result{T}" /> returned by the <paramref name="ifSuccessFunction" /> if <paramref name="result" /> is successful,
-    ///     or the <see cref="Result{T}" /> with the original <paramref name="result" /> after invoking <paramref name="ifErrorAction" />.
-    /// </returns>
-    /// <exception cref="ArgumentNullException">
-    ///     If any of the <paramref name="result" />, <paramref name="ifSuccessFunction" />,
-    ///     or <paramref name="ifErrorAction" /> parameters are <see langword="null" />.
-    /// </exception>
-    /// <exception cref="InvalidOperationException">If <paramref name="ifSuccessFunction" /> returns <see langword="null" />.</exception>
-    public static Result<T> Match<T>(this Result result, Func<Result<T>> ifSuccessFunction, Action<Error> ifErrorAction)
-    {
-        ArgumentNullException.ThrowIfNull(result);
-        ArgumentNullException.ThrowIfNull(ifSuccessFunction);
-        ArgumentNullException.ThrowIfNull(ifErrorAction);
-
-        if (result.IsSuccess)
-        {
-            var successResult = ifSuccessFunction();
-            return Guard.EnsureNotNullReturned(successResult, nameof(ifSuccessFunction));
-        }
-
-        ifErrorAction(result.Error);
-
-        return result.Error;
     }
 
     /// <summary>
@@ -392,100 +223,6 @@ public static class MatchExtensions
     }
 
     /// <summary>
-    ///     Invokes the provided function and returns its value as a <see cref="Result{TNext}" /> instance if the <paramref name="result" /> is successful,
-    ///     or the provided action and returns <see cref="Result{TNext}" /> with the original error.
-    /// </summary>
-    /// <typeparam name="T">The type wrapped by the source <see cref="Result{T}" />.</typeparam>
-    /// <typeparam name="TNext">The type produced by either branch.</typeparam>
-    /// <param name="result">
-    ///     The <see cref="Result{T}" /> whose outcome selects the function to invoke. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="ifSuccessFunction">
-    ///     The function executed when the <paramref name="result" /> represents success.
-    ///     The value of the successful <see cref="Result{T}" /> is passed as a parameter. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="ifErrorAction">
-    ///     The action invoked when the <paramref name="result" /> represents failure.
-    ///     The <see cref="Error" /> associated with the <paramref name="result" /> is passed to this action. Must not be <see langword="null" />.
-    /// </param>
-    /// <returns>
-    ///     The <see cref="Result{TNext}" /> with the value returned by <paramref name="ifSuccessFunction" /> if <paramref name="result" /> is successful,
-    ///     or the <see cref="Result{TNext}" /> with the original <paramref name="result" /> after invoking <paramref name="ifErrorAction" />.
-    /// </returns>
-    /// <exception cref="ArgumentNullException">
-    ///     If any of the <paramref name="result" />, <paramref name="ifSuccessFunction" />,
-    ///     or <paramref name="ifErrorAction" /> parameters are <see langword="null" />.
-    /// </exception>
-    public static Result<TNext> Match<T, TNext>(this Result<T> result, Func<T, TNext> ifSuccessFunction, Action<Error> ifErrorAction)
-    {
-        ArgumentNullException.ThrowIfNull(result);
-        ArgumentNullException.ThrowIfNull(ifSuccessFunction);
-        ArgumentNullException.ThrowIfNull(ifErrorAction);
-
-        if (result.IsSuccess)
-            return ifSuccessFunction(result.Value);
-
-        ifErrorAction(result.Error);
-
-        return result.Error;
-    }
-
-    /// <summary>
-    ///     Invokes the provided function if the <paramref name="result" /> is successful and returns a failed <see cref="Result" /> with
-    ///     the <see cref="Error" /> it returns; otherwise, invokes the provided action and returns a failed <see cref="Result" /> with
-    ///     the original <see cref="Error" />.
-    /// </summary>
-    /// <remarks>
-    ///     <para>
-    ///         Use it to turn a successful <see cref="Result{T}" /> into a failure, e.g., <c>result.Match(user => Error.Conflict(…), e => Log(e))</c>.
-    ///         The returned <see cref="Result" /> is always failed.
-    ///     </para>
-    ///     <para>
-    ///         Without this overload, such a call would bind to <see cref="Match{T, TNext}(Result{T}, Func{T, TNext}, Action{Error})" /> and return
-    ///         a <b>successful</b> <c>Result&lt;Error&gt;</c>. To get that on purpose, specify the type arguments: <c>Match&lt;T, Error&gt;(…)</c>.
-    ///     </para>
-    /// </remarks>
-    /// <typeparam name="T">The type wrapped by the source <see cref="Result{T}" />.</typeparam>
-    /// <param name="result">
-    ///     The <see cref="Result{T}" /> whose outcome selects the delegate to invoke. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="ifSuccessFunction">
-    ///     The function executed when the <paramref name="result" /> represents success. The value of the successful <see cref="Result{T}" /> is passed as
-    ///     a parameter. It returns the <see cref="Error" /> of the failed <see cref="Result" />. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="ifErrorAction">
-    ///     The action invoked when the <paramref name="result" /> represents failure.
-    ///     The <see cref="Error" /> associated with the <paramref name="result" /> is passed to this action. Must not be <see langword="null" />.
-    /// </param>
-    /// <returns>
-    ///     A failed <see cref="Result" /> with the <see cref="Error" /> returned by <paramref name="ifSuccessFunction" /> if <paramref name="result" /> is
-    ///     successful; otherwise, a failed <see cref="Result" /> with the original <see cref="Error" /> after invoking <paramref name="ifErrorAction" />.
-    /// </returns>
-    /// <exception cref="ArgumentNullException">
-    ///     If any of the <paramref name="result" />, <paramref name="ifSuccessFunction" />, or <paramref name="ifErrorAction" /> parameters are <see
-    ///     langword="null" />.
-    /// </exception>
-    /// <exception cref="InvalidOperationException">If <paramref name="ifSuccessFunction" /> returns <see langword="null" />.</exception>
-    public static Result Match<T>(this Result<T> result, Func<T, Error> ifSuccessFunction, Action<Error> ifErrorAction)
-    {
-        ArgumentNullException.ThrowIfNull(result);
-        ArgumentNullException.ThrowIfNull(ifSuccessFunction);
-        ArgumentNullException.ThrowIfNull(ifErrorAction);
-
-        if (result.IsSuccess)
-        {
-            var returnedError = ifSuccessFunction(result.Value);
-            var error = Guard.EnsureNotNullReturned(returnedError, nameof(ifSuccessFunction));
-
-            return Result.FromError(error);
-        }
-
-        ifErrorAction(result.Error);
-
-        return result.Error;
-    }
-
-    /// <summary>
     ///     Invokes one of the provided functions depending on whether the <paramref name="result" /> is successful and returns their output as
     ///     a <see cref="Result{TNext}" /> instance.
     /// </summary>
@@ -519,49 +256,6 @@ public static class MatchExtensions
         return result.IsSuccess
             ? ifSuccessFunction(result.Value)
             : ifErrorFunction(result.Error);
-    }
-
-    /// <summary>
-    ///     Invokes the provided function and returns its <see cref="Result{TNext}" /> output if the <paramref name="result" /> is successful,
-    ///     or the provided action and returns <see cref="Result{TNext}" /> with the original error.
-    /// </summary>
-    /// <typeparam name="T">The type wrapped by the source <see cref="Result{T}" />.</typeparam>
-    /// <typeparam name="TNext">The type of the <see cref="Result{TNext}" /> returned by the invoked function.</typeparam>
-    /// <param name="result">
-    ///     The <see cref="Result{T}" /> whose outcome selects the function to invoke. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="ifSuccessFunction">
-    ///     The function executed when the <paramref name="result" /> represents success.
-    ///     The value of the successful <see cref="Result{T}" /> is passed as a parameter. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="ifErrorAction">
-    ///     The action invoked when the <paramref name="result" /> represents failure.
-    ///     The <see cref="Error" /> associated with the <paramref name="result" /> is passed to this action. Must not be <see langword="null" />.
-    /// </param>
-    /// <returns>
-    ///     The <see cref="Result{TNext}" /> returned by <paramref name="ifSuccessFunction" /> if the <paramref name="result" /> is successful,
-    ///     or the <see cref="Result{TNext}" /> with the original <paramref name="result" /> after invoking <paramref name="ifErrorAction" />.
-    /// </returns>
-    /// <exception cref="ArgumentNullException">
-    ///     If any of the <paramref name="result" />, <paramref name="ifSuccessFunction" />,
-    ///     or <paramref name="ifErrorAction" /> parameters are <see langword="null" />.
-    /// </exception>
-    /// <exception cref="InvalidOperationException">If <paramref name="ifSuccessFunction" /> returns <see langword="null" />.</exception>
-    public static Result<TNext> Match<T, TNext>(this Result<T> result, Func<T, Result<TNext>> ifSuccessFunction, Action<Error> ifErrorAction)
-    {
-        ArgumentNullException.ThrowIfNull(result);
-        ArgumentNullException.ThrowIfNull(ifSuccessFunction);
-        ArgumentNullException.ThrowIfNull(ifErrorAction);
-
-        if (result.IsSuccess)
-        {
-            var successResult = ifSuccessFunction(result.Value);
-            return Guard.EnsureNotNullReturned(successResult, nameof(ifSuccessFunction));
-        }
-
-        ifErrorAction(result.Error);
-
-        return result.Error;
     }
 
     /// <summary>
@@ -1004,6 +698,98 @@ public static class MatchExtensions
         Func<Error, ValueTask<TTaskResult>> ifErrorAction)
     {
         throw new NotSupportedException(ErrorActionTaskNotAwaitedMessage);
+    }
+
+    #endregion
+
+    #region Not supported: a success function and an error action (#227)
+
+    // A success function with an error action transforms the result, as Then(…).IfError(…) does, and the same call with a
+    // success action taps it: which one runs depended on the return type of the lambda (e.g., x => set.Add(x) mapped to a
+    // Result<bool>), as for IfSuccess before #197. These overloads keep the signatures and the priorities of the overloads
+    // they replace, so no other call changes its binding, and turn such a call into a compile error (CS0619) that names
+    // Then(…).IfError(…). Match keeps two meanings: two functions (a value) and two actions (a side effect).
+
+    private const string SuccessFunctionAndErrorActionMessage =
+        "Match with a success function and an error action transforms the result, as Then does. Use Then(…).IfError(…) " +
+        "to transform it, a statement lambda (e.g., x => { list.Add(x); }) for a side effect, or two functions that " +
+        "return the same type for a value.";
+
+    /// <summary>
+    ///     Not supported: a success function with an error action transforms the result; use
+    ///     <c>Then(…).IfError(…)</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(SuccessFunctionAndErrorActionMessage, error: true)]
+    public static Result Match(this Result result, Func<Result> ifSuccessFunction, Action<Error> ifErrorAction)
+    {
+        throw new NotSupportedException(SuccessFunctionAndErrorActionMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: a success function with an error action transforms the result; use
+    ///     <c>Then(…).IfError(…)</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(SuccessFunctionAndErrorActionMessage, error: true)]
+    public static Result<T> Match<T>(this Result result, Func<T> ifSuccessFunction, Action<Error> ifErrorAction)
+    {
+        throw new NotSupportedException(SuccessFunctionAndErrorActionMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: a success function with an error action transforms the result; use
+    ///     <c>Then(…).IfError(…)</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(SuccessFunctionAndErrorActionMessage, error: true)]
+    public static Result Match(this Result result, Func<Error> ifSuccessFunction, Action<Error> ifErrorAction)
+    {
+        throw new NotSupportedException(SuccessFunctionAndErrorActionMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: a success function with an error action transforms the result; use
+    ///     <c>Then(…).IfError(…)</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(SuccessFunctionAndErrorActionMessage, error: true)]
+    public static Result<T> Match<T>(this Result result, Func<Result<T>> ifSuccessFunction, Action<Error> ifErrorAction)
+    {
+        throw new NotSupportedException(SuccessFunctionAndErrorActionMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: a success function with an error action transforms the result; use
+    ///     <c>Then(…).IfError(…)</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(SuccessFunctionAndErrorActionMessage, error: true)]
+    public static Result<TNext> Match<T, TNext>(this Result<T> result, Func<T, TNext> ifSuccessFunction, Action<Error> ifErrorAction)
+    {
+        throw new NotSupportedException(SuccessFunctionAndErrorActionMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: a success function with an error action transforms the result; use
+    ///     <c>Then(…).IfError(…)</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(SuccessFunctionAndErrorActionMessage, error: true)]
+    public static Result Match<T>(this Result<T> result, Func<T, Error> ifSuccessFunction, Action<Error> ifErrorAction)
+    {
+        throw new NotSupportedException(SuccessFunctionAndErrorActionMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: a success function with an error action transforms the result; use
+    ///     <c>Then(…).IfError(…)</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(SuccessFunctionAndErrorActionMessage, error: true)]
+    public static Result<TNext> Match<T, TNext>(this Result<T> result, Func<T, Result<TNext>> ifSuccessFunction, Action<Error> ifErrorAction)
+    {
+        throw new NotSupportedException(SuccessFunctionAndErrorActionMessage);
     }
 
     #endregion
