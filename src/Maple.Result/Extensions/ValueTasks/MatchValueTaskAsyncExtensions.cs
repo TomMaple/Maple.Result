@@ -10,6 +10,8 @@
 
 using Maple.Results.Helpers;
 using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Maple.Results.Extensions.ValueTasks;
@@ -23,7 +25,8 @@ namespace Maple.Results.Extensions.ValueTasks;
 ///     enabling concise match-like patterns across synchronous result workflows.
 ///     <para>
 ///         These methods are declared in the <c>Maple.Results.Extensions.ValueTasks</c> namespace, separately from their
-///         <see cref="System.Threading.Tasks.Task" />-based counterparts in <c>Maple.Results.Extensions</c>, because both sets declare the same method names and
+///         <see cref="System.Threading.Tasks.Task" />-based counterparts in <c>Maple.Results.Extensions</c>, because both sets declare the same
+///         method names and
 ///         an asynchronous lambda is convertible to a <c>Func&lt;Task&gt;</c> as well as to a <c>Func&lt;ValueTask&gt;</c> delegate.
 ///         Importing only one of these namespaces keeps such calls unambiguous.
 ///     </para>
@@ -550,6 +553,7 @@ public static class MatchValueTaskAsyncExtensions
     /// <exception cref="InvalidOperationException">
     ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />.
     /// </exception>
+    [OverloadResolutionPriority(1)]
     public static ValueTask<Result> MatchAsync(this ValueTask<Result> resultTask, Func<ValueTask> ifSuccessAction,
         Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
     {
@@ -610,6 +614,7 @@ public static class MatchValueTaskAsyncExtensions
     ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />,
     ///     or <paramref name="ifSuccessFunction" /> returns a value task with a <see langword="null" /> result.
     /// </exception>
+    [OverloadResolutionPriority(1)]
     public static ValueTask<Result> MatchAsync(this ValueTask<Result> resultTask, Func<ValueTask<Result>> ifSuccessFunction,
         Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
     {
@@ -672,6 +677,7 @@ public static class MatchValueTaskAsyncExtensions
     ///     <paramref name="ifSuccessFunction" /> returns a value task with a <see langword="null" /> result,
     ///     or <paramref name="ifErrorFunction" /> returns a value task with a <see langword="null" /> result.
     /// </exception>
+    [OverloadResolutionPriority(1)]
     public static ValueTask<Result> MatchAsync(this ValueTask<Result> resultTask, Func<ValueTask<Result>> ifSuccessFunction,
         Func<Error, ValueTask<Result>> ifErrorFunction, bool? continueOnCapturedContext = null)
     {
@@ -735,6 +741,7 @@ public static class MatchValueTaskAsyncExtensions
     /// <exception cref="InvalidOperationException">
     ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />.
     /// </exception>
+    [OverloadResolutionPriority(1)]
     public static ValueTask<Result<T>> MatchAsync<T>(this ValueTask<Result> resultTask, Func<ValueTask<T>> ifSuccessFunction,
         Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
     {
@@ -806,6 +813,7 @@ public static class MatchValueTaskAsyncExtensions
     ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />,
     ///     or <paramref name="ifSuccessFunction" /> returns a value task with a <see langword="null" /> result.
     /// </exception>
+    [OverloadResolutionPriority(1)]
     public static ValueTask<Result> MatchAsync(this ValueTask<Result> resultTask, Func<ValueTask<Error>> ifSuccessFunction,
         Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
     {
@@ -869,6 +877,7 @@ public static class MatchValueTaskAsyncExtensions
     /// <exception cref="InvalidOperationException">
     ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />.
     /// </exception>
+    [OverloadResolutionPriority(1)]
     public static ValueTask<T> MatchAsync<T>(this ValueTask<Result> resultTask, Func<ValueTask<T>> ifSuccessFunction,
         Func<Error, ValueTask<T>> ifErrorFunction, bool? continueOnCapturedContext = null)
     {
@@ -927,6 +936,7 @@ public static class MatchValueTaskAsyncExtensions
     ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />,
     ///     or <paramref name="ifSuccessFunction" /> returns a value task with a <see langword="null" /> result.
     /// </exception>
+    [OverloadResolutionPriority(1)]
     public static ValueTask<Result<T>> MatchAsync<T>(
         this ValueTask<Result> resultTask, Func<ValueTask<Result<T>>> ifSuccessFunction,
         Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
@@ -991,6 +1001,7 @@ public static class MatchValueTaskAsyncExtensions
     ///     <paramref name="ifSuccessFunction" /> returns a value task with a <see langword="null" /> result,
     ///     or <paramref name="ifErrorFunction" /> returns a value task with a <see langword="null" /> result.
     /// </exception>
+    [OverloadResolutionPriority(1)]
     public static ValueTask<Result<T>> MatchAsync<T>(
         this ValueTask<Result> resultTask, Func<ValueTask<Result<T>>> ifSuccessFunction,
         Func<Error, ValueTask<Result<T>>> ifErrorFunction, bool? continueOnCapturedContext = null)
@@ -1063,6 +1074,7 @@ public static class MatchValueTaskAsyncExtensions
     /// <exception cref="InvalidOperationException">
     ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />.
     /// </exception>
+    [OverloadResolutionPriority(1)]
     public static ValueTask<Result<T>> MatchAsync<T>(this ValueTask<Result<T>> resultTask, Func<T, ValueTask> ifSuccessAction,
         Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
     {
@@ -1125,6 +1137,7 @@ public static class MatchValueTaskAsyncExtensions
     /// <exception cref="InvalidOperationException">
     ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />.
     /// </exception>
+    [OverloadResolutionPriority(1)]
     public static ValueTask<Result<TNext>> MatchAsync<T, TNext>(
         this ValueTask<Result<T>> resultTask,
         Func<T, ValueTask<TNext>> ifSuccessFunction,
@@ -1201,6 +1214,7 @@ public static class MatchValueTaskAsyncExtensions
     ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />,
     ///     or <paramref name="ifSuccessFunction" /> returns a value task with a <see langword="null" /> result.
     /// </exception>
+    [OverloadResolutionPriority(1)]
     public static ValueTask<Result> MatchAsync<T>(
         this ValueTask<Result<T>> resultTask,
         Func<T, ValueTask<Error>> ifSuccessFunction,
@@ -1270,6 +1284,7 @@ public static class MatchValueTaskAsyncExtensions
     /// <exception cref="InvalidOperationException">
     ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />.
     /// </exception>
+    [OverloadResolutionPriority(1)]
     public static ValueTask<TNext> MatchAsync<T, TNext>(
         this ValueTask<Result<T>> resultTask,
         Func<T, ValueTask<TNext>> ifSuccessFunction,
@@ -1333,6 +1348,7 @@ public static class MatchValueTaskAsyncExtensions
     ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />,
     ///     or <paramref name="ifSuccessFunction" /> returns a value task with a <see langword="null" /> result.
     /// </exception>
+    [OverloadResolutionPriority(1)]
     public static ValueTask<Result<TNext>> MatchAsync<T, TNext>(
         this ValueTask<Result<T>> resultTask,
         Func<T, ValueTask<Result<TNext>>> ifSuccessFunction,
@@ -1401,6 +1417,7 @@ public static class MatchValueTaskAsyncExtensions
     ///     <paramref name="ifSuccessFunction" /> returns a value task with a <see langword="null" /> result,
     ///     or <paramref name="ifErrorFunction" /> returns a value task with a <see langword="null" /> result.
     /// </exception>
+    [OverloadResolutionPriority(1)]
     public static ValueTask<Result<TNext>> MatchAsync<T, TNext>(
         this ValueTask<Result<T>> resultTask,
         Func<T, ValueTask<Result<TNext>>> ifSuccessFunction,
@@ -1430,6 +1447,1235 @@ public static class MatchValueTaskAsyncExtensions
 
             return await Guard.EnsureNotNullResult(errorTask, nameof(ifErrorFunction), continueOnCapturedContext);
         }
+    }
+
+    #endregion
+
+    #region ValueTask results with synchronous delegates (#214)
+
+    /// <summary>
+    ///     Awaits the <paramref name="resultTask" /> and runs one of the synchronous delegates: the first one if the result is
+    ///     successful, the second one with the <see cref="Error" /> if it is failed.
+    /// </summary>
+    /// <remarks>
+    ///     The delegates are synchronous: they run after the <paramref name="resultTask" /> completes. Pass two asynchronous delegates
+    ///     for asynchronous work; one synchronous and one asynchronous delegate are not supported.
+    /// </remarks>
+    /// <param name="resultTask">The asynchronous operation that returns the result to match.</param>
+    /// <param name="ifSuccessAction">The synchronous action to run on a successful result. Must not be <see langword="null" />.</param>
+    /// <param name="ifErrorAction">The synchronous action to run on a failed result, with its error. Must not be <see langword="null" />.</param>
+    /// <param name="continueOnCapturedContext">
+    ///     <see langword="true" /> to run the continuation, including the passed delegates, on the captured context (e.g., the UI thread);
+    ///     <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
+    ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
+    /// </param>
+    /// <returns>The result of the match, as the synchronous <c>Match</c> returns it.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     If the <paramref name="ifSuccessAction" /> or the <paramref name="ifErrorAction" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />, or a function
+    ///     returns <see langword="null" /> where a result or an error is required.
+    /// </exception>
+    public static ValueTask<Result> MatchAsync(this ValueTask<Result> resultTask,
+        Action ifSuccessAction, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        ArgumentNullException.ThrowIfNull(ifSuccessAction);
+        ArgumentNullException.ThrowIfNull(ifErrorAction);
+
+        return Core(resultTask, ifSuccessAction, ifErrorAction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+
+        static async ValueTask<Result> Core(ValueTask<Result> resultTask, Action ifSuccessAction, Action<Error> ifErrorAction, bool continueOnCapturedContext)
+        {
+            var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
+            return result.Match(ifSuccessAction, ifErrorAction);
+        }
+    }
+
+    /// <summary>
+    ///     Awaits the <paramref name="resultTask" /> and runs one of the synchronous delegates: the first one if the result is
+    ///     successful, the second one with the <see cref="Error" /> if it is failed.
+    /// </summary>
+    /// <remarks>
+    ///     The delegates are synchronous: they run after the <paramref name="resultTask" /> completes. Pass two asynchronous delegates
+    ///     for asynchronous work; one synchronous and one asynchronous delegate are not supported.
+    /// </remarks>
+    /// <param name="resultTask">The asynchronous operation that returns the result to match.</param>
+    /// <param name="ifSuccessFunction">
+    ///     The synchronous function to run on a successful result; it returns the next result. Must not be <see langword="null" />.
+    /// </param>
+    /// <param name="ifErrorAction">The synchronous action to run on a failed result, with its error. Must not be <see langword="null" />.</param>
+    /// <param name="continueOnCapturedContext">
+    ///     <see langword="true" /> to run the continuation, including the passed delegates, on the captured context (e.g., the UI thread);
+    ///     <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
+    ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
+    /// </param>
+    /// <returns>The result of the match, as the synchronous <c>Match</c> returns it.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     If the <paramref name="ifSuccessFunction" /> or the <paramref name="ifErrorAction" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />, or a function
+    ///     returns <see langword="null" /> where a result or an error is required.
+    /// </exception>
+    public static ValueTask<Result> MatchAsync(this ValueTask<Result> resultTask,
+        Func<Result> ifSuccessFunction, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        ArgumentNullException.ThrowIfNull(ifSuccessFunction);
+        ArgumentNullException.ThrowIfNull(ifErrorAction);
+
+        return Core(resultTask, ifSuccessFunction, ifErrorAction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+
+        static async ValueTask<Result> Core(
+            ValueTask<Result> resultTask,
+            Func<Result> ifSuccessFunction,
+            Action<Error> ifErrorAction,
+            bool continueOnCapturedContext)
+        {
+            var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
+            return result.Match(ifSuccessFunction, ifErrorAction);
+        }
+    }
+
+    /// <summary>
+    ///     Awaits the <paramref name="resultTask" /> and runs one of the synchronous delegates: the first one if the result is
+    ///     successful, the second one with the <see cref="Error" /> if it is failed.
+    /// </summary>
+    /// <remarks>
+    ///     The delegates are synchronous: they run after the <paramref name="resultTask" /> completes. Pass two asynchronous delegates
+    ///     for asynchronous work; one synchronous and one asynchronous delegate are not supported.
+    /// </remarks>
+    /// <param name="resultTask">The asynchronous operation that returns the result to match.</param>
+    /// <param name="ifSuccessFunction">
+    ///     The synchronous function to run on a successful result; it returns the next result. Must not be <see langword="null" />.
+    /// </param>
+    /// <param name="ifErrorFunction">
+    ///     The synchronous function to run on a failed result, with its error; it returns the value of the match. Must not be
+    ///     <see langword="null" />.
+    /// </param>
+    /// <param name="continueOnCapturedContext">
+    ///     <see langword="true" /> to run the continuation, including the passed delegates, on the captured context (e.g., the UI thread);
+    ///     <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
+    ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
+    /// </param>
+    /// <returns>The result of the match, as the synchronous <c>Match</c> returns it.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     If the <paramref name="ifSuccessFunction" /> or the <paramref name="ifErrorFunction" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />, or a function
+    ///     returns <see langword="null" /> where a result or an error is required.
+    /// </exception>
+    public static ValueTask<Result> MatchAsync(this ValueTask<Result> resultTask,
+        Func<Result> ifSuccessFunction, Func<Error, Result> ifErrorFunction, bool? continueOnCapturedContext = null)
+    {
+        ArgumentNullException.ThrowIfNull(ifSuccessFunction);
+        ArgumentNullException.ThrowIfNull(ifErrorFunction);
+
+        return Core(resultTask, ifSuccessFunction, ifErrorFunction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+
+        static async ValueTask<Result> Core(
+            ValueTask<Result> resultTask,
+            Func<Result> ifSuccessFunction,
+            Func<Error, Result> ifErrorFunction,
+            bool continueOnCapturedContext)
+        {
+            var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
+            return result.Match(ifSuccessFunction, ifErrorFunction);
+        }
+    }
+
+    /// <summary>
+    ///     Awaits the <paramref name="resultTask" /> and runs one of the synchronous delegates: the first one if the result is
+    ///     successful, the second one with the <see cref="Error" /> if it is failed.
+    /// </summary>
+    /// <remarks>
+    ///     The delegates are synchronous: they run after the <paramref name="resultTask" /> completes. Pass two asynchronous delegates
+    ///     for asynchronous work; one synchronous and one asynchronous delegate are not supported.
+    /// </remarks>
+    /// <typeparam name="T">The type of the value of the result, or of the value that the delegates return.</typeparam>
+    /// <param name="resultTask">The asynchronous operation that returns the result to match.</param>
+    /// <param name="ifSuccessFunction">
+    ///     The synchronous function to run on a successful result; it returns the value. Must not be <see langword="null" />.
+    /// </param>
+    /// <param name="ifErrorAction">The synchronous action to run on a failed result, with its error. Must not be <see langword="null" />.</param>
+    /// <param name="continueOnCapturedContext">
+    ///     <see langword="true" /> to run the continuation, including the passed delegates, on the captured context (e.g., the UI thread);
+    ///     <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
+    ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
+    /// </param>
+    /// <returns>The result of the match, as the synchronous <c>Match</c> returns it.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     If the <paramref name="ifSuccessFunction" /> or the <paramref name="ifErrorAction" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />, or a function
+    ///     returns <see langword="null" /> where a result or an error is required.
+    /// </exception>
+    public static ValueTask<Result<T>> MatchAsync<T>(this ValueTask<Result> resultTask,
+        Func<T> ifSuccessFunction, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        ArgumentNullException.ThrowIfNull(ifSuccessFunction);
+        ArgumentNullException.ThrowIfNull(ifErrorAction);
+
+        return Core(resultTask, ifSuccessFunction, ifErrorAction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+
+        static async ValueTask<Result<T>> Core(
+            ValueTask<Result> resultTask,
+            Func<T> ifSuccessFunction,
+            Action<Error> ifErrorAction,
+            bool continueOnCapturedContext)
+        {
+            var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
+            return result.Match(ifSuccessFunction, ifErrorAction);
+        }
+    }
+
+    /// <summary>
+    ///     Awaits the <paramref name="resultTask" /> and runs one of the synchronous delegates: the first one if the result is
+    ///     successful, the second one with the <see cref="Error" /> if it is failed.
+    /// </summary>
+    /// <remarks>
+    ///     The delegates are synchronous: they run after the <paramref name="resultTask" /> completes. Pass two asynchronous delegates
+    ///     for asynchronous work; one synchronous and one asynchronous delegate are not supported.
+    /// </remarks>
+    /// <param name="resultTask">The asynchronous operation that returns the result to match.</param>
+    /// <param name="ifSuccessFunction">
+    ///     The synchronous function to run on a successful result; it returns the error of a failed result. Must not be <see langword="null" />.
+    /// </param>
+    /// <param name="ifErrorAction">The synchronous action to run on a failed result, with its error. Must not be <see langword="null" />.</param>
+    /// <param name="continueOnCapturedContext">
+    ///     <see langword="true" /> to run the continuation, including the passed delegates, on the captured context (e.g., the UI thread);
+    ///     <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
+    ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
+    /// </param>
+    /// <returns>The result of the match, as the synchronous <c>Match</c> returns it.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     If the <paramref name="ifSuccessFunction" /> or the <paramref name="ifErrorAction" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />, or a function
+    ///     returns <see langword="null" /> where a result or an error is required.
+    /// </exception>
+    public static ValueTask<Result> MatchAsync(this ValueTask<Result> resultTask,
+        Func<Error> ifSuccessFunction, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        ArgumentNullException.ThrowIfNull(ifSuccessFunction);
+        ArgumentNullException.ThrowIfNull(ifErrorAction);
+
+        return Core(resultTask, ifSuccessFunction, ifErrorAction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+
+        static async ValueTask<Result> Core(
+            ValueTask<Result> resultTask,
+            Func<Error> ifSuccessFunction,
+            Action<Error> ifErrorAction,
+            bool continueOnCapturedContext)
+        {
+            var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
+            return result.Match(ifSuccessFunction, ifErrorAction);
+        }
+    }
+
+    /// <summary>
+    ///     Awaits the <paramref name="resultTask" /> and runs one of the synchronous delegates: the first one if the result is
+    ///     successful, the second one with the <see cref="Error" /> if it is failed.
+    /// </summary>
+    /// <remarks>
+    ///     The delegates are synchronous: they run after the <paramref name="resultTask" /> completes. Pass two asynchronous delegates
+    ///     for asynchronous work; one synchronous and one asynchronous delegate are not supported.
+    /// </remarks>
+    /// <typeparam name="T">The type of the value of the result, or of the value that the delegates return.</typeparam>
+    /// <param name="resultTask">The asynchronous operation that returns the result to match.</param>
+    /// <param name="ifSuccessFunction">
+    ///     The synchronous function to run on a successful result; it returns the value. Must not be <see langword="null" />.
+    /// </param>
+    /// <param name="ifErrorFunction">
+    ///     The synchronous function to run on a failed result, with its error; it returns the value of the match. Must not be
+    ///     <see langword="null" />.
+    /// </param>
+    /// <param name="continueOnCapturedContext">
+    ///     <see langword="true" /> to run the continuation, including the passed delegates, on the captured context (e.g., the UI thread);
+    ///     <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
+    ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
+    /// </param>
+    /// <returns>The value that the delegate returns.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     If the <paramref name="ifSuccessFunction" /> or the <paramref name="ifErrorFunction" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />, or a function
+    ///     returns <see langword="null" /> where a result or an error is required.
+    /// </exception>
+    public static ValueTask<T> MatchAsync<T>(this ValueTask<Result> resultTask,
+        Func<T> ifSuccessFunction, Func<Error, T> ifErrorFunction, bool? continueOnCapturedContext = null)
+    {
+        ArgumentNullException.ThrowIfNull(ifSuccessFunction);
+        ArgumentNullException.ThrowIfNull(ifErrorFunction);
+
+        return Core(resultTask, ifSuccessFunction, ifErrorFunction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+
+        static async ValueTask<T> Core(ValueTask<Result> resultTask, Func<T> ifSuccessFunction, Func<Error, T> ifErrorFunction, bool continueOnCapturedContext)
+        {
+            var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
+            return result.Match(ifSuccessFunction, ifErrorFunction);
+        }
+    }
+
+    /// <summary>
+    ///     Awaits the <paramref name="resultTask" /> and runs one of the synchronous delegates: the first one if the result is
+    ///     successful, the second one with the <see cref="Error" /> if it is failed.
+    /// </summary>
+    /// <remarks>
+    ///     The delegates are synchronous: they run after the <paramref name="resultTask" /> completes. Pass two asynchronous delegates
+    ///     for asynchronous work; one synchronous and one asynchronous delegate are not supported.
+    /// </remarks>
+    /// <typeparam name="T">The type of the value of the result, or of the value that the delegates return.</typeparam>
+    /// <param name="resultTask">The asynchronous operation that returns the result to match.</param>
+    /// <param name="ifSuccessFunction">
+    ///     The synchronous function to run on a successful result; it returns the next result. Must not be <see langword="null" />.
+    /// </param>
+    /// <param name="ifErrorAction">The synchronous action to run on a failed result, with its error. Must not be <see langword="null" />.</param>
+    /// <param name="continueOnCapturedContext">
+    ///     <see langword="true" /> to run the continuation, including the passed delegates, on the captured context (e.g., the UI thread);
+    ///     <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
+    ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
+    /// </param>
+    /// <returns>The result of the match, as the synchronous <c>Match</c> returns it.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     If the <paramref name="ifSuccessFunction" /> or the <paramref name="ifErrorAction" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />, or a function
+    ///     returns <see langword="null" /> where a result or an error is required.
+    /// </exception>
+    public static ValueTask<Result<T>> MatchAsync<T>(this ValueTask<Result> resultTask,
+        Func<Result<T>> ifSuccessFunction, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        ArgumentNullException.ThrowIfNull(ifSuccessFunction);
+        ArgumentNullException.ThrowIfNull(ifErrorAction);
+
+        return Core(resultTask, ifSuccessFunction, ifErrorAction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+
+        static async ValueTask<Result<T>> Core(
+            ValueTask<Result> resultTask,
+            Func<Result<T>> ifSuccessFunction,
+            Action<Error> ifErrorAction,
+            bool continueOnCapturedContext)
+        {
+            var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
+            return result.Match(ifSuccessFunction, ifErrorAction);
+        }
+    }
+
+    /// <summary>
+    ///     Awaits the <paramref name="resultTask" /> and runs one of the synchronous delegates: the first one if the result is
+    ///     successful, the second one with the <see cref="Error" /> if it is failed.
+    /// </summary>
+    /// <remarks>
+    ///     The delegates are synchronous: they run after the <paramref name="resultTask" /> completes. Pass two asynchronous delegates
+    ///     for asynchronous work; one synchronous and one asynchronous delegate are not supported.
+    /// </remarks>
+    /// <typeparam name="T">The type of the value of the result, or of the value that the delegates return.</typeparam>
+    /// <param name="resultTask">The asynchronous operation that returns the result to match.</param>
+    /// <param name="ifSuccessFunction">
+    ///     The synchronous function to run on a successful result; it returns the next result. Must not be <see langword="null" />.
+    /// </param>
+    /// <param name="ifErrorFunction">
+    ///     The synchronous function to run on a failed result, with its error; it returns the value of the match. Must not be
+    ///     <see langword="null" />.
+    /// </param>
+    /// <param name="continueOnCapturedContext">
+    ///     <see langword="true" /> to run the continuation, including the passed delegates, on the captured context (e.g., the UI thread);
+    ///     <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
+    ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
+    /// </param>
+    /// <returns>The result of the match, as the synchronous <c>Match</c> returns it.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     If the <paramref name="ifSuccessFunction" /> or the <paramref name="ifErrorFunction" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />, or a function
+    ///     returns <see langword="null" /> where a result or an error is required.
+    /// </exception>
+    public static ValueTask<Result<T>> MatchAsync<T>(this ValueTask<Result> resultTask,
+        Func<Result<T>> ifSuccessFunction, Func<Error, Result<T>> ifErrorFunction, bool? continueOnCapturedContext = null)
+    {
+        ArgumentNullException.ThrowIfNull(ifSuccessFunction);
+        ArgumentNullException.ThrowIfNull(ifErrorFunction);
+
+        return Core(resultTask, ifSuccessFunction, ifErrorFunction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+
+        static async ValueTask<Result<T>> Core(
+            ValueTask<Result> resultTask,
+            Func<Result<T>> ifSuccessFunction,
+            Func<Error, Result<T>> ifErrorFunction,
+            bool continueOnCapturedContext)
+        {
+            var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
+            return result.Match(ifSuccessFunction, ifErrorFunction);
+        }
+    }
+
+    /// <summary>
+    ///     Awaits the <paramref name="resultTask" /> and runs one of the synchronous delegates: the first one if the result is
+    ///     successful, the second one with the <see cref="Error" /> if it is failed.
+    /// </summary>
+    /// <remarks>
+    ///     The delegates are synchronous: they run after the <paramref name="resultTask" /> completes. Pass two asynchronous delegates
+    ///     for asynchronous work; one synchronous and one asynchronous delegate are not supported.
+    /// </remarks>
+    /// <typeparam name="T">The type of the value of the result.</typeparam>
+    /// <param name="resultTask">The asynchronous operation that returns the result to match.</param>
+    /// <param name="ifSuccessAction">The synchronous action to run on a successful result, with its value. Must not be <see langword="null" />.</param>
+    /// <param name="ifErrorAction">The synchronous action to run on a failed result, with its error. Must not be <see langword="null" />.</param>
+    /// <param name="continueOnCapturedContext">
+    ///     <see langword="true" /> to run the continuation, including the passed delegates, on the captured context (e.g., the UI thread);
+    ///     <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
+    ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
+    /// </param>
+    /// <returns>The result of the match, as the synchronous <c>Match</c> returns it.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     If the <paramref name="ifSuccessAction" /> or the <paramref name="ifErrorAction" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />, or a function
+    ///     returns <see langword="null" /> where a result or an error is required.
+    /// </exception>
+    public static ValueTask<Result<T>> MatchAsync<T>(this ValueTask<Result<T>> resultTask,
+        Action<T> ifSuccessAction, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        ArgumentNullException.ThrowIfNull(ifSuccessAction);
+        ArgumentNullException.ThrowIfNull(ifErrorAction);
+
+        return Core(resultTask, ifSuccessAction, ifErrorAction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+
+        static async ValueTask<Result<T>> Core(
+            ValueTask<Result<T>> resultTask,
+            Action<T> ifSuccessAction,
+            Action<Error> ifErrorAction,
+            bool continueOnCapturedContext)
+        {
+            var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
+            return result.Match(ifSuccessAction, ifErrorAction);
+        }
+    }
+
+    /// <summary>
+    ///     Awaits the <paramref name="resultTask" /> and runs one of the synchronous delegates: the first one if the result is
+    ///     successful, the second one with the <see cref="Error" /> if it is failed.
+    /// </summary>
+    /// <remarks>
+    ///     The delegates are synchronous: they run after the <paramref name="resultTask" /> completes. Pass two asynchronous delegates
+    ///     for asynchronous work; one synchronous and one asynchronous delegate are not supported.
+    /// </remarks>
+    /// <typeparam name="T">The type of the value of the result.</typeparam>
+    /// <typeparam name="TNext">The type of the value that the delegates return.</typeparam>
+    /// <param name="resultTask">The asynchronous operation that returns the result to match.</param>
+    /// <param name="ifSuccessFunction">
+    ///     The synchronous function to run on a successful result, with its value; it returns the value. Must not be <see langword="null" />.
+    /// </param>
+    /// <param name="ifErrorAction">The synchronous action to run on a failed result, with its error. Must not be <see langword="null" />.</param>
+    /// <param name="continueOnCapturedContext">
+    ///     <see langword="true" /> to run the continuation, including the passed delegates, on the captured context (e.g., the UI thread);
+    ///     <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
+    ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
+    /// </param>
+    /// <returns>The result of the match, as the synchronous <c>Match</c> returns it.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     If the <paramref name="ifSuccessFunction" /> or the <paramref name="ifErrorAction" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />, or a function
+    ///     returns <see langword="null" /> where a result or an error is required.
+    /// </exception>
+    public static ValueTask<Result<TNext>> MatchAsync<T, TNext>(this ValueTask<Result<T>> resultTask,
+        Func<T, TNext> ifSuccessFunction, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        ArgumentNullException.ThrowIfNull(ifSuccessFunction);
+        ArgumentNullException.ThrowIfNull(ifErrorAction);
+
+        return Core(resultTask, ifSuccessFunction, ifErrorAction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+
+        static async ValueTask<Result<TNext>> Core(
+            ValueTask<Result<T>> resultTask,
+            Func<T, TNext> ifSuccessFunction,
+            Action<Error> ifErrorAction,
+            bool continueOnCapturedContext)
+        {
+            var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
+            return result.Match(ifSuccessFunction, ifErrorAction);
+        }
+    }
+
+    /// <summary>
+    ///     Awaits the <paramref name="resultTask" /> and runs one of the synchronous delegates: the first one if the result is
+    ///     successful, the second one with the <see cref="Error" /> if it is failed.
+    /// </summary>
+    /// <remarks>
+    ///     The delegates are synchronous: they run after the <paramref name="resultTask" /> completes. Pass two asynchronous delegates
+    ///     for asynchronous work; one synchronous and one asynchronous delegate are not supported.
+    /// </remarks>
+    /// <typeparam name="T">The type of the value of the result.</typeparam>
+    /// <param name="resultTask">The asynchronous operation that returns the result to match.</param>
+    /// <param name="ifSuccessFunction">
+    ///     The synchronous function to run on a successful result, with its value; it returns the error of a failed result. Must not be
+    ///     <see langword="null" />.
+    /// </param>
+    /// <param name="ifErrorAction">The synchronous action to run on a failed result, with its error. Must not be <see langword="null" />.</param>
+    /// <param name="continueOnCapturedContext">
+    ///     <see langword="true" /> to run the continuation, including the passed delegates, on the captured context (e.g., the UI thread);
+    ///     <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
+    ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
+    /// </param>
+    /// <returns>The result of the match, as the synchronous <c>Match</c> returns it.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     If the <paramref name="ifSuccessFunction" /> or the <paramref name="ifErrorAction" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />, or a function
+    ///     returns <see langword="null" /> where a result or an error is required.
+    /// </exception>
+    public static ValueTask<Result> MatchAsync<T>(this ValueTask<Result<T>> resultTask,
+        Func<T, Error> ifSuccessFunction, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        ArgumentNullException.ThrowIfNull(ifSuccessFunction);
+        ArgumentNullException.ThrowIfNull(ifErrorAction);
+
+        return Core(resultTask, ifSuccessFunction, ifErrorAction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+
+        static async ValueTask<Result> Core(
+            ValueTask<Result<T>> resultTask,
+            Func<T, Error> ifSuccessFunction,
+            Action<Error> ifErrorAction,
+            bool continueOnCapturedContext)
+        {
+            var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
+            return result.Match(ifSuccessFunction, ifErrorAction);
+        }
+    }
+
+    /// <summary>
+    ///     Awaits the <paramref name="resultTask" /> and runs one of the synchronous delegates: the first one if the result is
+    ///     successful, the second one with the <see cref="Error" /> if it is failed.
+    /// </summary>
+    /// <remarks>
+    ///     The delegates are synchronous: they run after the <paramref name="resultTask" /> completes. Pass two asynchronous delegates
+    ///     for asynchronous work; one synchronous and one asynchronous delegate are not supported.
+    /// </remarks>
+    /// <typeparam name="T">The type of the value of the result.</typeparam>
+    /// <typeparam name="TNext">The type of the value that the delegates return.</typeparam>
+    /// <param name="resultTask">The asynchronous operation that returns the result to match.</param>
+    /// <param name="ifSuccessFunction">
+    ///     The synchronous function to run on a successful result, with its value; it returns the value. Must not be <see langword="null" />.
+    /// </param>
+    /// <param name="ifErrorFunction">
+    ///     The synchronous function to run on a failed result, with its error; it returns the value of the match. Must not be
+    ///     <see langword="null" />.
+    /// </param>
+    /// <param name="continueOnCapturedContext">
+    ///     <see langword="true" /> to run the continuation, including the passed delegates, on the captured context (e.g., the UI thread);
+    ///     <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
+    ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
+    /// </param>
+    /// <returns>The value that the delegate returns.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     If the <paramref name="ifSuccessFunction" /> or the <paramref name="ifErrorFunction" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />, or a function
+    ///     returns <see langword="null" /> where a result or an error is required.
+    /// </exception>
+    public static ValueTask<TNext> MatchAsync<T, TNext>(this ValueTask<Result<T>> resultTask,
+        Func<T, TNext> ifSuccessFunction, Func<Error, TNext> ifErrorFunction, bool? continueOnCapturedContext = null)
+    {
+        ArgumentNullException.ThrowIfNull(ifSuccessFunction);
+        ArgumentNullException.ThrowIfNull(ifErrorFunction);
+
+        return Core(resultTask, ifSuccessFunction, ifErrorFunction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+
+        static async ValueTask<TNext> Core(
+            ValueTask<Result<T>> resultTask,
+            Func<T, TNext> ifSuccessFunction,
+            Func<Error, TNext> ifErrorFunction,
+            bool continueOnCapturedContext)
+        {
+            var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
+            return result.Match(ifSuccessFunction, ifErrorFunction);
+        }
+    }
+
+    /// <summary>
+    ///     Awaits the <paramref name="resultTask" /> and runs one of the synchronous delegates: the first one if the result is
+    ///     successful, the second one with the <see cref="Error" /> if it is failed.
+    /// </summary>
+    /// <remarks>
+    ///     The delegates are synchronous: they run after the <paramref name="resultTask" /> completes. Pass two asynchronous delegates
+    ///     for asynchronous work; one synchronous and one asynchronous delegate are not supported.
+    /// </remarks>
+    /// <typeparam name="T">The type of the value of the result.</typeparam>
+    /// <typeparam name="TNext">The type of the value that the delegates return.</typeparam>
+    /// <param name="resultTask">The asynchronous operation that returns the result to match.</param>
+    /// <param name="ifSuccessFunction">
+    ///     The synchronous function to run on a successful result, with its value; it returns the next result. Must not be <see langword="null" />.
+    /// </param>
+    /// <param name="ifErrorAction">The synchronous action to run on a failed result, with its error. Must not be <see langword="null" />.</param>
+    /// <param name="continueOnCapturedContext">
+    ///     <see langword="true" /> to run the continuation, including the passed delegates, on the captured context (e.g., the UI thread);
+    ///     <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
+    ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
+    /// </param>
+    /// <returns>The result of the match, as the synchronous <c>Match</c> returns it.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     If the <paramref name="ifSuccessFunction" /> or the <paramref name="ifErrorAction" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />, or a function
+    ///     returns <see langword="null" /> where a result or an error is required.
+    /// </exception>
+    public static ValueTask<Result<TNext>> MatchAsync<T, TNext>(this ValueTask<Result<T>> resultTask,
+        Func<T, Result<TNext>> ifSuccessFunction, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        ArgumentNullException.ThrowIfNull(ifSuccessFunction);
+        ArgumentNullException.ThrowIfNull(ifErrorAction);
+
+        return Core(resultTask, ifSuccessFunction, ifErrorAction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+
+        static async ValueTask<Result<TNext>> Core(
+            ValueTask<Result<T>> resultTask,
+            Func<T, Result<TNext>> ifSuccessFunction,
+            Action<Error> ifErrorAction,
+            bool continueOnCapturedContext)
+        {
+            var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
+            return result.Match(ifSuccessFunction, ifErrorAction);
+        }
+    }
+
+    /// <summary>
+    ///     Awaits the <paramref name="resultTask" /> and runs one of the synchronous delegates: the first one if the result is
+    ///     successful, the second one with the <see cref="Error" /> if it is failed.
+    /// </summary>
+    /// <remarks>
+    ///     The delegates are synchronous: they run after the <paramref name="resultTask" /> completes. Pass two asynchronous delegates
+    ///     for asynchronous work; one synchronous and one asynchronous delegate are not supported.
+    /// </remarks>
+    /// <typeparam name="T">The type of the value of the result.</typeparam>
+    /// <typeparam name="TNext">The type of the value that the delegates return.</typeparam>
+    /// <param name="resultTask">The asynchronous operation that returns the result to match.</param>
+    /// <param name="ifSuccessFunction">
+    ///     The synchronous function to run on a successful result, with its value; it returns the next result. Must not be <see langword="null" />.
+    /// </param>
+    /// <param name="ifErrorFunction">
+    ///     The synchronous function to run on a failed result, with its error; it returns the value of the match. Must not be
+    ///     <see langword="null" />.
+    /// </param>
+    /// <param name="continueOnCapturedContext">
+    ///     <see langword="true" /> to run the continuation, including the passed delegates, on the captured context (e.g., the UI thread);
+    ///     <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
+    ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
+    /// </param>
+    /// <returns>The result of the match, as the synchronous <c>Match</c> returns it.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     If the <paramref name="ifSuccessFunction" /> or the <paramref name="ifErrorFunction" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />, or a function
+    ///     returns <see langword="null" /> where a result or an error is required.
+    /// </exception>
+    public static ValueTask<Result<TNext>> MatchAsync<T, TNext>(this ValueTask<Result<T>> resultTask,
+        Func<T, Result<TNext>> ifSuccessFunction, Func<Error, Result<TNext>> ifErrorFunction, bool? continueOnCapturedContext = null)
+    {
+        ArgumentNullException.ThrowIfNull(ifSuccessFunction);
+        ArgumentNullException.ThrowIfNull(ifErrorFunction);
+
+        return Core(resultTask, ifSuccessFunction, ifErrorFunction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+
+        static async ValueTask<Result<TNext>> Core(
+            ValueTask<Result<T>> resultTask,
+            Func<T, Result<TNext>> ifSuccessFunction,
+            Func<Error, Result<TNext>> ifErrorFunction,
+            bool continueOnCapturedContext)
+        {
+            var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
+            return result.Match(ifSuccessFunction, ifErrorFunction);
+        }
+    }
+
+    #endregion
+
+    #region Not supported: one synchronous and one asynchronous delegate, and delegates returning a Task (#214)
+
+    // One synchronous and one asynchronous delegate would bind to the overloads with synchronous delegates, which would drop the task
+    // (an async lambda as an action becomes async void) or wrap it in the result (#214). These overloads, the traps of the synchronous
+    // Match moved to the task receivers, turn such a call into a compile error (CS0619). The second group covers two delegates that
+    // return a Task, which would otherwise be ambiguous (CS0121) between the first group. The overloads whose delegates return a
+    // ValueTask have priority 1: an async lambda converts to a Task and to a ValueTask.
+
+    private const string MixedSuccessTaskMessage =
+        "The success delegate returns a task, but the error delegate is synchronous. MatchAsync takes two synchronous " +
+        "or two asynchronous delegates: make the error delegate asynchronous too, or await the result first and call " +
+        "Match.";
+
+    private const string MixedErrorTaskMessage =
+        "The error delegate returns a task, but the success delegate is synchronous. MatchAsync takes two synchronous " +
+        "or two asynchronous delegates: make the success delegate asynchronous too, or await the result first and call " +
+        "Match.";
+
+    private const string OtherTaskMessage =
+        "The delegates return a Task, which the ValueTask-based MatchAsync does not await. Import " +
+        "Maple.Results.Extensions instead of Maple.Results.Extensions.ValueTasks, or wrap them in a ValueTask (e.g., " +
+        "new ValueTask<T>(task)).";
+
+    /// <summary>
+    ///     Not supported: the success delegate returns a task and the error delegate is synchronous.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(MixedSuccessTaskMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static ValueTask<Result> MatchAsync(this ValueTask<Result> resultTask,
+        Func<ValueTask> ifSuccessFunction, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(MixedSuccessTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the success delegate returns a task and the error delegate is synchronous.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(MixedSuccessTaskMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static ValueTask<Result> MatchAsync<TNext>(this ValueTask<Result> resultTask,
+        Func<ValueTask<TNext>> ifSuccessFunction, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(MixedSuccessTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the success delegate returns a task and the error delegate is synchronous.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(MixedSuccessTaskMessage, error: true)]
+    public static ValueTask<Result> MatchAsync(this ValueTask<Result> resultTask,
+        Func<Task> ifSuccessFunction, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(MixedSuccessTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the success delegate returns a task and the error delegate is synchronous.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(MixedSuccessTaskMessage, error: true)]
+    public static ValueTask<Result> MatchAsync<TNext>(this ValueTask<Result> resultTask,
+        Func<Task<TNext>> ifSuccessFunction, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(MixedSuccessTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the success delegate returns a task and the error delegate is synchronous.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(MixedSuccessTaskMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static ValueTask<Result> MatchAsync<T>(this ValueTask<Result<T>> resultTask,
+        Func<T, ValueTask> ifSuccessFunction, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(MixedSuccessTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the success delegate returns a task and the error delegate is synchronous.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(MixedSuccessTaskMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static ValueTask<Result> MatchAsync<T, TNext>(this ValueTask<Result<T>> resultTask,
+        Func<T, ValueTask<TNext>> ifSuccessFunction, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(MixedSuccessTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the success delegate returns a task and the error delegate is synchronous.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(MixedSuccessTaskMessage, error: true)]
+    public static ValueTask<Result> MatchAsync<T>(this ValueTask<Result<T>> resultTask,
+        Func<T, Task> ifSuccessFunction, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(MixedSuccessTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the success delegate returns a task and the error delegate is synchronous.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(MixedSuccessTaskMessage, error: true)]
+    public static ValueTask<Result> MatchAsync<T, TNext>(this ValueTask<Result<T>> resultTask,
+        Func<T, Task<TNext>> ifSuccessFunction, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(MixedSuccessTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(MixedErrorTaskMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static ValueTask<Result> MatchAsync(this ValueTask<Result> resultTask,
+        Action ifSuccessAction, Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(MixedErrorTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(MixedErrorTaskMessage, error: true)]
+    public static ValueTask<Result> MatchAsync(this ValueTask<Result> resultTask,
+        Action ifSuccessAction, Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(MixedErrorTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(MixedErrorTaskMessage, error: true)]
+    public static ValueTask<Result> MatchAsync<TTaskResult>(this ValueTask<Result> resultTask,
+        Action ifSuccessAction, Func<Error, Task<TTaskResult>> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(MixedErrorTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(MixedErrorTaskMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static ValueTask<Result> MatchAsync(this ValueTask<Result> resultTask,
+        Func<Result> ifSuccessFunction, Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(MixedErrorTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(MixedErrorTaskMessage, error: true)]
+    public static ValueTask<Result> MatchAsync(this ValueTask<Result> resultTask,
+        Func<Result> ifSuccessFunction, Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(MixedErrorTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(MixedErrorTaskMessage, error: true)]
+    public static ValueTask<Result> MatchAsync<TTaskResult>(this ValueTask<Result> resultTask,
+        Func<Result> ifSuccessFunction, Func<Error, Task<TTaskResult>> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(MixedErrorTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(MixedErrorTaskMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static ValueTask<Result<T>> MatchAsync<T>(this ValueTask<Result> resultTask,
+        Func<T> ifSuccessFunction, Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(MixedErrorTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(MixedErrorTaskMessage, error: true)]
+    public static ValueTask<Result<T>> MatchAsync<T>(this ValueTask<Result> resultTask,
+        Func<T> ifSuccessFunction, Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(MixedErrorTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(MixedErrorTaskMessage, error: true)]
+    public static ValueTask<Result<T>> MatchAsync<T, TTaskResult>(this ValueTask<Result> resultTask,
+        Func<T> ifSuccessFunction, Func<Error, Task<TTaskResult>> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(MixedErrorTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(MixedErrorTaskMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static ValueTask<Result> MatchAsync(this ValueTask<Result> resultTask,
+        Func<Error> ifSuccessFunction, Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(MixedErrorTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(MixedErrorTaskMessage, error: true)]
+    public static ValueTask<Result> MatchAsync(this ValueTask<Result> resultTask,
+        Func<Error> ifSuccessFunction, Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(MixedErrorTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(MixedErrorTaskMessage, error: true)]
+    public static ValueTask<Result> MatchAsync<TTaskResult>(this ValueTask<Result> resultTask,
+        Func<Error> ifSuccessFunction, Func<Error, Task<TTaskResult>> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(MixedErrorTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(MixedErrorTaskMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static ValueTask<Result<T>> MatchAsync<T>(this ValueTask<Result> resultTask,
+        Func<Result<T>> ifSuccessFunction, Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(MixedErrorTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(MixedErrorTaskMessage, error: true)]
+    public static ValueTask<Result<T>> MatchAsync<T>(this ValueTask<Result> resultTask,
+        Func<Result<T>> ifSuccessFunction, Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(MixedErrorTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(MixedErrorTaskMessage, error: true)]
+    public static ValueTask<Result<T>> MatchAsync<T, TTaskResult>(this ValueTask<Result> resultTask,
+        Func<Result<T>> ifSuccessFunction, Func<Error, Task<TTaskResult>> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(MixedErrorTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(MixedErrorTaskMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static ValueTask<Result<T>> MatchAsync<T>(this ValueTask<Result<T>> resultTask,
+        Action<T> ifSuccessAction, Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(MixedErrorTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(MixedErrorTaskMessage, error: true)]
+    public static ValueTask<Result<T>> MatchAsync<T>(this ValueTask<Result<T>> resultTask,
+        Action<T> ifSuccessAction, Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(MixedErrorTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(MixedErrorTaskMessage, error: true)]
+    public static ValueTask<Result<T>> MatchAsync<T, TTaskResult>(this ValueTask<Result<T>> resultTask,
+        Action<T> ifSuccessAction, Func<Error, Task<TTaskResult>> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(MixedErrorTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(MixedErrorTaskMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static ValueTask<Result<TNext>> MatchAsync<T, TNext>(this ValueTask<Result<T>> resultTask,
+        Func<T, TNext> ifSuccessFunction, Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(MixedErrorTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(MixedErrorTaskMessage, error: true)]
+    public static ValueTask<Result<TNext>> MatchAsync<T, TNext>(this ValueTask<Result<T>> resultTask,
+        Func<T, TNext> ifSuccessFunction, Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(MixedErrorTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(MixedErrorTaskMessage, error: true)]
+    public static ValueTask<Result<TNext>> MatchAsync<T, TNext, TTaskResult>(this ValueTask<Result<T>> resultTask,
+        Func<T, TNext> ifSuccessFunction, Func<Error, Task<TTaskResult>> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(MixedErrorTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(MixedErrorTaskMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static ValueTask<Result> MatchAsync<T>(this ValueTask<Result<T>> resultTask,
+        Func<T, Error> ifSuccessFunction, Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(MixedErrorTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(MixedErrorTaskMessage, error: true)]
+    public static ValueTask<Result> MatchAsync<T>(this ValueTask<Result<T>> resultTask,
+        Func<T, Error> ifSuccessFunction, Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(MixedErrorTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(MixedErrorTaskMessage, error: true)]
+    public static ValueTask<Result> MatchAsync<T, TTaskResult>(this ValueTask<Result<T>> resultTask,
+        Func<T, Error> ifSuccessFunction, Func<Error, Task<TTaskResult>> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(MixedErrorTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(MixedErrorTaskMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static ValueTask<Result<TNext>> MatchAsync<T, TNext>(this ValueTask<Result<T>> resultTask,
+        Func<T, Result<TNext>> ifSuccessFunction, Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(MixedErrorTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(MixedErrorTaskMessage, error: true)]
+    public static ValueTask<Result<TNext>> MatchAsync<T, TNext>(this ValueTask<Result<T>> resultTask,
+        Func<T, Result<TNext>> ifSuccessFunction, Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(MixedErrorTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(MixedErrorTaskMessage, error: true)]
+    public static ValueTask<Result<TNext>> MatchAsync<T, TNext, TTaskResult>(this ValueTask<Result<T>> resultTask,
+        Func<T, Result<TNext>> ifSuccessFunction, Func<Error, Task<TTaskResult>> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(MixedErrorTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the delegates return a <c>Task</c>, which this method does not await.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(OtherTaskMessage, error: true)]
+    public static ValueTask<Result> MatchAsync(this ValueTask<Result> resultTask,
+        Func<Task> ifSuccessAction, Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(OtherTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the delegates return a <c>Task</c>, which this method does not await.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(OtherTaskMessage, error: true)]
+    public static ValueTask<Result> MatchAsync(this ValueTask<Result> resultTask,
+        Func<Task<Result>> ifSuccessFunction, Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(OtherTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the delegates return a <c>Task</c>, which this method does not await.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(OtherTaskMessage, error: true)]
+    public static ValueTask<Result> MatchAsync(this ValueTask<Result> resultTask,
+        Func<Task<Result>> ifSuccessFunction, Func<Error, Task<Result>> ifErrorFunction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(OtherTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the delegates return a <c>Task</c>, which this method does not await.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(OtherTaskMessage, error: true)]
+    public static ValueTask<Result<T>> MatchAsync<T>(this ValueTask<Result> resultTask,
+        Func<Task<T>> ifSuccessFunction, Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(OtherTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the delegates return a <c>Task</c>, which this method does not await.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(OtherTaskMessage, error: true)]
+    public static ValueTask<Result> MatchAsync(this ValueTask<Result> resultTask,
+        Func<Task<Error>> ifSuccessFunction, Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(OtherTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the delegates return a <c>Task</c>, which this method does not await.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(OtherTaskMessage, error: true)]
+    public static ValueTask<T> MatchAsync<T>(this ValueTask<Result> resultTask,
+        Func<Task<T>> ifSuccessFunction, Func<Error, Task<T>> ifErrorFunction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(OtherTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the delegates return a <c>Task</c>, which this method does not await.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(OtherTaskMessage, error: true)]
+    public static ValueTask<Result<T>> MatchAsync<T>(this ValueTask<Result> resultTask,
+        Func<Task<Result<T>>> ifSuccessFunction, Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(OtherTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the delegates return a <c>Task</c>, which this method does not await.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(OtherTaskMessage, error: true)]
+    public static ValueTask<Result<T>> MatchAsync<T>(this ValueTask<Result> resultTask,
+        Func<Task<Result<T>>> ifSuccessFunction, Func<Error, Task<Result<T>>> ifErrorFunction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(OtherTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the delegates return a <c>Task</c>, which this method does not await.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(OtherTaskMessage, error: true)]
+    public static ValueTask<Result<T>> MatchAsync<T>(this ValueTask<Result<T>> resultTask,
+        Func<T, Task> ifSuccessAction, Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(OtherTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the delegates return a <c>Task</c>, which this method does not await.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(OtherTaskMessage, error: true)]
+    public static ValueTask<Result<TNext>> MatchAsync<T, TNext>(this ValueTask<Result<T>> resultTask,
+        Func<T, Task<TNext>> ifSuccessFunction, Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(OtherTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the delegates return a <c>Task</c>, which this method does not await.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(OtherTaskMessage, error: true)]
+    public static ValueTask<Result> MatchAsync<T>(this ValueTask<Result<T>> resultTask,
+        Func<T, Task<Error>> ifSuccessFunction, Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(OtherTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the delegates return a <c>Task</c>, which this method does not await.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(OtherTaskMessage, error: true)]
+    public static ValueTask<TNext> MatchAsync<T, TNext>(this ValueTask<Result<T>> resultTask,
+        Func<T, Task<TNext>> ifSuccessFunction, Func<Error, Task<TNext>> ifErrorFunction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(OtherTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the delegates return a <c>Task</c>, which this method does not await.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(OtherTaskMessage, error: true)]
+    public static ValueTask<Result<TNext>> MatchAsync<T, TNext>(this ValueTask<Result<T>> resultTask,
+        Func<T, Task<Result<TNext>>> ifSuccessFunction, Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(OtherTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the delegates return a <c>Task</c>, which this method does not await.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(OtherTaskMessage, error: true)]
+    public static ValueTask<Result<TNext>> MatchAsync<T, TNext>(this ValueTask<Result<T>> resultTask,
+        Func<T, Task<Result<TNext>>> ifSuccessFunction, Func<Error, Task<Result<TNext>>> ifErrorFunction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(OtherTaskMessage);
     }
 
     #endregion

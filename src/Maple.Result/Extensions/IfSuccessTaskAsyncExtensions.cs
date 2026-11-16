@@ -163,6 +163,7 @@ public static class IfSuccessTaskAsyncExtensions
     ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />,
     ///     or <paramref name="ifSuccessAction" /> returns a <see langword="null" /> task.
     /// </exception>
+    [OverloadResolutionPriority(1)]
     public static Task<Result> IfSuccessAsync(this Task<Result> resultTask, Func<Task> ifSuccessAction, bool? continueOnCapturedContext = null)
     {
         ArgumentNullException.ThrowIfNull(resultTask);
@@ -229,6 +230,7 @@ public static class IfSuccessTaskAsyncExtensions
     ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />,
     ///     or <paramref name="ifSuccessAction" /> returns a <see langword="null" /> task.
     /// </exception>
+    [OverloadResolutionPriority(1)]
     public static Task<Result<T>> IfSuccessAsync<T>(this Task<Result<T>> resultTask,
         Func<T, Task> ifSuccessAction, bool? continueOnCapturedContext = null)
     {
@@ -288,6 +290,7 @@ public static class IfSuccessTaskAsyncExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ValueDiscardedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
     public static Task<Result> IfSuccessAsync<TValue>(this Task<Result> resultTask, Func<Task<TValue>> ifSuccessAction, bool? continueOnCapturedContext = null)
     {
         throw new NotSupportedException(ValueDiscardedMessage);
@@ -298,9 +301,171 @@ public static class IfSuccessTaskAsyncExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ValueDiscardedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
     public static Task<Result<T>> IfSuccessAsync<T, TValue>(this Task<Result<T>> resultTask, Func<T, Task<TValue>> ifSuccessAction, bool? continueOnCapturedContext = null)
     {
         throw new NotSupportedException(ValueDiscardedMessage);
+    }
+
+    #endregion
+
+    #region Task results with synchronous delegates (#214)
+
+    /// <summary>
+    ///     Runs the synchronous action if the result that the <paramref name="resultTask" /> returns is successful, and returns
+    ///     the result unchanged.
+    /// </summary>
+    /// <remarks>
+    ///     The action is synchronous: it runs after the <paramref name="resultTask" /> completes, and it is not called for a
+    ///     failed result. The result is returned unchanged.
+    /// </remarks>
+    /// <param name="resultTask">The asynchronous operation that returns the result to inspect. Must not be <see langword="null" />.</param>
+    /// <param name="ifSuccessAction">The synchronous action to run. Must not be <see langword="null" />.</param>
+    /// <param name="continueOnCapturedContext">
+    ///     <see langword="true" /> to run the continuation, including the passed delegate, on the captured context (e.g., the UI thread);
+    ///     <see langword="false" /> to run it on any thread; <see langword="null" /> (the default) to use
+    ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
+    /// </param>
+    /// <returns>The result that the <paramref name="resultTask" /> returns.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     If the <paramref name="resultTask" /> or the <paramref name="ifSuccessAction" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />.
+    /// </exception>
+    public static Task<Result> IfSuccessAsync(this Task<Result> resultTask,
+        Action ifSuccessAction, bool? continueOnCapturedContext = null)
+    {
+        ArgumentNullException.ThrowIfNull(resultTask);
+        ArgumentNullException.ThrowIfNull(ifSuccessAction);
+
+        return Core(resultTask, ifSuccessAction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+
+        static async Task<Result> Core(Task<Result> resultTask, Action ifSuccessAction, bool continueOnCapturedContext)
+        {
+            var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
+            return result.IfSuccess(ifSuccessAction);
+        }
+    }
+
+    /// <summary>
+    ///     Runs the synchronous action on the value if the result that the <paramref name="resultTask" /> returns is successful,
+    ///     and returns the result unchanged.
+    /// </summary>
+    /// <remarks>
+    ///     The action is synchronous: it runs after the <paramref name="resultTask" /> completes, and it is not called for a
+    ///     failed result. The result is returned unchanged.
+    /// </remarks>
+    /// <typeparam name="T">The type of the value of the result.</typeparam>
+    /// <param name="resultTask">The asynchronous operation that returns the result to inspect. Must not be <see langword="null" />.</param>
+    /// <param name="ifSuccessAction">The synchronous action that receives the value. Must not be <see langword="null" />.</param>
+    /// <param name="continueOnCapturedContext">
+    ///     <see langword="true" /> to run the continuation, including the passed delegate, on the captured context (e.g., the UI thread);
+    ///     <see langword="false" /> to run it on any thread; <see langword="null" /> (the default) to use
+    ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
+    /// </param>
+    /// <returns>The result that the <paramref name="resultTask" /> returns.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     If the <paramref name="resultTask" /> or the <paramref name="ifSuccessAction" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />.
+    /// </exception>
+    public static Task<Result<T>> IfSuccessAsync<T>(this Task<Result<T>> resultTask,
+        Action<T> ifSuccessAction, bool? continueOnCapturedContext = null)
+    {
+        ArgumentNullException.ThrowIfNull(resultTask);
+        ArgumentNullException.ThrowIfNull(ifSuccessAction);
+
+        return Core(resultTask, ifSuccessAction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+
+        static async Task<Result<T>> Core(Task<Result<T>> resultTask, Action<T> ifSuccessAction, bool continueOnCapturedContext)
+        {
+            var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
+            return result.IfSuccess(ifSuccessAction);
+        }
+    }
+
+    #endregion
+
+    #region Not supported: synchronous delegates of the wrong kind, and functions returning a ValueTask (#214)
+
+    // A synchronous action passed to ThenAsync or ElseAsync, or a synchronous function that returns a value passed to
+    // IfSuccessAsync or IfErrorAsync, is a compile error (CS0619) that names the method to use, as in #197.
+    // A function that returns a ValueTask would bind to the overloads with a synchronous delegate and give a result holding a task
+    // that nobody awaits (#214): these overloads turn the call into a compile error (CS0619) that names the namespace to import.
+    // The overloads whose delegate returns a Task have priority 1 (#214): an async lambda converts to a Task and to a ValueTask,
+    // so without it, a call with an async lambda would be ambiguous (CS0121) between them and the traps for the other kind of task.
+
+    private const string SyncValueDiscardedMessage =
+        "The function returns a value, which IfSuccessAsync discards. Use ThenAsync to keep it, or a statement lambda " +
+        "(e.g., x => { list.Add(x); }) for a side effect.";
+
+    private const string OtherTaskMessage =
+        "The function returns a ValueTask, which the Task-based IfSuccessAsync does not await. Import " +
+        "Maple.Results.Extensions.ValueTasks instead of Maple.Results.Extensions, or convert it with AsTask().";
+
+    /// <summary>
+    ///     Not supported: the function returns a value, which <c>IfSuccessAsync</c> discards; use <c>ThenAsync</c>, or a statement lambda.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(SyncValueDiscardedMessage, error: true)]
+    public static Task<Result> IfSuccessAsync<TValue>(this Task<Result> resultTask, Func<TValue> ifSuccessAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(SyncValueDiscardedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the function returns a value, which <c>IfSuccessAsync</c> discards; use <c>ThenAsync</c>, or a statement lambda.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(SyncValueDiscardedMessage, error: true)]
+    public static Task<Result<T>> IfSuccessAsync<T, TValue>(this Task<Result<T>> resultTask,
+        Func<T, TValue> ifSuccessAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(SyncValueDiscardedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the function returns a <c>ValueTask</c>, which this method does not await.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(OtherTaskMessage, error: true)]
+    public static Task<Result> IfSuccessAsync(this Task<Result> resultTask, Func<ValueTask> ifSuccessAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(OtherTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the function returns a <c>ValueTask</c>, which this method does not await.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(OtherTaskMessage, error: true)]
+    public static Task<Result> IfSuccessAsync<TTaskResult>(this Task<Result> resultTask,
+        Func<ValueTask<TTaskResult>> ifSuccessAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(OtherTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the function returns a <c>ValueTask</c>, which this method does not await.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(OtherTaskMessage, error: true)]
+    public static Task<Result<T>> IfSuccessAsync<T>(this Task<Result<T>> resultTask, Func<T, ValueTask> ifSuccessAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(OtherTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the function returns a <c>ValueTask</c>, which this method does not await.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(OtherTaskMessage, error: true)]
+    public static Task<Result<T>> IfSuccessAsync<T, TTaskResult>(this Task<Result<T>> resultTask,
+        Func<T, ValueTask<TTaskResult>> ifSuccessAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(OtherTaskMessage);
     }
 
     #endregion
