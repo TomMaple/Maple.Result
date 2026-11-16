@@ -20,6 +20,9 @@ internal static partial class UriUrnValidator
     // RFC 3986: pchar = unreserved / pct-encoded / sub-delims / ":" / "@"
     private const string PChar = @"(?:[A-Za-z0-9\-._~!$&'()*+,;=:@]|%[0-9A-Fa-f]{2})";
 
+    // pchar without a literal "=" (a percent-encoded "%3D" stays allowed); used to end the r-component at "?=".
+    private const string PCharWithoutEquals = @"(?:[A-Za-z0-9\-._~!$&'()*+,;:@]|%[0-9A-Fa-f]{2})";
+
     // RFC 8141: namestring    = assigned-name [ rq-components ] [ "#" f-component ]
     //           assigned-name = "urn" ":" NID ":" NSS
     //           NID           = (alphanum) 0*30(ldh) (alphanum)
@@ -28,6 +31,9 @@ internal static partial class UriUrnValidator
     //           r-component / q-component = pchar *( pchar / "/" / "?" )
     //           f-component   = fragment = *( pchar / "/" / "?" )
     // The "urn" scheme is case-insensitive.
+    // "The r-component ends with a "?=" sequence (which begins a q-component) or a "#" character" (RFC 8141, section 2.3.1), so
+    // the r-component cannot contain "?=". It is written without a lookahead, which NonBacktracking does not support: a run of
+    // "?" is followed by a character that is neither "?" nor "=", or ends the r-component.
     // NonBacktracking: the value can come from another service (ErrorUri.Parse and TryParse), and this engine runs in linear time
     // whatever the pattern (#189). The source generator does not generate code for this option; it creates the Regex instead.
     [GeneratedRegex(
@@ -37,7 +43,7 @@ internal static partial class UriUrnValidator
         // NSS
         PChar + "(?:" + PChar + "|/)*" +
         // rq-components and f-component
-        @"(?:\?\+" + PChar + "(?:" + PChar + @"|[/?])*)?" +
+        @"(?:\?\+" + PChar + "(?:" + PCharWithoutEquals + "|/|=|" + @"\?+(?:" + PCharWithoutEquals + @"|/))*\?*)?" +
         @"(?:\?=" + PChar + "(?:" + PChar + @"|[/?])*)?" +
         "(?:#(?:" + PChar + @"|[/?])*)?\z",
         RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
