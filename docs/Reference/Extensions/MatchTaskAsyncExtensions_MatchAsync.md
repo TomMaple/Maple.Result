@@ -48,7 +48,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Executes the provided asynchronous `ifSuccessAction`, only if the instance of [Result](../Result/Result.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), or the provided asynchronous `ifErrorAction` otherwise, as an asynchronous operation.
 
 ```csharp
-public static async Task<Result> MatchAsync(this Result result, Func<Task> ifSuccessAction,
+public static Task<Result> MatchAsync(this Result result, Func<Task> ifSuccessAction,
     Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null);
 ```
 
@@ -94,7 +94,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Executes the provided asynchronous `ifSuccessFunction`, only if the instance of [Result](../Result/Result.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), or the provided asynchronous `ifErrorFunction` otherwise, as an asynchronous operation.
 
 ```csharp
-public static async Task<Result> MatchAsync(this Result result, Func<Task<Result>> ifSuccessFunction,
+public static Task<Result> MatchAsync(this Result result, Func<Task<Result>> ifSuccessFunction,
     Func<Error, Task<Result>> ifErrorFunction, bool? continueOnCapturedContext = null);
 ```
 
@@ -144,7 +144,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Executes the provided asynchronous `ifSuccessFunction`, only if the instance of [Result](../Result/Result.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), or the provided asynchronous `ifErrorFunction` otherwise, as an asynchronous operation.
 
 ```csharp
-public static async Task<T> MatchAsync<T>(this Result result, Func<Task<T>> ifSuccessFunction,
+public static Task<T> MatchAsync<T>(this Result result, Func<Task<T>> ifSuccessFunction,
     Func<Error, Task<T>> ifErrorFunction, bool? continueOnCapturedContext = null);
 ```
 
@@ -198,7 +198,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Executes the provided asynchronous `ifSuccessFunction`, only if the instance of [Result](../Result/Result.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), or the provided asynchronous `ifErrorFunction` otherwise, as an asynchronous operation.
 
 ```csharp
-public static async Task<Result<T>> MatchAsync<T>(this Result result, Func<Task<Result<T>>> ifSuccessFunction,
+public static Task<Result<T>> MatchAsync<T>(this Result result, Func<Task<Result<T>>> ifSuccessFunction,
     Func<Error, Task<Result<T>>> ifErrorFunction, bool? continueOnCapturedContext = null);
 ```
 
@@ -248,7 +248,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Executes the provided asynchronous `ifSuccessAction`, only if the instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), or the provided asynchronous `ifErrorAction` otherwise, as an asynchronous operation.
 
 ```csharp
-public static async Task<Result<T>> MatchAsync<T>(this Result<T> result, Func<T, Task> ifSuccessAction,
+public static Task<Result<T>> MatchAsync<T>(this Result<T> result, Func<T, Task> ifSuccessAction,
     Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null);
 ```
 
@@ -298,7 +298,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Executes the provided asynchronous `ifSuccessFunction`, only if the instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), or the provided asynchronous `ifErrorFunction` otherwise, as an asynchronous operation.
 
 ```csharp
-public static async Task<TNext> MatchAsync<T, TNext>(
+public static Task<TNext> MatchAsync<T, TNext>(
     this Result<T> result,
     Func<T, Task<TNext>> ifSuccessFunction,
     Func<Error, Task<TNext>> ifErrorFunction,
@@ -358,7 +358,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Executes the provided asynchronous `ifSuccessFunction`, only if the instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), or the provided asynchronous `ifErrorFunction` otherwise, as an asynchronous operation.
 
 ```csharp
-public static async Task<Result<TNext>> MatchAsync<T, TNext>(
+public static Task<Result<TNext>> MatchAsync<T, TNext>(
     this Result<T> result,
     Func<T, Task<Result<TNext>>> ifSuccessFunction,
     Func<Error, Task<Result<TNext>>> ifErrorFunction,
@@ -418,7 +418,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Executes the provided asynchronous `ifSuccessAction`, only if the asynchronous operation `resultTask` represents a successful instance of [Result](../Result/Result.md); or the provided asynchronous `ifErrorAction`, otherwise.
 
 ```csharp
-public static async Task<Result> MatchAsync(this Task<Result> resultTask, Func<Task> ifSuccessAction,
+public static Task<Result> MatchAsync(this Task<Result> resultTask, Func<Task> ifSuccessAction,
     Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null);
 ```
 
@@ -466,7 +466,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Executes the provided asynchronous `ifSuccessFunction`, only if the asynchronous operation `resultTask` represents a successful instance of [Result](../Result/Result.md); or the provided asynchronous `ifErrorFunction`, otherwise.
 
 ```csharp
-public static async Task<Result> MatchAsync(this Task<Result> resultTask, Func<Task<Result>> ifSuccessFunction,
+public static Task<Result> MatchAsync(this Task<Result> resultTask, Func<Task<Result>> ifSuccessFunction,
     Func<Error, Task<Result>> ifErrorFunction, bool? continueOnCapturedContext = null);
 ```
 
@@ -518,7 +518,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Executes the provided asynchronous `ifSuccessFunction`, only if the asynchronous operation `resultTask` represents a successful instance of [Result](../Result/Result.md); or the provided asynchronous `ifErrorFunction`, otherwise.
 
 ```csharp
-public static async Task<T> MatchAsync<T>(this Task<Result> resultTask, Func<Task<T>> ifSuccessFunction,
+public static Task<T> MatchAsync<T>(this Task<Result> resultTask, Func<Task<T>> ifSuccessFunction,
     Func<Error, Task<T>> ifErrorFunction, bool? continueOnCapturedContext = null);
 ```
 
@@ -574,7 +574,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Executes the provided asynchronous `ifSuccessFunction`, only if the asynchronous operation `resultTask` represents a successful instance of [Result](../Result/Result.md); or the provided asynchronous `ifErrorFunction`, otherwise.
 
 ```csharp
-public static async Task<Result<T>> MatchAsync<T>(
+public static Task<Result<T>> MatchAsync<T>(
     this Task<Result> resultTask, Func<Task<Result<T>>> ifSuccessFunction,
     Func<Error, Task<Result<T>>> ifErrorFunction, bool? continueOnCapturedContext = null);
 ```
@@ -627,7 +627,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Executes the provided asynchronous `ifSuccessAction`, only if the asynchronous operation `resultTask` represents a successful instance of [Result&lt;T&gt;](../ResultT/ResultT.md); or the provided asynchronous `ifErrorAction`, otherwise.
 
 ```csharp
-public static async Task<Result<T>> MatchAsync<T>(this Task<Result<T>> resultTask, Func<T, Task> ifSuccessAction,
+public static Task<Result<T>> MatchAsync<T>(this Task<Result<T>> resultTask, Func<T, Task> ifSuccessAction,
     Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null);
 ```
 
@@ -680,7 +680,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Executes the provided asynchronous `ifSuccessFunction`, only if the instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), or the provided asynchronous `ifErrorFunction` otherwise, as an asynchronous operation.
 
 ```csharp
-public static async Task<TNext> MatchAsync<T, TNext>(
+public static Task<TNext> MatchAsync<T, TNext>(
     this Task<Result<T>> resultTask,
     Func<T, Task<TNext>> ifSuccessFunction,
     Func<Error, Task<TNext>> ifErrorFunction,
@@ -743,7 +743,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Executes the provided asynchronous `ifSuccessFunction`, only if the asynchronous operation `resultTask` represents a successful instance of [Result&lt;T&gt;](../ResultT/ResultT.md); or the provided asynchronous `ifErrorFunction`, otherwise.
 
 ```csharp
-public static async Task<Result<TNext>> MatchAsync<T, TNext>(
+public static Task<Result<TNext>> MatchAsync<T, TNext>(
     this Task<Result<T>> resultTask,
     Func<T, Task<Result<TNext>>> ifSuccessFunction,
     Func<Error, Task<Result<TNext>>> ifErrorFunction,

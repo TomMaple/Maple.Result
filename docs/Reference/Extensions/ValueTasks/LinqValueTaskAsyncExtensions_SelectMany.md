@@ -74,7 +74,7 @@ Returns a new instance of [ValueTask](https://learn.microsoft.com/dotnet/api/sys
 
 
 ```csharp
-public static async ValueTask<Result<TNext>> SelectMany<T, TMiddle, TNext>(
+public static ValueTask<Result<TNext>> SelectMany<T, TMiddle, TNext>(
     this ValueTask<Result<T>> result,
     Func<T, ValueTask<Result<TMiddle>>> collectionSelector,
     Func<T, TMiddle, TNext> resultSelector);
@@ -131,7 +131,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Applies the synchronous `collectionSelector` and the `resultSelector` to the value of a successful [Result&lt;T&gt;](../../ResultT/ResultT.md) produced by the awaited `result`; otherwise, returns a failed result with the original [Error](../../Error/Error.md).
 
 ```csharp
-public static async ValueTask<Result<TNext>> SelectMany<T, TMiddle, TNext>(
+public static ValueTask<Result<TNext>> SelectMany<T, TMiddle, TNext>(
     this ValueTask<Result<T>> result,
     Func<T, Result<TMiddle>> collectionSelector,
     Func<T, TMiddle, TNext> resultSelector);
@@ -186,7 +186,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Applies the asynchronous `collectionSelector` and the `resultSelector` to the value of a successful `result`; otherwise, returns a failed result with the original [Error](../../Error/Error.md).
 
 ```csharp
-public static async ValueTask<Result<TNext>> SelectMany<T, TMiddle, TNext>(
+public static ValueTask<Result<TNext>> SelectMany<T, TMiddle, TNext>(
     this Result<T> result,
     Func<T, ValueTask<Result<TMiddle>>> collectionSelector,
     Func<T, TMiddle, TNext> resultSelector);
@@ -241,7 +241,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Applies the asynchronous `collectionSelector` and the `resultSelector` to the value of a successful [Result&lt;T&gt;](../../ResultT/ResultT.md) produced by the awaited `result` and returns a failed [Result](../../Result/Result.md) with the [Error](../../Error/Error.md) returned by `resultSelector`; otherwise, returns a failed [Result](../../Result/Result.md) with the first [Error](../../Error/Error.md).
 
 ```csharp
-public static async ValueTask<Result> SelectMany<T, TMiddle>(
+public static ValueTask<Result> SelectMany<T, TMiddle>(
     this ValueTask<Result<T>> result,
     Func<T, ValueTask<Result<TMiddle>>> collectionSelector,
     Func<T, TMiddle, Error> resultSelector);
@@ -293,7 +293,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Applies the synchronous `collectionSelector` and the `resultSelector` to the value of a successful [Result&lt;T&gt;](../../ResultT/ResultT.md) produced by the awaited `result` and returns a failed [Result](../../Result/Result.md) with the [Error](../../Error/Error.md) returned by `resultSelector`; otherwise, returns a failed [Result](../../Result/Result.md) with the first [Error](../../Error/Error.md).
 
 ```csharp
-public static async ValueTask<Result> SelectMany<T, TMiddle>(
+public static ValueTask<Result> SelectMany<T, TMiddle>(
     this ValueTask<Result<T>> result,
     Func<T, Result<TMiddle>> collectionSelector,
     Func<T, TMiddle, Error> resultSelector);
@@ -345,7 +345,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Applies the asynchronous `collectionSelector` and the `resultSelector` to the value of a successful [Result&lt;T&gt;](../../ResultT/ResultT.md) and returns a failed [Result](../../Result/Result.md) with the [Error](../../Error/Error.md) returned by `resultSelector`; otherwise, returns a failed [Result](../../Result/Result.md) with the first [Error](../../Error/Error.md).
 
 ```csharp
-public static async ValueTask<Result> SelectMany<T, TMiddle>(
+public static ValueTask<Result> SelectMany<T, TMiddle>(
     this Result<T> result,
     Func<T, ValueTask<Result<TMiddle>>> collectionSelector,
     Func<T, TMiddle, Error> resultSelector);

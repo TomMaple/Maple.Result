@@ -8,7 +8,7 @@ Asynchronously converts the outcome of the asynchronous operation represented by
 
 
 ```csharp
-public static async Task<Result> ToResultAsync<T>(this Task<Result<T>> resultTask,
+public static Task<Result> ToResultAsync<T>(this Task<Result<T>> resultTask,
     bool? continueOnCapturedContext = null);
 ```
 

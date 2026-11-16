@@ -35,7 +35,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Executes the provided asynchronous action, only if the instance of [Result](../../Result/Result.md) represents a successful operation (i.e., does not contain an [Error](../../Error/Error.md)), as an asynchronous operation.
 
 ```csharp
-public static async ValueTask<Result> IfSuccessAsync(this Result result, Func<ValueTask> ifSuccessAction,
+public static ValueTask<Result> IfSuccessAsync(this Result result, Func<ValueTask> ifSuccessAction,
     bool? continueOnCapturedContext = null);
 ```
 
@@ -76,7 +76,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Executes the provided asynchronous action, only if the instance of [Result&lt;T&gt;](../../ResultT/ResultT.md) represents a successful operation (i.e., does not contain an [Error](../../Error/Error.md)), as an asynchronous operation.
 
 ```csharp
-public static async ValueTask<Result<T>> IfSuccessAsync<T>(this Result<T> result, Func<T, ValueTask> ifSuccessAction,
+public static ValueTask<Result<T>> IfSuccessAsync<T>(this Result<T> result, Func<T, ValueTask> ifSuccessAction,
     bool? continueOnCapturedContext = null);
 ```
 
@@ -121,7 +121,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Executes the provided asynchronous action, only if the provided asynchronous operation `resultTask` returns a successful instance of [Result](../../Result/Result.md).
 
 ```csharp
-public static async ValueTask<Result> IfSuccessAsync(this ValueTask<Result> resultTask, Func<ValueTask> ifSuccessAction,
+public static ValueTask<Result> IfSuccessAsync(this ValueTask<Result> resultTask, Func<ValueTask> ifSuccessAction,
     bool? continueOnCapturedContext = null);
 ```
 
@@ -167,7 +167,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result&lt;T&gt;](../../ResultT/ResultT.md).
 
 ```csharp
-public static async ValueTask<Result<T>> IfSuccessAsync<T>(this ValueTask<Result<T>> resultTask,
+public static ValueTask<Result<T>> IfSuccessAsync<T>(this ValueTask<Result<T>> resultTask,
     Func<T, ValueTask> ifSuccessAction, bool? continueOnCapturedContext = null);
 ```
 

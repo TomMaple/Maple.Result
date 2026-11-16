@@ -32,7 +32,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Executes the provided asynchronous action, only if the instance of [Result](../Result/Result.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), as an asynchronous operation.
 
 ```csharp
-public static async Task<Result> IfSuccessAsync(this Result result, Func<Task> ifSuccessAction,
+public static Task<Result> IfSuccessAsync(this Result result, Func<Task> ifSuccessAction,
     bool? continueOnCapturedContext = null);
 ```
 
@@ -76,7 +76,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Executes the provided asynchronous action, only if the instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), as an asynchronous operation.
 
 ```csharp
-public static async Task<Result<T>> IfSuccessAsync<T>(this Result<T> result, Func<T, Task> ifSuccessAction,
+public static Task<Result<T>> IfSuccessAsync<T>(this Result<T> result, Func<T, Task> ifSuccessAction,
     bool? continueOnCapturedContext = null);
 ```
 
@@ -124,7 +124,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Executes the provided asynchronous action, only if the provided asynchronous operation `resultTask` returns a successful instance of [Result](../Result/Result.md).
 
 ```csharp
-public static async Task<Result> IfSuccessAsync(this Task<Result> resultTask, Func<Task> ifSuccessAction,
+public static Task<Result> IfSuccessAsync(this Task<Result> resultTask, Func<Task> ifSuccessAction,
     bool? continueOnCapturedContext = null);
 ```
 
@@ -170,7 +170,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result&lt;T&gt;](../ResultT/ResultT.md).
 
 ```csharp
-public static async Task<Result<T>> IfSuccessAsync<T>(this Task<Result<T>> resultTask,
+public static Task<Result<T>> IfSuccessAsync<T>(this Task<Result<T>> resultTask,
     Func<T, Task> ifSuccessAction, bool? continueOnCapturedContext = null);
 ```
 

@@ -32,7 +32,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Executes the provided asynchronous action, only if the instance of `TResult` represents a failed operation (i.e., contains an [Error](../../Error/Error.md)), as an asynchronous operation.
 
 ```csharp
-public static async ValueTask<TResult> IfErrorAsync<TResult>(this TResult result, Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
+public static ValueTask<TResult> IfErrorAsync<TResult>(this TResult result, Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
     where TResult : IOperationResult;
 ```
 
@@ -78,7 +78,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Executes the provided asynchronous function, if the provided asynchronous operation returns a failed`TResult` instance (i.e., contains an [Error](../../Error/Error.md)), and returns its result as an asynchronous operation.
 
 ```csharp
-public static async ValueTask<TResult> IfErrorAsync<TResult>(
+public static ValueTask<TResult> IfErrorAsync<TResult>(
     this ValueTask<TResult> resultTask,
     Func<Error, ValueTask> ifErrorAction,
     bool? continueOnCapturedContext = null)
