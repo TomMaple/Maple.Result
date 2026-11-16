@@ -105,6 +105,11 @@ public sealed record Error
     ///     </list>
     ///     Using a <i>URI</i> to have a unique ID is not recommended especially from the point of view of integration and use of tools for which
     ///     providing further information at the Developer Experience level is a fundamental objective.
+    ///     <para>
+    ///         The scheme is not restricted: a value read from another service can be, e.g., <c>javascript:</c> or <c>file:</c>
+    ///         (<see cref="ErrorUri.Other" />). Treat it as untrusted: a consumer that shows it as a link (e.g., in HTML) or opens it has to
+    ///         check the scheme first, e.g., allow only <c>http</c> and <c>https</c>.
+    ///     </para>
     /// </remarks>
     public string TypeUri { get; }
 
@@ -159,6 +164,11 @@ public sealed record Error
     ///             </description>
     ///         </item>
     ///     </list>
+    ///     <para>
+    ///         The scheme is not restricted: a value read from another service can be, e.g., <c>javascript:</c> or <c>file:</c>
+    ///         (<see cref="ErrorUri.Other" />). Treat it as untrusted: a consumer that shows it as a link (e.g., in HTML) or opens it has to
+    ///         check the scheme first, e.g., allow only <c>http</c> and <c>https</c>.
+    ///     </para>
     /// </remarks>
     public string? InstanceUri { get; }
 

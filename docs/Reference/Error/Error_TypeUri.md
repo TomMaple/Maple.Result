@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L109" target="_blank">Error.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L114" target="_blank">Error.cs</a>
 
 Gets a *URI* that identifies the type of the problem.
 
@@ -32,6 +32,9 @@ The value of this property should be:
 If the value is a *URI Locator*, it is a *URL* (with an “http” or “https” scheme) that, when dereferenced, provides human-readable documentation about the problem type. The locator should use absolute *URI*s to avoid confusion and malfunctions. However, consumers **should not** automatically dereference the type *URI*, unless they do so when providing information to developers (e.g., when a debugging tool is in use).
 
 If the value is a *URI Tag*, it is not dereferenceable and uniquely represents the different types of problems.
+
+> [!WARNING]
+> The scheme is not restricted: a value read from another service can be, e.g., `javascript:` or `file:` ([ErrorUri.Other](../ErrorUri/ErrorUri_Other.md)). Treat it as untrusted: a consumer that shows it as a link (e.g., in HTML) or opens it has to check the scheme first, e.g., allow only `http` and `https`.
 
 ## Examples
 ```csharp

@@ -18,7 +18,7 @@ Each call copies the error. To add several details, use [ToBuilder()](Error_ToBu
 
 
 ## WithErrorDetail(ErrorDetail)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L232" target="_blank">Error.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L242" target="_blank">Error.cs</a>
 
 Returns a copy of the current error with the specified individual error occurrence appended to the [ErrorDetails](Error_ErrorDetails.md).
 
@@ -52,7 +52,7 @@ var error = Error.Validation(
 
 
 ## WithErrorDetail(String, String, String, (String, Object)[])
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L272" target="_blank">Error.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L282" target="_blank">Error.cs</a>
 
 Returns a copy of the current error with a new individual error occurrence appended to the [ErrorDetails](Error_ErrorDetails.md).
 

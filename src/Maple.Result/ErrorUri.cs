@@ -210,6 +210,12 @@ public readonly record struct ErrorUri : IParsable<ErrorUri>
     ///         methods, or <see cref="Parse" /> when the kind is not known. The value is stored as passed: white space, characters that
     ///         would need escaping, invalid percent-encoding and a second <c>#</c> are rejected.
     ///     </para>
+    ///     <para>
+    ///         Any other scheme is accepted, including <c>javascript:</c>, <c>vbscript:</c>, <c>data:</c> and <c>file:</c>: <i>RFC 3986</i> and
+    ///         <i>RFC 9457</i> do not restrict the scheme, and the values of other services must be kept. Treat such a value as untrusted: a
+    ///         consumer that shows a type or an instance <i>URI</i> as a link (e.g., in HTML) or opens it has to check the scheme first, e.g.,
+    ///         allow only <c>http</c> and <c>https</c>.
+    ///     </para>
     /// </remarks>
     /// <exception cref="ArgumentNullException">If the <paramref name="uri" /> is <see langword="null" />.</exception>
     /// <exception cref="UriFormatException">
@@ -245,6 +251,9 @@ public readonly record struct ErrorUri : IParsable<ErrorUri>
     ///         Schemes are case-insensitive (<i>RFC 3986</i>, section 3.1), so <c>TAG:…</c> is a <i>URI Tag</i>; the value is stored as passed.
     ///         <c>about:blank</c> is the exception: its scheme may have any case, the <c>blank</c> token must be lowercase, and the result always has
     ///         the value <c>about:blank</c>. <c>ErrorUri.Parse(uri.Value)</c> returns an <see cref="ErrorUri" /> equal to <c>uri</c>.
+    ///     </para>
+    ///     <para>
+    ///         Any scheme is accepted (see <see cref="Other" />), e.g., <c>javascript:</c>: check the scheme before showing the value as a link.
     ///     </para>
     /// </remarks>
     /// <exception cref="ArgumentNullException">If the <paramref name="value" /> is <see langword="null" />.</exception>
