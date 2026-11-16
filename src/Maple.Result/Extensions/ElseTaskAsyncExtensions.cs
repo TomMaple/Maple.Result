@@ -153,6 +153,318 @@ public static class ElseTaskAsyncExtensions
 
     #endregion
 
+    #region A value or an Error in a task (#237)
+
+    // Else takes a function that returns a value or an Error through the implicit conversions to the result type. A task blocks
+    // them: Task<int> does not convert to Task<Result<int>>, and the type argument of the task contradicts the receiver in the type
+    // inference, so these overloads give ElseAsync the same functions (#237). The overloads on a task receiver have priority 1, as
+    // the generic one: an async lambda converts to a Task and to a ValueTask, and the traps for a ValueTask would be ambiguous.
+
+    /// <summary>
+    ///     Invokes the specified asynchronous function if the <paramref name="result" /> is failed and returns a successful
+    ///     <see cref="Result{T}" /> with the value that it returns; otherwise, returns the original <paramref name="result" />.
+    /// </summary>
+    /// <remarks>
+    ///     Use it to recover from an error with a value, e.g., <c>result.ElseAsync(async error =&gt; await LoadDefaultAsync())</c>, as
+    ///     <c>Else(error =&gt; 0)</c> does. A <see langword="null" /> value is a valid value.
+    /// </remarks>
+    /// <typeparam name="T">The type of the value of the <paramref name="result" />.</typeparam>
+    /// <param name="result">The <see cref="Result{T}" /> to evaluate for an error. Must not be <see langword="null" />.</param>
+    /// <param name="ifErrorFunction">
+    ///     The asynchronous function to invoke if the <paramref name="result" /> is failed. It receives the <see cref="Error" /> and returns
+    ///     the value of the successful <see cref="Result{T}" />. Must not be <see langword="null" />.
+    /// </param>
+    /// <param name="continueOnCapturedContext">
+    ///     <see langword="true" /> to run the continuations, including the passed delegates when they run after an <c>await</c>,
+    ///     on the captured context (e.g., the UI thread); <see langword="false" /> to run them on any thread;
+    ///     <see langword="null" /> (the default) to use <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
+    /// </param>
+    /// <returns>
+    ///     A <see cref="Task{TResult}" /> that represents the original <paramref name="result" /> if it is successful; otherwise, a successful
+    ///     <see cref="Result{T}" /> with the value returned by the <paramref name="ifErrorFunction" />.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    ///     If any of the <paramref name="result" /> or <paramref name="ifErrorFunction" /> parameters are <see langword="null" />.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">If <paramref name="ifErrorFunction" /> returns a <see langword="null" /> task.</exception>
+    public static Task<Result<T>> ElseAsync<T>(this Result<T> result, Func<Error, Task<T>> ifErrorFunction, bool? continueOnCapturedContext = null)
+    {
+        ArgumentNullException.ThrowIfNull(result);
+        ArgumentNullException.ThrowIfNull(ifErrorFunction);
+
+        return Core(result, ifErrorFunction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+
+        static async Task<Result<T>> Core(Result<T> result, Func<Error, Task<T>> ifErrorFunction, bool continueOnCapturedContext)
+        {
+            if (result.IsSuccess)
+                return result;
+
+            var recoveryTask = ifErrorFunction(result.Error);
+            var checkedTask = Guard.EnsureNotNullTask(recoveryTask, nameof(ifErrorFunction));
+            var value = await checkedTask.ConfigureAwait(continueOnCapturedContext);
+
+            return Result<T>.FromValue(value);
+        }
+    }
+
+    /// <summary>
+    ///     Invokes the specified asynchronous function if the <paramref name="result" /> is failed and returns a failed
+    ///     <see cref="Result{T}" /> with the <see cref="Error" /> that it returns; otherwise, returns the original <paramref name="result" />.
+    /// </summary>
+    /// <remarks>
+    ///     Use it to replace an error with another one, e.g., <c>result.ElseAsync(async error =&gt; await TranslateAsync(error))</c>, as
+    ///     <c>Else(error =&gt; error.WithMetadata(…))</c> does. When <typeparamref name="T" /> is <see cref="Error" />, a returned
+    ///     <see cref="Error" /> is the error of a failed result too; return <c>Result&lt;Error&gt;.FromValue(…)</c> for a successful one.
+    /// </remarks>
+    /// <typeparam name="T">The type of the value of the <paramref name="result" />.</typeparam>
+    /// <param name="result">The <see cref="Result{T}" /> to evaluate for an error. Must not be <see langword="null" />.</param>
+    /// <param name="ifErrorFunction">
+    ///     The asynchronous function to invoke if the <paramref name="result" /> is failed. It receives the <see cref="Error" /> and returns
+    ///     the <see cref="Error" /> of the failed <see cref="Result{T}" />. Must not be <see langword="null" />.
+    /// </param>
+    /// <param name="continueOnCapturedContext">
+    ///     <see langword="true" /> to run the continuations, including the passed delegates when they run after an <c>await</c>,
+    ///     on the captured context (e.g., the UI thread); <see langword="false" /> to run them on any thread;
+    ///     <see langword="null" /> (the default) to use <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
+    /// </param>
+    /// <returns>
+    ///     A <see cref="Task{TResult}" /> that represents the original <paramref name="result" /> if it is successful; otherwise, a failed
+    ///     <see cref="Result{T}" /> with the <see cref="Error" /> returned by the <paramref name="ifErrorFunction" />.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    ///     If any of the <paramref name="result" /> or <paramref name="ifErrorFunction" /> parameters are <see langword="null" />.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///     If <paramref name="ifErrorFunction" /> returns a <see langword="null" /> task or a task with a <see langword="null" /> result.
+    /// </exception>
+    public static Task<Result<T>> ElseAsync<T>(this Result<T> result, Func<Error, Task<Error>> ifErrorFunction, bool? continueOnCapturedContext = null)
+    {
+        ArgumentNullException.ThrowIfNull(result);
+        ArgumentNullException.ThrowIfNull(ifErrorFunction);
+
+        return Core(result, ifErrorFunction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+
+        static async Task<Result<T>> Core(Result<T> result, Func<Error, Task<Error>> ifErrorFunction, bool continueOnCapturedContext)
+        {
+            if (result.IsSuccess)
+                return result;
+
+            var errorTask = ifErrorFunction(result.Error);
+            var error = await Guard.EnsureNotNullResult(errorTask, nameof(ifErrorFunction), continueOnCapturedContext);
+
+            return Result<T>.FromError(error);
+        }
+    }
+
+    /// <summary>
+    ///     Invokes the specified asynchronous function if the <paramref name="result" /> is failed and returns a failed
+    ///     <see cref="Result" /> with the <see cref="Error" /> that it returns; otherwise, returns the original <paramref name="result" />.
+    /// </summary>
+    /// <remarks>
+    ///     Use it to replace an error with another one, e.g., <c>result.ElseAsync(async error =&gt; await TranslateAsync(error))</c>, as
+    ///     <c>Else(error =&gt; error.WithMetadata(…))</c> does.
+    /// </remarks>
+    /// <param name="result">The <see cref="Result" /> to evaluate for an error. Must not be <see langword="null" />.</param>
+    /// <param name="ifErrorFunction">
+    ///     The asynchronous function to invoke if the <paramref name="result" /> is failed. It receives the <see cref="Error" /> and returns
+    ///     the <see cref="Error" /> of the failed <see cref="Result" />. Must not be <see langword="null" />.
+    /// </param>
+    /// <param name="continueOnCapturedContext">
+    ///     <see langword="true" /> to run the continuations, including the passed delegates when they run after an <c>await</c>,
+    ///     on the captured context (e.g., the UI thread); <see langword="false" /> to run them on any thread;
+    ///     <see langword="null" /> (the default) to use <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
+    /// </param>
+    /// <returns>
+    ///     A <see cref="Task{TResult}" /> that represents the original <paramref name="result" /> if it is successful; otherwise, a failed
+    ///     <see cref="Result" /> with the <see cref="Error" /> returned by the <paramref name="ifErrorFunction" />.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    ///     If any of the <paramref name="result" /> or <paramref name="ifErrorFunction" /> parameters are <see langword="null" />.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///     If <paramref name="ifErrorFunction" /> returns a <see langword="null" /> task or a task with a <see langword="null" /> result.
+    /// </exception>
+    public static Task<Result> ElseAsync(this Result result, Func<Error, Task<Error>> ifErrorFunction, bool? continueOnCapturedContext = null)
+    {
+        ArgumentNullException.ThrowIfNull(result);
+        ArgumentNullException.ThrowIfNull(ifErrorFunction);
+
+        return Core(result, ifErrorFunction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+
+        static async Task<Result> Core(Result result, Func<Error, Task<Error>> ifErrorFunction, bool continueOnCapturedContext)
+        {
+            if (result.IsSuccess)
+                return result;
+
+            var errorTask = ifErrorFunction(result.Error);
+            var error = await Guard.EnsureNotNullResult(errorTask, nameof(ifErrorFunction), continueOnCapturedContext);
+
+            return Result.FromError(error);
+        }
+    }
+
+    /// <summary>
+    ///     Invokes the specified asynchronous function if the result of the <paramref name="resultTask" /> is failed and returns a successful
+    ///     <see cref="Result{T}" /> with the value that it returns; otherwise, returns the result of the <paramref name="resultTask" />.
+    /// </summary>
+    /// <remarks>
+    ///     Use it to recover from an error with a value, e.g., <c>resultTask.ElseAsync(async error =&gt; await LoadDefaultAsync())</c>, as
+    ///     <c>Else(error =&gt; 0)</c> does. A <see langword="null" /> value is a valid value.
+    /// </remarks>
+    /// <typeparam name="T">The type of the value of the result.</typeparam>
+    /// <param name="resultTask">The asynchronous operation that returns the result to inspect. Must not be <see langword="null" />.</param>
+    /// <param name="ifErrorFunction">
+    ///     The asynchronous function to invoke if the result is failed. It receives the <see cref="Error" /> and returns the value of the
+    ///     successful <see cref="Result{T}" />. Must not be <see langword="null" />.
+    /// </param>
+    /// <param name="continueOnCapturedContext">
+    ///     <see langword="true" /> to run the continuations, including the passed delegates when they run after an <c>await</c>,
+    ///     on the captured context (e.g., the UI thread); <see langword="false" /> to run them on any thread;
+    ///     <see langword="null" /> (the default) to use <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
+    /// </param>
+    /// <returns>
+    ///     A <see cref="Task{TResult}" /> that represents the result of the <paramref name="resultTask" /> if it is successful; otherwise, a
+    ///     successful <see cref="Result{T}" /> with the value returned by the <paramref name="ifErrorFunction" />.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    ///     If any of the <paramref name="resultTask" /> or <paramref name="ifErrorFunction" /> parameters are <see langword="null" />.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />,
+    ///     or <paramref name="ifErrorFunction" /> returns a <see langword="null" /> task.
+    /// </exception>
+    [OverloadResolutionPriority(1)]
+    public static Task<Result<T>> ElseAsync<T>(this Task<Result<T>> resultTask, Func<Error, Task<T>> ifErrorFunction,
+        bool? continueOnCapturedContext = null)
+    {
+        ArgumentNullException.ThrowIfNull(resultTask);
+        ArgumentNullException.ThrowIfNull(ifErrorFunction);
+
+        return Core(resultTask, ifErrorFunction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+
+        static async Task<Result<T>> Core(Task<Result<T>> resultTask, Func<Error, Task<T>> ifErrorFunction, bool continueOnCapturedContext)
+        {
+            var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
+
+            if (result.IsSuccess)
+                return result;
+
+            var recoveryTask = ifErrorFunction(result.Error);
+            var checkedTask = Guard.EnsureNotNullTask(recoveryTask, nameof(ifErrorFunction));
+            var value = await checkedTask.ConfigureAwait(continueOnCapturedContext);
+
+            return Result<T>.FromValue(value);
+        }
+    }
+
+    /// <summary>
+    ///     Invokes the specified asynchronous function if the result of the <paramref name="resultTask" /> is failed and returns a failed
+    ///     <see cref="Result{T}" /> with the <see cref="Error" /> that it returns; otherwise, returns the result of the
+    ///     <paramref name="resultTask" />.
+    /// </summary>
+    /// <remarks>
+    ///     Use it to replace an error with another one, e.g., <c>resultTask.ElseAsync(async error =&gt; await TranslateAsync(error))</c>, as
+    ///     <c>Else(error =&gt; error.WithMetadata(…))</c> does. When <typeparamref name="T" /> is <see cref="Error" />, a returned
+    ///     <see cref="Error" /> is the error of a failed result too; return <c>Result&lt;Error&gt;.FromValue(…)</c> for a successful one.
+    /// </remarks>
+    /// <typeparam name="T">The type of the value of the result.</typeparam>
+    /// <param name="resultTask">The asynchronous operation that returns the result to inspect. Must not be <see langword="null" />.</param>
+    /// <param name="ifErrorFunction">
+    ///     The asynchronous function to invoke if the result is failed. It receives the <see cref="Error" /> and returns the
+    ///     <see cref="Error" /> of the failed <see cref="Result{T}" />. Must not be <see langword="null" />.
+    /// </param>
+    /// <param name="continueOnCapturedContext">
+    ///     <see langword="true" /> to run the continuations, including the passed delegates when they run after an <c>await</c>,
+    ///     on the captured context (e.g., the UI thread); <see langword="false" /> to run them on any thread;
+    ///     <see langword="null" /> (the default) to use <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
+    /// </param>
+    /// <returns>
+    ///     A <see cref="Task{TResult}" /> that represents the result of the <paramref name="resultTask" /> if it is successful; otherwise, a
+    ///     failed <see cref="Result{T}" /> with the <see cref="Error" /> returned by the <paramref name="ifErrorFunction" />.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    ///     If any of the <paramref name="resultTask" /> or <paramref name="ifErrorFunction" /> parameters are <see langword="null" />.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />,
+    ///     or <paramref name="ifErrorFunction" /> returns a <see langword="null" /> task or a task with a <see langword="null" /> result.
+    /// </exception>
+    [OverloadResolutionPriority(1)]
+    public static Task<Result<T>> ElseAsync<T>(this Task<Result<T>> resultTask, Func<Error, Task<Error>> ifErrorFunction,
+        bool? continueOnCapturedContext = null)
+    {
+        ArgumentNullException.ThrowIfNull(resultTask);
+        ArgumentNullException.ThrowIfNull(ifErrorFunction);
+
+        return Core(resultTask, ifErrorFunction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+
+        static async Task<Result<T>> Core(Task<Result<T>> resultTask, Func<Error, Task<Error>> ifErrorFunction, bool continueOnCapturedContext)
+        {
+            var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
+
+            if (result.IsSuccess)
+                return result;
+
+            var errorTask = ifErrorFunction(result.Error);
+            var error = await Guard.EnsureNotNullResult(errorTask, nameof(ifErrorFunction), continueOnCapturedContext);
+
+            return Result<T>.FromError(error);
+        }
+    }
+
+    /// <summary>
+    ///     Invokes the specified asynchronous function if the result of the <paramref name="resultTask" /> is failed and returns a failed
+    ///     <see cref="Result" /> with the <see cref="Error" /> that it returns; otherwise, returns the result of the <paramref name="resultTask" />.
+    /// </summary>
+    /// <remarks>
+    ///     Use it to replace an error with another one, e.g., <c>resultTask.ElseAsync(async error =&gt; await TranslateAsync(error))</c>, as
+    ///     <c>Else(error =&gt; error.WithMetadata(…))</c> does.
+    /// </remarks>
+    /// <param name="resultTask">The asynchronous operation that returns the result to inspect. Must not be <see langword="null" />.</param>
+    /// <param name="ifErrorFunction">
+    ///     The asynchronous function to invoke if the result is failed. It receives the <see cref="Error" /> and returns the
+    ///     <see cref="Error" /> of the failed <see cref="Result" />. Must not be <see langword="null" />.
+    /// </param>
+    /// <param name="continueOnCapturedContext">
+    ///     <see langword="true" /> to run the continuations, including the passed delegates when they run after an <c>await</c>,
+    ///     on the captured context (e.g., the UI thread); <see langword="false" /> to run them on any thread;
+    ///     <see langword="null" /> (the default) to use <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
+    /// </param>
+    /// <returns>
+    ///     A <see cref="Task{TResult}" /> that represents the result of the <paramref name="resultTask" /> if it is successful; otherwise, a
+    ///     failed <see cref="Result" /> with the <see cref="Error" /> returned by the <paramref name="ifErrorFunction" />.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    ///     If any of the <paramref name="resultTask" /> or <paramref name="ifErrorFunction" /> parameters are <see langword="null" />.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />,
+    ///     or <paramref name="ifErrorFunction" /> returns a <see langword="null" /> task or a task with a <see langword="null" /> result.
+    /// </exception>
+    [OverloadResolutionPriority(1)]
+    public static Task<Result> ElseAsync(this Task<Result> resultTask, Func<Error, Task<Error>> ifErrorFunction, bool? continueOnCapturedContext = null)
+    {
+        ArgumentNullException.ThrowIfNull(resultTask);
+        ArgumentNullException.ThrowIfNull(ifErrorFunction);
+
+        return Core(resultTask, ifErrorFunction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+
+        static async Task<Result> Core(Task<Result> resultTask, Func<Error, Task<Error>> ifErrorFunction, bool continueOnCapturedContext)
+        {
+            var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
+
+            if (result.IsSuccess)
+                return result;
+
+            var errorTask = ifErrorFunction(result.Error);
+            var error = await Guard.EnsureNotNullResult(errorTask, nameof(ifErrorFunction), continueOnCapturedContext);
+
+            return Result.FromError(error);
+        }
+    }
+
+    #endregion
+
     #region Not supported: actions (#197)
 
     // A function that returns nothing is a side effect, not a transformation (#197): these overloads turn the call into a compile

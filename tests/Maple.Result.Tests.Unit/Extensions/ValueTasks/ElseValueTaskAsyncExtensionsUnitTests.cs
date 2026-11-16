@@ -678,7 +678,7 @@ public class ElseValueTaskAsyncExtensionsUnitTests
             .ToList();
 
         // Assert
-        priorities.Count.ShouldBe(2);
+        priorities.Count.ShouldBe(5);
         priorities.ShouldAllBe(p => p == 1);
     }
 
@@ -697,6 +697,217 @@ public class ElseValueTaskAsyncExtensionsUnitTests
         // Assert
         priorities.Count.ShouldBe(1);
         priorities.ShouldAllBe(p => p == 0);
+    }
+
+    #endregion
+
+    #region A function returning a value or an Error in a value task (issue #237)
+
+    // ElseAsync takes a function that returns the value or the Error of the replacement result, as Else does through the implicit
+    // conversions. A successful result is returned unchanged; the null rules are checked over every overload by NullCheckUnitTests.
+
+    private static readonly Error FailedError = Error.Failure(ErrorUri.None, "The failed result");
+    private static readonly Error ReplacementError = Error.Conflict(ErrorUri.None, "The replacement error");
+
+    [Fact]
+    public async Task ElseAsync_FailedResultOfTWithValueFunction_ReturnsSuccessfulResultWithTheValue()
+    {
+        // Arrange
+        var sut = Result<int>.FromError(FailedError);
+
+        // Act
+        var result = await sut.ElseAsync(_ => new ValueTask<int>(-1));
+
+        // Assert
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldBe(-1);
+    }
+
+    [Fact]
+    public async Task ElseAsync_SuccessfulResultOfTWithValueFunction_ReturnsOriginalResultAndDoesNotCallFunction()
+    {
+        // Arrange
+        var sut = Result<int>.FromValue(5);
+        var called = false;
+
+        // Act
+        var result = await sut.ElseAsync(_ => { called = true; return new ValueTask<int>(-1); });
+
+        // Assert
+        result.ShouldBeSameAs(sut);
+        called.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task ElseAsync_FailedResultOfTWithValueFunctionReturningNull_ReturnsSuccessfulResultWithNullValue()
+    {
+        // Arrange
+        var sut = Result<string?>.FromError(FailedError);
+
+        // Act
+        var result = await sut.ElseAsync(_ => new ValueTask<string?>((string?)null));
+
+        // Assert
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task ElseAsync_FailedResultOfTWithErrorFunction_ReturnsFailedResultWithTheError()
+    {
+        // Arrange
+        var sut = Result<int>.FromError(FailedError);
+
+        // Act
+        var result = await sut.ElseAsync(_ => new ValueTask<Error>(ReplacementError));
+
+        // Assert
+        result.Error.ShouldBe(ReplacementError);
+    }
+
+    [Fact]
+    public async Task ElseAsync_SuccessfulResultOfTWithErrorFunction_ReturnsOriginalResultAndDoesNotCallFunction()
+    {
+        // Arrange
+        var sut = Result<int>.FromValue(5);
+        var called = false;
+
+        // Act
+        var result = await sut.ElseAsync(_ => { called = true; return new ValueTask<Error>(ReplacementError); });
+
+        // Assert
+        result.ShouldBeSameAs(sut);
+        called.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task ElseAsync_FailedResultWithErrorFunction_ReturnsFailedResultWithTheError()
+    {
+        // Arrange
+        var sut = Result.FromError(FailedError);
+
+        // Act
+        var result = await sut.ElseAsync(_ => new ValueTask<Error>(ReplacementError));
+
+        // Assert
+        result.Error.ShouldBe(ReplacementError);
+    }
+
+    [Fact]
+    public async Task ElseAsync_SuccessfulResultWithErrorFunction_ReturnsOriginalResultAndDoesNotCallFunction()
+    {
+        // Arrange
+        var sut = Result.Success();
+        var called = false;
+
+        // Act
+        var result = await sut.ElseAsync(_ => { called = true; return new ValueTask<Error>(ReplacementError); });
+
+        // Assert
+        result.ShouldBeSameAs(sut);
+        called.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task ElseAsync_FailedResultOfTValueTaskWithValueFunction_ReturnsSuccessfulResultWithTheValue()
+    {
+        // Arrange
+        var sut = new ValueTask<Result<int>>(Result<int>.FromError(FailedError));
+
+        // Act
+        var result = await sut.ElseAsync(_ => new ValueTask<int>(-1));
+
+        // Assert
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldBe(-1);
+    }
+
+    [Fact]
+    public async Task ElseAsync_SuccessfulResultOfTValueTaskWithValueFunction_ReturnsOriginalResultAndDoesNotCallFunction()
+    {
+        // Arrange
+        var original = Result<int>.FromValue(5);
+        var sut = new ValueTask<Result<int>>(original);
+        var called = false;
+
+        // Act
+        var result = await sut.ElseAsync(_ => { called = true; return new ValueTask<int>(-1); });
+
+        // Assert
+        result.ShouldBeSameAs(original);
+        called.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task ElseAsync_FailedResultOfTValueTaskWithValueFunctionReturningNull_ReturnsSuccessfulResultWithNullValue()
+    {
+        // Arrange
+        var sut = new ValueTask<Result<string?>>(Result<string?>.FromError(FailedError));
+
+        // Act
+        var result = await sut.ElseAsync(_ => new ValueTask<string?>((string?)null));
+
+        // Assert
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task ElseAsync_FailedResultOfTValueTaskWithErrorFunction_ReturnsFailedResultWithTheError()
+    {
+        // Arrange
+        var sut = new ValueTask<Result<int>>(Result<int>.FromError(FailedError));
+
+        // Act
+        var result = await sut.ElseAsync(e => new ValueTask<Error>(e == FailedError ? ReplacementError : e));
+
+        // Assert
+        result.Error.ShouldBe(ReplacementError);
+    }
+
+    [Fact]
+    public async Task ElseAsync_SuccessfulResultOfTValueTaskWithErrorFunction_ReturnsOriginalResultAndDoesNotCallFunction()
+    {
+        // Arrange
+        var original = Result<int>.FromValue(5);
+        var sut = new ValueTask<Result<int>>(original);
+        var called = false;
+
+        // Act
+        var result = await sut.ElseAsync(_ => { called = true; return new ValueTask<Error>(ReplacementError); });
+
+        // Assert
+        result.ShouldBeSameAs(original);
+        called.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task ElseAsync_FailedResultValueTaskWithErrorFunction_ReturnsFailedResultWithTheError()
+    {
+        // Arrange
+        var sut = new ValueTask<Result>(Result.FromError(FailedError));
+
+        // Act
+        var result = await sut.ElseAsync(e => new ValueTask<Error>(e.ToBuilder().WithTitle("Replaced").Build()));
+
+        // Assert
+        result.Error.ShouldNotBeNull().Title.ShouldBe("Replaced");
+    }
+
+    [Fact]
+    public async Task ElseAsync_SuccessfulResultValueTaskWithErrorFunction_ReturnsOriginalResultAndDoesNotCallFunction()
+    {
+        // Arrange
+        var original = Result.Success();
+        var sut = new ValueTask<Result>(original);
+        var called = false;
+
+        // Act
+        var result = await sut.ElseAsync(_ => { called = true; return new ValueTask<Error>(ReplacementError); });
+
+        // Assert
+        result.ShouldBeSameAs(original);
+        called.ShouldBeFalse();
     }
 
     #endregion

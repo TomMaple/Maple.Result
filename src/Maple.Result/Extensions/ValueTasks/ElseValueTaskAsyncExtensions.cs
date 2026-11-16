@@ -134,6 +134,193 @@ public static class ElseValueTaskAsyncExtensions
 
     #endregion
 
+    #region A value or an Error in a value task (#237)
+
+    // The ValueTask counterparts of the Task overloads (#237): a function that returns a value or an Error, as Else takes one through
+    // the implicit conversions. The overloads on a value task receiver have priority 1, as the generic one.
+
+    /// <returns>
+    ///     A <see cref="ValueTask{TResult}" /> that represents the original <paramref name="result" /> if it is successful; otherwise, a successful
+    ///     <see cref="Result{T}" /> with the value returned by the <paramref name="ifErrorFunction" />.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    ///     If any of the <paramref name="result" /> or <paramref name="ifErrorFunction" /> parameters are <see langword="null" />.
+    /// </exception>
+    /// <inheritdoc cref="ElseTaskAsyncExtensions.ElseAsync{T}(Result{T}, Func{Error, Task{T}}, bool?)" path="/*[not(self::exception)]" />
+    public static ValueTask<Result<T>> ElseAsync<T>(this Result<T> result, Func<Error, ValueTask<T>> ifErrorFunction,
+        bool? continueOnCapturedContext = null)
+    {
+        ArgumentNullException.ThrowIfNull(result);
+        ArgumentNullException.ThrowIfNull(ifErrorFunction);
+
+        return Core(result, ifErrorFunction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+
+        static async ValueTask<Result<T>> Core(Result<T> result, Func<Error, ValueTask<T>> ifErrorFunction, bool continueOnCapturedContext)
+        {
+            if (result.IsSuccess)
+                return result;
+
+            var recoveryTask = ifErrorFunction(result.Error);
+            var value = await recoveryTask.ConfigureAwait(continueOnCapturedContext);
+
+            return Result<T>.FromValue(value);
+        }
+    }
+
+    /// <returns>
+    ///     A <see cref="ValueTask{TResult}" /> that represents the original <paramref name="result" /> if it is successful; otherwise, a failed
+    ///     <see cref="Result{T}" /> with the <see cref="Error" /> returned by the <paramref name="ifErrorFunction" />.
+    /// </returns>
+    /// <exception cref="InvalidOperationException">
+    ///     If <paramref name="ifErrorFunction" /> returns a value task with a <see langword="null" /> result.
+    /// </exception>
+    /// <inheritdoc cref="ElseTaskAsyncExtensions.ElseAsync{T}(Result{T}, Func{Error, Task{Error}}, bool?)" />
+    public static ValueTask<Result<T>> ElseAsync<T>(this Result<T> result, Func<Error, ValueTask<Error>> ifErrorFunction,
+        bool? continueOnCapturedContext = null)
+    {
+        ArgumentNullException.ThrowIfNull(result);
+        ArgumentNullException.ThrowIfNull(ifErrorFunction);
+
+        return Core(result, ifErrorFunction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+
+        static async ValueTask<Result<T>> Core(Result<T> result, Func<Error, ValueTask<Error>> ifErrorFunction, bool continueOnCapturedContext)
+        {
+            if (result.IsSuccess)
+                return result;
+
+            var errorTask = ifErrorFunction(result.Error);
+            var error = await Guard.EnsureNotNullResult(errorTask, nameof(ifErrorFunction), continueOnCapturedContext);
+
+            return Result<T>.FromError(error);
+        }
+    }
+
+    /// <returns>
+    ///     A <see cref="ValueTask{TResult}" /> that represents the original <paramref name="result" /> if it is successful; otherwise, a failed
+    ///     <see cref="Result" /> with the <see cref="Error" /> returned by the <paramref name="ifErrorFunction" />.
+    /// </returns>
+    /// <exception cref="InvalidOperationException">
+    ///     If <paramref name="ifErrorFunction" /> returns a value task with a <see langword="null" /> result.
+    /// </exception>
+    /// <inheritdoc cref="ElseTaskAsyncExtensions.ElseAsync(Result, Func{Error, Task{Error}}, bool?)" />
+    public static ValueTask<Result> ElseAsync(this Result result, Func<Error, ValueTask<Error>> ifErrorFunction, bool? continueOnCapturedContext = null)
+    {
+        ArgumentNullException.ThrowIfNull(result);
+        ArgumentNullException.ThrowIfNull(ifErrorFunction);
+
+        return Core(result, ifErrorFunction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+
+        static async ValueTask<Result> Core(Result result, Func<Error, ValueTask<Error>> ifErrorFunction, bool continueOnCapturedContext)
+        {
+            if (result.IsSuccess)
+                return result;
+
+            var errorTask = ifErrorFunction(result.Error);
+            var error = await Guard.EnsureNotNullResult(errorTask, nameof(ifErrorFunction), continueOnCapturedContext);
+
+            return Result.FromError(error);
+        }
+    }
+
+    /// <returns>
+    ///     A <see cref="ValueTask{TResult}" /> that represents the result of the <paramref name="resultTask" /> if it is successful; otherwise, a
+    ///     successful <see cref="Result{T}" /> with the value returned by the <paramref name="ifErrorFunction" />.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">If the <paramref name="ifErrorFunction" /> parameter is <see langword="null" />.</exception>
+    /// <exception cref="InvalidOperationException">
+    ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />.
+    /// </exception>
+    /// <inheritdoc cref="ElseTaskAsyncExtensions.ElseAsync{T}(Task{Result{T}}, Func{Error, Task{T}}, bool?)" path="/*[not(self::exception)]" />
+    [OverloadResolutionPriority(1)]
+    public static ValueTask<Result<T>> ElseAsync<T>(this ValueTask<Result<T>> resultTask, Func<Error, ValueTask<T>> ifErrorFunction,
+        bool? continueOnCapturedContext = null)
+    {
+        ArgumentNullException.ThrowIfNull(ifErrorFunction);
+
+        return Core(resultTask, ifErrorFunction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+
+        static async ValueTask<Result<T>> Core(ValueTask<Result<T>> resultTask, Func<Error, ValueTask<T>> ifErrorFunction,
+            bool continueOnCapturedContext)
+        {
+            var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
+
+            if (result.IsSuccess)
+                return result;
+
+            var recoveryTask = ifErrorFunction(result.Error);
+            var value = await recoveryTask.ConfigureAwait(continueOnCapturedContext);
+
+            return Result<T>.FromValue(value);
+        }
+    }
+
+    /// <returns>
+    ///     A <see cref="ValueTask{TResult}" /> that represents the result of the <paramref name="resultTask" /> if it is successful; otherwise, a
+    ///     failed <see cref="Result{T}" /> with the <see cref="Error" /> returned by the <paramref name="ifErrorFunction" />.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">If the <paramref name="ifErrorFunction" /> parameter is <see langword="null" />.</exception>
+    /// <exception cref="InvalidOperationException">
+    ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />,
+    ///     or <paramref name="ifErrorFunction" /> returns a value task with a <see langword="null" /> result.
+    /// </exception>
+    /// <inheritdoc cref="ElseTaskAsyncExtensions.ElseAsync{T}(Task{Result{T}}, Func{Error, Task{Error}}, bool?)" />
+    [OverloadResolutionPriority(1)]
+    public static ValueTask<Result<T>> ElseAsync<T>(this ValueTask<Result<T>> resultTask, Func<Error, ValueTask<Error>> ifErrorFunction,
+        bool? continueOnCapturedContext = null)
+    {
+        ArgumentNullException.ThrowIfNull(ifErrorFunction);
+
+        return Core(resultTask, ifErrorFunction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+
+        static async ValueTask<Result<T>> Core(ValueTask<Result<T>> resultTask, Func<Error, ValueTask<Error>> ifErrorFunction,
+            bool continueOnCapturedContext)
+        {
+            var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
+
+            if (result.IsSuccess)
+                return result;
+
+            var errorTask = ifErrorFunction(result.Error);
+            var error = await Guard.EnsureNotNullResult(errorTask, nameof(ifErrorFunction), continueOnCapturedContext);
+
+            return Result<T>.FromError(error);
+        }
+    }
+
+    /// <returns>
+    ///     A <see cref="ValueTask{TResult}" /> that represents the result of the <paramref name="resultTask" /> if it is successful; otherwise, a
+    ///     failed <see cref="Result" /> with the <see cref="Error" /> returned by the <paramref name="ifErrorFunction" />.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">If the <paramref name="ifErrorFunction" /> parameter is <see langword="null" />.</exception>
+    /// <exception cref="InvalidOperationException">
+    ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />,
+    ///     or <paramref name="ifErrorFunction" /> returns a value task with a <see langword="null" /> result.
+    /// </exception>
+    /// <inheritdoc cref="ElseTaskAsyncExtensions.ElseAsync(Task{Result}, Func{Error, Task{Error}}, bool?)" />
+    [OverloadResolutionPriority(1)]
+    public static ValueTask<Result> ElseAsync(this ValueTask<Result> resultTask, Func<Error, ValueTask<Error>> ifErrorFunction,
+        bool? continueOnCapturedContext = null)
+    {
+        ArgumentNullException.ThrowIfNull(ifErrorFunction);
+
+        return Core(resultTask, ifErrorFunction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+
+        static async ValueTask<Result> Core(ValueTask<Result> resultTask, Func<Error, ValueTask<Error>> ifErrorFunction, bool continueOnCapturedContext)
+        {
+            var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
+
+            if (result.IsSuccess)
+                return result;
+
+            var errorTask = ifErrorFunction(result.Error);
+            var error = await Guard.EnsureNotNullResult(errorTask, nameof(ifErrorFunction), continueOnCapturedContext);
+
+            return Result.FromError(error);
+        }
+    }
+
+    #endregion
+
     #region Not supported: actions (#197)
 
     // A function that returns nothing is a side effect, not a transformation (#197): these overloads turn the call into a compile

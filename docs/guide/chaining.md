@@ -48,6 +48,15 @@ var userNameResult = await _userService.GetUserAsync(userId)
     .IfErrorAsync(error => _logger.LogWarning("{Title}", error.Title));
 ```
 
+As `Else()`, `ElseAsync()` takes a function that returns the replacement result, a value or an `Error`: a value recovers from the error, and an `Error` replaces it:
+```csharp
+var countResult = await _counterService.GetCountAsync(id)
+    .ElseAsync(async error => await _cache.GetLastCountAsync(id));       // a value: a successful Result<int>
+
+var userResult = await _userService.GetUserAsync(id)
+    .ElseAsync(async error => await _errorTranslator.TranslateAsync(error));   // an Error: a failed Result<User>
+```
+
 > [!NOTE]
 > The asynchronous extension methods (`ThenAsync()`, `ElseAsync()`, `IfSuccessAsync()`, `IfErrorAsync()`, `MatchAsync()`, `ToResultAsync()` and the LINQ `Select()` and `SelectMany()`) support both `Task` and `ValueTask`, so you can chain and `await` results regardless of which one your methods return.
 
