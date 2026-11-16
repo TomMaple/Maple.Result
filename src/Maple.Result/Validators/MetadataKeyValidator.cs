@@ -10,7 +10,6 @@
 
 using System;
 using System.Collections.Frozen;
-using System.Collections.Generic;
 
 namespace Maple.Results.Validators;
 
@@ -26,7 +25,8 @@ namespace Maple.Results.Validators;
 ///     <para>
 ///         The comparison ignores case: clients often deserialize JSON case-insensitively,
 ///         and naming policies can change the case of a key during serialization.
-///         For the same reason, two keys of one error must not differ only in case (<see cref="ValidateCase(string, Dictionary{string, object?}, string)" />).
+///         For the same reason, two keys of one error must not differ only in case (<see cref="KeyDiffersOnlyInCase" /> and
+///         <see cref="ValidateCase(string, string, string)" />).
 ///     </para>
 ///     <para>
 ///         A key does not start or end with white space (<see cref="NameValidator" />): <c>" type"</c> would get past the reserved-name check
@@ -87,28 +87,19 @@ internal static class MetadataKeyValidator
     }
 
     /// <summary>
-    ///     Throws if the key differs only in case from a key of the existing metadata; the same key is allowed (it replaces the value).
+    ///     Creates the exception for a key that differs only in case from a key of the existing metadata.
     /// </summary>
     /// <remarks>
-    ///     The existing metadata never holds two keys that differ only in case, so an exact match is the only key the new key can equal.
+    ///     The caller finds the <paramref name="existingKey" />; the existing metadata never holds two keys that differ only in case,
+    ///     so there is at most one.
     /// </remarks>
-    /// <exception cref="ArgumentException">If the <paramref name="key" /> differs only in case from an existing key.</exception>
-    internal static void ValidateCase(string key, Dictionary<string, object?> existing, string paramName)
+    internal static ArgumentException KeyDiffersOnlyInCase(string key, string existingKey, string paramName)
     {
-        if (existing.ContainsKey(key))
-            return;
-
-        foreach (var existingKey in existing.Keys)
-        {
-            if (string.Equals(existingKey, key, StringComparison.OrdinalIgnoreCase))
-            {
-                throw new ArgumentException(
-                    $"The metadata key ‘{key}’ differs only in case from the existing key ‘{existingKey}’. " +
-                    "Keys that differ only in case would be the same member of a problem details object; " +
-                    $"use ‘{existingKey}’ to replace the value, or remove it first.",
-                    paramName);
-            }
-        }
+        return new ArgumentException(
+            $"The metadata key ‘{key}’ differs only in case from the existing key ‘{existingKey}’. " +
+            "Keys that differ only in case would be the same member of a problem details object; " +
+            $"use ‘{existingKey}’ to replace the value, or remove it first.",
+            paramName);
     }
 
     /// <summary>
