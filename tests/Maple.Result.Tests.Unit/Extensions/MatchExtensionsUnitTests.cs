@@ -9,9 +9,7 @@
  */
 
 using Maple.Results.Extensions;
-using Maple.Results.Tests.Unit.TestingInfrastructure.Fakes;
 using Maple.Results.Tests.Unit.TestingInfrastructure.Helpers;
-using Moq;
 using System;
 using System.ComponentModel;
 using System.Linq;
@@ -22,327 +20,41 @@ namespace Maple.Results.Tests.Unit.Extensions;
 
 public class MatchExtensionsUnitTests
 {
-    #region Match (Result, Action, Action<Error>)
+    private static readonly Error SourceError = Error.Failure(ErrorUri.None, "50f1c1fb-560e-4bb3-84da-034072df7ca2", "Error title 6");
+    private static readonly Error OtherError = Error.Conflict(ErrorUri.None, "3d7a81ec-801d-45f4-b4b0-8d58e93b1d89", "Error title 7");
+
+    #region Match (Result, Func<TOut>, Func<Error, TOut>)
 
     [Fact]
-    public void Match_NoResultWithActions_ThrowsException()
+    public void Match_NullResult_ThrowsArgumentNullException()
     {
         // Arrange
         const Result? Sut = null;
 
         // Act
-        var exception = Record.Exception(() => Sut!.Match(() => { }, _ => { }));
+        var exception = Record.Exception(() => Sut!.Match(() => 1, _ => 0));
 
         // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
+        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("result");
     }
 
     [Fact]
-    public void Match_SuccessfulResultWithNoSuccessActionAndErrorAction_ThrowsException()
+    public void Match_NullSuccessFunction_ThrowsArgumentNullException()
     {
         // Arrange
-        const Action? SuccessAction = null;
+        const Func<int>? SuccessFunction = null;
 
         var sut = Result.Success();
 
         // Act
-        var exception = Record.Exception(() => sut.Match(SuccessAction!, _ => { }));
+        var exception = Record.Exception(() => sut.Match(SuccessFunction!, _ => 0));
 
         // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
+        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("ifSuccessFunction");
     }
 
     [Fact]
-    public void Match_SuccessfulResultWithSuccessActionAndNoErrorAction_ThrowsException()
-    {
-        // Arrange
-        const Action<Error>? ErrorAction = null;
-
-        var sut = Result.Success();
-
-        // Act
-        var exception = Record.Exception(() => sut.Match(() => { }, ErrorAction!));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public void Match_SuccessfulResultWithSuccessAndErrorActions_CallsSuccessAction()
-    {
-        // Arrange
-        var successActionMock = new Mock<Action>();
-
-        var sut = Result.Success();
-
-        // Act
-        sut.Match(successActionMock.Object, _ => { });
-
-        // Assert
-        successActionMock.Verify(x => x.Invoke(), Times.Once);
-    }
-
-    [Fact]
-    public void Match_SuccessfulResultWithSuccessAndErrorActions_DoesNotCallErrorAction()
-    {
-        // Arrange
-        var errorActionMock = new Mock<Action<Error>>();
-
-        var sut = Result.Success();
-
-        // Act
-        sut.Match(() => { }, errorActionMock.Object);
-
-        // Assert
-        errorActionMock.Verify(x => x.Invoke(It.IsAny<Error>()), Times.Never);
-    }
-
-    [Fact]
-    public void Match_SuccessfulResultWithSuccessAndErrorActions_ReturnsOriginalResult()
-    {
-        // Arrange
-        var sut = Result.Success();
-
-        // Act
-        var result = sut.Match(() => { }, _ => { });
-
-        // Assert
-        result.ShouldNotBeNull();
-        result.ShouldBe(sut);
-    }
-
-    [Fact]
-    public void Match_ErrorResultWithSuccessAndErrorActions_DoesNotCallSuccessAction()
-    {
-        // Arrange
-        var successActionMock = new Mock<Action>();
-
-        var sut = GetErrorResult();
-
-        // Act
-        sut.Match(successActionMock.Object, _ => { });
-
-        // Assert
-        successActionMock.Verify(x => x.Invoke(), Times.Never);
-    }
-
-    [Fact]
-    public void Match_ErrorResultWithSuccessAndErrorActions_CallsErrorAction()
-    {
-        // Arrange
-        var errorActionMock = new Mock<Action<Error>>();
-
-        var sut = GetErrorResult();
-
-        // Act
-        sut.Match(() => { }, errorActionMock.Object);
-
-        // Assert
-        errorActionMock.Verify(x => x.Invoke(sut.Error!), Times.Once);
-    }
-
-    [Fact]
-    public void Match_ErrorResultWithSuccessAndErrorActions_ReturnsOriginalResult()
-    {
-        // Arrange
-        var sut = GetErrorResult();
-
-        // Act
-        var result = sut.Match(() => { }, _ => { });
-
-        // Assert
-        result.ShouldBe(sut);
-    }
-
-    #endregion
-
-    #region Match (Result, Func<Result>, Func<Error, Result>)
-
-    [Fact]
-    public void Match_NoResultWithSuccessAndErrorResultFunctions_ThrowsException()
-    {
-        // Arrange
-        const Result? Sut = null;
-
-        // Act
-        var exception = Record.Exception(() => Sut!.Match(Result.Success, _ => Result.Success()));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public void Match_SuccessfulResultWithNoSuccessResultFunctionAndErrorResultFunction_ThrowsException2()
-    {
-        // Arrange
-        const Func<Result>? SuccessFunction = null;
-
-        var sut = Result.Success();
-
-        // Act
-        var exception = Record.Exception(() => sut.Match(SuccessFunction!, _ => Result.Success()));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public void Match_SuccessfulResultWithSuccessResultFunctionAndNoErrorResultFunction_ThrowsException()
-    {
-        // Arrange
-        const Func<Error, Result>? ErrorFunction = null;
-
-        var sut = Result.Success();
-
-        // Act
-        var exception = Record.Exception(() => sut.Match(Result.Success, ErrorFunction!));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public void Match_SuccessfulResultWithSuccessAndErrorResultFunctions_CallsSuccessFunction()
-    {
-        // Arrange
-        var successFunctionMock = new Mock<Func<Result>> { DefaultValueProvider = ResultDefaultValueProvider.Instance };
-
-        var sut = Result.Success();
-
-        // Act
-        sut.Match(successFunctionMock.Object, _ => Result.Success());
-
-        // Assert
-        successFunctionMock.Verify(x => x.Invoke(), Times.Once);
-    }
-
-    [Fact]
-    public void Match_SuccessfulResultWithSuccessAndErrorResultFunctions_DoesNotCallErrorFunction()
-    {
-        // Arrange
-        var errorFunctionMock = new Mock<Func<Error, Result>>();
-
-        var sut = Result.Success();
-
-        // Act
-        sut.Match(Result.Success, errorFunctionMock.Object);
-
-        // Assert
-        errorFunctionMock.Verify(x => x.Invoke(It.IsAny<Error>()), Times.Never);
-    }
-
-    [Fact]
-    public void Match_SuccessfulResultWithSuccessAndErrorResultFunctions_ReturnsSuccessFunctionResult()
-    {
-        // Arrange
-        var successFunctionResult = Result.Success();
-
-        var sut = Result.Success();
-
-        // Act
-        var result = sut.Match(() => successFunctionResult, _ => Result.Success());
-
-        // Assert
-        result.ShouldNotBeNull();
-        result.ShouldBeSameAs(successFunctionResult);
-    }
-
-    [Fact]
-    public void Match_ErrorResultWithSuccessAndErrorResultFunctions_DoesNotCallSuccessFunction()
-    {
-        // Arrange
-        var successFunctionMock = new Mock<Func<Result>>();
-
-        var sut = GetErrorResult();
-
-        // Act
-        sut.Match(successFunctionMock.Object, _ => Result.Success());
-
-        // Assert
-        successFunctionMock.Verify(x => x.Invoke(), Times.Never);
-    }
-
-    [Fact]
-    public void Match_ErrorResultWithSuccessAndErrorResultFunctions_CallsErrorFunction()
-    {
-        // Arrange
-        var errorFunctionMock = new Mock<Func<Error, Result>> { DefaultValueProvider = ResultDefaultValueProvider.Instance };
-
-        var sut = GetErrorResult();
-
-        // Act
-        sut.Match(Result.Success, errorFunctionMock.Object);
-
-        // Assert
-        errorFunctionMock.Verify(x => x.Invoke(sut.Error!), Times.Once);
-    }
-
-    [Fact]
-    public void Match_ErrorResultWithSuccessAndErrorResultFunctions_ReturnsErrorFunctionResult()
-    {
-        // Arrange
-        var errorFunctionResult = Result.Success();
-
-        var sut = GetErrorResult();
-
-        // Act
-        var result = sut.Match(Result.Success, _ => errorFunctionResult);
-
-        // Assert
-        result.ShouldNotBeNull();
-        result.ShouldBeSameAs(errorFunctionResult);
-    }
-
-    #endregion
-
-    #region Match (Result, Func<T>, Func<Error, T>)
-
-    [Fact]
-    public void Match_NoResultWithGenericSuccessAndErrorFunctions_ThrowsException()
-    {
-        // Arrange
-        const Result? Sut = null;
-
-        // Act
-        var exception = Record.Exception(() => Sut!.Match(() => 1, _ => 2));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public void Match_SuccessfulResultWithNoGenericSuccessFunctionAndGenericErrorFunction_ThrowsException()
-    {
-        // Arrange
-        const Func<int>? Function = null;
-
-        var sut = Result.Success();
-
-        // Act
-        var exception = Record.Exception(() => sut.Match(Function!, _ => 2));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public void Match_SuccessfulResultWithGenericSuccessFunctionAndNoGenericErrorFunction_ThrowsException()
+    public void Match_NullErrorFunction_ThrowsArgumentNullException()
     {
         // Arrange
         const Func<Error, int>? ErrorFunction = null;
@@ -353,872 +65,359 @@ public class MatchExtensionsUnitTests
         var exception = Record.Exception(() => sut.Match(() => 1, ErrorFunction!));
 
         // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
+        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("ifErrorFunction");
     }
 
     [Fact]
-    public void Match_SuccessfulResultWithGenericSuccessAndErrorFunctions_CallsSuccessFunction()
+    public void Match_SuccessfulResult_ReturnsValueOfSuccessFunction()
     {
         // Arrange
-        var successFunctionMock = new Mock<Func<int>>();
-
+        var errorCalled = false;
         var sut = Result.Success();
 
         // Act
-        sut.Match(successFunctionMock.Object, _ => 2);
+        var result = sut.Match(() => "success", _ =>
+        {
+            errorCalled = true;
+
+            return "error";
+        });
 
         // Assert
-        successFunctionMock.Verify(x => x.Invoke(), Times.Once);
+        result.ShouldBe("success");
+        errorCalled.ShouldBeFalse();
     }
 
     [Fact]
-    public void Match_SuccessfulResultWithGenericSuccessAndErrorFunctions_DoesNotCallErrorFunction()
+    public void Match_FailedResult_ReturnsValueOfErrorFunctionCalledWithTheError()
     {
         // Arrange
-        var errorFunctionMock = new Mock<Func<Error, int>>();
+        var successCalled = false;
+        Error? passedError = null;
+        var sut = Result.FromError(SourceError);
 
+        // Act
+        var result = sut.Match(() =>
+        {
+            successCalled = true;
+
+            return "success";
+        }, e =>
+        {
+            passedError = e;
+
+            return "error";
+        });
+
+        // Assert
+        result.ShouldBe("error");
+        passedError.ShouldBeSameAs(SourceError);
+        successCalled.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void Match_FunctionsReturningResult_ReturnsResultOfTheFunction()
+    {
+        // Arrange
+        var successResult = Result.FromError(OtherError);
         var sut = Result.Success();
 
         // Act
-        sut.Match(() => 1, errorFunctionMock.Object);
+        var result = sut.Match(() => successResult, e => e);
 
         // Assert
-        errorFunctionMock.Verify(x => x.Invoke(It.IsAny<Error>()), Times.Never);
+        result.ShouldBeSameAs(successResult);
     }
 
     [Fact]
-    public void Match_SuccessfulResultWithGenericSuccessAndErrorFunctions_ReturnsSuccessFunctionValue()
+    public void Match_FailedResultWithErrorFunctionReturningTheError_ReturnsFailedResult()
     {
         // Arrange
-        const int ExpectedValue = 58;
+        var sut = Result.FromError(SourceError);
 
+        // Act
+        var result = sut.Match(() => Result.FromValue(1), e => e);
+
+        // Assert
+        result.Error.ShouldBeSameAs(SourceError);
+    }
+
+    [Fact]
+    public void Match_FunctionReturningNullResult_ReturnsNull()
+    {
+        // Arrange
         var sut = Result.Success();
 
         // Act
-        var result = sut.Match(() => ExpectedValue, _ => 2);
+        var result = sut.Match(() => (Result)null!, e => e);
 
         // Assert
-        result.ShouldBe(ExpectedValue);
+        result.ShouldBeNull();
     }
 
     [Fact]
-    public void Match_ErrorResultWithGenericSuccessAndErrorFunctions_DoesNotCallSuccessFunction()
-    {
-        // Arrange
-        var successFunctionMock = new Mock<Func<int>>();
-
-        var sut = GetErrorResult();
-
-        // Act
-        sut.Match(successFunctionMock.Object, _ => 2);
-
-        // Assert
-        successFunctionMock.Verify(x => x.Invoke(), Times.Never);
-    }
-
-    [Fact]
-    public void Match_ErrorResultWithGenericSuccessAndErrorFunctions_CallsErrorFunction()
-    {
-        // Arrange
-        var errorFunctionMock = new Mock<Func<Error, int>>();
-
-        var sut = GetErrorResult();
-
-        // Act
-        sut.Match(() => 1, errorFunctionMock.Object);
-
-        // Assert
-        errorFunctionMock.Verify(x => x.Invoke(sut.Error!), Times.Once);
-    }
-
-    [Fact]
-    public void Match_ErrorResultWithGenericSuccessAndErrorFunctions_ReturnsErrorFunctionValue()
-    {
-        // Arrange
-        const int ExpectedValue = 73;
-
-        var sut = GetErrorResult();
-
-        // Act
-        var result = sut.Match(() => 1, _ => ExpectedValue);
-
-        // Assert
-        result.ShouldBe(ExpectedValue);
-    }
-
-    #endregion
-
-    #region Match (Result, Func<Result<T>>, Func<Error, Result<T>>)
-
-    [Fact]
-    public void Match_NoResultWithGenericResultSuccessAndErrorFunctions_ThrowsException()
-    {
-        // Arrange
-        const Result? Sut = null;
-
-        // Act
-        var exception = Record.Exception(() => Sut!.Match(() => Result.FromValue(1), _ => Result.FromValue(2)));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public void Match_SuccessfulResultWithNoGenericResultSuccessFunctionAndGenericResultErrorFunction_ThrowsException3()
-    {
-        // Arrange
-        const Func<Result<int>>? Function = null;
-
-        var sut = Result.Success();
-
-        // Act
-        var exception = Record.Exception(() => sut.Match(Function!, _ => Result.FromValue(2)));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public void Match_SuccessfulResultWithGenericResultSuccessFunctionAndNoGenericResultErrorFunction_ThrowsException()
-    {
-        // Arrange
-        const Func<Error, Result<int>>? ErrorFunction = null;
-
-        var sut = Result.Success();
-
-        // Act
-        var exception = Record.Exception(() => sut.Match(() => Result.FromValue(1), ErrorFunction!));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public void Match_SuccessfulResultWithGenericResultSuccessAndErrorFunctions_CallsSuccessFunction()
-    {
-        // Arrange
-        var successFunctionMock = new Mock<Func<Result<int>>> { DefaultValueProvider = ResultDefaultValueProvider.Instance };
-
-        var sut = Result.Success();
-
-        // Act
-        sut.Match(successFunctionMock.Object, _ => Result.FromValue(2));
-
-        // Assert
-        successFunctionMock.Verify(x => x.Invoke(), Times.Once);
-    }
-
-    [Fact]
-    public void Match_SuccessfulResultWithGenericResultSuccessAndErrorFunctions_DoesNotCallErrorFunction()
-    {
-        // Arrange
-        var errorFunctionMock = new Mock<Func<Error, Result<int>>>();
-
-        var sut = Result.Success();
-
-        // Act
-        sut.Match(() => Result.FromValue(1), errorFunctionMock.Object);
-
-        // Assert
-        errorFunctionMock.Verify(x => x.Invoke(It.IsAny<Error>()), Times.Never);
-    }
-
-    [Fact]
-    public void Match_SuccessfulResultWithGenericResultSuccessAndErrorFunctions_ReturnsSuccessFunctionResult()
-    {
-        // Arrange
-        var expectedResult = Result.FromValue(9);
-
-        var sut = Result.Success();
-
-        // Act
-        var result = sut.Match(() => expectedResult, _ => Result.FromValue(2));
-
-        // Assert
-        result.ShouldNotBeNull();
-        result.IsSuccess.ShouldBeTrue();
-        result.ShouldBeSameAs(expectedResult);
-    }
-
-    [Fact]
-    public void Match_ErrorResultWithGenericResultSuccessAndErrorFunctions_DoesNotCallSuccessFunction()
-    {
-        // Arrange
-        var successFunctionMock = new Mock<Func<Result<int>>>();
-
-        var sut = GetErrorResult();
-
-        // Act
-        sut.Match(successFunctionMock.Object, _ => Result.FromValue(2));
-
-        // Assert
-        successFunctionMock.Verify(x => x.Invoke(), Times.Never);
-    }
-
-    [Fact]
-    public void Match_ErrorResultWithGenericResultSuccessAndErrorFunctions_CallsErrorFunction()
-    {
-        // Arrange
-        var errorFunctionMock = new Mock<Func<Error, Result<int>>> { DefaultValueProvider = ResultDefaultValueProvider.Instance };
-
-        var sut = GetErrorResult();
-
-        // Act
-        sut.Match(() => Result.FromValue(1), errorFunctionMock.Object);
-
-        // Assert
-        errorFunctionMock.Verify(x => x.Invoke(sut.Error!), Times.Once);
-    }
-
-    [Fact]
-    public void Match_ErrorResultWithGenericResultSuccessAndErrorFunctions_ReturnsErrorFunctionValueResult()
-    {
-        // Arrange
-        var expectedResult = Result.FromValue(15);
-
-        var sut = GetErrorResult();
-
-        // Act
-        var result = sut.Match(() => Result.FromValue(1), _ => expectedResult);
-
-        // Assert
-        result.ShouldNotBeNull();
-        result.ShouldBeSameAs(expectedResult);
-    }
-
-    #endregion
-
-    #region Match (Result<T>, Action<T>, Action<Error>)
-
-    [Fact]
-    public void Match_NoGenericResultWithSuccessAndErrorActions_ThrowsException()
-    {
-        // Arrange
-        const Result<int>? Sut = null;
-
-        // Act
-        var exception = Record.Exception(() => Sut!.Match(_ => { }, _ => { }));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public void Match_SuccessfulGenericResultWithNoSuccessActionAndErrorAction_ThrowsException()
-    {
-        // Arrange
-        const Action<int>? SuccessAction = null;
-
-        Result<int> sut = 1;
-
-        // Act
-        var exception = Record.Exception(() => sut.Match(SuccessAction!, _ => { }));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public void Match_SuccessfulGenericResultWithSuccessActionAndNoErrorAction_ThrowsException()
-    {
-        // Arrange
-        const Action<Error>? ErrorAction = null;
-
-        Result<int> sut = 1;
-
-        // Act
-        var exception = Record.Exception(() => sut.Match(_ => { }, ErrorAction!));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public void Match_SuccessfulGenericResultWithSuccessAndErrorActions_CallsSuccessAction()
-    {
-        // Arrange
-        var successActionMock = new Mock<Action<int>>();
-
-        const int Value = 25;
-        Result<int> sut = Value;
-
-        // Act
-        sut.Match(successActionMock.Object, _ => { });
-
-        // Assert
-        successActionMock.Verify(x => x.Invoke(Value), Times.Once);
-    }
-
-    [Fact]
-    public void Match_SuccessfulGenericResultWithSuccessAndErrorActions_DoesNotCallErrorAction()
-    {
-        // Arrange
-        var errorActionMock = new Mock<Action<Error>>();
-
-        const int Value = 25;
-        Result<int> sut = Value;
-
-        // Act
-        sut.Match(_ => { }, errorActionMock.Object);
-
-        // Assert
-        errorActionMock.Verify(x => x.Invoke(It.IsAny<Error>()), Times.Never);
-    }
-
-    [Fact]
-    public void Match_SuccessfulGenericResultWithSuccessAndErrorActions_ReturnsOriginalValueResult()
-    {
-        // Arrange
-        const int Value = 25;
-        Result<int> sut = Value;
-
-        // Act
-        var result = sut.Match(_ => { }, _ => { });
-
-        // Assert
-        result.ShouldNotBeNull();
-        result.IsSuccess.ShouldBeTrue();
-        result.ShouldBeSameAs(sut);
-    }
-
-    [Fact]
-    public void Match_ErrorGenericResultWithSuccessAndErrorActions_DoesNotCallSuccessAction()
-    {
-        // Arrange
-        var successActionMock = new Mock<Action<int>>();
-
-        var sut = GetErrorResult<int>();
-
-        // Act
-        sut.Match(successActionMock.Object, _ => { });
-
-        // Assert
-        successActionMock.Verify(x => x.Invoke(It.IsAny<int>()), Times.Never);
-    }
-
-    [Fact]
-    public void Match_ErrorGenericResultWithSuccessAndErrorActions_CallsErrorAction()
-    {
-        // Arrange
-        var errorActionMock = new Mock<Action<Error>>();
-
-        var sut = GetErrorResult<int>();
-
-        // Act
-        sut.Match(_ => { }, errorActionMock.Object);
-
-        // Assert
-        errorActionMock.Verify(x => x.Invoke(sut.Error!), Times.Once);
-    }
-
-    [Fact]
-    public void Match_ErrorGenericResultWithSuccessAndErrorActions_ReturnsOriginalValueResultWithError()
-    {
-        // Arrange
-        var sut = GetErrorResult<int>();
-
-        // Act
-        var result = sut.Match(_ => { }, _ => { });
-
-        // Assert
-        result.ShouldNotBeNull();
-        result.IsSuccess.ShouldBeFalse();
-        result.ShouldBeSameAs(sut);
-    }
-
-    #endregion
-
-    #region Match (Result<T>, Func<T, TNext>, Func<Error, TNext>)
-
-    [Fact]
-    public void Match_NoGenericResultWithGenericSuccessAndErrorFunctions_ThrowsException()
-    {
-        // Arrange
-        const Result<int>? Sut = null;
-
-        // Act
-        var exception = Record.Exception(() => Sut!.Match(x => x.ToString(), _ => "error"));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public void Match_SuccessfulGenericResultWithNoGenericSuccessFunctionAndGenericErrorFunction_ThrowsException()
-    {
-        // Arrange
-        const Func<int, string>? SuccessFunction = null;
-
-        Result<int> sut = 1;
-
-        // Act
-        var exception = Record.Exception(() => sut.Match(SuccessFunction!, _ => "error"));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public void Match_SuccessfulGenericResultWithGenericSuccessFunctionAndNoGenericErrorFunction_ThrowsException()
-    {
-        // Arrange
-        const Func<Error, string>? ErrorFunction = null;
-
-        Result<int> sut = 1;
-
-        // Act
-        var exception = Record.Exception(() => sut.Match(x => x.ToString(), ErrorFunction!));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public void Match_SuccessfulGenericResultWithGenericSuccessAndErrorFunctions_CallsSuccessFunction()
-    {
-        // Arrange
-        const int Value = 5;
-        var successFunctionMock = new Mock<Func<int, string>>();
-        successFunctionMock
-            .Setup(x => x.Invoke(It.IsAny<int>()))
-            .Returns("success value");
-
-        Result<int> sut = Value;
-
-        // Act
-        sut.Match(successFunctionMock.Object, _ => "error");
-
-        // Assert
-        successFunctionMock.Verify(x => x.Invoke(Value), Times.Once);
-    }
-
-    [Fact]
-    public void Match_SuccessfulGenericResultWithGenericSuccessAndErrorFunctions_DoesNotCallErrorFunction()
-    {
-        // Arrange
-        var errorFunctionMock = new Mock<Func<Error, string>>();
-
-        Result<int> sut = 5;
-
-        // Act
-        sut.Match(x => x.ToString(), errorFunctionMock.Object);
-
-        // Assert
-        errorFunctionMock.Verify(x => x.Invoke(It.IsAny<Error>()), Times.Never);
-    }
-
-    [Fact]
-    public void Match_SuccessfulGenericResultWithGenericSuccessAndErrorFunctions_ReturnsSuccessFunctionValue()
-    {
-        // Arrange
-        const int Value = 5;
-        const string ExpectedValue = "6";
-
-        Result<int> sut = Value;
-
-        // Act
-        var result = sut.Match(x => (x + 1).ToString(), _ => "error");
-
-        // Assert
-        result.ShouldBe(ExpectedValue);
-    }
-
-    [Fact]
-    public void Match_ErrorGenericResultWithProjectionFunctions_DoesNotCallSuccessFunction()
-    {
-        // Arrange
-        var successFunctionMock = new Mock<Func<int, string>>();
-
-        var sut = GetErrorResult<int>();
-
-        // Act
-        sut.Match(successFunctionMock.Object, _ => "error");
-
-        // Assert
-        successFunctionMock.Verify(x => x.Invoke(It.IsAny<int>()), Times.Never);
-    }
-
-    [Fact]
-    public void Match_ErrorGenericResultWithProjectionFunctions_CallsErrorFunction()
-    {
-        // Arrange
-        var errorFunctionMock = new Mock<Func<Error, string>>();
-        errorFunctionMock
-            .Setup(x => x.Invoke(It.IsAny<Error>()))
-            .Returns("error value");
-
-        var sut = GetErrorResult<int>();
-
-        // Act
-        sut.Match(x => x.ToString(), errorFunctionMock.Object);
-
-        // Assert
-        errorFunctionMock.Verify(x => x.Invoke(sut.Error!), Times.Once);
-    }
-
-    [Fact]
-    public void Match_ErrorGenericResultWithProjectionFunctions_ReturnsErrorFunctionValue()
-    {
-        // Arrange
-        const string ExpectedValue = "Error function value";
-
-        var sut = GetErrorResult<int>();
-
-        // Act
-        var result = sut.Match(x => x.ToString(), _ => ExpectedValue);
-
-        // Assert
-        result.ShouldBe(ExpectedValue);
-    }
-
-    #endregion
-
-    #region Match (Result<T>, Func<T, Result<TNext>>, Func<Error, Result<TNext>>)
-
-    [Fact]
-    public void Match_NoGenericResultWithGenericResultSuccessAndErrorFunctions_ThrowsException()
-    {
-        // Arrange
-        const Result<int>? Sut = null;
-
-        // Act
-        var exception = Record.Exception(
-            () => Sut!.Match(x => Result.FromValue(x.ToString()), _ => Result.FromValue("error value")));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public void Match_SuccessfulGenericResultWithNoGenericResultSuccessFunctionAndGenericResultErrorFunction_ThrowsException()
-    {
-        // Arrange
-        const Func<int, Result<string>>? SuccessFunction = null;
-
-        Result<int> sut = 1;
-
-        // Act
-        var exception = Record.Exception(() => sut.Match(SuccessFunction!, _ => Result.FromValue("error value")));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public void Match_SuccessfulGenericResultWithGenericResultSuccessFunctionAndNoGenericResultErrorFunction_ThrowsException()
-    {
-        // Arrange
-        const Func<Error, Result<string>>? ErrorFunction = null;
-
-        Result<int> sut = 1;
-
-        // Act
-        var exception = Record.Exception(() => sut.Match(x => Result.FromValue(x.ToString()), ErrorFunction!));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public void Match_SuccessfulGenericResultWithGenericResultSuccessAndErrorFunctions_CallsSuccessFunction()
-    {
-        // Arrange
-        const int Value = 90;
-        var successFunctionMock = new Mock<Func<int, Result<string>>> { DefaultValueProvider = ResultDefaultValueProvider.Instance };
-
-        Result<int> sut = Value;
-
-        // Act
-        sut.Match(successFunctionMock.Object, _ => Result.FromValue("error value"));
-
-        // Assert
-        successFunctionMock.Verify(x => x.Invoke(Value), Times.Once);
-    }
-
-    [Fact]
-    public void Match_SuccessfulGenericResultWithGenericResultSuccessAndErrorFunctions_DoesNotCallErrorFunction()
-    {
-        // Arrange
-        var errorFunctionMock = new Mock<Func<Error, Result<string>>>();
-
-        Result<int> sut = 90;
-
-        // Act
-        sut.Match(x => Result.FromValue(x.ToString()), errorFunctionMock.Object);
-
-        // Assert
-        errorFunctionMock.Verify(x => x.Invoke(It.IsAny<Error>()), Times.Never);
-    }
-
-    [Fact]
-    public void Match_SuccessfulGenericResultWithGenericResultSuccessAndErrorFunctions_ReturnsSuccessFunctionValueResult()
-    {
-        // Arrange
-        const string ExpectedValue = "-90-";
-        const int Value = 90;
-
-        Result<int> sut = Value;
-
-        // Act
-        var result = sut.Match(x => Result.FromValue($"-{x}-"), _ => Result.FromValue("error value"));
-
-        // Assert
-        result.ShouldNotBeNull();
-        result.IsSuccess.ShouldBeTrue();
-        result.Value.ShouldBe(ExpectedValue);
-    }
-
-    [Fact]
-    public void Match_ErrorGenericResultWithGenericResultSuccessAndErrorFunctions_DoesNotCallSuccessFunction()
-    {
-        // Arrange
-        var successFunctionMock = new Mock<Func<int, Result<string>>>();
-
-        var sut = GetErrorResult<int>();
-
-        // Act
-        sut.Match(successFunctionMock.Object, _ => Result.FromValue("error value"));
-
-        // Assert
-        successFunctionMock.Verify(x => x.Invoke(It.IsAny<int>()), Times.Never);
-    }
-
-    [Fact]
-    public void Match_ErrorGenericResultWithGenericResultSuccessAndErrorFunctions_CallsErrorFunction()
-    {
-        // Arrange
-        var errorFunctionMock = new Mock<Func<Error, Result<string>>> { DefaultValueProvider = ResultDefaultValueProvider.Instance };
-
-        var sut = GetErrorResult<int>();
-
-        // Act
-        sut.Match(x => Result.FromValue(x.ToString()), errorFunctionMock.Object);
-
-        // Assert
-        errorFunctionMock.Verify(x => x.Invoke(sut.Error!), Times.Once);
-    }
-
-    [Fact]
-    public void Match_ErrorGenericResultWithGenericResultSuccessAndErrorFunctions_ReturnsErrorFunctionValueResult()
-    {
-        // Arrange
-        const string ExpectedValue = "error value";
-
-        var sut = GetErrorResult<int>();
-
-        // Act
-        var result = sut.Match(x => Result.FromValue(x.ToString()), _ => Result.FromValue(ExpectedValue));
-
-        // Assert
-        result.ShouldNotBeNull();
-        result.IsSuccess.ShouldBeTrue();
-        result.Value.ShouldBe(ExpectedValue);
-    }
-
-    #endregion
-
-    #region helper methods
-
-    private static Result GetErrorResult()
-    {
-        return Error.Failure(ErrorUri.None, "50f1c1fb-560e-4bb3-84da-034072df7ca2", "Error title 6");
-    }
-
-    private static Result<T> GetErrorResult<T>()
-    {
-        return Error.Failure(ErrorUri.None, "3d7a81ec-801d-45f4-b4b0-8d58e93b1d89", "Error title 7");
-    }
-
-    #endregion
-
-    #region Match with a function returning a task (overload trap, issue #119)
-
-    [Fact]
-    public void Match_FunctionReturningTaskOverloads_AreHiddenCompileErrors()
-    {
-        // Arrange
-        var overloads = typeof(MatchExtensions).GetMethods()
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a task"))
-            .ToArray();
-
-        // Act & Assert
-        overloads.Length.ShouldBe(8);
-        overloads.ShouldAllBe(m => m.Name == "Match"
-                                   && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
-                                   && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
-    }
-
-    [Fact]
-    public void Match_SuccessfulResultWithTaskFunctions_ReturnsTaskOfSuccessFunction()
+    public void Match_FunctionsReturningTask_ReturnsTaskOfSuccessFunction()
     {
         // Arrange
         var sut = Result.Success();
         var taskSource = new TaskCompletionSource();
 
         // Act
-        Task result = sut.Match(() => taskSource.Task, _ => Task.CompletedTask);
+        var result = sut.Match(() => taskSource.Task, _ => Task.CompletedTask);
 
         // Assert
         result.ShouldBeSameAs(taskSource.Task);
     }
 
-    #endregion
-
-    #region Match with a function returning an Error (overload trap, issue #119)
-
-    private static readonly Error TrapError = Error.Conflict(ErrorUri.Tag("tag:test.com,2024:Trap"), "Trap title");
-
-    #endregion
-
-    #region Match with an error action returning a task (overload trap, issue #123)
-
     [Fact]
-    public void Match_ErrorActionReturningTaskOverloads_AreHiddenCompileErrors()
+    public void Match_FailedResultWithFunctionsReturningTask_ReturnsTaskOfErrorFunction()
     {
         // Arrange
-        var overloads = typeof(MatchExtensions).GetMethods()
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The error action returns a task"))
-            .ToArray();
+        var sut = Result.FromError(SourceError);
+        var taskSource = new TaskCompletionSource();
 
-        // Act & Assert
-        overloads.Length.ShouldBe(27);
-        overloads.ShouldAllBe(m => m.Name == "Match"
-                                   && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
-                                   && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
+        // Act
+        var result = sut.Match(() => Task.CompletedTask, _ => taskSource.Task);
+
+        // Assert
+        result.ShouldBeSameAs(taskSource.Task);
     }
 
     [Fact]
-    public void Match_TaskTrapOverloads_HavePriorityOne()
+    public void Match_SuccessFunctionThrows_PropagatesTheException()
     {
         // Arrange
-        var overloads = typeof(MatchExtensions).GetMethods()
-            .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is not null && m.GetParameters().Any(p => OverloadTrapHelper.IsTaskFunction(p.ParameterType)))
-            .ToArray();
+        var thrown = new InvalidOperationException("success function");
+        var sut = Result.Success();
 
-        // Act & Assert
-        overloads.Length.ShouldBe(9 + 4);
-        overloads.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 1);
+        // Act
+        var exception = Record.Exception(() => sut.Match<int>(() => throw thrown, _ => 0));
+
+        // Assert
+        exception.ShouldBeSameAs(thrown);
+    }
+
+    #endregion
+
+    #region Match (Result<T>, Func<T, TOut>, Func<Error, TOut>)
+
+    [Fact]
+    public void Match_NullResultOfT_ThrowsArgumentNullException()
+    {
+        // Arrange
+        const Result<int>? Sut = null;
+
+        // Act
+        var exception = Record.Exception(() => Sut!.Match(x => x, _ => 0));
+
+        // Assert
+        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("result");
     }
 
     [Fact]
-    public void Match_ValueTaskTrapOverloads_HaveDefaultPriority()
+    public void Match_ResultOfTWithNullSuccessFunction_ThrowsArgumentNullException()
     {
         // Arrange
-        var overloads = typeof(MatchExtensions).GetMethods()
-            .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is not null
-                        && !OverloadTrapHelper.IsTrap(m, "Match with a success function and an error action")
-                        && !m.GetParameters().Any(p => OverloadTrapHelper.IsTaskFunction(p.ParameterType)))
-            .ToArray();
+        const Func<int, int>? SuccessFunction = null;
 
-        // Act & Assert
-        overloads.Length.ShouldBe(18 + 4);
+        var sut = Result.FromValue(5);
+
+        // Act
+        var exception = Record.Exception(() => sut.Match(SuccessFunction!, _ => 0));
+
+        // Assert
+        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("ifSuccessFunction");
+    }
+
+    [Fact]
+    public void Match_ResultOfTWithNullErrorFunction_ThrowsArgumentNullException()
+    {
+        // Arrange
+        const Func<Error, int>? ErrorFunction = null;
+
+        var sut = Result.FromValue(5);
+
+        // Act
+        var exception = Record.Exception(() => sut.Match(x => x, ErrorFunction!));
+
+        // Assert
+        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("ifErrorFunction");
+    }
+
+    [Fact]
+    public void Match_SuccessfulResultOfT_ReturnsValueOfSuccessFunctionCalledWithTheValue()
+    {
+        // Arrange
+        var errorCalled = false;
+        var sut = Result.FromValue(5);
+
+        // Act
+        var result = sut.Match(x => $"value {x}", _ =>
+        {
+            errorCalled = true;
+
+            return "error";
+        });
+
+        // Assert
+        result.ShouldBe("value 5");
+        errorCalled.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void Match_FailedResultOfT_ReturnsValueOfErrorFunctionCalledWithTheError()
+    {
+        // Arrange
+        var successCalled = false;
+        Error? passedError = null;
+        var sut = Result<int>.FromError(SourceError);
+
+        // Act
+        var result = sut.Match(x =>
+        {
+            successCalled = true;
+
+            return $"value {x}";
+        }, e =>
+        {
+            passedError = e;
+
+            return "error";
+        });
+
+        // Assert
+        result.ShouldBe("error");
+        passedError.ShouldBeSameAs(SourceError);
+        successCalled.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void Match_ResultOfTWithFunctionsReturningResult_ReturnsResultOfTheFunction()
+    {
+        // Arrange
+        var sut = Result.FromValue(5);
+
+        // Act
+        var result = sut.Match(x => Result.FromValue(x * 2), e => e);
+
+        // Assert
+        result.Value.ShouldBe(10);
+    }
+
+    [Fact]
+    public void Match_FailedResultOfTWithErrorFunctionReturningTheError_ReturnsFailedResult()
+    {
+        // Arrange
+        var sut = Result<int>.FromError(SourceError);
+
+        // Act
+        var result = sut.Match(x => Result.FromValue(x.ToString()), e => e);
+
+        // Assert
+        result.Error.ShouldBeSameAs(SourceError);
+    }
+
+    [Fact]
+    public void Match_ResultOfTWithFunctionReturningNullResult_ReturnsNull()
+    {
+        // Arrange
+        var sut = Result<int>.FromError(SourceError);
+
+        // Act
+        var result = sut.Match(x => Result.FromValue(x), _ => (Result<int>)null!);
+
+        // Assert
+        result.ShouldBeNull();
+    }
+
+    [Fact]
+    public void Match_ResultOfTWithExplicitTypeArguments_ReturnsTheWholeReturnType()
+    {
+        // Arrange
+        var sut = Result.FromValue(5);
+
+        // Act
+        var result = sut.Match<int, Result<int>>(x => x + 1, e => e);
+
+        // Assert
+        result.Value.ShouldBe(6);
+    }
+
+    [Fact]
+    public void Match_SuccessfulResultOfTWithFunctionsReturningTask_ReturnsTaskOfSuccessFunction()
+    {
+        // Arrange
+        var sut = Result.FromValue(5);
+        var taskSource = new TaskCompletionSource<int>();
+
+        // Act
+        var result = sut.Match(_ => taskSource.Task, _ => Task.FromResult(0));
+
+        // Assert
+        result.ShouldBeSameAs(taskSource.Task);
+    }
+
+    [Fact]
+    public void Match_FailedResultOfTWithErrorFunctionThrowing_PropagatesTheException()
+    {
+        // Arrange
+        var thrown = new InvalidOperationException("error function");
+        var sut = Result<int>.FromError(SourceError);
+
+        // Act
+        var exception = Record.Exception(() => sut.Match(x => x, _ => throw thrown));
+
+        // Assert
+        exception.ShouldBeSameAs(thrown);
+    }
+
+    #endregion
+
+    #region Match with two actions (overload trap, issue #255)
+
+    [Fact]
+    public void Match_TwoActionsOverloads_AreHiddenCompileErrorsThatNameSwitch()
+    {
+        // Act
+        var traps = typeof(MatchExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is not null)
+            .ToList();
+
+        // Assert
+        traps.Count.ShouldBe(2);
+        traps.ShouldAllBe(m => m.Name == "Match"
+                               && OverloadTrapHelper.IsTrap(m, "Match takes two functions that return a value. Use Switch")
+                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
+                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never
+                               && m.GetParameters().Skip(1).All(p => p.ParameterType.Name.StartsWith("Action", StringComparison.Ordinal)));
+    }
+
+    [Fact]
+    public void Match_Overloads_HaveDefaultPriority()
+    {
+        // Act
+        var overloads = typeof(MatchExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(m => m.Name == "Match")
+            .ToList();
+
+        // Assert
+        overloads.Count.ShouldBe(4);
         overloads.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 0);
     }
 
     [Fact]
-    public void Match_OverloadsWithTwoFunctions_HavePriorityTwo()
+    public void Match_TwoActionsTrapCalledByReflection_ThrowsNotSupportedException()
     {
         // Arrange
-        var overloads = typeof(MatchExtensions).GetMethods()
-            .Where(m => m.Name == "Match" && m.GetCustomAttribute<ObsoleteAttribute>() is null && m.GetParameters()[2].Name == "ifErrorFunction")
-            .ToArray();
-
-        // Act & Assert
-        overloads.Length.ShouldBe(5);
-        overloads.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 2);
-    }
-
-    [Fact]
-    public void Match_FailedResultWithStatementLambdaDiscardingTask_CallsErrorAction()
-    {
-        // Arrange
-        var sut = GetErrorResult();
-        var taskSource = new TaskCompletionSource();
-        Error? passedError = null;
+        var trap = typeof(MatchExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Single(m => m.GetCustomAttribute<ObsoleteAttribute>() is not null && !m.IsGenericMethodDefinition);
+        object?[] arguments = [Result.Success(), (Action)(() => { }), (Action<Error>)(_ => { })];
 
         // Act
-        var result = sut.Match(() => { }, e =>
-        {
-            passedError = e;
-            _ = taskSource.Task;
-        });
+        var exception = Record.Exception(() => trap.Invoke(null, arguments));
 
         // Assert
-        result.ShouldBeSameAs(sut);
-        passedError.ShouldBeSameAs(sut.Error);
-    }
-
-    [Fact]
-    public void Match_FailedResultWithTaskFunctions_ReturnsTaskOfErrorFunction()
-    {
-        // Arrange
-        var sut = GetErrorResult();
-        var taskSource = new TaskCompletionSource();
-
-        // Act
-        Task result = sut.Match(() => Task.CompletedTask, _ => taskSource.Task);
-
-        // Assert
-        result.ShouldBeSameAs(taskSource.Task);
-    }
-
-    [Fact]
-    public void Match_SuccessfulResultOfTWithTaskFunctions_ReturnsTaskOfSuccessFunction()
-    {
-        // Arrange
-        var sut = Result<int>.FromValue(5);
-        var taskSource = new TaskCompletionSource();
-
-        // Act
-        Task result = sut.Match(_ => taskSource.Task, _ => Task.CompletedTask);
-
-        // Assert
-        result.ShouldBeSameAs(taskSource.Task);
-    }
-
-    #endregion
-
-    #region Match with a success function and an error action (overload trap, issue #227)
-
-    [Fact]
-    public void Match_SuccessFunctionAndErrorActionOverloads_AreHiddenCompileErrors()
-    {
-        // Act
-        var traps = typeof(MatchExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Where(m => OverloadTrapHelper.IsTrap(m, "Match with a success function and an error action"))
-            .ToList();
-
-        // Assert
-        traps.Count.ShouldBe(7);
-        traps.ShouldAllBe(m => m.Name == "Match"
-                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
-                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
+        exception.ShouldBeOfType<TargetInvocationException>().InnerException.ShouldBeOfType<NotSupportedException>();
     }
 
     #endregion

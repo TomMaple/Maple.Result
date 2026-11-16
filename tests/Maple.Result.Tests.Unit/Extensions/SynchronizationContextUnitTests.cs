@@ -127,6 +127,33 @@ public sealed class SynchronizationContextUnitTests : IDisposable
 
     #endregion
 
+    #region SwitchAsync
+
+    [Fact]
+    public void SwitchAsync_GlobalSettingTrue_RunsActionOnCapturedContext()
+    {
+        // Arrange
+        ResultConfiguration.ContinueOnCapturedContext = true;
+
+        // Act
+        var (context, callbackContext) = SingleThreadSynchronizationContext.Run(async context =>
+        {
+            var source = new TaskCompletionSource<Result<int>>(TaskCreationOptions.RunContinuationsAsynchronously);
+            SynchronizationContext? captured = null;
+
+            var chain = source.Task.SwitchAsync(_ => captured = SynchronizationContext.Current, _ => { });
+            CompleteOnThreadPool(source, 1);
+            await chain;
+
+            return (context, captured);
+        });
+
+        // Assert
+        callbackContext.ShouldBeSameAs(context);
+    }
+
+    #endregion
+
     #region LINQ
 
     [Fact]
