@@ -12,10 +12,17 @@ Runs code that can throw and turns the exception into a failed result, with the 
 | [Try&lt;TException&gt;(Action, Func&lt;TException, Error&gt;)](#trytexceptionaction-functexception-error) | Runs the action and maps only the exceptions of the given type. |
 | [Try&lt;T&gt;(Func&lt;T&gt;, Func&lt;Exception, Error&gt;)](#trytfunct-funcexception-error) | Runs the function; a [Result&lt;T&gt;](../ResultT/ResultT.md) with its value. |
 | [Try&lt;T, TException&gt;(Func&lt;T&gt;, Func&lt;TException, Error&gt;)](#tryt-texceptionfunct-functexception-error) | Runs the function and maps only the exceptions of the given type. |
+| [Try(Func&lt;Result&gt;, Func&lt;Exception, Error&gt;)](#tryfuncresult-funcexception-error) | Runs the function and returns the [Result](Result.md) it returns. |
+| [Try&lt;TException&gt;(Func&lt;Result&gt;, Func&lt;TException, Error&gt;)](#trytexceptionfuncresult-functexception-error) | Runs the function and returns the [Result](Result.md) it returns; maps only the exceptions of the given type. |
+| [Try&lt;T&gt;(Func&lt;Result&lt;T&gt;&gt;, Func&lt;Exception, Error&gt;)](#trytfuncresultt-funcexception-error) | Runs the function and returns the [Result&lt;T&gt;](../ResultT/ResultT.md) it returns. |
+| [Try&lt;T, TException&gt;(Func&lt;Result&lt;T&gt;&gt;, Func&lt;TException, Error&gt;)](#tryt-texceptionfuncresultt-functexception-error) | Runs the function and returns the [Result&lt;T&gt;](../ResultT/ResultT.md) it returns; maps only the exceptions of the given type. |
+| [Try(Func&lt;Error&gt;, Func&lt;Exception, Error&gt;)](#tryfuncerror-funcexception-error) | Runs the function and returns a failed [Result](Result.md) with the [Error](../Error/Error.md) it returns. |
+| [Try&lt;TException&gt;(Func&lt;Error&gt;, Func&lt;TException, Error&gt;)](#trytexceptionfuncerror-functexception-error) | Runs the function and returns a failed [Result](Result.md) with the [Error](../Error/Error.md) it returns; maps only the exceptions of the given type. |
 
 ## Remarks
 * **The mapper is required.** An [Error](../Error/Error.md) needs a category, a type *URI* and a title, which the library cannot pick on its own, so there is no default mapping (and no global one in [ResultConfiguration](../ResultConfiguration/ResultConfiguration.md)).
 * **Nothing of the exception is copied into the error** by the library: an error is meant to be sent to clients, and the message or the stack trace can reveal internals. The mapper decides what the error contains, e.g., the exception type in [Metadata](../Error/Error_Metadata.md). The exception itself is not stored.
+* **A function that returns a `Result`, a `Result<T>` or an `Error` is flattened.** Its result is returned as it is (a failed result keeps its error), and an `Error` gives a failed result, as in `IfSuccess` and `Match`: `Result.Try(() => repository.Load(id), map)` is a `Result<Customer>` when `Load` returns a `Result<Customer>`. A `null` result or error throws an `InvalidOperationException` and is not mapped. Pass the type argument explicitly to keep the nested result (e.g., `Result.Try<Result<int>>(…)`).
 * **Cancellation is not a failure.** An [OperationCanceledException](https://learn.microsoft.com/dotnet/api/system.operationcanceledexception) (e.g., a `TaskCanceledException`) is rethrown, unless `TException` is `OperationCanceledException` or a type derived from it.
 * **A mapper that returns `null`** throws an [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception); **a mapper that throws** lets its exception propagate.
 * **For code that returns a task**, use [TryAsync](Result_TryAsync.md). A call such as `Result.Try(async () => await SaveAsync(), map)` or `Result.Try(() => LoadValueTaskAsync(), (IOException e) => …)` does not compile (CS0619), with an untyped or a typed mapper: the async lambda would become `async void`, whose exceptions escape `Try`, and a lambda that returns a task would give a result holding a task that is never awaited.
@@ -183,6 +190,208 @@ Result<int> number = Result.Try<int, FormatException>(
     () => int.Parse(text),
     _ => Error.Validation(ErrorUri.None, "The value is not a number."));
 ```
+
+## Try(Func&lt;Result&gt;, Func&lt;Exception, Error&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L612" target="_blank">Result.Try.cs</a>
+
+```csharp
+public static Result Try(Func<Result> function, Func<Exception, Error> mapException);
+```
+
+### Parameters
+`function` Func&lt;Result&gt;
+
+The function to run. Must not be `null`, nor return `null`.
+
+`mapException` Func&lt;Exception, [Error](../Error/Error.md)&gt;
+
+The function that creates the error from the exception. Must not be `null`, nor return `null`.
+
+### Returns
+[Result](Result.md)
+
+The [Result](Result.md) returned by the `function`, as it is; or a failed one with the mapped error.
+
+### Exceptions
+[ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+
+`function` or `mapException` is `null`.
+
+[InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+
+`function` returns a `null` result, or `mapException` returns `null`.
+
+## Try&lt;TException&gt;(Func&lt;Result&gt;, Func&lt;TException, Error&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L643" target="_blank">Result.Try.cs</a>
+
+```csharp
+public static Result Try<TException>(Func<Result> function, Func<TException, Error> mapException)
+    where TException : Exception;
+```
+
+### Type Parameters
+#### `TException`
+The type of the exceptions to map; other exceptions propagate. An `OperationCanceledException` is mapped only when `TException` is `OperationCanceledException` or a type derived from it.
+
+### Parameters
+`function` Func&lt;Result&gt;
+
+The function to run. Must not be `null`, nor return `null`.
+
+`mapException` Func&lt;TException, [Error](../Error/Error.md)&gt;
+
+The function that creates the error from the exception. Must not be `null`, nor return `null`.
+
+### Returns
+[Result](Result.md)
+
+The [Result](Result.md) returned by the `function`, as it is; or a failed one with the mapped error.
+
+### Exceptions
+[ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+
+`function` or `mapException` is `null`.
+
+[InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+
+`function` returns a `null` result, or `mapException` returns `null`.
+
+## Try&lt;T&gt;(Func&lt;Result&lt;T&gt;&gt;, Func&lt;Exception, Error&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L690" target="_blank">Result.Try.cs</a>
+
+```csharp
+public static Result<T> Try<T>(Func<Result<T>> function, Func<Exception, Error> mapException);
+```
+
+### Type Parameters
+#### `T`
+The type of the value.
+
+### Parameters
+`function` Func&lt;Result&lt;T&gt;&gt;
+
+The function to run. Must not be `null`, nor return `null`.
+
+`mapException` Func&lt;Exception, [Error](../Error/Error.md)&gt;
+
+The function that creates the error from the exception. Must not be `null`, nor return `null`.
+
+### Returns
+[Result&lt;T&gt;](../ResultT/ResultT.md)
+
+The [Result&lt;T&gt;](../ResultT/ResultT.md) returned by the `function`, as it is; or a failed one with the mapped error.
+
+### Exceptions
+[ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+
+`function` or `mapException` is `null`.
+
+[InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+
+`function` returns a `null` result, or `mapException` returns `null`.
+
+## Try&lt;T, TException&gt;(Func&lt;Result&lt;T&gt;&gt;, Func&lt;TException, Error&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L722" target="_blank">Result.Try.cs</a>
+
+```csharp
+public static Result<T> Try<T, TException>(Func<Result<T>> function, Func<TException, Error> mapException)
+    where TException : Exception;
+```
+
+### Type Parameters
+#### `T`
+The type of the value.
+
+#### `TException`
+The type of the exceptions to map; other exceptions propagate. An `OperationCanceledException` is mapped only when `TException` is `OperationCanceledException` or a type derived from it.
+
+### Parameters
+`function` Func&lt;Result&lt;T&gt;&gt;
+
+The function to run. Must not be `null`, nor return `null`.
+
+`mapException` Func&lt;TException, [Error](../Error/Error.md)&gt;
+
+The function that creates the error from the exception. Must not be `null`, nor return `null`.
+
+### Returns
+[Result&lt;T&gt;](../ResultT/ResultT.md)
+
+The [Result&lt;T&gt;](../ResultT/ResultT.md) returned by the `function`, as it is; or a failed one with the mapped error.
+
+### Exceptions
+[ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+
+`function` or `mapException` is `null`.
+
+[InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+
+`function` returns a `null` result, or `mapException` returns `null`.
+
+## Try(Func&lt;Error&gt;, Func&lt;Exception, Error&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L768" target="_blank">Result.Try.cs</a>
+
+```csharp
+public static Result Try(Func<Error> function, Func<Exception, Error> mapException);
+```
+
+### Parameters
+`function` Func&lt;Error&gt;
+
+The function to run. Must not be `null`, nor return `null`.
+
+`mapException` Func&lt;Exception, [Error](../Error/Error.md)&gt;
+
+The function that creates the error from the exception. Must not be `null`, nor return `null`.
+
+### Returns
+[Result](Result.md)
+
+A failed [Result](Result.md) with the [Error](../Error/Error.md) returned by the `function`, or with the mapped error.
+
+### Exceptions
+[ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+
+`function` or `mapException` is `null`.
+
+[InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+
+`function` returns a `null` error, or `mapException` returns `null`.
+
+## Try&lt;TException&gt;(Func&lt;Error&gt;, Func&lt;TException, Error&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L799" target="_blank">Result.Try.cs</a>
+
+```csharp
+public static Result Try<TException>(Func<Error> function, Func<TException, Error> mapException)
+    where TException : Exception;
+```
+
+### Type Parameters
+#### `TException`
+The type of the exceptions to map; other exceptions propagate. An `OperationCanceledException` is mapped only when `TException` is `OperationCanceledException` or a type derived from it.
+
+### Parameters
+`function` Func&lt;Error&gt;
+
+The function to run. Must not be `null`, nor return `null`.
+
+`mapException` Func&lt;TException, [Error](../Error/Error.md)&gt;
+
+The function that creates the error from the exception. Must not be `null`, nor return `null`.
+
+### Returns
+[Result](Result.md)
+
+A failed [Result](Result.md) with the [Error](../Error/Error.md) returned by the `function`, or with the mapped error.
+
+### Exceptions
+[ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+
+`function` or `mapException` is `null`.
+
+[InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+
+`function` returns a `null` error, or `mapException` returns `null`.
 
 ## See Also
 * [TryAsync](Result_TryAsync.md)
