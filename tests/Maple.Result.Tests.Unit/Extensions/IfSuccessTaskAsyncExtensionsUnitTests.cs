@@ -533,4 +533,152 @@ public class IfSuccessTaskAsyncExtensionsUnitTests
     }
 
     #endregion
+
+    #region Task results with synchronous delegates (issue #214)
+
+    private static readonly Error SyncTestError = Error.Failure(ErrorUri.None, "Synchronous delegate test error");
+    private static readonly Error SyncOtherError = Error.Conflict(ErrorUri.None, "Synchronous delegate other error");
+
+    [Fact]
+    public async Task IfSuccessAsync_SuccessfulResultTaskWithSyncAction_CallsActionAndReturnsResult()
+    {
+        // Arrange
+        var sut = Task.FromResult(Result.Success());
+        var called = false;
+
+        // Act
+        var result = await sut.IfSuccessAsync(() => { called = true; });
+
+        // Assert
+        called.ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task IfSuccessAsync_FailedResultTaskWithSyncAction_DoesNotCallAction()
+    {
+        // Arrange
+        var sut = Task.FromResult(Result.FromError(SyncTestError));
+        var called = false;
+
+        // Act
+        var result = await sut.IfSuccessAsync(() => { called = true; });
+
+        // Assert
+        called.ShouldBeFalse();
+        result.Error.ShouldBeSameAs(SyncTestError);
+    }
+
+    [Fact]
+    public async Task IfSuccessAsync_SuccessfulResultOfTTaskWithSyncAction_PassesValueAndReturnsResult()
+    {
+        // Arrange
+        var sut = Task.FromResult(Result.FromValue(5));
+        var received = 0;
+
+        // Act
+        var result = await sut.IfSuccessAsync(value => { received = value; });
+
+        // Assert
+        received.ShouldBe(5);
+        result.Value.ShouldBe(5);
+    }
+
+    [Fact]
+    public async Task IfSuccessAsync_FailedResultOfTTaskWithSyncAction_DoesNotCallAction()
+    {
+        // Arrange
+        var sut = Task.FromResult(Result<int>.FromError(SyncTestError));
+        var called = false;
+
+        // Act
+        var result = await sut.IfSuccessAsync(_ => { called = true; });
+
+        // Assert
+        called.ShouldBeFalse();
+        result.Error.ShouldBeSameAs(SyncTestError);
+    }
+
+    [Fact]
+    public async Task IfSuccessAsync_IncompleteTaskWithSynchronousDelegate_RunsDelegateAfterCompletion()
+    {
+        // Arrange
+        var source = new TaskCompletionSource<Result<int>>();
+        var called = false;
+        var sut = source.Task;
+
+        // Act
+        var task = sut.IfSuccessAsync(_ => { called = true; });
+        var calledBeforeCompletion = called;
+        source.SetResult(Result.FromValue(5));
+        await task;
+
+        // Assert
+        calledBeforeCompletion.ShouldBeFalse();
+        called.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void IfSuccessAsync_SyncFunctionReturningValueOverloads_AreHiddenCompileErrors()
+    {
+        // Act
+        var traps = typeof(IfSuccessTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a value, which IfSuccessAsync discards"))
+            .ToList();
+
+        // Assert
+        traps.Count.ShouldBe(2);
+        traps.ShouldAllBe(m => m.Name == "IfSuccessAsync"
+                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
+                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
+    }
+
+    [Fact]
+    public void IfSuccessAsync_FunctionReturningValueTaskOverloads_AreHiddenCompileErrors()
+    {
+        // Act
+        var traps = typeof(IfSuccessTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a ValueTask, which the Task-based IfSuccessAsync does not await"))
+            .ToList();
+
+        // Assert
+        traps.Count.ShouldBe(4);
+        traps.ShouldAllBe(m => m.Name == "IfSuccessAsync"
+                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
+                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
+    }
+
+    [Fact]
+    public void IfSuccessAsync_OverloadsWithTaskDelegatesOnTaskResults_HavePriorityOne()
+    {
+        // Act
+        var priorities = typeof(IfSuccessTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(m => m.GetParameters()[0].ParameterType is { IsGenericType: true } receiver && receiver.GetGenericTypeDefinition() == typeof(Task<>)
+                        && OverloadTrapHelper.IsTaskFunction(m.GetParameters()[1].ParameterType))
+            .Select(OverloadTrapHelper.Priority)
+            .ToList();
+
+        // Assert
+        priorities.Count.ShouldBe(4);
+        priorities.ShouldAllBe(p => p == 1);
+    }
+
+    [Fact]
+    public void IfSuccessAsync_SynchronousOverloadsOnTaskResults_HavePriorityZero()
+    {
+        // Act
+        var priorities = typeof(IfSuccessTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is null
+                        && m.GetParameters()[0].ParameterType is { IsGenericType: true } receiver && receiver.GetGenericTypeDefinition() == typeof(Task<>)
+                        && !OverloadTrapHelper.IsTaskFunction(m.GetParameters()[1].ParameterType)
+                        && !OverloadTrapHelper.IsValueTaskFunction(m.GetParameters()[1].ParameterType))
+            .Select(OverloadTrapHelper.Priority)
+            .ToList();
+
+        // Assert
+        priorities.Count.ShouldBe(2);
+        priorities.ShouldAllBe(p => p == 0);
+    }
+
+    #endregion
 }

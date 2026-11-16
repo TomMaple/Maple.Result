@@ -17,6 +17,7 @@ Inheritance [Object](https://learn.microsoft.com/dotnet/api/system.object) → E
 | ---- | ----------- |
 | [ElseAsync&lt;TResult&gt;(TResult, Func&lt;Error, Task&lt;TResult&gt;&gt;, Boolean)](ElseTaskAsyncExtensions_ElseAsync.md#elseasynctresulttresult-funcerror-tasktresult-boolean) | Executes the provided asynchronous function, if the `TResult` instance represents a failed operation and returns its result, as an asynchronous operation. |
 | [ElseAsync&lt;TResult&gt;(Task&lt;TResult&gt;, Func&lt;Error, Task&lt;TResult&gt;&gt;, Boolean)](ElseTaskAsyncExtensions_ElseAsync.md#elseasynctresulttasktresult-funcerror-tasktresult-boolean) | Executes the provided asynchronous function, if the provided asynchronous operation returns a failed `TResult` instance, and returns its result as an asynchronous operation. |
+| [ElseAsync&lt;TResult&gt;(Task&lt;TResult&gt;, Func&lt;Error, TResult&gt;, Boolean)](ElseTaskAsyncExtensions_ElseAsync.md#elseasynctresulttasktresult-funcerror-tresult-boolean) | Runs the synchronous function if the result that the `resultTask` returns is failed, and returns the result that the function returns instead (e.g., a recovered value or another error). |
 
 ## See Also
 * [IfErrorTaskAsyncExtensions](IfErrorTaskAsyncExtensions.md)

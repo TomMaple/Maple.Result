@@ -12,8 +12,12 @@ Runs a asynchronous side effect if the instance of [Result](../../Result/Result.
 | [IfSuccessAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&gt;, Boolean)](#ifsuccessasynctresultt-funct-valuetask-boolean) | Executes the specified asynchronous action, if the [Result&lt;T&gt;](../../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
 | [IfSuccessAsync(ValueTask&lt;Result&gt;, Func&lt;ValueTask&gt;, Boolean)](#ifsuccessasyncvaluetaskresult-funcvaluetask-boolean) | Executes the specified asynchronous action, if the provided asynchronous operation returns a successful [Result](../../Result/Result.md), as an asynchronous operation. |
 | [IfSuccessAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&gt;, Boolean)](#ifsuccessasynctvaluetaskresultt-funct-valuetask-boolean) | Executes the specified asynchronous action, if the [Result&lt;T&gt;](../../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
+| [IfSuccessAsync(ValueTask&lt;Result&gt;, Action, Boolean)](#ifsuccessasyncvaluetaskresult-action-boolean) | Runs the synchronous action if the result that the `resultTask` returns is successful, and returns the result unchanged. |
+| [IfSuccessAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Action&lt;T&gt;, Boolean)](#ifsuccessasynctvaluetaskresultt-actiont-boolean) | Runs the synchronous action on the value if the result that the `resultTask` returns is successful, and returns the result unchanged. |
 
 ## Remarks
+The overloads with a synchronous action (e.g., `IfSuccessAsync(user => Log(user))`) run it after the task completes. A synchronous function that returns a value is a compile error (CS0619) that names `ThenAsync`. A delegate that returns a `Task` is a compile error too: this page is for the `ValueTask` namespace; import `Maple.Results.Extensions` for the other one.
+
 To transform or chain the result with a function that returns a value, a `Result`, a `Result<T>` or an `Error` in a task, use [ThenAsync](ThenValueTaskAsyncExtensions_ThenAsync.md). Such a function passed to `IfSuccessAsync` is a compile error (CS0619) that names `ThenAsync`, so that its value is not discarded by mistake. For a side effect whose expression happens to return a value (e.g., `set.Add(x)`), use a statement lambda: `async x => { await set.Add(x); }`.
 
 > [!NOTE]
@@ -112,7 +116,7 @@ await userResult.IfSuccessAsync(async (user) =>
 
 
 ## IfSuccessAsync(ValueTask&lt;Result&gt;, Func&lt;ValueTask&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/IfSuccessValueTaskAsyncExtensions.cs#L122" target="_blank">IfSuccessValueTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/IfSuccessValueTaskAsyncExtensions.cs#L123" target="_blank">IfSuccessValueTaskAsyncExtensions.cs</a>
 
 Executes the provided asynchronous action, only if the provided asynchronous operation `resultTask` returns a successful instance of [Result](../../Result/Result.md).
 
@@ -158,7 +162,7 @@ var createUserResult = await _userService.CreateUserAsync(userData)
 
 
 ## IfSuccessAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/IfSuccessValueTaskAsyncExtensions.cs#L182" target="_blank">IfSuccessValueTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/IfSuccessValueTaskAsyncExtensions.cs#L184" target="_blank">IfSuccessValueTaskAsyncExtensions.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result&lt;T&gt;](../../ResultT/ResultT.md).
 
@@ -204,6 +208,94 @@ var userResult = await _userService.CreateUserAsync(userData)
     {
         await _auditService.LogUserAddedAsync(user);
     });
+```
+
+
+## IfSuccessAsync(ValueTask&lt;Result&gt;, Action, Boolean)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/IfSuccessValueTaskAsyncExtensions.cs#L280" target="_blank">IfSuccessValueTaskAsyncExtensions.cs</a>
+
+Runs the synchronous action if the result that the `resultTask` returns is successful, and returns the result unchanged.
+
+```csharp
+public static ValueTask<Result> IfSuccessAsync(this ValueTask<Result> resultTask, Action ifSuccessAction, bool? continueOnCapturedContext = null);
+```
+
+### Parameters
+#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+The asynchronous operation that returns the result to inspect.
+
+#### `ifSuccessAction` [Action](https://learn.microsoft.com/dotnet/api/system.action)
+The synchronous action to run. Must not be `null`.
+
+#### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
+`true` to run the continuation, including the passed delegate, on the captured context (e.g., the UI thread); `false` to run it on any thread; `null` to use [ResultConfiguration.ContinueOnCapturedContext](../../ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md) (`false` unless changed).
+
+The default value is: `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+The result that the `resultTask` returns.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `ifSuccessAction` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the asynchronous operation represented by `resultTask` returns `null`.
+
+### Remarks
+The action is synchronous: it runs after the `resultTask` completes, and it is not called for a failed result. The result is returned unchanged.
+
+### Examples
+```csharp
+var result = await _service.DeleteAsync(id)
+    .IfSuccessAsync(() => _logger.LogInformation("Deleted {Id}", id));
+```
+
+
+## IfSuccessAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Action&lt;T&gt;, Boolean)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/IfSuccessValueTaskAsyncExtensions.cs#L315" target="_blank">IfSuccessValueTaskAsyncExtensions.cs</a>
+
+Runs the synchronous action on the value if the result that the `resultTask` returns is successful, and returns the result unchanged.
+
+```csharp
+public static ValueTask<Result<T>> IfSuccessAsync<T>(this ValueTask<Result<T>> resultTask, Action<T> ifSuccessAction, bool? continueOnCapturedContext = null);
+```
+
+### Type Parameters
+#### `T`
+The type of the value of the result.
+
+### Parameters
+#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;T&gt;&gt;
+The asynchronous operation that returns the result to inspect.
+
+#### `ifSuccessAction` [Action](https://learn.microsoft.com/dotnet/api/system.action-1)&lt;T&gt;
+The synchronous action that receives the value. Must not be `null`.
+
+#### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
+`true` to run the continuation, including the passed delegate, on the captured context (e.g., the UI thread); `false` to run it on any thread; `null` to use [ResultConfiguration.ContinueOnCapturedContext](../../ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md) (`false` unless changed).
+
+The default value is: `null`.
+
+### Returns
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;T&gt;&gt;
+The result that the `resultTask` returns.
+
+### Exceptions
+#### [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+If the `ifSuccessAction` is `null`.
+
+#### [InvalidOperationException](https://learn.microsoft.com/dotnet/api/system.invalidoperationexception)
+If the asynchronous operation represented by `resultTask` returns `null`.
+
+### Remarks
+The action is synchronous: it runs after the `resultTask` completes, and it is not called for a failed result. The result is returned unchanged.
+
+### Examples
+```csharp
+var userResult = await _userService.GetUserAsync(id)
+    .IfSuccessAsync(user => _logger.LogInformation("Loaded {Name}", user.Name));
 ```
 
 ## See Also

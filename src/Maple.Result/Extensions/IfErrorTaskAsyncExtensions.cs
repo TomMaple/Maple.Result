@@ -120,6 +120,7 @@ public static class IfErrorTaskAsyncExtensions
     ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />,
     ///     or <paramref name="ifErrorAction" /> returns a <see langword="null" /> task.
     /// </exception>
+    [OverloadResolutionPriority(1)]
     public static Task<TResult> IfErrorAsync<TResult>(
         this Task<TResult> resultTask,
         Func<Error, Task> ifErrorAction,
@@ -172,10 +173,109 @@ public static class IfErrorTaskAsyncExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ValueDiscardedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
     public static Task<TResult> IfErrorAsync<TResult, TValue>(this Task<TResult> resultTask, Func<Error, Task<TValue>> ifErrorAction, bool? continueOnCapturedContext = null)
         where TResult : IOperationResult
     {
         throw new NotSupportedException(ValueDiscardedMessage);
+    }
+
+    #endregion
+
+    #region Task results with synchronous delegates (#214)
+
+    /// <summary>
+    ///     Runs the synchronous action if the result that the <paramref name="resultTask" /> returns is failed, and returns
+    ///     the result unchanged.
+    /// </summary>
+    /// <remarks>
+    ///     The action is synchronous: it runs after the <paramref name="resultTask" /> completes, and it is not called for a
+    ///     successful result. The result is returned unchanged.
+    /// </remarks>
+    /// <typeparam name="TResult">The type of the result: <see cref="Result" /> or <see cref="Result{T}" />.</typeparam>
+    /// <param name="resultTask">The asynchronous operation that returns the result to inspect. Must not be <see langword="null" />.</param>
+    /// <param name="ifErrorAction">The synchronous action that receives the error. Must not be <see langword="null" />.</param>
+    /// <param name="continueOnCapturedContext">
+    ///     <see langword="true" /> to run the continuation, including the passed delegate, on the captured context (e.g., the UI thread);
+    ///     <see langword="false" /> to run it on any thread; <see langword="null" /> (the default) to use
+    ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
+    /// </param>
+    /// <returns>The result that the <paramref name="resultTask" /> returns.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     If the <paramref name="resultTask" /> or the <paramref name="ifErrorAction" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />.
+    /// </exception>
+    public static Task<TResult> IfErrorAsync<TResult>(this Task<TResult> resultTask,
+        Action<Error> ifErrorAction, bool? continueOnCapturedContext = null)
+        where TResult : IOperationResult
+    {
+        ArgumentNullException.ThrowIfNull(resultTask);
+        ArgumentNullException.ThrowIfNull(ifErrorAction);
+
+        return Core(resultTask, ifErrorAction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+
+        static async Task<TResult> Core(Task<TResult> resultTask, Action<Error> ifErrorAction, bool continueOnCapturedContext)
+        {
+            var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
+            return result.IfError(ifErrorAction);
+        }
+    }
+
+    #endregion
+
+    #region Not supported: synchronous delegates of the wrong kind, and functions returning a ValueTask (#214)
+
+    // A synchronous action passed to ThenAsync or ElseAsync, or a synchronous function that returns a value passed to
+    // IfSuccessAsync or IfErrorAsync, is a compile error (CS0619) that names the method to use, as in #197.
+    // A function that returns a ValueTask would bind to the overloads with a synchronous delegate and give a result holding a task
+    // that nobody awaits (#214): these overloads turn the call into a compile error (CS0619) that names the namespace to import.
+    // The overloads whose delegate returns a Task have priority 1 (#214): an async lambda converts to a Task and to a ValueTask,
+    // so without it, a call with an async lambda would be ambiguous (CS0121) between them and the traps for the other kind of task.
+
+    private const string SyncValueDiscardedMessage =
+        "The function returns a value, which IfErrorAsync discards. Use ElseAsync to replace the result with it, or a " +
+        "statement lambda (e.g., e => { titles.Add(e.Title); }) for a side effect.";
+
+    private const string OtherTaskMessage =
+        "The function returns a ValueTask, which the Task-based IfErrorAsync does not await. Import " +
+        "Maple.Results.Extensions.ValueTasks instead of Maple.Results.Extensions, or convert it with AsTask().";
+
+    /// <summary>
+    ///     Not supported: the function returns a value, which <c>IfErrorAsync</c> discards; use <c>ElseAsync</c>, or a statement lambda.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(SyncValueDiscardedMessage, error: true)]
+    public static Task<TResult> IfErrorAsync<TResult, TValue>(this Task<TResult> resultTask,
+        Func<Error, TValue> ifErrorAction, bool? continueOnCapturedContext = null)
+        where TResult : IOperationResult
+    {
+        throw new NotSupportedException(SyncValueDiscardedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the function returns a <c>ValueTask</c>, which this method does not await.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(OtherTaskMessage, error: true)]
+    public static Task<TResult> IfErrorAsync<TResult>(this Task<TResult> resultTask,
+        Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
+        where TResult : IOperationResult
+    {
+        throw new NotSupportedException(OtherTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the function returns a <c>ValueTask</c>, which this method does not await.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(OtherTaskMessage, error: true)]
+    public static Task<TResult> IfErrorAsync<TResult, TTaskResult>(this Task<TResult> resultTask,
+        Func<Error, ValueTask<TTaskResult>> ifErrorAction, bool? continueOnCapturedContext = null)
+        where TResult : IOperationResult
+    {
+        throw new NotSupportedException(OtherTaskMessage);
     }
 
     #endregion
