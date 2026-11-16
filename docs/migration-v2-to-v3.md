@@ -171,7 +171,7 @@ Writing the types as JSON still works with the default settings, except for a fa
 > [!WARNING]
 > `ErrorUri` is a struct, so both serializers can create it without a constructor: an `ErrorUri` that is a member of your own type is silently read as `about:blank`. Do not deserialize it without a dedicated converter; store the *URI* as a `string` in your DTOs instead.
 
-Dedicated converter packages for *System.Text.Json* and *Newtonsoft.Json* are planned. Until they are available, if you need to read these types (e.g., as Azure Durable Functions activity results, Service Bus messages or cached values), map them to your own DTOs at the boundary:
+Dedicated converter packages are coming soon: [Maple.Result.Serialization.SystemTextJson](https://github.com/TomMaple/Maple.Result.Serialization.SystemTextJson) and [Maple.Result.Serialization.NewtonsoftJson](https://github.com/TomMaple/Maple.Result.Serialization.NewtonsoftJson). Until they are available, if you need to read these types (e.g., as Azure Durable Functions activity results, Service Bus messages or cached values), map them to your own DTOs at the boundary:
 
 ```csharp
 public sealed record ErrorDto(ErrorCategory Category, string TypeUri, string Title, string? Detail, string? InstanceUri);
@@ -476,7 +476,7 @@ var task = result.ThenAsync((Func<Task<Result>>)null!);
 ```
 
 ### Extension packages
-The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an internal method of `Maple.Result` 2.x that no longer exists, so using it with `Maple.Result` 3.0 fails at runtime. Upgrade all `Maple.Result.Extensions.*` packages to versions built for 3.0 together with `Maple.Result`, and do not mix 2.x and 3.0 packages.
+The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an internal method of `Maple.Result` 2.x that no longer exists, so using it with `Maple.Result` 3.0 fails at runtime. Upgrade all `Maple.Result.Extensions.*` packages to versions built for 3.0 together with `Maple.Result`, and do not mix 2.x and 3.0 packages. The published versions of `Maple.Result.Extensions.AspNetCore`, `.MinimalApi`, `.Functions.Worker`, `.Functions.Worker.AspNetCore` and `.HttpClient` are built for 2.x; see [Related packages](../README.md#related-packages) for the list and the status of each package.
 
 ## New features
 * **`ErrorBuilder`** — a mutable builder of an immutable `Error`. Create it with `new ErrorBuilder(category, typeUri, title)`, a static method per category (e.g., `ErrorBuilder.Validation(...)`) or `error.ToBuilder()`; set the members with `With…` / `AddErrorDetail` methods; call `Build()`. Every argument is validated when it is passed, so `Build()` never throws. See [ErrorBuilder](Reference/ErrorBuilder/ErrorBuilder.md).
@@ -535,7 +535,7 @@ The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an
 | `result.Value` relied on as the default value of a failed result | `result.TryGetValue(out var value) ? value : default` or a check of `result.IsSuccess` |
 | `WithErrorDetail(…, messageId: …, namedValues: …)` (named arguments) | `WithErrorDetail(…, detailTemplateId: …, detailNamedValues: …)` |
 | `var (id, parameters) = templatedMessage;` | `templatedMessage is { TemplateId: var id, Params: var parameters }` |
-| `JsonSerializer.Deserialize<Result<T>>(…)` / `Deserialize<Error>(…)` | your own DTO, or the planned converter packages |
+| `JsonSerializer.Deserialize<Result<T>>(…)` / `Deserialize<Error>(…)` | your own DTO, or the converter packages (coming soon) |
 
 ## See Also
 * [README: Upgrading to 3.0](../README.md#upgrading-to-30)

@@ -10,9 +10,10 @@
 # Result
 An abstraction of the operation result which can be either successful (with or without a value) or failed (with an error).
 
-It can be mapped to or from the HTTP response if needed. Check:
-* [Maple.Result.Extensions.AspNetCore](https://github.com/TomMaple/Maple.Result.Extensions.AspNetCore),
-* [Maple.Result.Extensions.HttpClient](https://github.com/TomMaple/Maple.Result.Extensions.HttpClient).
+> [!IMPORTANT]
+> **Version 3.0 is a major release with breaking changes**, and this README describes it. `Result`, `Result<T>` and `Error` are immutable (with a new `ErrorBuilder`), the namespace is `Maple.Results`, the transforming `IfSuccess` / `IfError` are `Then` / `Else`, and the types can no longer be read from JSON without the converter packages. Read the [migration guide from 2.x to 3.0](https://github.com/TomMaple/Maple.Result/blob/main/docs/migration-v2-to-v3.md) before you upgrade, and upgrade the [related packages](https://github.com/TomMaple/Maple.Result#related-packages) together with `Maple.Result`.
+
+It can be mapped to and from HTTP responses, and written to and read from JSON, by the [related packages](https://github.com/TomMaple/Maple.Result#related-packages): *ASP.NET Core*, *Minimal API*, *Azure Functions* and `HttpClient` are published; resilience and the JSON converters are coming soon.
 
 
 # Give it a star ⭐
@@ -39,7 +40,7 @@ Although, there are many existing implementation of the *Result* pattern in C#, 
 * [Quick Start](https://github.com/TomMaple/Maple.Result#quick-start)
 * [The Result Pattern](https://github.com/TomMaple/Maple.Result#the-result-pattern)
 * [How To Use Result library](https://github.com/TomMaple/Maple.Result#how-to-use-result-library)
-* [Mapping to HTTP responses](https://github.com/TomMaple/Maple.Result#mapping-to-http-responses)
+* [Related packages](https://github.com/TomMaple/Maple.Result#related-packages)
 * [Upgrading to 3.0](https://github.com/TomMaple/Maple.Result/blob/main/docs/migration-v2-to-v3.md)
 * [FAQ](https://github.com/TomMaple/Maple.Result#faq)
 * [Learn More & Documentation](https://github.com/TomMaple/Maple.Result#learn-more)
@@ -566,16 +567,24 @@ See more: [ResultConfiguration.ContinueOnCapturedContext](https://github.com/Tom
 
 See more: [Maple.Results.Extensions](https://github.com/TomMaple/Maple.Result/blob/main/docs/Reference/Extensions/namespace.md)
 
-# Mapping to HTTP responses
-Check:
-* [Maple.Result.Extensions.AspNetCore](https://github.com/TomMaple/Maple.Result.Extensions.AspNetCore) library *(in development)* for mapping the *Result* to *ASP.NET Core* HTTP responses.
+# Related packages
+The core package (`Maple.Result`) has no dependencies. These packages add the mapping to and from HTTP responses, resilience and JSON serialization:
 
-### Coming soon:
-* *Maple.Result.Extensions.Functions.Worker* library for mapping the *Result* to *Azure Functions* HTTP responses.
+| Package | Purpose | Status |
+| ------- | ------- | ------ |
+| [Maple.Result.Extensions.AspNetCore](https://github.com/TomMaple/Maple.Result.Extensions.AspNetCore) | Maps a *Result* to an *ASP.NET Core* HTTP response (`ActionResult`, problem details). | Published ([0.15.0](https://www.nuget.org/packages/Maple.Result.Extensions.AspNetCore/0.15.0), for `Maple.Result` 2.x); a version for 3.0 is released with it |
+| [Maple.Result.Extensions.MinimalApi](https://github.com/TomMaple/Maple.Result.Extensions.MinimalApi) | Maps a *Result* to a *.NET Minimal API* result (`IResult`, problem details). | Published ([0.4.0](https://www.nuget.org/packages/Maple.Result.Extensions.MinimalApi/0.4.0), for `Maple.Result` 2.x); a version for 3.0 is released with it |
+| [Maple.Result.Extensions.Functions.Worker](https://github.com/TomMaple/Maple.Result.Extensions.Functions.Worker) | Maps a *Result* to an *Azure Functions* (isolated worker model) HTTP response (`HttpResponseData`). | Published ([0.2.0](https://www.nuget.org/packages/Maple.Result.Extensions.Functions.Worker/0.2.0), for `Maple.Result` 2.x); a version for 3.0 is released with it |
+| [Maple.Result.Extensions.Functions.Worker.AspNetCore](https://github.com/TomMaple/Maple.Result.Extensions.AspNetCore) | Maps a *Result* to an `ActionResult` in *Azure Functions* (isolated worker model) with the *ASP.NET Core* integration. | Published ([0.15.0](https://www.nuget.org/packages/Maple.Result.Extensions.Functions.Worker.AspNetCore/0.15.0), for `Maple.Result` 2.x); a version for 3.0 is released with it |
+| [Maple.Result.Extensions.HttpClient](https://github.com/TomMaple/Maple.Result.Extensions.HttpClient) | Maps an `HttpClient` response (`HttpResponseMessage`, problem details) to a *Result*. | Published ([0.12.0](https://www.nuget.org/packages/Maple.Result.Extensions.HttpClient/0.12.0), for `Maple.Result` 2.x); a version for 3.0 is released with it |
+| [Maple.Result.Extensions.Resilience](https://github.com/TomMaple/Maple.Result.Extensions.Resilience) | The retry-after metadata of an `Error` (e.g., for `LimitExceeded`) and helpers for the retry pipeline of an application (no dependency on *Polly*). | **Coming soon** (not on NuGet yet) |
+| [Maple.Result.Serialization.SystemTextJson](https://github.com/TomMaple/Maple.Result.Serialization.SystemTextJson) | *System.Text.Json* converters that write and read `Result`, `Result<T>` and `Error`. | **Coming soon** (not on NuGet yet) |
+| [Maple.Result.Serialization.NewtonsoftJson](https://github.com/TomMaple/Maple.Result.Serialization.NewtonsoftJson) | *Newtonsoft.Json* (Json.NET) converters that write and read `Result`, `Result<T>` and `Error`. | **Coming soon** (not on NuGet yet) |
 
-# Mapping from HTTP responses
-Check:
-* [Maple.Result.Extensions.HttpClient](https://github.com/TomMaple/Maple.Result.Extensions.HttpClient) library for mapping *HTTP Client* responses to *Result* objects.
+> [!WARNING]
+> The published versions above are built for `Maple.Result` 2.x: do not mix them with `Maple.Result` 3.0 (e.g., the current `Maple.Result.Extensions.HttpClient` fails at runtime with 3.0). Upgrade all packages together, to the versions built for 3.0 (see [Extension packages](https://github.com/TomMaple/Maple.Result/blob/main/docs/migration-v2-to-v3.md#extension-packages) in the migration guide).
+
+The problem details that these packages write and read follow one format, described in [Problem details format](https://github.com/TomMaple/Maple.Result/blob/main/docs/problem-details.md).
 
 # Upgrading to 3.0
 > [!TIP]
@@ -598,7 +607,7 @@ Check:
 > [!WARNING]
 > **Breaking changes.**
 
-* **No deserialization without converters.** `Result`, `Result<T>`, `Error` and `ErrorUri` have no public constructors or setters, so *System.Text.Json* and *Newtonsoft.Json* can no longer read them from JSON: `Result`, `Result<T>` and `Error` throw, and an `ErrorUri` is silently read as `about:blank` (see the [migration guide](https://github.com/TomMaple/Maple.Result/blob/main/docs/migration-v2-to-v3.md#no-json-deserialization-without-converters)). Writing them still works with the default settings, except for a failed `Result<T>` (its `Value` throws). Reading them requires dedicated converter packages (planned).
+* **No deserialization without converters.** `Result`, `Result<T>`, `Error` and `ErrorUri` have no public constructors or setters, so *System.Text.Json* and *Newtonsoft.Json* can no longer read them from JSON: `Result`, `Result<T>` and `Error` throw, and an `ErrorUri` is silently read as `about:blank` (see the [migration guide](https://github.com/TomMaple/Maple.Result/blob/main/docs/migration-v2-to-v3.md#no-json-deserialization-without-converters)). Writing them still works with the default settings, except for a failed `Result<T>` (its `Value` throws). Reading them requires the converter packages [Maple.Result.Serialization.SystemTextJson](https://github.com/TomMaple/Maple.Result.Serialization.SystemTextJson) and [Maple.Result.Serialization.NewtonsoftJson](https://github.com/TomMaple/Maple.Result.Serialization.NewtonsoftJson) (coming soon).
 * **`AddDetail()` has been removed.** Use `error.WithErrorDetail(...)`, which returns a copy instead of changing the error, or an `ErrorBuilder` and its `AddErrorDetail(...)` to add several details:
   ```csharp
   // before
