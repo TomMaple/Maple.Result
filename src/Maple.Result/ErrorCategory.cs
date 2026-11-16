@@ -14,8 +14,18 @@ namespace Maple.Results;
 ///     An enumeration representing the different categories of errors that can be returned by the Result record.
 /// </summary>
 /// <remarks>
-///     The members are ordered by the HTTP status code they can be mapped to.
-///     The values are explicit and must not change: they are stored and serialized (e.g., as numbers in JSON).
+///     <para>
+///         The members are ordered by the HTTP status code they can be mapped to.
+///         The values are explicit and must not change: they are stored and serialized (e.g., as numbers in JSON).
+///     </para>
+///     <para>
+///         The default value (<c>default(ErrorCategory)</c>, <c>0</c>) is <see cref="Validation" />, a real category: do not use it to mean
+///         "not set". A category that is missing, e.g., from a JSON payload, has to be handled as missing by the code that reads it, not
+///         read as <see cref="Validation" />.
+///     </para>
+///     <para>
+///         The status codes are the default mapping of the packages that write and read problem details; both directions can be customized.
+///     </para>
 /// </remarks>
 public enum ErrorCategory
 {
@@ -24,7 +34,9 @@ public enum ErrorCategory
     /// </summary>
     /// <remarks>
     ///     The operation failed due to something wrong with the input data.<br />
-    ///     Can be mapped to the 400 HTTP status code (Bad Request).
+    ///     Can be mapped to the 400 HTTP status code (Bad Request); the 413 (Content Too Large), 414 (URI Too Long) and 431 (Request Header
+    ///     Fields Too Large) status codes are read as this category.<br />
+    ///     It is the default value of the enumeration (<c>0</c>); do not use the default value to mean "not set".
     /// </remarks>
     Validation = 0,
 
@@ -50,7 +62,7 @@ public enum ErrorCategory
     ///     The resource was not found error.
     /// </summary>
     /// <remarks>
-    ///     Can be mapped to the 404 HTTP status code (Not Found).
+    ///     Can be mapped to the 404 HTTP status code (Not Found); the 410 status code (Gone) is read as this category.
     /// </remarks>
     NotFound = 3,
 
@@ -69,7 +81,8 @@ public enum ErrorCategory
     /// </summary>
     /// <remarks>
     ///     The operation failed due to the data or state conflict (such as a unique constraint violation).<br />
-    ///     Can be mapped to the 409 HTTP status code (Conflict).
+    ///     Can be mapped to the 409 HTTP status code (Conflict); the 412 (Precondition Failed) and 423 (Locked) status codes are read as this
+    ///     category.
     /// </remarks>
     Conflict = 5,
 
@@ -78,7 +91,8 @@ public enum ErrorCategory
     /// </summary>
     /// <remarks>
     ///     Do not use for authentication, authorization, validation, data conflict or unexpected errors.<br />
-    ///     Can be mapped to the 422 HTTP status code (Unprocessable Content).
+    ///     Can be mapped to the 422 HTTP status code (Unprocessable Content); a 4xx status code that no other category is read from is read as
+    ///     this category.
     /// </remarks>
     Failure = 6,
 
@@ -97,7 +111,8 @@ public enum ErrorCategory
     ///     An unexpected, critical error.
     /// </summary>
     /// <remarks>
-    ///     Can be mapped to the 500 HTTP status code (Internal Server Error).
+    ///     Can be mapped to the 500 HTTP status code (Internal Server Error); a 5xx status code that no other category is read from (e.g., 505
+    ///     or 507) is read as this category.
     /// </remarks>
     Critical = 7,
 
@@ -116,7 +131,7 @@ public enum ErrorCategory
     /// <remarks>
     ///     The service (or a resource it depends on) is temporarily unavailable, e.g. it is down or overloaded. Try again later.<br />
     ///     Do not use when a usage limit, quota or rate has been exhausted (use <see cref="LimitExceeded" />).<br />
-    ///     Can be mapped to the 503 HTTP status code (Service Unavailable).
+    ///     Can be mapped to the 503 HTTP status code (Service Unavailable); the 502 status code (Bad Gateway) is read as this category.
     /// </remarks>
     Unavailable = 9
 }

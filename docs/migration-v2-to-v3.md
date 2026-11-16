@@ -88,6 +88,10 @@ var statusCode = error.Category switch
 };
 ```
 
+The default mapping of the status codes that are **read** (e.g., by the `HttpClient` package) changed as well: in 2.x, every code without a category of its own was read as `Failure`. In 3.0, `502` is read as `Unavailable`, any other `5xx` code as `Critical`, `410` as `NotFound`, `412` and `423` as `Conflict`, and `413`, `414` and `431` as `Validation`; only the other `4xx` codes are still read as `Failure`. See [Category and status](problem-details.md#category-and-status).
+
+`default(ErrorCategory)` is still `Validation` (`0`), and the values did not change. Do not use the default value to mean "not set".
+
 ### Public constructors removed
 The types can only be created through their factory methods, which always produce a valid instance.
 
@@ -513,3 +517,4 @@ The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an
 * [Issue #197: Split `IfSuccess` and `IfError` by intent: `Then` and `Else`](https://github.com/TomMaple/Maple.Result/issues/197)
 * [Issue #198: Validate `ErrorDetail.PropertyPointer` as a JSON Pointer](https://github.com/TomMaple/Maple.Result/issues/198)
 * [Issue #203: Reject empty or whitespace-only detail texts and names padded with white space](https://github.com/TomMaple/Maple.Result/issues/203)
+* [Issue #205: The default `ErrorCategory` and the status codes read as `Failure`](https://github.com/TomMaple/Maple.Result/issues/205)
