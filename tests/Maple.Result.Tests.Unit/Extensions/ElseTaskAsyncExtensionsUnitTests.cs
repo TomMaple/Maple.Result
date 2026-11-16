@@ -708,7 +708,7 @@ public class ElseTaskAsyncExtensionsUnitTests
             .ToList();
 
         // Assert
-        priorities.Count.ShouldBe(2);
+        priorities.Count.ShouldBe(5);
         priorities.ShouldAllBe(p => p == 1);
     }
 
@@ -727,6 +727,217 @@ public class ElseTaskAsyncExtensionsUnitTests
         // Assert
         priorities.Count.ShouldBe(1);
         priorities.ShouldAllBe(p => p == 0);
+    }
+
+    #endregion
+
+    #region A function returning a value or an Error in a task (issue #237)
+
+    // ElseAsync takes a function that returns the value or the Error of the replacement result, as Else does through the implicit
+    // conversions. A successful result is returned unchanged; the null rules are checked over every overload by NullCheckUnitTests.
+
+    private static readonly Error FailedError = Error.Failure(ErrorUri.None, "The failed result");
+    private static readonly Error ReplacementError = Error.Conflict(ErrorUri.None, "The replacement error");
+
+    [Fact]
+    public async Task ElseAsync_FailedResultOfTWithValueFunction_ReturnsSuccessfulResultWithTheValue()
+    {
+        // Arrange
+        var sut = Result<int>.FromError(FailedError);
+
+        // Act
+        var result = await sut.ElseAsync(_ => Task.FromResult(-1));
+
+        // Assert
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldBe(-1);
+    }
+
+    [Fact]
+    public async Task ElseAsync_SuccessfulResultOfTWithValueFunction_ReturnsOriginalResultAndDoesNotCallFunction()
+    {
+        // Arrange
+        var sut = Result<int>.FromValue(5);
+        var called = false;
+
+        // Act
+        var result = await sut.ElseAsync(_ => { called = true; return Task.FromResult(-1); });
+
+        // Assert
+        result.ShouldBeSameAs(sut);
+        called.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task ElseAsync_FailedResultOfTWithValueFunctionReturningNull_ReturnsSuccessfulResultWithNullValue()
+    {
+        // Arrange
+        var sut = Result<string?>.FromError(FailedError);
+
+        // Act
+        var result = await sut.ElseAsync(_ => Task.FromResult<string?>(null));
+
+        // Assert
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task ElseAsync_FailedResultOfTWithErrorFunction_ReturnsFailedResultWithTheError()
+    {
+        // Arrange
+        var sut = Result<int>.FromError(FailedError);
+
+        // Act
+        var result = await sut.ElseAsync(_ => Task.FromResult(ReplacementError));
+
+        // Assert
+        result.Error.ShouldBe(ReplacementError);
+    }
+
+    [Fact]
+    public async Task ElseAsync_SuccessfulResultOfTWithErrorFunction_ReturnsOriginalResultAndDoesNotCallFunction()
+    {
+        // Arrange
+        var sut = Result<int>.FromValue(5);
+        var called = false;
+
+        // Act
+        var result = await sut.ElseAsync(_ => { called = true; return Task.FromResult(ReplacementError); });
+
+        // Assert
+        result.ShouldBeSameAs(sut);
+        called.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task ElseAsync_FailedResultWithErrorFunction_ReturnsFailedResultWithTheError()
+    {
+        // Arrange
+        var sut = Result.FromError(FailedError);
+
+        // Act
+        var result = await sut.ElseAsync(_ => Task.FromResult(ReplacementError));
+
+        // Assert
+        result.Error.ShouldBe(ReplacementError);
+    }
+
+    [Fact]
+    public async Task ElseAsync_SuccessfulResultWithErrorFunction_ReturnsOriginalResultAndDoesNotCallFunction()
+    {
+        // Arrange
+        var sut = Result.Success();
+        var called = false;
+
+        // Act
+        var result = await sut.ElseAsync(_ => { called = true; return Task.FromResult(ReplacementError); });
+
+        // Assert
+        result.ShouldBeSameAs(sut);
+        called.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task ElseAsync_FailedResultOfTTaskWithValueFunction_ReturnsSuccessfulResultWithTheValue()
+    {
+        // Arrange
+        var sut = Task.FromResult(Result<int>.FromError(FailedError));
+
+        // Act
+        var result = await sut.ElseAsync(_ => Task.FromResult(-1));
+
+        // Assert
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldBe(-1);
+    }
+
+    [Fact]
+    public async Task ElseAsync_SuccessfulResultOfTTaskWithValueFunction_ReturnsOriginalResultAndDoesNotCallFunction()
+    {
+        // Arrange
+        var original = Result<int>.FromValue(5);
+        var sut = Task.FromResult(original);
+        var called = false;
+
+        // Act
+        var result = await sut.ElseAsync(_ => { called = true; return Task.FromResult(-1); });
+
+        // Assert
+        result.ShouldBeSameAs(original);
+        called.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task ElseAsync_FailedResultOfTTaskWithValueFunctionReturningNull_ReturnsSuccessfulResultWithNullValue()
+    {
+        // Arrange
+        var sut = Task.FromResult(Result<string?>.FromError(FailedError));
+
+        // Act
+        var result = await sut.ElseAsync(_ => Task.FromResult<string?>(null));
+
+        // Assert
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task ElseAsync_FailedResultOfTTaskWithErrorFunction_ReturnsFailedResultWithTheError()
+    {
+        // Arrange
+        var sut = Task.FromResult(Result<int>.FromError(FailedError));
+
+        // Act
+        var result = await sut.ElseAsync(e => Task.FromResult(e == FailedError ? ReplacementError : e));
+
+        // Assert
+        result.Error.ShouldBe(ReplacementError);
+    }
+
+    [Fact]
+    public async Task ElseAsync_SuccessfulResultOfTTaskWithErrorFunction_ReturnsOriginalResultAndDoesNotCallFunction()
+    {
+        // Arrange
+        var original = Result<int>.FromValue(5);
+        var sut = Task.FromResult(original);
+        var called = false;
+
+        // Act
+        var result = await sut.ElseAsync(_ => { called = true; return Task.FromResult(ReplacementError); });
+
+        // Assert
+        result.ShouldBeSameAs(original);
+        called.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task ElseAsync_FailedResultTaskWithErrorFunction_ReturnsFailedResultWithTheError()
+    {
+        // Arrange
+        var sut = Task.FromResult(Result.FromError(FailedError));
+
+        // Act
+        var result = await sut.ElseAsync(e => Task.FromResult(e.ToBuilder().WithTitle("Replaced").Build()));
+
+        // Assert
+        result.Error.ShouldNotBeNull().Title.ShouldBe("Replaced");
+    }
+
+    [Fact]
+    public async Task ElseAsync_SuccessfulResultTaskWithErrorFunction_ReturnsOriginalResultAndDoesNotCallFunction()
+    {
+        // Arrange
+        var original = Result.Success();
+        var sut = Task.FromResult(original);
+        var called = false;
+
+        // Act
+        var result = await sut.ElseAsync(_ => { called = true; return Task.FromResult(ReplacementError); });
+
+        // Assert
+        result.ShouldBeSameAs(original);
+        called.ShouldBeFalse();
     }
 
     #endregion
