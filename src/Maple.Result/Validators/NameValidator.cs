@@ -8,6 +8,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+using System;
+using System.Collections.Generic;
+
 namespace Maple.Results.Validators;
 
 /// <summary>
@@ -28,6 +31,12 @@ namespace Maple.Results.Validators;
 internal static class NameValidator
 {
     /// <summary>
+    ///     The number of names from which a name that differs only in case is found with a case-insensitive index instead of a scan (#234):
+    ///     the usual collection with a few names allocates nothing more, and a large one is checked in linear time.
+    /// </summary>
+    internal const int CaseIndexThreshold = 8;
+
+    /// <summary>
     ///     Determines whether the name is not empty and does not start or end with white space.
     /// </summary>
     internal static bool IsValid(string name)
@@ -35,5 +44,35 @@ internal static class NameValidator
         return name.Length > 0
                && !char.IsWhiteSpace(name[0])
                && !char.IsWhiteSpace(name[^1]);
+    }
+
+    /// <summary>
+    ///     Returns the name of the <paramref name="dictionary" /> that differs only in case from the <paramref name="name" />, which is not in
+    ///     the dictionary; <see langword="null" /> if there is none.
+    /// </summary>
+    /// <remarks>
+    ///     The dictionary never holds two names that differ only in case, so there is at most one. The <paramref name="index" /> (the names,
+    ///     compared case-insensitively, with their stored spelling) is created once the dictionary has <see cref="CaseIndexThreshold" />
+    ///     names; the caller keeps it in step with the later changes of the dictionary.
+    /// </remarks>
+    internal static string? FindNameDifferingOnlyInCase(string name, Dictionary<string, object?> dictionary, ref Dictionary<string, string>? index)
+    {
+        if (index is null && dictionary.Count >= CaseIndexThreshold)
+        {
+            index = new Dictionary<string, string>(dictionary.Count, StringComparer.OrdinalIgnoreCase);
+            foreach (var existingName in dictionary.Keys)
+                index.Add(existingName, existingName);
+        }
+
+        if (index is not null)
+            return index.GetValueOrDefault(name);
+
+        foreach (var existingName in dictionary.Keys)
+        {
+            if (string.Equals(existingName, name, StringComparison.OrdinalIgnoreCase))
+                return existingName;
+        }
+
+        return null;
     }
 }
