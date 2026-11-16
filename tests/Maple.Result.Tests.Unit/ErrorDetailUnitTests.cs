@@ -168,4 +168,94 @@ public class ErrorDetailUnitTests
     }
 
     #endregion
+
+    #region Pointer (issue #230)
+
+    [Fact]
+    public void Pointer_NamesAndIndex_JoinsThemWithSlashes()
+    {
+        // Act
+        var pointer = ErrorDetail.Pointer("items", 0, "name");
+
+        // Assert
+        pointer.ShouldBe("/items/0/name");
+    }
+
+    [Fact]
+    public void Pointer_NoSegments_ReturnsEmptyPointer()
+    {
+        ErrorDetail.Pointer().ShouldBe(string.Empty);
+    }
+
+    [Fact]
+    public void Pointer_EmptyName_IsAValidSegment()
+    {
+        ErrorDetail.Pointer("").ShouldBe("/");
+    }
+
+    [Theory]
+    [InlineData("a/b", "/a~1b")]
+    [InlineData("a~b", "/a~0b")]
+    [InlineData("~1", "/~01")]
+    [InlineData("~/", "/~0~1")]
+    [InlineData("a b", "/a b")]
+    public void Pointer_NameWithSpecialCharacters_EscapesTildeBeforeSlash(string name, string expected)
+    {
+        ErrorDetail.Pointer(name).ShouldBe(expected);
+    }
+
+    [Fact]
+    public void Pointer_LongIndex_IsWrittenInDecimal()
+    {
+        ErrorDetail.Pointer("ids", 3_000_000_000L).ShouldBe("/ids/3000000000");
+    }
+
+    [Theory]
+    [InlineData("a/b")]
+    [InlineData("a~b")]
+    [InlineData("~1/~0")]
+    public void Pointer_Result_IsAcceptedByTheConstructor(string name)
+    {
+        // Act
+        var sut = new ErrorDetail(ErrorDetail.Pointer("items", 1, name), "Invalid.");
+
+        // Assert
+        sut.PropertyPointer.ShouldNotBeNull();
+    }
+
+    [Fact]
+    public void Pointer_NullSegment_ThrowsArgumentNullException()
+    {
+        var exception = Record.Exception(() => ErrorDetail.Pointer("items", null!));
+
+        exception.ShouldBeOfType<ArgumentNullException>();
+    }
+
+    [Theory]
+    [InlineData(-1)]
+    [InlineData(int.MinValue)]
+    public void Pointer_NegativeIndex_ThrowsArgumentOutOfRangeException(int index)
+    {
+        var exception = Record.Exception(() => ErrorDetail.Pointer("items", index));
+
+        exception.ShouldBeOfType<ArgumentOutOfRangeException>();
+    }
+
+    [Fact]
+    public void Pointer_NegativeLongIndex_ThrowsArgumentOutOfRangeException()
+    {
+        var exception = Record.Exception(() => ErrorDetail.Pointer("items", -1L));
+
+        exception.ShouldBeOfType<ArgumentOutOfRangeException>();
+    }
+
+    [Fact]
+    public void Pointer_SegmentOfAnotherType_ThrowsArgumentException()
+    {
+        var exception = Record.Exception(() => ErrorDetail.Pointer("items", 1.5));
+
+        exception.ShouldBeOfType<ArgumentException>();
+    }
+
+    #endregion
 }
