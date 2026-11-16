@@ -112,6 +112,19 @@ public class ResultTryFlatteningUnitTests
         exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("mapException");
     }
 
+    [Fact]
+    public void Try_ResultFunctionThrowsAndMapperDeclines_RethrowsTheSameException()
+    {
+        // Arrange
+        var thrown = new TimeoutException();
+
+        // Act
+        var exception = Record.Exception(() => Result.Try(() => Fail<Result>(thrown), _ => null));
+
+        // Assert
+        exception.ShouldBeSameAs(thrown);
+    }
+
     #endregion
 
     #region Try<TException>(Func<Result>, Func<TException, Error>)

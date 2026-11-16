@@ -116,6 +116,32 @@ public class ResultTryAsyncFlatteningUnitTests
         exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("function");
     }
 
+    [Fact]
+    public async Task TryAsync_TaskOfResultFaultsAndMapperDeclines_RethrowsTheSameException()
+    {
+        // Arrange
+        var thrown = new TimeoutException();
+
+        // Act
+        var exception = await Record.ExceptionAsync(() => Result.TryAsync(() => Task.FromException<Result>(thrown), _ => null));
+
+        // Assert
+        exception.ShouldBeSameAs(thrown);
+    }
+
+    [Fact]
+    public async Task TryAsync_ValueTaskOfResultOfValueFaultsAndMapperDeclines_RethrowsTheSameException()
+    {
+        // Arrange
+        var thrown = new TimeoutException();
+
+        // Act
+        var exception = await Record.ExceptionAsync(() => Result.TryAsync(() => ValueTask.FromException<Result<int>>(thrown), _ => null).AsTask());
+
+        // Assert
+        exception.ShouldBeSameAs(thrown);
+    }
+
     #endregion
 
     #region TryAsync<TException>(Func<Task<Result>>, Func<TException, Error>)
