@@ -10,6 +10,8 @@
 
 using Maple.Results.Tests.Unit.TestingInfrastructure.Helpers;
 using System;
+using System.Diagnostics;
+using System.Linq;
 
 namespace Maple.Results.Tests.Unit.ErrorUriTests;
 
@@ -181,6 +183,34 @@ public class ErrorUriParseUnitTests
 
         // Assert
         parsed.ShouldBeFalse();
+    }
+
+    // ReDoS regression (#189): TryParse is the entry point for values received from other services.
+    [Fact]
+    public void TryParse_HostileUrn_ReturnsFalseInLinearTime()
+    {
+        // Arrange
+        var maximum = TimeSpan.FromSeconds(2);
+        var hostile = "urn:a1:x?+" + string.Concat(Enumerable.Repeat("a?=", 32_000)) + " ";
+        var stopwatch = Stopwatch.StartNew();
+
+        // Act
+        var result = ErrorUri.TryParse(hostile, out _);
+
+        // Assert
+        stopwatch.Elapsed.ShouldBeLessThan(maximum);
+        result.ShouldBeFalse();
+    }
+
+    // The r-component ends at "?=" (RFC 8141, section 2.3.1), so the q-component that follows must be valid.
+    [Fact]
+    public void TryParse_UrnWithInvalidComponentAfterQuestionMarkEquals_ReturnsFalse()
+    {
+        // Act
+        var result = ErrorUri.TryParse("urn:example:a?+a?=/b", out _);
+
+        // Assert
+        result.ShouldBeFalse();
     }
 
     [Fact]

@@ -9,6 +9,8 @@
  */
 
 using System;
+using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 
 namespace Maple.Results.Tests.Unit.ErrorUriTests;
@@ -448,6 +450,14 @@ public class ErrorUriUnitTests
     [InlineData("urn:example:a123,z456#789")]                       // f-component
     [InlineData("urn:ab:c")]                                        // the shortest NID (2 characters)
     [InlineData("urn:a2345678901234567890123456789012:c")]          // the longest NID (32 characters)
+    [InlineData("urn:example:a?+abc?=xyz")]                         // r-component and q-component
+    [InlineData("urn:example:a?+abc?=xyz#frag")]                    // r-, q- and f-component
+    [InlineData("urn:example:a?+a?b?=c?=d")]                        // "?" in the r-component; "?=" in the q-component
+    [InlineData("urn:example:a?+a?")]                               // a trailing "?" in the r-component
+    [InlineData("urn:example:a?+a??=b")]                            // "?" before the "?=" of the q-component
+    [InlineData("urn:example:a?+abc?=x?+y")]                        // "?+" in the q-component
+    [InlineData("urn:example:a?+a%3Db")]                            // a percent-encoded "=" in the r-component
+    [InlineData("URN:Example:a#")]                                  // an empty f-component
     public void Urn_ValidUrn_ReturnsErrorUriWithUrn(string urn)
     {
         // Act
@@ -485,6 +495,9 @@ public class ErrorUriUnitTests
     [InlineData("urn:example:café")]                                // a literal non-ASCII character
     [InlineData("urn:example:a\n")]                                 // a trailing newline
     [InlineData("urn:example:a?b")]                                 // "?" not followed by "+" or "="
+    [InlineData("urn:example:a?+a?=/b")]                            // the r-component ends at "?=" (RFC 8141, 2.3.1); "/" cannot start the q-component
+    [InlineData("urn:example:a?+a?=")]                              // the r-component ends at "?="; the q-component is empty
+    [InlineData("urn:example:a?+?=b")]                              // an empty r-component
     [InlineData("tag:example.com,2004:1234")]
     [InlineData("https://example.com/errors/1")]
     public void Urn_InvalidUrn_ThrowsUriFormatException(string value)
@@ -496,6 +509,24 @@ public class ErrorUriUnitTests
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<UriFormatException>();
         exception.Message.ShouldBe("The URN is not valid. Check https://datatracker.ietf.org/doc/html/rfc8141#section-2 for details.");
+    }
+
+    // ReDoS regression (#189): every "?=" was a possible end of the r-component, and the backtracking engine retried each one,
+    // so this 96 KB value took about 7 seconds. In linear time it takes milliseconds; the limit is generous for slow CI machines.
+    [Fact]
+    public void Urn_HostileValue_IsRejectedInLinearTime()
+    {
+        // Arrange
+        var maximum = TimeSpan.FromSeconds(2);
+        var hostile = "urn:a1:x?+" + string.Concat(Enumerable.Repeat("a?=", 32_000)) + " ";
+        var stopwatch = Stopwatch.StartNew();
+
+        // Act
+        var exception = Record.Exception(() => ErrorUri.Urn(hostile));
+
+        // Assert
+        stopwatch.Elapsed.ShouldBeLessThan(maximum);
+        exception.ShouldBeOfType<UriFormatException>();
     }
 
     #endregion
