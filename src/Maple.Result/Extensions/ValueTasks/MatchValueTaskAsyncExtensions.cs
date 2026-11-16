@@ -100,7 +100,7 @@ public static class MatchValueTaskAsyncExtensions
     }
 
     /// <returns>
-    ///     The <see cref="ValueTask{T}" /> that represents the value of type<typeparamref name="T" /> produced by either <paramref name="ifSuccessFunction" />
+    ///     The <see cref="ValueTask{T}" /> that represents the value of type <typeparamref name="T" /> produced by either <paramref name="ifSuccessFunction" />
     ///     or <paramref name="ifErrorFunction" />.
     /// </returns>
     /// <inheritdoc cref="MatchTaskAsyncExtensions.MatchAsync{T}(Result, Func{Task{T}}, Func{Error, Task{T}}, bool?)" />
@@ -392,7 +392,7 @@ public static class MatchValueTaskAsyncExtensions
 
     /// <summary>
     ///     Invokes one of the provided asynchronous functions depending on whether the <paramref name="resultTask" /> is a successful operation and returns
-    ///     their value as an asynchronous operation that returns a <see cref="Result{T}" /> instance.
+    ///     the value that the invoked function returns, as an asynchronous operation.
     /// </summary>
     /// <remarks>
     ///     The method executes passed <paramref name="resultTask" /> asynchronous operation.
@@ -414,7 +414,7 @@ public static class MatchValueTaskAsyncExtensions
     ///     <see langword="null" /> (the default) to use <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
     /// </param>
     /// <returns>
-    ///     The <see cref="ValueTask{T}" /> that represents the value of type<typeparamref name="T" /> produced by either <paramref name="ifSuccessFunction" />
+    ///     The <see cref="ValueTask{T}" /> that represents the value of type <typeparamref name="T" /> produced by either <paramref name="ifSuccessFunction" />
     ///     or <paramref name="ifErrorFunction" />.
     /// </returns>
     /// <exception cref="ArgumentNullException">
@@ -582,7 +582,7 @@ public static class MatchValueTaskAsyncExtensions
 
     /// <summary>
     ///     Invokes one of the provided asynchronous functions depending on whether the <paramref name="resultTask" /> is a successful operation and returns
-    ///     their output as an asynchronous operation that represents a <see cref="Result{TNext}" /> instance.
+    ///     the value that the invoked function returns, as an asynchronous operation.
     /// </summary>
     /// <remarks>
     ///     The method executes passed <paramref name="resultTask" /> asynchronous operation.
@@ -1628,9 +1628,10 @@ public static class MatchValueTaskAsyncExtensions
     // ThenAsync(…).IfErrorAsync(…). MatchAsync keeps two meanings: two functions (a value) and two actions (a side effect).
 
     private const string SuccessFunctionAndErrorActionMessage =
-        "MatchAsync with a success function and an error action transforms the result, as ThenAsync does. Use " +
-        "ThenAsync(…).IfErrorAsync(…) to transform it, a success delegate without a value for a side effect, or two " +
-        "functions that return the same type for a value.";
+        "MatchAsync with a success function and an error action transforms the result, as ThenAsync does; an assignment or an increment " +
+        "(e.g., x => last = x) is a function too. " +
+        "Use ThenAsync(…).IfErrorAsync(…) to transform it, a success delegate without a value (e.g., x => { last = x; }) for a side effect, or " +
+        "two functions that return the same type for a value.";
 
     /// <summary>
     ///     Not supported: a success function with an error action transforms the result; use

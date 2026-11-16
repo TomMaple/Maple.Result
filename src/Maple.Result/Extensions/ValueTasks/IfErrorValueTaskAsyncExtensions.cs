@@ -128,11 +128,13 @@ public static class IfErrorValueTaskAsyncExtensions
     // or a method that returns nothing is a side effect and binds to the action overload.
 
     private const string ValueDiscardedMessage =
-        "The function returns a value in a task, which IfErrorAsync discards. Use ElseAsync to replace the result with " +
-        "it, or an async statement lambda for a side effect.";
+        "The function returns a value in a task, which IfErrorAsync discards; an assignment or an increment in an async lambda " +
+        "(e.g., async e => last = await LoadAsync(e)) has a value too. " +
+        "Use ElseAsync to replace the result with the value, or an async statement lambda (e.g., async e => { await LogAsync(e); }) for a side effect.";
 
     /// <summary>
-    ///     Not supported: the function returns a value in a task, which <c>IfErrorAsync</c> discards; use <c>ElseAsync</c>.
+    ///     Not supported: the function returns a value in a task (an assignment or an increment in an async lambda has one too), which
+    ///     <c>IfErrorAsync</c> discards; use <c>ElseAsync</c>.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ValueDiscardedMessage, error: true)]
@@ -143,7 +145,8 @@ public static class IfErrorValueTaskAsyncExtensions
     }
 
     /// <summary>
-    ///     Not supported: the function returns a value in a task, which <c>IfErrorAsync</c> discards; use <c>ElseAsync</c>.
+    ///     Not supported: the function returns a value in a task (an assignment or an increment in an async lambda has one too), which
+    ///     <c>IfErrorAsync</c> discards; use <c>ElseAsync</c>.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ValueDiscardedMessage, error: true)]
@@ -206,8 +209,10 @@ public static class IfErrorValueTaskAsyncExtensions
     // so without it, a call with an async lambda would be ambiguous (CS0121) between them and the traps for the other kind of task.
 
     private const string SyncValueDiscardedMessage =
-        "The function returns a value, which IfErrorAsync discards. Use ElseAsync to replace the result with it, or a " +
-        "statement lambda (e.g., e => { titles.Add(e.Title); }) for a side effect.";
+        "The function returns a value, which IfErrorAsync discards; an assignment or an increment (e.g., e => last = e or e => count++) " +
+        "has a value too. " +
+        "Use ElseAsync to replace the result with the value, or a statement lambda (e.g., e => { titles.Add(e.Title); } or e => { count++; }) " +
+        "for a side effect.";
 
     private const string OtherTaskMessage =
         "The function returns a Task, which the ValueTask-based IfErrorAsync does not await. Import " +
@@ -215,7 +220,8 @@ public static class IfErrorValueTaskAsyncExtensions
         "ValueTask<T>(task)).";
 
     /// <summary>
-    ///     Not supported: the function returns a value, which <c>IfErrorAsync</c> discards; use <c>ElseAsync</c>, or a statement lambda.
+    ///     Not supported: the function returns a value (an assignment or an increment has one too), which <c>IfErrorAsync</c> discards;
+    ///     use <c>ElseAsync</c>, or a statement lambda.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SyncValueDiscardedMessage, error: true)]

@@ -197,11 +197,12 @@ public static class IfSuccessExtensions
     // or a method that returns nothing is a side effect and binds to the action overload.
 
     private const string ValueDiscardedMessage =
-        "The function returns a value, which IfSuccess discards. Use Then to keep it, or a statement lambda (e.g., x => " +
-        "{ list.Add(x); }) for a side effect.";
+        "The function returns a value, which IfSuccess discards; an assignment or an increment (e.g., x => last = x or x => count++) has a value too. " +
+        "Use Then to keep the value, or a statement lambda (e.g., x => { list.Add(x); } or x => { count++; }) for a side effect.";
 
     /// <summary>
-    ///     Not supported: the function returns a value, which <c>IfSuccess</c> discards; use <c>Then</c>, or a statement lambda.
+    ///     Not supported: the function returns a value (an assignment or an increment has one too), which <c>IfSuccess</c> discards;
+    ///     use <c>Then</c>, or a statement lambda.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ValueDiscardedMessage, error: true)]
@@ -211,7 +212,8 @@ public static class IfSuccessExtensions
     }
 
     /// <summary>
-    ///     Not supported: the function returns a value, which <c>IfSuccess</c> discards; use <c>Then</c>, or a statement lambda.
+    ///     Not supported: the function returns a value (an assignment or an increment has one too), which <c>IfSuccess</c> discards;
+    ///     use <c>Then</c>, or a statement lambda.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ValueDiscardedMessage, error: true)]

@@ -208,11 +208,13 @@ public static class IfSuccessValueTaskAsyncExtensions
     // or a method that returns nothing is a side effect and binds to the action overload.
 
     private const string ValueDiscardedMessage =
-        "The function returns a value in a task, which IfSuccessAsync discards. Use ThenAsync to keep it, or an async " +
-        "statement lambda (e.g., async x => { await SaveAsync(x); }) for a side effect.";
+        "The function returns a value in a task, which IfSuccessAsync discards; an assignment or an increment in an async lambda " +
+        "(e.g., async x => last = await LoadAsync(x)) has a value too. " +
+        "Use ThenAsync to keep the value, or an async statement lambda (e.g., async x => { await SaveAsync(x); }) for a side effect.";
 
     /// <summary>
-    ///     Not supported: the function returns a value in a task, which <c>IfSuccessAsync</c> discards; use <c>ThenAsync</c>.
+    ///     Not supported: the function returns a value in a task (an assignment or an increment in an async lambda has one too), which
+    ///     <c>IfSuccessAsync</c> discards; use <c>ThenAsync</c>.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ValueDiscardedMessage, error: true)]
@@ -222,7 +224,8 @@ public static class IfSuccessValueTaskAsyncExtensions
     }
 
     /// <summary>
-    ///     Not supported: the function returns a value in a task, which <c>IfSuccessAsync</c> discards; use <c>ThenAsync</c>.
+    ///     Not supported: the function returns a value in a task (an assignment or an increment in an async lambda has one too), which
+    ///     <c>IfSuccessAsync</c> discards; use <c>ThenAsync</c>.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ValueDiscardedMessage, error: true)]
@@ -232,7 +235,8 @@ public static class IfSuccessValueTaskAsyncExtensions
     }
 
     /// <summary>
-    ///     Not supported: the function returns a value in a task, which <c>IfSuccessAsync</c> discards; use <c>ThenAsync</c>.
+    ///     Not supported: the function returns a value in a task (an assignment or an increment in an async lambda has one too), which
+    ///     <c>IfSuccessAsync</c> discards; use <c>ThenAsync</c>.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ValueDiscardedMessage, error: true)]
@@ -243,7 +247,8 @@ public static class IfSuccessValueTaskAsyncExtensions
     }
 
     /// <summary>
-    ///     Not supported: the function returns a value in a task, which <c>IfSuccessAsync</c> discards; use <c>ThenAsync</c>.
+    ///     Not supported: the function returns a value in a task (an assignment or an increment in an async lambda has one too), which
+    ///     <c>IfSuccessAsync</c> discards; use <c>ThenAsync</c>.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ValueDiscardedMessage, error: true)]
@@ -338,8 +343,9 @@ public static class IfSuccessValueTaskAsyncExtensions
     // so without it, a call with an async lambda would be ambiguous (CS0121) between them and the traps for the other kind of task.
 
     private const string SyncValueDiscardedMessage =
-        "The function returns a value, which IfSuccessAsync discards. Use ThenAsync to keep it, or a statement lambda " +
-        "(e.g., x => { list.Add(x); }) for a side effect.";
+        "The function returns a value, which IfSuccessAsync discards; an assignment or an increment (e.g., x => last = x or x => count++) " +
+        "has a value too. " +
+        "Use ThenAsync to keep the value, or a statement lambda (e.g., x => { list.Add(x); } or x => { count++; }) for a side effect.";
 
     private const string OtherTaskMessage =
         "The function returns a Task, which the ValueTask-based IfSuccessAsync does not await. Import " +
@@ -347,7 +353,8 @@ public static class IfSuccessValueTaskAsyncExtensions
         "ValueTask<T>(task)).";
 
     /// <summary>
-    ///     Not supported: the function returns a value, which <c>IfSuccessAsync</c> discards; use <c>ThenAsync</c>, or a statement lambda.
+    ///     Not supported: the function returns a value (an assignment or an increment has one too), which <c>IfSuccessAsync</c> discards;
+    ///     use <c>ThenAsync</c>, or a statement lambda.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SyncValueDiscardedMessage, error: true)]
@@ -358,7 +365,8 @@ public static class IfSuccessValueTaskAsyncExtensions
     }
 
     /// <summary>
-    ///     Not supported: the function returns a value, which <c>IfSuccessAsync</c> discards; use <c>ThenAsync</c>, or a statement lambda.
+    ///     Not supported: the function returns a value (an assignment or an increment has one too), which <c>IfSuccessAsync</c> discards;
+    ///     use <c>ThenAsync</c>, or a statement lambda.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SyncValueDiscardedMessage, error: true)]
