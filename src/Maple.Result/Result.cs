@@ -366,6 +366,11 @@ public sealed record Result<T> : IOperationResult
     ///     A <see langword="null" /> <paramref name="value" /> is permitted when <typeparamref name="T" /> is nullable
     ///     (a nullable reference type or <see cref="Nullable{T}" />);
     ///     the resulting <see cref="Result{T}" /> is successful and its <see cref="Value" /> is <see langword="null" />.
+    ///     <para>
+    ///     C# does not apply a user-defined conversion from an interface type: when <typeparamref name="T" /> is an interface
+    ///     and the value is declared as that interface, the conversion does not compile (CS0029). Use
+    ///     <see cref="FromValue(T)" /> instead; a value declared as a class converts as usual.
+    ///     </para>
     /// </remarks>
     public static implicit operator Result<T>(T value)
     {
