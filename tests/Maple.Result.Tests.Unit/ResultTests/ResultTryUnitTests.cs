@@ -381,7 +381,7 @@ public class ResultTryUnitTests
     public void TryTyped_NullFunction_ThrowsArgumentNullException()
     {
         // Act
-        var exception = Record.Exception(() => Result.Try<int, FormatException>(null!, _ => MappedError));
+        var exception = Record.Exception(() => Result.Try<int, FormatException>((Func<int>)null!, _ => MappedError));
 
         // Assert
         exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("function");
@@ -408,7 +408,7 @@ public class ResultTryUnitTests
     public void Try_TaskFunctionOverloads_AreHiddenCompileErrors()
     {
         // Arrange
-        const int ExpectedCount = 5;
+        const int ExpectedCount = 7;
 
         // Act
         var traps = typeof(Result).GetMethods(BindingFlags.Public | BindingFlags.Static)
@@ -421,20 +421,44 @@ public class ResultTryUnitTests
                                && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
     }
 
-    // A Task<T> converts to Task, so the Func<Task> traps also catch functions returning Task<T>; their priority makes them win over
-    // Try(Action) and Try<T>(Func<T>), which would otherwise bind an async lambda.
+    // The traps for functions returning a Task or a Task<T> win over Try(Action), Try<T>(Func<T>) and Try<T, TException>(Func<T>),
+    // which would otherwise bind an async lambda: Func<Task> for both mappers, and Func<Task<T>> for the typed one (#191).
     [Fact]
-    public void Try_FuncOfTaskTrapOverloads_HavePriorityOne()
+    public void Try_TaskTrapOverloads_HavePriorityOne()
     {
         // Act
         var priorities = typeof(Result).GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Where(m => m.Name == nameof(Result.Try) && m.GetParameters()[0].ParameterType == typeof(Func<Task>))
+            .Where(m => m.Name == nameof(Result.Try)
+                        && OverloadTrapHelper.IsTrap(m, "The function returns a task")
+                        && OverloadTrapHelper.IsTaskFunction(m.GetParameters()[0].ParameterType))
             .Select(OverloadTrapHelper.Priority)
             .ToList();
 
         // Assert
-        priorities.Count.ShouldBe(2);
+        priorities.Count.ShouldBe(3);
         priorities.ShouldAllBe(p => p == 1);
+    }
+
+    // With the untyped mapper, the Func<Task> trap also catches Task<T> (a Task<T> converts to Task) and the Func<ValueTask<T>> trap
+    // catches an async lambda that returns a value. With a typed mapper the call has two type parameters, so the typed family needs its
+    // own traps for Task<T> and ValueTask<T>: without them, three shapes bound to Try<T, TException> with T = a task (#191).
+    [Fact]
+    public void Try_TypedMapperTraps_CoverTaskValueTaskAndTheirGenericForms()
+    {
+        // Arrange
+        var expected = new[] { "Task", "Task`1", "ValueTask", "ValueTask`1" };
+
+        // Act
+        var returnTypes = typeof(Result).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(m => m.Name == nameof(Result.Try)
+                        && OverloadTrapHelper.IsTrap(m, "The function returns a task")
+                        && m.GetParameters()[1].ParameterType.GetGenericArguments()[0].IsGenericParameter)
+            .Select(m => m.GetParameters()[0].ParameterType.GetGenericArguments()[0].Name)
+            .Order()
+            .ToList();
+
+        // Assert
+        returnTypes.ShouldBe(expected);
     }
 
     // An async lambda converts to both Func<Task…> and Func<ValueTask…>; the Task overloads win (no CS0121), and a function that
