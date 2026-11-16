@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.cs#L370" target="_blank">Result.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.cs#L375" target="_blank">Result.cs</a>
 
 Defines an implicit conversion of a given value of the type `T` to a successful [Result&lt;T&gt;](ResultT.md) (with a value), with the provided value.
 
@@ -29,7 +29,13 @@ A new instance of the [Result&lt;T&gt;](ResultT.md) record (with a value) that r
 
 A `null` *value* is permitted when `T` is nullable (a nullable reference type or `Nullable<T>`); the resulting [Result&lt;T&gt;](ResultT.md) is successful and its [Value](ResultT_Value.md) is `null`.
 
+C# does not apply a user-defined conversion from an interface type. When `T` is an interface and the value is declared as that interface, the conversion does not compile (CS0029); use [FromValue(T)](ResultT_FromValue.md) instead. A value declared as a class converts as usual.
+
 ## Examples
 ```csharp
 Result<User> result = new User("John", "Doe");
+
+IUser user = GetUser();
+// Result<IUser> bad = user;               // CS0029: the value is declared as an interface
+Result<IUser> good = Result.FromValue(user);
 ```

@@ -214,6 +214,8 @@ return Result.FromValue(user);
 ```
 to explicitly create a `Result<T>` with a value.
 
+The implicit conversion does not compile when the value is declared as an interface (`IUser user = …; Result<IUser> r = user;` is CS0029: C# applies no user-defined conversion from an interface type); use `Result.FromValue(user)` there.
+
 Use
 ```csharp
 var result = userResult.ToResult();
