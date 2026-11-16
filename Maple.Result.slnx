@@ -111,6 +111,10 @@
     <File Path="docs/Reference/ErrorUri/ErrorUri_Value.md" />
   </Folder>
   <Folder Name="/docs/Reference/Extensions/">
+    <File Path="docs/Reference/Extensions/ElseExtensions.md" />
+    <File Path="docs/Reference/Extensions/ElseExtensions_Else.md" />
+    <File Path="docs/Reference/Extensions/ElseTaskAsyncExtensions.md" />
+    <File Path="docs/Reference/Extensions/ElseTaskAsyncExtensions_ElseAsync.md" />
     <File Path="docs/Reference/Extensions/IfErrorExtensions.md" />
     <File Path="docs/Reference/Extensions/IfErrorExtensions_IfError.md" />
     <File Path="docs/Reference/Extensions/IfErrorTaskAsyncExtensions.md" />
@@ -134,8 +138,14 @@
     <File Path="docs/Reference/Extensions/ResultExtensions_ToResult.md" />
     <File Path="docs/Reference/Extensions/ResultTaskAsyncExtensions.md" />
     <File Path="docs/Reference/Extensions/ResultTaskAsyncExtensions_ToResultAsync.md" />
+    <File Path="docs/Reference/Extensions/ThenExtensions.md" />
+    <File Path="docs/Reference/Extensions/ThenExtensions_Then.md" />
+    <File Path="docs/Reference/Extensions/ThenTaskAsyncExtensions.md" />
+    <File Path="docs/Reference/Extensions/ThenTaskAsyncExtensions_ThenAsync.md" />
   </Folder>
   <Folder Name="/docs/Reference/Extensions/ValueTasks/">
+    <File Path="docs/Reference/Extensions/ValueTasks/ElseValueTaskAsyncExtensions.md" />
+    <File Path="docs/Reference/Extensions/ValueTasks/ElseValueTaskAsyncExtensions_ElseAsync.md" />
     <File Path="docs/Reference/Extensions/ValueTasks/IfErrorValueTaskAsyncExtensions.md" />
     <File Path="docs/Reference/Extensions/ValueTasks/IfErrorValueTaskAsyncExtensions_IfErrorAsync.md" />
     <File Path="docs/Reference/Extensions/ValueTasks/IfSuccessValueTaskAsyncExtensions.md" />
@@ -148,6 +158,8 @@
     <File Path="docs/Reference/Extensions/ValueTasks/namespace.md" />
     <File Path="docs/Reference/Extensions/ValueTasks/ResultValueTaskAsyncExtensions.md" />
     <File Path="docs/Reference/Extensions/ValueTasks/ResultValueTaskAsyncExtensions_ToResultAsync.md" />
+    <File Path="docs/Reference/Extensions/ValueTasks/ThenValueTaskAsyncExtensions.md" />
+    <File Path="docs/Reference/Extensions/ValueTasks/ThenValueTaskAsyncExtensions_ThenAsync.md" />
   </Folder>
   <Folder Name="/docs/Reference/IOperationResult/">
     <File Path="docs/Reference/IOperationResult/IOperationResult.md" />

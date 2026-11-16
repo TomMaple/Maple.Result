@@ -18,12 +18,13 @@ using System.Threading.Tasks;
 namespace Maple.Results.Extensions;
 
 /// <summary>
-///     The collection of extension methods for executing actions or functions conditionally based on the error state of a <see cref="IOperationResult" />
-///     instance.
+///     The collection of extension methods that run a side effect when an <see cref="IOperationResult" /> is failed: an action receives
+///     the <see cref="Error" />, and the result is returned unchanged.
 /// </summary>
 /// <remarks>
-///     These methods enable fluent handling of error scenarios by allowing to specify actions or functions that should be executed only when the result
-///     indicates an error.
+///     A successful result is returned unchanged, and the action is not called. To replace a failed result (e.g., recover with a
+///     value, or return another error), use <c>Else</c>; a function that returns a value is a compile error here (CS0619), so that a failure
+///     is not turned into a success by mistake.
 /// </remarks>
 public static class IfErrorExtensions
 {
@@ -55,38 +56,6 @@ public static class IfErrorExtensions
             ifErrorAction(result.Error);
 
         return result;
-    }
-
-    /// <summary>
-    ///     Invokes the specified function if the <paramref name="result" /> represents an error and returns its outcome;
-    ///     otherwise, returns the original <paramref name="result" />.
-    /// </summary>
-    /// <typeparam name="TResult">The type of the result object, which must implement the <see cref="IOperationResult" /> interface.</typeparam>
-    /// <param name="result">The <paramref name="result" /> to inspect for an error. Must not be <see langword="null" />.</param>
-    /// <param name="ifErrorFunction">
-    ///     The function to execute if the <paramref name="result" /> is an error. The <see cref="Error" /> associated with the <paramref name="result" /> is
-    ///     passed to this function, and the function’s return value is used as the outcome.
-    ///     The function must return a value of the <typeparamref name="TResult" /> type. Must not be <see langword="null" />.
-    /// </param>
-    /// <returns>
-    ///     The original <paramref name="result" /> if it represents success; otherwise, the outcome of the <paramref name="ifErrorFunction" />.
-    /// </returns>
-    /// <exception cref="ArgumentNullException">
-    ///     If any of the <paramref name="result" /> or <paramref name="ifErrorFunction" /> parameters are <see langword="null" />.
-    /// </exception>
-    /// <exception cref="InvalidOperationException">If <paramref name="ifErrorFunction" /> returns <see langword="null" />.</exception>
-    public static TResult IfError<TResult>([DisallowNull] this TResult result, Func<Error, TResult> ifErrorFunction)
-        where TResult : IOperationResult
-    {
-        ArgumentNullException.ThrowIfNull(result);
-        ArgumentNullException.ThrowIfNull(ifErrorFunction);
-
-        if (result.IsSuccess)
-            return result;
-
-        var errorResult = ifErrorFunction(result.Error);
-
-        return Guard.EnsureNotNullReturned(errorResult, nameof(ifErrorFunction));
     }
 
     #region Not supported: error actions returning a task
@@ -133,6 +102,29 @@ public static class IfErrorExtensions
         where TResult : IOperationResult
     {
         throw new NotSupportedException(ErrorActionTaskNotAwaitedMessage);
+    }
+
+    #endregion
+
+    #region Not supported: functions returning a value (#197)
+
+    // A function that returns a value is a transformation, not a side effect (#197): these overloads turn the call into a compile
+    // error (CS0619) that names the method to use, instead of discarding the value. A statement lambda (e.g., x => { list.Add(x); })
+    // or a method that returns nothing is a side effect and binds to the action overload.
+
+    private const string ValueDiscardedMessage =
+        "The function returns a value, which IfError discards. Use Else to replace the result with it, or a statement " +
+        "lambda (e.g., e => { titles.Add(e.Title); }) for a side effect.";
+
+    /// <summary>
+    ///     Not supported: the function returns a value, which <c>IfError</c> discards; use <c>Else</c>, or a statement lambda.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ValueDiscardedMessage, error: true)]
+    public static TResult IfError<TResult, TValue>([DisallowNull] this TResult result, Func<Error, TValue> ifErrorAction)
+        where TResult : IOperationResult
+    {
+        throw new NotSupportedException(ValueDiscardedMessage);
     }
 
     #endregion

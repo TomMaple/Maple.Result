@@ -1,0 +1,1051 @@
+// SPDX-License-Identifier: MIT
+/*
+ * This code is a part of a Maple.Result library project.
+ * https://github.com/TomMaple/Maple.Result/
+ * Copyright (c) Tom Maple
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+using Maple.Results.Extensions;
+using Maple.Results.Tests.Unit.TestingInfrastructure.Fakes;
+using Maple.Results.Tests.Unit.TestingInfrastructure.Helpers;
+using Moq;
+using System;
+using System.ComponentModel;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
+
+namespace Maple.Results.Tests.Unit.Extensions;
+
+public class ThenExtensionsUnitTests
+{
+    #region IfSuccess (Result, Func<Result>)
+
+    [Fact]
+    public void IfSuccess_NoResultWithResultFunction_ThrowsException()
+    {
+        // Arrange
+        const Result? Sut = null;
+
+        // Act
+        var exception = Record.Exception(() => Sut!.Then(Result.Success));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentNullException>();
+        exception.Message.ShouldStartWith("Value cannot be null.");
+    }
+
+    [Fact]
+    public void IfSuccess_SuccessfulResultWithNoResultFunction_ThrowsException()
+    {
+        // Arrange
+        const Func<Result>? Function = null;
+
+        var sut = Result.Success();
+
+        // Act
+        var exception = Record.Exception(() => sut.Then(Function!));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentNullException>();
+        exception.Message.ShouldStartWith("Value cannot be null.");
+    }
+
+    [Fact]
+    public void IfSuccess_ErrorResultWithNoResultFunction_ThrowsException()
+    {
+        // Arrange
+        const Func<Result>? Function = null;
+
+        var sut = GetErrorResult();
+
+        // Act
+        var exception = Record.Exception(() => sut.Then(Function!));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentNullException>();
+        exception.Message.ShouldStartWith("Value cannot be null.");
+    }
+
+    [Fact]
+    public void IfSuccess_SuccessfulResultWithResultFunction_CallsFunction()
+    {
+        // Arrange
+        var functionMock = new Mock<Func<Result>> { DefaultValueProvider = ResultDefaultValueProvider.Instance };
+
+        var sut = Result.Success();
+
+        // Act
+        sut.Then(functionMock.Object);
+
+        // Assert
+        functionMock.Verify(x => x.Invoke(), Times.Once);
+    }
+
+    [Fact]
+    public void IfSuccess_SuccessfulResultWithSuccessfulResultFunction_ReturnsFunctionResult()
+    {
+        // Arrange
+        var funcResult = Result.Success();
+
+        var sut = Result.Success();
+
+        // Act
+        var result = sut.Then(() => funcResult);
+
+        // Assert
+        result.ShouldNotBeNull();
+        result.ShouldBeOfType<Result>();
+        result.IsSuccess.ShouldBeTrue();
+        result.ShouldBeSameAs(funcResult);
+    }
+
+    [Fact]
+    public void IfSuccess_SuccessfulResultWithErrorResultFunction_ReturnsFunctionResult()
+    {
+        // Arrange
+        var funcError = GetErrorResult();
+
+        var sut = Result.Success();
+
+        // Act
+        var result = sut.Then(() => funcError);
+
+        // Assert
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeFalse();
+        result.Error.ShouldBeSameAs(funcError.Error);
+    }
+
+    [Fact]
+    public void IfSuccess_ErrorResultWithResultFunction_DoesNotCallFunction()
+    {
+        // Arrange
+        var functionMock = new Mock<Func<Result>>();
+
+        var sut = GetErrorResult();
+
+        // Act
+        sut.Then(functionMock.Object);
+
+        // Assert
+        functionMock.Verify(x => x.Invoke(), Times.Never);
+    }
+
+    [Fact]
+    public void IfSuccess_ErrorResultWithResultFunction_ReturnsOriginalResult()
+    {
+        // Arrange
+        var sut = GetErrorResult();
+
+        // Act
+        var result = sut.Then(Result.Success);
+
+        // Assert
+        result.ShouldNotBeNull();
+        result.ShouldBeOfType<Result>();
+        result.IsSuccess.ShouldBeFalse();
+        result.Error.ShouldBeSameAs(sut.Error);
+    }
+
+    #endregion
+
+    #region IfSuccess (Result, Func<T>)
+
+    [Fact]
+    public void IfSuccess_NoResultWithGenericFunction_ThrowsException()
+    {
+        // Arrange
+        const Result? Sut = null;
+
+        // Act
+        var exception = Record.Exception(() => Sut!.Then(() => 38));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentNullException>();
+        exception.Message.ShouldStartWith("Value cannot be null.");
+    }
+
+    [Fact]
+    public void IfSuccess_SuccessfulResultWithNoGenericFunction_ThrowsException()
+    {
+        // Arrange
+        const Func<int>? Function = null;
+
+        var sut = Result.Success();
+
+        // Act
+        var exception = Record.Exception(() => sut.Then(Function!));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentNullException>();
+        exception.Message.ShouldStartWith("Value cannot be null.");
+    }
+
+    [Fact]
+    public void IfSuccess_ErrorResultWithNoGenericFunction_ThrowsException()
+    {
+        // Arrange
+        const Func<int>? Function = null;
+
+        var sut = GetErrorResult();
+
+        // Act
+        var exception = Record.Exception(() => sut.Then(Function!));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentNullException>();
+        exception.Message.ShouldStartWith("Value cannot be null.");
+    }
+
+    [Fact]
+    public void IfSuccess_SuccessfulResultWithGenericFunction_CallsFunction()
+    {
+        // Arrange
+        var functionMock = new Mock<Func<int>>();
+
+        var sut = Result.Success();
+
+        // Act
+        sut.Then(functionMock.Object);
+
+        // Assert
+        functionMock.Verify(x => x.Invoke(), Times.Once);
+    }
+
+    [Fact]
+    public void IfSuccess_SuccessfulResultWithGenericFunction_ReturnsFunctionValueResult()
+    {
+        // Arrange
+        const int FuncValue = 2463;
+
+        var sut = Result.Success();
+
+        // Act
+        var result = sut.Then(() => FuncValue);
+
+        // Assert
+        result.ShouldNotBeNull();
+        result.ShouldBeOfType<Result<int>>();
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldBe(FuncValue);
+    }
+
+    [Fact]
+    public void IfSuccess_ErrorResultWithGenericFunction_DoesNotCallFunction()
+    {
+        // Arrange
+        var functionMock = new Mock<Func<int>>();
+
+        var sut = GetErrorResult();
+
+        // Act
+        sut.Then(functionMock.Object);
+
+        // Assert
+        functionMock.Verify(x => x.Invoke(), Times.Never);
+    }
+
+    [Fact]
+    public void IfSuccess_ErrorResultWithGenericFunction_ReturnsOriginalResult()
+    {
+        // Arrange
+        var sut = GetErrorResult();
+
+        // Act
+        var result = sut.Then(() => 2987);
+
+        // Assert
+        result.ShouldNotBeNull();
+        result.ShouldBeOfType<Result<int>>();
+        result.IsSuccess.ShouldBeFalse();
+        result.Error.ShouldBeSameAs(sut.Error);
+    }
+
+    #endregion
+
+    #region IfSuccess (Result, Func<Result<T>>)
+
+    [Fact]
+    public void IfSuccess_NoResultWithGenericResultFunction_ThrowsException()
+    {
+        // Arrange
+        const Result? Sut = null;
+
+        // Act
+        var exception = Record.Exception(() => Sut!.Then(() => Result.FromValue(897)));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentNullException>();
+        exception.Message.ShouldStartWith("Value cannot be null.");
+    }
+
+    [Fact]
+    public void IfSuccess_SuccessfulResultWithNoGenericResultFunction_ThrowsException()
+    {
+        // Arrange
+        const Func<Result<int>>? Function = null;
+
+        var sut = Result.Success();
+
+        // Act
+        var exception = Record.Exception(() => sut.Then(Function!));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentNullException>();
+        exception.Message.ShouldStartWith("Value cannot be null.");
+    }
+
+    [Fact]
+    public void IfSuccess_ErrorResultWithNoGenericResultFunction_ThrowsException()
+    {
+        // Arrange
+        const Func<Result<int>>? Function = null;
+
+        var sut = GetErrorResult();
+
+        // Act
+        var exception = Record.Exception(() => sut.Then(Function!));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentNullException>();
+        exception.Message.ShouldStartWith("Value cannot be null.");
+    }
+
+    [Fact]
+    public void IfSuccess_SuccessfulResultWithGenericResultFunction_CallsFunction()
+    {
+        // Arrange
+        var functionMock = new Mock<Func<Result<int>>> { DefaultValueProvider = ResultDefaultValueProvider.Instance };
+
+        var sut = Result.Success();
+
+        // Act
+        sut.Then(functionMock.Object);
+
+        // Assert
+        functionMock.Verify(x => x.Invoke(), Times.Once);
+    }
+
+    [Fact]
+    public void IfSuccess_SuccessfulResultWithSuccessGenericResultFunction_ReturnsFunctionValueResult()
+    {
+        // Arrange
+        const int FuncValue = 2463;
+
+        var sut = Result.Success();
+
+        // Act
+        var result = sut.Then(() => Result.FromValue(FuncValue));
+
+        // Assert
+        result.ShouldNotBeNull();
+        result.ShouldBeOfType<Result<int>>();
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldBe(FuncValue);
+    }
+
+    [Fact]
+    public void IfSuccess_SuccessfulResultWithGenericErrorResultFunction_ReturnsErrorResult()
+    {
+        // Arrange
+        var funcError = GetError();
+
+        var sut = Result.Success();
+
+        // Act
+        var result = sut.Then(() => Result<int>.FromError(funcError));
+
+        // Assert
+        result.ShouldNotBeNull();
+        result.ShouldBeOfType<Result<int>>();
+        result.IsSuccess.ShouldBeFalse();
+        result.Error.ShouldBeSameAs(funcError);
+    }
+
+    [Fact]
+    public void IfSuccess_ErrorResultWithGenericResultFunction_DoesNotCallFunction()
+    {
+        // Arrange
+        var functionMock = new Mock<Func<Result<int>>>();
+
+        var sut = GetErrorResult();
+
+        // Act
+        sut.Then(functionMock.Object);
+
+        // Assert
+        functionMock.Verify(x => x.Invoke(), Times.Never);
+    }
+
+    [Fact]
+    public void IfSuccess_ErrorResultWithGenericResultFunction_ReturnsOriginalValueResultWithError()
+    {
+        // Arrange
+        var sut = GetErrorResult();
+
+        // Act
+        var result = sut.Then(() => Result.FromValue(321));
+
+        // Assert
+        result.ShouldNotBeNull();
+        result.ShouldBeOfType<Result<int>>();
+        result.IsSuccess.ShouldBeFalse();
+        result.Error.ShouldBeSameAs(sut.Error);
+    }
+
+    #endregion
+
+    #region IfSuccess (Result<T>, Func<T, Result>)
+
+    [Fact]
+    public void IfSuccess_NoGenericResultWithResultFunction_ThrowsException()
+    {
+        // Arrange
+        const Result<string>? Sut = null;
+
+        // Act
+        var exception = Record.Exception(() => Sut!.Then(_ => Result.Success()));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentNullException>();
+        exception.Message.ShouldStartWith("Value cannot be null.");
+    }
+
+    [Fact]
+    public void IfSuccess_SuccessfulGenericResultWithNoResultFunction_ThrowsException()
+    {
+        // Arrange
+        const string InitialValue = "Start";
+        Result<string> sut = InitialValue;
+
+        const Func<string, Result>? Function = null;
+
+        // Act
+        var exception = Record.Exception(() => sut.Then(Function!));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentNullException>();
+        exception.Message.ShouldStartWith("Value cannot be null.");
+    }
+
+    [Fact]
+    public void IfSuccess_ErrorGenericResultWithNoResultFunction_ThrowsException()
+    {
+        // Arrange
+        const Func<string, Result>? Function = null;
+
+        var sut = GetErrorResult<string>();
+
+        // Act
+        var exception = Record.Exception(() => sut.Then(Function!));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentNullException>();
+        exception.Message.ShouldStartWith("Value cannot be null.");
+    }
+
+    [Fact]
+    public void IfSuccess_SuccessfulGenericResultWithResultFunction_CallsFunction()
+    {
+        // Arrange
+        const string InitialValue = "Start";
+        var functionMock = new Mock<Func<string, Result>> { DefaultValueProvider = ResultDefaultValueProvider.Instance };
+
+        Result<string> sut = InitialValue;
+
+        // Act
+        sut.Then(functionMock.Object);
+
+        // Assert
+        functionMock.Verify(x => x.Invoke(InitialValue), Times.Once);
+    }
+
+    [Fact]
+    public void IfSuccess_SuccessfulGenericResultWithSuccessResultFunction_ReturnsFunctionResult()
+    {
+        // Arrange
+        const string InitialValue = "Start";
+        var expectedResult = Result.Success();
+
+        Result<string> sut = InitialValue;
+
+        // Act
+        var result = sut.Then(_ => expectedResult);
+
+        // Assert
+        result.ShouldNotBeNull();
+        result.ShouldBeOfType<Result>();
+        result.IsSuccess.ShouldBeTrue();
+        result.ShouldBeSameAs(expectedResult);
+    }
+
+    [Fact]
+    public void IfSuccess_SuccessfulGenericResultWithErrorResultFunction_ReturnsFunctionResult()
+    {
+        // Arrange
+        var funcError = GetErrorResult();
+        const string Value = "Start";
+
+        Result<string> sut = Value;
+
+        // Act
+        var result = sut.Then(_ => funcError);
+
+        // Assert
+        result.ShouldNotBeNull();
+        result.ShouldBeOfType<Result>();
+        result.IsSuccess.ShouldBeFalse();
+        result.Error.ShouldBeSameAs(funcError.Error);
+    }
+
+    [Fact]
+    public void IfSuccess_ErrorGenericResultWithResultFunction_DoesNotCallFunction()
+    {
+        // Arrange
+        var functionMock = new Mock<Func<string, Result>>();
+
+        var sut = GetErrorResult<string>();
+
+        // Act
+        sut.Then(functionMock.Object);
+
+        // Assert
+        functionMock.Verify(x => x.Invoke(It.IsAny<string>()), Times.Never);
+    }
+
+    [Fact]
+    public void IfSuccess_ErrorGenericResultWithResultFunction_ReturnsOriginalValueResultWithError()
+    {
+        // Arrange
+        var sut = GetErrorResult<string>();
+
+        // Act
+        var result = sut.Then(_ => Result.Success());
+
+        // Assert
+        result.ShouldNotBeNull();
+        result.ShouldBeOfType<Result>();
+        result.IsSuccess.ShouldBeFalse();
+        result.Error.ShouldBeSameAs(sut.Error);
+    }
+
+    #endregion
+
+    #region IfSuccess (Result<T>, Func<T, TNext>)
+
+    [Fact]
+    public void IfSuccess_NoGenericResultWithGenericFunction_ThrowsException()
+    {
+        // Arrange
+        const Result<double>? Sut = null;
+
+        // Act
+        var exception = Record.Exception(() => Sut!.Then(_ => 428));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentNullException>();
+        exception.Message.ShouldStartWith("Value cannot be null.");
+    }
+
+    [Fact]
+    public void IfSuccess_SuccessfulGenericResultWithNoGenericFunction_ThrowsException()
+    {
+        // Arrange
+        const double InitialValue = 12.34;
+        const Func<double, int>? Function = null;
+
+        Result<double> sut = InitialValue;
+
+        // Act
+        var exception = Record.Exception(() => sut.Then(Function!));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentNullException>();
+        exception.Message.ShouldStartWith("Value cannot be null.");
+    }
+
+    [Fact]
+    public void IfSuccess_ErrorGenericResultWithNoGenericFunction_ThrowsException()
+    {
+        // Arrange
+        const Func<double, int>? Function = null;
+
+        var sut = GetErrorResult<double>();
+
+        // Act
+        var exception = Record.Exception(() => sut.Then(Function!));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentNullException>();
+        exception.Message.ShouldStartWith("Value cannot be null.");
+    }
+
+    [Fact]
+    public void IfSuccess_SuccessfulGenericResultWithGenericFunction_CallsFunction()
+    {
+        // Arrange
+        const double InitialValue = 12.34;
+        var functionMock = new Mock<Func<double, int>>();
+
+        Result<double> sut = InitialValue;
+
+        // Act
+        sut.Then(functionMock.Object);
+
+        // Assert
+        functionMock.Verify(x => x.Invoke(InitialValue), Times.Once);
+    }
+
+    [Fact]
+    public void IfSuccess_SuccessfulGenericResultWithGenericFunction_ReturnsFunctionValueResult()
+    {
+        // Arrange
+        const int ExpectedValue = 11;
+        const double InitialValue = 12.34;
+
+        Result<double> sut = InitialValue;
+
+        // Act
+        var result = sut.Then(x => (int)x - 1);
+
+        // Assert
+        result.ShouldNotBeNull();
+        result.ShouldBeOfType<Result<int>>();
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldBe(ExpectedValue);
+    }
+
+    [Fact]
+    public void IfSuccess_ErrorGenericResultWithGenericFunction_DoesNotCallFunction()
+    {
+        // Arrange
+        var functionMock = new Mock<Func<double, int>>();
+
+        var sut = GetErrorResult<double>();
+
+        // Act
+        sut.Then(functionMock.Object);
+
+        // Assert
+        functionMock.Verify(x => x.Invoke(It.IsAny<double>()), Times.Never);
+    }
+
+    [Fact]
+    public void IfSuccess_ErrorGenericResultWithGenericFunction_ReturnsOriginalValueResultWithError()
+    {
+        // Arrange
+        var sut = GetErrorResult<double>();
+
+        // Act
+        var result = sut.Then(_ => 4873);
+
+        // Assert
+        result.ShouldNotBeNull();
+        result.ShouldBeOfType<Result<int>>();
+        result.IsSuccess.ShouldBeFalse();
+        result.Error.ShouldBeSameAs(sut.Error);
+    }
+
+    #endregion
+
+    #region IfSuccess (Result<T>, Func<T, Result<TNext>>)
+
+    [Fact]
+    public void IfSuccess_NoGenericResultWithGenericResultFunction_ThrowsException()
+    {
+        // Arrange
+        const Result<int>? Sut = null;
+
+        // Act
+        var exception = Record.Exception(() => Sut!.Then(_ => Result.FromValue("new text value")));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentNullException>();
+        exception.Message.ShouldStartWith("Value cannot be null.");
+    }
+
+    [Fact]
+    public void IfSuccess_SuccessfulGenericResultWithNoGenericResultFunction_ThrowsException()
+    {
+        // Arrange
+        const int InitialValue = 39;
+        const Func<int, Result<string>>? Function = null;
+
+        Result<int> sut = InitialValue;
+
+        // Act
+        var exception = Record.Exception(() => sut.Then(Function!));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentNullException>();
+        exception.Message.ShouldStartWith("Value cannot be null.");
+    }
+
+    [Fact]
+    public void IfSuccess_ErrorGenericResultWithNoGenericResultFunction_ThrowsException()
+    {
+        // Arrange
+        const Func<int, Result<string>>? Function = null;
+
+        var sut = GetErrorResult<int>();
+
+        // Act
+        var exception = Record.Exception(() => sut.Then(Function!));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentNullException>();
+        exception.Message.ShouldStartWith("Value cannot be null.");
+    }
+
+    [Fact]
+    public void IfSuccess_SuccessfulGenericResultWithGenericResultFunction_CallsFunction()
+    {
+        // Arrange
+        const int InitialValue = 39;
+        var functionMock = new Mock<Func<int, Result<string>>> { DefaultValueProvider = ResultDefaultValueProvider.Instance };
+
+        Result<int> sut = InitialValue;
+
+        // Act
+        sut.Then(functionMock.Object);
+
+        // Assert
+        functionMock.Verify(x => x.Invoke(InitialValue), Times.Once);
+    }
+
+    [Fact]
+    public void IfSuccess_SuccessfulGenericResultWithSuccessfulGenericResultFunction_ReturnsFunctionValueResult()
+    {
+        // Arrange
+        const int InitialValue = 49;
+        const string FuncValue = "48";
+
+        Result<int> sut = InitialValue;
+
+        // Act
+        var result = sut.Then(x => Result.FromValue((x - 1).ToString()));
+
+        // Assert
+        result.ShouldNotBeNull();
+        result.ShouldBeOfType<Result<string>>();
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldBe(FuncValue);
+    }
+
+    [Fact]
+    public void IfSuccess_SuccessfulGenericResultWithErrorGenericResultFunction_ReturnsFunctionValueResultWithError()
+    {
+        // Arrange
+        const int InitialValue = 49;
+        var funcErrorResult = GetErrorResult<string>();
+
+        Result<int> sut = InitialValue;
+
+        // Act
+        var result = sut.Then(_ => funcErrorResult);
+
+        // Assert
+        result.ShouldNotBeNull();
+        result.ShouldBeOfType<Result<string>>();
+        result.IsSuccess.ShouldBeFalse();
+        result.Error.ShouldBeSameAs(funcErrorResult.Error);
+    }
+
+    [Fact]
+    public void IfSuccess_ErrorGenericResultWithGenericResultFunction_DoesNotCallFunction()
+    {
+        // Arrange
+        var functionMock = new Mock<Func<int, Result<string>>>();
+
+        var sut = GetErrorResult<int>();
+
+        // Act
+        sut.Then(functionMock.Object);
+
+        // Assert
+        functionMock.Verify(x => x.Invoke(It.IsAny<int>()), Times.Never);
+    }
+
+    [Fact]
+    public void IfSuccess_ErrorGenericResultWithGenericResultFunction_ReturnsOriginalValueResultWithError()
+    {
+        // Arrange
+        var sut = GetErrorResult<int>();
+
+        // Act
+        var result = sut.Then(_ => Result.FromValue("new text value"));
+
+        // Assert
+        result.ShouldNotBeNull();
+        result.ShouldBeOfType<Result<string>>();
+        result.IsSuccess.ShouldBeFalse();
+        result.Error.ShouldBeSameAs(sut.Error);
+    }
+
+    #endregion
+
+    #region IfSuccess with a function returning an Error (overload trap, issue #119)
+
+    private static readonly Error TrapError = Error.Conflict(ErrorUri.Tag("tag:test.com,2024:Trap"), "Trap title");
+
+    [Fact]
+    public void IfSuccess_SuccessfulResultWithErrorFunction_ReturnsFailedResultWithReturnedError()
+    {
+        // Arrange
+        var sut = Result.Success();
+
+        // Act
+        Result result = sut.Then(() => TrapError);
+
+        // Assert
+        result.IsSuccess.ShouldBeFalse();
+        result.Error.ShouldBeSameAs(TrapError);
+    }
+
+    [Fact]
+    public void IfSuccess_ErrorResultWithErrorFunction_ReturnsOriginalResultAndDoesNotCallFunction()
+    {
+        // Arrange
+        var sut = Result.FromError(GetError());
+        var called = false;
+
+        // Act
+        var result = sut.Then(() =>
+        {
+            called = true;
+            return TrapError;
+        });
+
+        // Assert
+        result.ShouldBeSameAs(sut);
+        called.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void IfSuccess_SuccessfulResultWithErrorFunctionReturningNull_ThrowsInvalidOperationException()
+    {
+        // Arrange
+        var sut = Result.Success();
+
+        // Act
+        var exception = Record.Exception(() => sut.Then(() => (Error)null!));
+
+        // Assert
+        exception.ShouldBeOfType<InvalidOperationException>().Message.ShouldBe("The function ‘ifSuccessFunction’ returned null.");
+    }
+
+    [Fact]
+    public void IfSuccess_SuccessfulResultWithErrorFunctionAndExplicitTypeArgument_ReturnsSuccessfulResultOfError()
+    {
+        // Arrange
+        var sut = Result.Success();
+
+        // Act
+        Result<Error> result = sut.Then<Error>(() => TrapError);
+
+        // Assert
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldBeSameAs(TrapError);
+    }
+
+    [Fact]
+    public void IfSuccess_SuccessfulResultOfTWithErrorFunction_ReturnsFailedResultWithReturnedError()
+    {
+        // Arrange
+        var sut = Result<int>.FromValue(5);
+        var passedValue = 0;
+
+        // Act
+        Result result = sut.Then(x =>
+        {
+            passedValue = x;
+            return TrapError;
+        });
+
+        // Assert
+        result.IsSuccess.ShouldBeFalse();
+        result.Error.ShouldBeSameAs(TrapError);
+        passedValue.ShouldBe(5);
+    }
+
+    [Fact]
+    public void IfSuccess_ErrorResultOfTWithErrorFunction_ReturnsFailedResultWithOriginalErrorAndDoesNotCallFunction()
+    {
+        // Arrange
+        var error = GetError();
+        var sut = Result<int>.FromError(error);
+        var called = false;
+
+        // Act
+        Result result = sut.Then(_ =>
+        {
+            called = true;
+            return TrapError;
+        });
+
+        // Assert
+        result.Error.ShouldBeSameAs(error);
+        called.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void IfSuccess_SuccessfulResultOfTWithErrorFunctionReturningNull_ThrowsInvalidOperationException()
+    {
+        // Arrange
+        var sut = Result<int>.FromValue(5);
+
+        // Act
+        var exception = Record.Exception(() => sut.Then(_ => (Error)null!));
+
+        // Assert
+        exception.ShouldBeOfType<InvalidOperationException>().Message.ShouldBe("The function ‘ifSuccessFunction’ returned null.");
+    }
+
+    [Fact]
+    public void IfSuccess_SuccessfulResultOfTWithErrorFunctionAndExplicitTypeArguments_ReturnsSuccessfulResultOfError()
+    {
+        // Arrange
+        var sut = Result<int>.FromValue(5);
+
+        // Act
+        Result<Error> result = sut.Then<int, Error>(_ => TrapError);
+
+        // Assert
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldBeSameAs(TrapError);
+    }
+
+    #endregion
+
+    #region helper methods
+
+    private static Error GetError()
+    {
+        return Error.Failure(ErrorUri.None, "e06d75de-115c-46ec-a5f6-f6373007ec61", "Error title 1");
+    }
+
+    private static Result GetErrorResult()
+    {
+        return Error.Failure(ErrorUri.None, "636d213a-2dc4-4f63-adaf-bbfb80d888ab", "Error title 3");
+    }
+
+    private static Result<T> GetErrorResult<T>()
+    {
+        return Error.Failure(ErrorUri.None, "a3ef9d52-c18d-4707-8ef3-f7e25072224f", "Error title 4");
+    }
+
+    #endregion
+
+    #region Then with a function returning a task (overload trap, issue #119)
+
+    // The traps of IfSuccess, copied to Then (#197): a function that returns a task points to ThenAsync, and explicit type
+    // arguments keep the task on purpose.
+
+    [Fact]
+    public void Then_FunctionReturningTaskOverloads_AreHiddenCompileErrors()
+    {
+        // Act
+        var traps = typeof(ThenExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a task, which Then does not await"))
+            .ToList();
+
+        // Assert
+        traps.Count.ShouldBe(8);
+        traps.ShouldAllBe(m => m.Name == "Then"
+                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
+                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
+    }
+
+    // The Task traps win over the ValueTask ones for an async lambda, which converts to both (no CS0121).
+    [Fact]
+    public void Then_FunctionReturningTaskTraps_HavePriorityOne()
+    {
+        // Act
+        var priorities = typeof(ThenExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a task") && OverloadTrapHelper.IsTaskFunction(m.GetParameters()[1].ParameterType))
+            .Select(OverloadTrapHelper.Priority)
+            .ToList();
+
+        // Assert
+        priorities.Count.ShouldBe(4);
+        priorities.ShouldAllBe(p => p == 1);
+    }
+
+    [Fact]
+    public void Then_SuccessfulResultWithTaskFunctionAndExplicitTypeArgument_ReturnsResultWithTaskNotAwaited()
+    {
+        // Arrange
+        var sut = Result.Success();
+        var taskSource = new TaskCompletionSource();
+
+        // Act
+        Result<Task> result = sut.Then<Task>(() => taskSource.Task);
+
+        // Assert
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldBeSameAs(taskSource.Task);
+        result.Value.IsCompleted.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void Then_SuccessfulResultOfTWithTaskFunctionAndExplicitTypeArguments_ReturnsResultWithTaskNotAwaited()
+    {
+        // Arrange
+        var sut = Result<int>.FromValue(5);
+        var taskSource = new TaskCompletionSource();
+
+        // Act
+        Result<Task> result = sut.Then<int, Task>(_ => taskSource.Task);
+
+        // Assert
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldBeSameAs(taskSource.Task);
+        result.Value.IsCompleted.ShouldBeFalse();
+    }
+
+    #endregion
+
+    #region Then with an action (overload trap, issue #197)
+
+    // A function that returns nothing is a side effect: the transforming method reports it as a compile error (CS0619) that
+    // names the side-effect method (#197). The bindings are checked with a consumer project.
+
+    [Fact]
+    public void Then_ActionOverloads_AreHiddenCompileErrors()
+    {
+        // Act
+        var traps = typeof(ThenExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The action returns nothing. Then needs"))
+            .ToList();
+
+        // Assert
+        traps.Count.ShouldBe(2);
+        traps.ShouldAllBe(m => m.Name == "Then"
+                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
+                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
+    }
+
+    #endregion
+}

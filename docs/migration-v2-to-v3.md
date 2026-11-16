@@ -23,7 +23,8 @@ Version 3.0 makes `Result`, `Result<T>` and `Error` **immutable** and **always v
   * [`IsSuccess` is a property; new `IsError`](#issuccess-is-a-property-new-iserror)
   * [`ErrorUri.None()` is a property](#errorurinone-is-a-property)
   * [`Result<T>.Value` throws on a failed result](#resulttvalue-throws-on-a-failed-result)
-  * [`IfSuccess` and `Match` with an `Error` or a task](#ifsuccess-and-match-with-an-error-or-a-task)
+  * [Transforming `IfSuccess` and `IfError` renamed to `Then` and `Else`](#transforming-ifsuccess-and-iferror-renamed-to-then-and-else)
+  * [`Then` and `Match` with an `Error` or a task](#then-and-match-with-an-error-or-a-task)
   * [`IfError` and `Match` with an error action that returns a task](#iferror-and-match-with-an-error-action-that-returns-a-task)
   * [LINQ queries that select a task](#linq-queries-that-select-a-task)
   * [Null results and null arguments of the extension methods](#null-results-and-null-arguments-of-the-extension-methods)
@@ -40,14 +41,15 @@ Version 3.0 makes `Result`, `Result<T>` and `Error` **immutable** and **always v
 6. If you **read** `Result`, `Result<T>` or `Error` from JSON (e.g., Azure Durable Functions, message queues, caches, HTTP clients), see [No JSON deserialization without converters](#no-json-deserialization-without-converters).
 7. If you compare or snapshot the **written** JSON, see [Changed JSON output](#changed-json-output).
 8. Make sure error titles are never `null` or blank, and pass `null` instead of `ErrorUri.None()` as an instance *URI*.
-9. Fix the calls of `IfSuccess`, `Match` and the LINQ queries that no longer compile or that now return a failed result (see [`IfSuccess` and `Match` with an `Error` or a task](#ifsuccess-and-match-with-an-error-or-a-task)).
-10. Replace the error actions of `IfError` and `Match` that return a task with the asynchronous methods (see [`IfError` and `Match` with an error action that returns a task](#iferror-and-match-with-an-error-action-that-returns-a-task)).
-11. Replace the LINQ queries whose `select` returns a task with an asynchronous `from` clause or `IfSuccessAsync` (see [LINQ queries that select a task](#linq-queries-that-select-a-task)).
-12. Make sure the functions passed to the extension methods never return `null` where a result, an `Error` or a task is expected (see [Null results and null arguments of the extension methods](#null-results-and-null-arguments-of-the-extension-methods)).
-13. Upgrade the `Maple.Result.Extensions.*` packages together with `Maple.Result` (see [Extension packages](#extension-packages)).
-14. Replace `result.IsSuccess()` with `result.IsSuccess`, and `!result.IsSuccess()` with `result.IsError` (see [`IsSuccess` is a property; new `IsError`](#issuccess-is-a-property-new-iserror)).
-15. Make sure `Result<T>.Value` is read only on a successful result, or use `TryGetValue(out var value)`; and do not write a failed `Result<T>` with the default serializers (see [`Result<T>.Value` throws on a failed result](#resulttvalue-throws-on-a-failed-result)).
-16. Replace `ErrorUri.None()` with `ErrorUri.None` (see [`ErrorUri.None()` is a property](#errorurinone-is-a-property)).
+9. Rename the calls of `IfSuccess`, `IfSuccessAsync`, `IfError` and `IfErrorAsync` that transform or replace the result to `Then`, `ThenAsync`, `Else` and `ElseAsync`; the compiler reports each of them (see [Transforming `IfSuccess` and `IfError` renamed to `Then` and `Else`](#transforming-ifsuccess-and-iferror-renamed-to-then-and-else)).
+10. Fix the calls of `Then`, `Match` and the LINQ queries that no longer compile or that now return a failed result (see [`Then` and `Match` with an `Error` or a task](#then-and-match-with-an-error-or-a-task)).
+11. Replace the error actions of `IfError` and `Match` that return a task with the asynchronous methods (see [`IfError` and `Match` with an error action that returns a task](#iferror-and-match-with-an-error-action-that-returns-a-task)).
+12. Replace the LINQ queries whose `select` returns a task with an asynchronous `from` clause or `IfSuccessAsync` (see [LINQ queries that select a task](#linq-queries-that-select-a-task)).
+13. Make sure the functions passed to the extension methods never return `null` where a result, an `Error` or a task is expected (see [Null results and null arguments of the extension methods](#null-results-and-null-arguments-of-the-extension-methods)).
+14. Upgrade the `Maple.Result.Extensions.*` packages together with `Maple.Result` (see [Extension packages](#extension-packages)).
+15. Replace `result.IsSuccess()` with `result.IsSuccess`, and `!result.IsSuccess()` with `result.IsError` (see [`IsSuccess` is a property; new `IsError`](#issuccess-is-a-property-new-iserror)).
+16. Make sure `Result<T>.Value` is read only on a successful result, or use `TryGetValue(out var value)`; and do not write a failed `Result<T>` with the default serializers (see [`Result<T>.Value` throws on a failed result](#resulttvalue-throws-on-a-failed-result)).
+17. Replace `ErrorUri.None()` with `ErrorUri.None` (see [`ErrorUri.None()` is a property](#errorurinone-is-a-property)).
 
 ## Breaking changes
 ### Namespace renamed to `Maple.Results`
@@ -265,7 +267,7 @@ The named values of the factory methods (`detailNamedValues`), `WithErrorDetail`
 * **`ErrorCategory.Timeout`** is now documented as `408` (Request Timeout) when the client did not send the complete request in time, or `504` (Gateway Timeout) when an upstream server or a dependency did not respond in time; 2.x documented only `408`. The `ErrorCategory` members now have explicit values, equal to the 2.x ones, so stored and serialized values do not change.
 
 ### `continueOnCapturedContext` is `bool?`
-The `continueOnCapturedContext` parameter of the asynchronous extension methods (`IfSuccessAsync`, `IfErrorAsync`, `MatchAsync`, `ToResultAsync`, for `Task` and `ValueTask`) changed from `bool continueOnCapturedContext = false` to `bool? continueOnCapturedContext = null`. `null` uses the new global setting [`ResultConfiguration.ContinueOnCapturedContext`](Reference/ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md), which is `false` by default, so **the behaviour does not change** unless you change the setting.
+The `continueOnCapturedContext` parameter of the asynchronous extension methods (`ThenAsync`, `ElseAsync`, `IfSuccessAsync`, `IfErrorAsync`, `MatchAsync`, `ToResultAsync`, for `Task` and `ValueTask`) changed from `bool continueOnCapturedContext = false` to `bool? continueOnCapturedContext = null`. `null` uses the new global setting [`ResultConfiguration.ContinueOnCapturedContext`](Reference/ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md), which is `false` by default, so **the behaviour does not change** unless you change the setting.
 
 Calls that pass `true` or `false` still compile; recompile code that calls these methods (the signature changed, so binaries built against 2.x do not bind to 3.0).
 
@@ -344,26 +346,50 @@ Consequences:
 * the default serializers read every public property, so **writing a failed `Result<T>` without a converter throws** (*System.Text.Json*: `InvalidOperationException`; *Newtonsoft.Json*: `JsonSerializationException`); a successful one is still written;
 * `ToString()` prints only the value of a successful result or the error of a failed one (see [Other behaviour changes](#other-behaviour-changes)).
 
-### `IfSuccess` and `Match` with an `Error` or a task
-Two kinds of calls compiled in 2.x but did not do what they looked like:
+### Transforming `IfSuccess` and `IfError` renamed to `Then` and `Else`
+In 2.x, `IfSuccess` and `IfError` did two different things under one name: with an action they ran a side effect and returned the result unchanged; with a function they transformed the result (`IfSuccess`) or replaced a failed one (`IfError`). The overload, and so the behaviour, depended on whether the lambda returned a value: `result.IfSuccess(x => set.Add(x))` (a side effect whose expression returns a `bool`) turned a `Result<T>` into a `Result<bool>`, and `result.IfError(e => Interlocked.Increment(ref failures))` turned a failure into a success.
 
-* **A function that returns an `Error`** bound to the generic overload and returned a **successful** `Result<Error>`. In 3.0, `IfSuccess`, `IfSuccessAsync`, `Match` and `MatchAsync` (the overloads with an error action) have overloads for such functions that return a **failed** `Result` with that error. The same applies to a LINQ query that selects an `Error` (`from user in GetUser(id) select Error…`). Code that read `.Value` of the `Result<Error>` no longer compiles; if you need it, specify the type arguments.
-* **A function that returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>`** passed to `IfSuccess`, or to the `Match` overloads with an `Action<Error>`, was wrapped in a `Result<Task>` and **never awaited**. In 3.0 such a call is a compile error (CS0619); use the asynchronous method, or specify the type argument to keep the task on purpose.
+In 3.0 the name says what the call does:
+* `IfSuccess`, `IfSuccessAsync`, `IfError` and `IfErrorAsync` run a side effect and return the result unchanged;
+* `Then` and `ThenAsync` transform or chain a successful result with a function that returns a value, a `Result`, a `Result<T>` or an `Error` (the overloads, the flattening of a returned result and the handling of a returned `Error` are the same as before);
+* `Else` and `ElseAsync` replace a failed result with the result that the function returns.
+
+A 2.x call that transforms or replaces the result is a compile error (CS0619) whose message names the method to use, so the compiler finds every such call. An action passed to `Then` or `Else` is a compile error that names `IfSuccess` or `IfError`.
 
 ```csharp
-// 2.x: a successful Result<Error>; 3.0: a failed Result with the error
-var result = userResult.IfSuccess(user => Error.Conflict(typeUri, "The user already exists."));
+// 2.x
+var orderResult = userResult.IfSuccess(user => CreateOrder(user));
+var guestResult = userResult.IfError(error => Result<User>.FromValue(User.Guest));
+
+// 3.0
+var orderResult = userResult.Then(user => CreateOrder(user));
+var guestResult = userResult.Else(error => Result<User>.FromValue(User.Guest));
+
+// 3.0: a side effect whose expression returns a value needs a statement lambda
+userResult.IfSuccess(user => { seenIds.Add(user.Id); });
+```
+
+### `Then` and `Match` with an `Error` or a task
+Two kinds of calls compiled in 2.x but did not do what they looked like:
+
+* **A function that returns an `Error`** bound to the generic overload and returned a **successful** `Result<Error>`. In 3.0, `Then`, `ThenAsync`, `Match` and `MatchAsync` (the overloads with an error action) have overloads for such functions that return a **failed** `Result` with that error. The same applies to a LINQ query that selects an `Error` (`from user in GetUser(id) select Error…`). Code that read `.Value` of the `Result<Error>` no longer compiles; if you need it, specify the type arguments.
+* **A function that returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>`** passed to `IfSuccess` (now `Then`), or to the `Match` overloads with an `Action<Error>`, was wrapped in a `Result<Task>` and **never awaited**. In 3.0 such a call is a compile error (CS0619); use the asynchronous method, or specify the type argument to keep the task on purpose.
+
+```csharp
+// 2.x (IfSuccess): a successful Result<Error>; 3.0: a failed Result with the error
+var result = userResult.Then(user => Error.Conflict(typeUri, "The user already exists."));
 var result = userResult.Match(user => Error.Conflict(typeUri, "The user already exists."), error => Log(error));
 var result = from user in userResult select Error.Conflict(typeUri, "The user already exists.");
 
 // 2.x: the task was never awaited; 3.0: a compile error
 var result = Result.Success().IfSuccess(() => SaveAsync());
+var result = Result.Success().Then(() => SaveAsync());
 
 // 3.0: await it…
 var result = await Result.Success().IfSuccessAsync(() => SaveAsync());
 
 // …or keep the task on purpose
-Result<Task> result = Result.Success().IfSuccess<Task>(() => SaveAsync());
+Result<Task> result = Result.Success().Then<Task>(() => SaveAsync());
 ```
 
 ### `IfError` and `Match` with an error action that returns a task
@@ -384,32 +410,32 @@ var result = userResult.IfError(error => { _ = LogAsync(error); });
 ```
 
 ### LINQ queries that select a task
-In 2.x, a query whose `select` returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>` wrapped the task in a successful result (e.g., `Result<Task<int>>`) and **never awaited** it. This applies to every source (`Result<T>`, `Task<Result<T>>`, `ValueTask<Result<T>>`) and to queries with several `from` clauses. In 3.0 such a query is a compile error (CS0619). Chain the operation in a `from` clause whose function returns a `Task<Result<T>>` (or `ValueTask<Result<T>>`), or use `IfSuccessAsync`. To keep the task in the result on purpose, call `Select` with explicit type arguments.
+In 2.x, a query whose `select` returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>` wrapped the task in a successful result (e.g., `Result<Task<int>>`) and **never awaited** it. This applies to every source (`Result<T>`, `Task<Result<T>>`, `ValueTask<Result<T>>`) and to queries with several `from` clauses. In 3.0 such a query is a compile error (CS0619). Chain the operation in a `from` clause whose function returns a `Task<Result<T>>` (or `ValueTask<Result<T>>`), or use `ThenAsync`. To keep the task in the result on purpose, call `Select` with explicit type arguments.
 
 ```csharp
 // 2.x: a Result<Task<int>> whose task was never awaited; 3.0: a compile error
 var result = from user in userResult select SaveAsync(user);
 
 // 3.0: await it…
-var result = await userResult.IfSuccessAsync(user => SaveAsync(user));
+var result = await userResult.ThenAsync(user => SaveAsync(user));
 
 // …or keep the task on purpose
 Result<Task<int>> result = userResult.Select<User, Task<int>>(user => SaveAsync(user));
 ```
 
 ### Null results and null arguments of the extension methods
-In 2.x, a `null` returned by a function passed to `IfSuccess`, `IfError`, `Match` or a LINQ query was returned to the caller, caused a `NullReferenceException` inside the library, or an `ArgumentNullException` for a parameter the caller did not pass. In 3.0 the rules are the same for all extension methods (sync, `Task` and `ValueTask`):
+In 2.x, a `null` returned by a function passed to `IfSuccess`, `IfError` (now `Then` and `Else`), `Match` or a LINQ query was returned to the caller, caused a `NullReferenceException` inside the library, or an `ArgumentNullException` for a parameter the caller did not pass. In 3.0 the rules are the same for all extension methods (sync, `Task` and `ValueTask`):
 
-* **A `null` argument** throws an `ArgumentNullException`. The asynchronous methods now throw it **from the call**, not from `await`: `var task = result.IfSuccessAsync(null!)` throws immediately. This only changes code that stored such a task and awaited it inside a `try`.
+* **A `null` argument** throws an `ArgumentNullException`. The asynchronous methods now throw it **from the call**, not from `await`: `var task = result.ThenAsync((Func<Task<Result>>)null!)` throws immediately. This only changes code that stored such a task and awaited it inside a `try`.
 * **A function that returns `null`** where a `Result`, `Result<T>`, `Error` or a task is required — a `null` result, a `null` task, or a task with a `null` result — throws an `InvalidOperationException` that names the function, e.g., "The function ‘ifSuccessFunction’ returned null." A `null` **value** returned for a `Result<T>` is still a successful result.
 * **An awaited source** (`Task<Result>`, `ValueTask<Result<T>>`, …) that returns `null` throws an `InvalidOperationException` as before; the message now names the parameter: "The asynchronous operation represented by ‘resultTask’ returned null."
 
 ```csharp
 // 2.x: returned null; 3.0: InvalidOperationException
-var result = Result.Success().IfSuccess(() => (Result)null!);
+var result = Result.Success().Then(() => (Result)null!);
 
 // 2.x: the exception surfaced at await; 3.0: thrown by the call
-var task = result.IfSuccessAsync((Func<Task<Result>>)null!);
+var task = result.ThenAsync((Func<Task<Result>>)null!);
 ```
 
 ### Extension packages
@@ -446,11 +472,16 @@ The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an
 | `new ErrorUri(s)` | `ErrorUri.Tag(s)` / `ErrorUri.Locator(s)` / `ErrorUri.Urn(s)` / `ErrorUri.Relative(s)` / `ErrorUri.None` |
 | `instanceUri: ErrorUri.None()` / `WithInstanceUri(ErrorUri.None())` | `instanceUri: null` / `WithInstanceUri(null)` |
 | `ErrorUri.None()` | `ErrorUri.None` |
+| `result.IfSuccess(x => …)` (a function returning a value, a result or an error) | `result.Then(x => …)` |
+| `await result.IfSuccessAsync(x => …)` (a function returning a value, a result or an error in a task) | `await result.ThenAsync(x => …)` |
+| `result.IfError(e => …)` (a function returning the replacement result) | `result.Else(e => …)` |
+| `await result.IfErrorAsync(e => …)` (a function returning the replacement result in a task) | `await result.ElseAsync(e => …)` |
+| `result.IfSuccess(x => set.Add(x))` (a side effect whose expression returns a value) | `result.IfSuccess(x => { set.Add(x); })` |
 | `result.IfSuccess(() => SaveAsync())` (a function returning a task) | `await result.IfSuccessAsync(() => SaveAsync())` |
 | `result.IfError(e => LogAsync(e))` (an error action returning a task) | `await result.IfErrorAsync(e => LogAsync(e))` |
 | `result.Match(…, e => LogAsync(e))` (an error action returning a task) | `await result.MatchAsync(…, e => LogAsync(e))` |
-| `from x in result select SaveAsync(x)` (a selector returning a task) | `await result.IfSuccessAsync(x => SaveAsync(x))` |
-| `result.IfSuccess(x => Error…)` relied on as a `Result<Error>` | `result.IfSuccess<T, Error>(x => Error…)` |
+| `from x in result select SaveAsync(x)` (a selector returning a task) | `await result.ThenAsync(x => SaveAsync(x))` |
+| `result.IfSuccess(x => Error…)` relied on as a `Result<Error>` | `result.Then<T, Error>(x => Error…)` |
 | `result.Match(x => Error…, e => …)` relied on as a `Result<Error>` | `result.Match<T, Error>(x => Error…, e => …)` |
 | `Dictionary<string, object>` passed as named values | `Dictionary<string, object?>` |
 | `using Maple.Result;` | `using Maple.Results;` |
@@ -473,3 +504,4 @@ The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an
 * [Issue #121: Null results and synchronous argument checks of the extension methods](https://github.com/TomMaple/Maple.Result/issues/121)
 * [Issue #123: Task-returning error actions in `IfError` and `Match`](https://github.com/TomMaple/Maple.Result/issues/123)
 * [Issue #126: LINQ selectors that return a task](https://github.com/TomMaple/Maple.Result/issues/126)
+* [Issue #197: Split `IfSuccess` and `IfError` by intent: `Then` and `Else`](https://github.com/TomMaple/Maple.Result/issues/197)

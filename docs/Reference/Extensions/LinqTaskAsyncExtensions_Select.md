@@ -14,7 +14,7 @@ Enables the single-clause LINQ query syntax (a `from … select …` query witho
 ## Remarks
 A selector that returns an [Error](../Error/Error.md) makes the query fail: such a query returns a failed [Result](../Result/Result.md) instead of a **successful** `Result<Error>`.
 
-A selector that returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>` is not supported: the query does not await it, so such a query is a compile error. Await the operation with [IfSuccessAsync](IfSuccessTaskAsyncExtensions_IfSuccessAsync.md) instead, or chain it in a `from` clause whose function returns a `Task<Result<T>>`. To keep the task in the result on purpose, call `Select<T, Task>(…)` with explicit type arguments.
+A selector that returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>` is not supported: the query does not await it, so such a query is a compile error. Await the operation with [ThenAsync](ThenTaskAsyncExtensions_ThenAsync.md) instead, or chain it in a `from` clause whose function returns a `Task<Result<T>>`. To keep the task in the result on purpose, call `Select<T, Task>(…)` with explicit type arguments.
 
 
 ## Select&lt;T, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, TNext&gt;)

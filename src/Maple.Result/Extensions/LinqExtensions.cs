@@ -54,7 +54,7 @@ public static class LinqExtensions
         ArgumentNullException.ThrowIfNull(result);
         ArgumentNullException.ThrowIfNull(selector);
 
-        return result.IfSuccess(selector);
+        return result.Then(selector);
     }
 
     /// <summary>
@@ -143,12 +143,12 @@ public static class LinqExtensions
         ArgumentNullException.ThrowIfNull(collectionSelector);
         ArgumentNullException.ThrowIfNull(resultSelector);
 
-        return result.IfSuccess(x =>
+        return result.Then(x =>
         {
             var selectedCollection = collectionSelector(x);
             var collectionResult = Guard.EnsureNotNullReturned(selectedCollection, nameof(collectionSelector));
 
-            return collectionResult.IfSuccess(y => resultSelector(x, y));
+            return collectionResult.Then(y => resultSelector(x, y));
         });
     }
 
@@ -199,12 +199,12 @@ public static class LinqExtensions
         ArgumentNullException.ThrowIfNull(collectionSelector);
         ArgumentNullException.ThrowIfNull(resultSelector);
 
-        return result.IfSuccess(x =>
+        return result.Then(x =>
         {
             var selectedCollection = collectionSelector(x);
             var collectionResult = Guard.EnsureNotNullReturned(selectedCollection, nameof(collectionSelector));
 
-            return collectionResult.IfSuccess(y =>
+            return collectionResult.Then(y =>
             {
                 var selected = resultSelector(x, y);
                 return Guard.EnsureNotNullReturned(selected, nameof(resultSelector));
