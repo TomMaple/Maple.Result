@@ -63,7 +63,7 @@ A member is written only when it has a value: `null` values and an empty `errors
 | `type`            | string    | `TypeUri`         | always (`about:blank` when not specified) | `ProblemDetailsMembers.Type` |
 | `title`           | string    | `Title`           | always                           | `ProblemDetailsMembers.Title` |
 | `status`          | number    | `Category`        | always (mapped as in [Category and status](#category-and-status)) | `ProblemDetailsMembers.Status` |
-| `detail`          | string    | `Detail`          | when not `null`                  | `ProblemDetailsMembers.Detail` |
+| `detail`          | string    | `Detail`          | when not `null` (never an empty text) | `ProblemDetailsMembers.Detail` |
 | `instance`        | string    | `InstanceUri`     | when not `null`                  | `ProblemDetailsMembers.Instance` |
 | `errors`          | array     | `ErrorDetails`    | when not empty                   | `ProblemDetailsMembers.Errors` |
 | `detailTemplated` | object    | `DetailTemplated` | when not `null`                  | `ProblemDetailsMembers.DetailTemplated` |
@@ -79,7 +79,7 @@ Each `ErrorDetail` is one object of the `errors` array:
 | Member            | JSON type | `ErrorDetail` property | Present          | Constant |
 | ----------------- | --------- | ---------------------- | ---------------- | -------- |
 | `pointer`         | string    | `PropertyPointer`      | when not `null`  | `ProblemDetailsMembers.ErrorPointer` |
-| `detail`          | string    | `Detail`               | always           | `ProblemDetailsMembers.ErrorDetail` |
+| `detail`          | string    | `Detail`               | always (never an empty text) | `ProblemDetailsMembers.ErrorDetail` |
 | `detailTemplated` | object    | `DetailTemplated`      | when not `null`  | `ProblemDetailsMembers.ErrorDetailTemplated` |
 
 The `pointer` is a JSON Pointer ([RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901)) to the invalid part of the request, as in the `errors` example of RFC 9457 (section 3). `PropertyPointer` is `null` (no `pointer` member) or a pointer in one of two forms; the constructor of `ErrorDetail` throws an `ArgumentException` for any other value (e.g., `Email` or `Items[0].Name`):
@@ -119,6 +119,8 @@ A `TemplatedMessage` (of the error or of an error detail) is an object:
 Each `Metadata` entry is a top-level extension member: the key is the member name and the value is written as JSON.
 
 The top-level members of the format are **reserved**: `type`, `title`, `status`, `detail`, `instance`, `errors` and `detailTemplated` cannot be used as metadata keys, in any case (e.g., `Title` or `ERRORS`), because the entry would collide with the member once the metadata is flattened into the object, and clients often read JSON case-insensitively. `Error.WithMetadata()` and `ErrorBuilder.WithMetadata()` throw an `ArgumentException` for them. For the same reason, an error cannot hold two keys that differ only in case (e.g., `RetryAfter` and `retryAfter`). The names inside an `errors` item or a `detailTemplated` object (`pointer`, `templateId`, `params`) are not reserved.
+
+A metadata key is not empty and does not start or end with white space (e.g., `" type"`, which would be written next to `type`); white space inside a key is allowed. Like the reserved names and the keys that differ only in case, this is a rule of this library: JSON allows any string as a member name (RFC 8259, section 4), and the naming recommendations of RFC 9457 (section 4) are not mandatory.
 
 Members added by the host are not reserved either: e.g., ASP.NET Core adds `traceId`. When a metadata entry has the same key, the package that writes the response decides which value wins and documents it.
 

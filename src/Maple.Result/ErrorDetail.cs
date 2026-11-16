@@ -37,12 +37,14 @@ namespace Maple.Results;
 ///     starts with <c>/</c> (e.g., <c>/email</c>, <c>/items/0/name</c>), or its URI fragment form (e.g., <c>#/email</c>). It is stored as it is
 ///     given, so <c>/email</c> and <c>#/email</c> are different values.
 /// </param>
-/// <param name="Detail">The human-readable explanation specific to this individual error occurrence.</param>
+/// <param name="Detail">
+///     The human-readable explanation specific to this individual error occurrence; not empty or whitespace-only. It is not trimmed.
+/// </param>
 /// <param name="DetailTemplated">The message template with the human-readable explanation.</param>
 /// <exception cref="ArgumentNullException">If the <paramref name="Detail" /> is <see langword="null" />.</exception>
 /// <exception cref="ArgumentException">
 ///     If the <paramref name="PropertyPointer" /> is not a JSON Pointer (e.g., <c>Email</c> or <c>Items[0].Name</c>), or contains a <c>~</c>
-///     that is not followed by <c>0</c> or <c>1</c>.
+///     that is not followed by <c>0</c> or <c>1</c>; or if the <paramref name="Detail" /> is empty or whitespace-only.
 /// </exception>
 public sealed record ErrorDetail(string? PropertyPointer, string Detail, TemplatedMessage? DetailTemplated = null)
 {
@@ -53,7 +55,7 @@ public sealed record ErrorDetail(string? PropertyPointer, string Detail, Templat
     public string? PropertyPointer { get; } = JsonPointerValidator.Validate(PropertyPointer, nameof(PropertyPointer));
 
     /// <summary>
-    ///     The human-readable explanation specific to this individual error occurrence (never <see langword="null" />).
+    ///     The human-readable explanation specific to this individual error occurrence (never <see langword="null" />, empty or whitespace-only).
     /// </summary>
     public string Detail { get; } = ValidateDetail(Detail, nameof(Detail));
 

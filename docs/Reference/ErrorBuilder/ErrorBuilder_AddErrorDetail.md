@@ -16,7 +16,7 @@ The details are kept in the order they were added. Unlike [Error.WithErrorDetail
 
 
 ## AddErrorDetail(ErrorDetail)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L337" target="_blank">ErrorBuilder.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L354" target="_blank">ErrorBuilder.cs</a>
 
 Appends the specified individual error occurrence.
 
@@ -48,7 +48,7 @@ foreach (var errorDetail in validationResult.ErrorDetails)
 
 
 ## AddErrorDetail(String, String, String, (String, Object)[])
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L371" target="_blank">ErrorBuilder.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L389" target="_blank">ErrorBuilder.cs</a>
 
 Appends a new individual error occurrence.
 
@@ -85,7 +85,7 @@ The `detail` or a name in `detailNamedValues` is `null`.
 
 [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception)
 
-The `propertyPointer` is not a *JSON Pointer* (e.g., `Email` or `Items[0].Name`; the parameter name of the exception is `PropertyPointer`), the `detailTemplateId` is empty or consists only of white-space characters, a name in `detailNamedValues` is repeated, or `detailNamedValues` are passed without a `detailTemplateId`.
+The `propertyPointer` is not a *JSON Pointer* (e.g., `Email` or `Items[0].Name`; the parameter name of the exception is `PropertyPointer`), the `detail` is empty or consists only of white-space characters (the parameter name of the exception is `Detail`), the `detailTemplateId` is empty, consists only of white-space characters or starts or ends with white space, a name in `detailNamedValues` is empty, starts or ends with white space, or is repeated, or `detailNamedValues` are passed without a `detailTemplateId`.
 
 In both cases nothing is appended.
 

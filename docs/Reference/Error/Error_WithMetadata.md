@@ -21,7 +21,7 @@ A key that already exists is never an error: its value is replaced, so code that
 
 
 ## WithMetadata(String, Object)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L324" target="_blank">Error.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L327" target="_blank">Error.cs</a>
 
 Returns a copy of the current error with the specified metadata entry added, or replaced if the key already exists.
 
@@ -48,7 +48,7 @@ The `key` is `null`.
 
 [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception)
 
-The `key` is empty, consists only of white-space characters, is [reserved](Error_Metadata.md#keys), or differs only in case from an existing key.
+The `key` is empty, consists only of white-space characters, starts or ends with white space, is [reserved](Error_Metadata.md#keys), or differs only in case from an existing key.
 
 ### Examples
 ```csharp
@@ -61,7 +61,7 @@ var error = Error.LimitExceeded(
 
 
 ## WithMetadata(IEnumerable&lt;KeyValuePair&lt;String, Object&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L346" target="_blank">Error.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L349" target="_blank">Error.cs</a>
 
 Returns a copy of the current error with the specified metadata entries added. Entries with existing keys are replaced; the other existing entries are kept.
 
@@ -86,7 +86,7 @@ The `metadata` sequence or any of its keys is `null`.
 
 [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception)
 
-Any key is empty, consists only of white-space characters, is [reserved](Error_Metadata.md#keys), or differs only in case from an existing key or from another key of the same call.
+Any key is empty, consists only of white-space characters, starts or ends with white space, is [reserved](Error_Metadata.md#keys), or differs only in case from an existing key or from another key of the same call.
 
 ### Examples
 ```csharp
@@ -101,7 +101,7 @@ var error = Error.LimitExceeded(
 
 
 ## WithMetadata(ReadOnlySpan&lt;(String, Object)&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L368" target="_blank">Error.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L371" target="_blank">Error.cs</a>
 
 Returns a copy of the current error with the specified metadata entries, given as key-value tuples, added. Entries with existing keys are replaced; the other existing entries are kept.
 
@@ -125,7 +125,7 @@ Any key is `null`.
 
 [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception)
 
-Any key is empty, consists only of white-space characters, is [reserved](Error_Metadata.md#keys), or differs only in case from an existing key or from another key of the same call.
+Any key is empty, consists only of white-space characters, starts or ends with white space, is [reserved](Error_Metadata.md#keys), or differs only in case from an existing key or from another key of the same call.
 
 ### Examples
 ```csharp

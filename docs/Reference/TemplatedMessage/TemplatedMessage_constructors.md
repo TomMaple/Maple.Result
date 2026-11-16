@@ -19,7 +19,7 @@ Both constructors copy the parameters into one read-only dictionary with an ordi
 
 
 ## TemplatedMessage(String, IEnumerable&lt;KeyValuePair&lt;String, Object&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/TemplatedMessage.cs#L52" target="_blank">TemplatedMessage.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/TemplatedMessage.cs#L54" target="_blank">TemplatedMessage.cs</a>
 
 Initializes a new instance of the [TemplatedMessage](TemplatedMessage.md) record with the parameters given as key-value pairs (e.g., a dictionary).
 
@@ -42,7 +42,7 @@ The `templateId` or a parameter name is `null`.
 
 [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception)
 
-The `templateId` is empty or consists only of white-space characters, or a parameter name is repeated.
+The `templateId` is empty, consists only of white-space characters or starts or ends with white space, or a parameter name is empty, starts or ends with white space, or is repeated.
 
 ### Remarks
 `null` and an empty collection expression (`[]`) as the second argument bind to this constructor.
@@ -56,7 +56,7 @@ var message = new TemplatedMessage(
 
 
 ## TemplatedMessage(String, ReadOnlySpan&lt;(String, Object)&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/TemplatedMessage.cs#L72" target="_blank">TemplatedMessage.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/TemplatedMessage.cs#L75" target="_blank">TemplatedMessage.cs</a>
 
 Initializes a new instance of the [TemplatedMessage](TemplatedMessage.md) record with the parameters given as name-value tuples.
 
@@ -78,7 +78,7 @@ The `templateId` or a parameter name is `null`.
 
 [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception)
 
-The `templateId` is empty or consists only of white-space characters, or a parameter name is repeated.
+The `templateId` is empty, consists only of white-space characters or starts or ends with white space, or a parameter name is empty, starts or ends with white space, or is repeated.
 
 ### Examples
 ```csharp

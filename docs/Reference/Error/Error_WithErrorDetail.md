@@ -18,7 +18,7 @@ Each call copies the error. To add several details, use [ToBuilder()](Error_ToBu
 
 
 ## WithErrorDetail(ErrorDetail)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L230" target="_blank">Error.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L232" target="_blank">Error.cs</a>
 
 Returns a copy of the current error with the specified individual error occurrence appended to the [ErrorDetails](Error_ErrorDetails.md).
 
@@ -52,7 +52,7 @@ var error = Error.Validation(
 
 
 ## WithErrorDetail(String, String, String, (String, Object)[])
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L269" target="_blank">Error.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L272" target="_blank">Error.cs</a>
 
 Returns a copy of the current error with a new individual error occurrence appended to the [ErrorDetails](Error_ErrorDetails.md).
 
@@ -89,7 +89,7 @@ The `detail` or a name in `detailNamedValues` is `null`.
 
 [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception)
 
-The `propertyPointer` is not a *JSON Pointer* (e.g., `Email` or `Items[0].Name`; the parameter name of the exception is `PropertyPointer`), the `detailTemplateId` is empty or consists only of white-space characters, a name in `detailNamedValues` is repeated, or `detailNamedValues` are passed without a `detailTemplateId`.
+The `propertyPointer` is not a *JSON Pointer* (e.g., `Email` or `Items[0].Name`; the parameter name of the exception is `PropertyPointer`), the `detail` is empty or consists only of white-space characters (the parameter name of the exception is `Detail`), the `detailTemplateId` is empty, consists only of white-space characters or starts or ends with white space, a name in `detailNamedValues` is empty, starts or ends with white space, or is repeated, or `detailNamedValues` are passed without a `detailTemplateId`.
 
 ### Examples
 ```csharp
