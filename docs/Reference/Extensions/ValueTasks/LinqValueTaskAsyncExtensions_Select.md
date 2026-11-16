@@ -115,7 +115,7 @@ var result =
 
 
 ## Select&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L740" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L757" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
 
 Awaits the result and projects it if it is successful (the `select` clause of a query); a failed result is returned unchanged.
 
@@ -157,7 +157,7 @@ var result = await (
 
 
 ## Select&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&lt;TNext&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L775" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L792" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
 
 Awaits the result and projects it if it is successful (the `select` clause of a query); a failed result is returned unchanged.
 
@@ -202,7 +202,7 @@ var result = await (
 
 
 ## Select&lt;TNext&gt;(ValueTask&lt;Result&gt;, Func&lt;Result, TNext&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L811" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L828" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
 
 Awaits the result and projects it if it is successful (the `select` clause of a query); a failed result is returned unchanged.
 
@@ -244,7 +244,7 @@ var result = await (
 
 
 ## Select(ValueTask&lt;Result&gt;, Func&lt;Result, Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L847" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L864" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
 
 Awaits the result and projects it if it is successful (the `select` clause of a query); a failed result is returned unchanged.
 
@@ -282,7 +282,7 @@ var result = await (
 
 
 ## Select(ValueTask&lt;Result&gt;, Func&lt;Result, Result&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L887" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L904" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
 
 Awaits the result and projects it if it is successful (the `select` clause of a query); a failed result is returned unchanged.
 
@@ -322,7 +322,7 @@ var result = await (
 
 
 ## Select&lt;TNext&gt;(ValueTask&lt;Result&gt;, Func&lt;Result, Result&lt;TNext&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L928" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/LinqValueTaskAsyncExtensions.cs#L945" target="_blank">LinqValueTaskAsyncExtensions.cs</a>
 
 Awaits the result and projects it if it is successful (the `select` clause of a query); a failed result is returned unchanged.
 
