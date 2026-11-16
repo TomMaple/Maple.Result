@@ -24,11 +24,13 @@ internal static partial class UriOtherValidator
     // and "%" as pct-encoded = "%" HEXDIG HEXDIG), and at most one "#", which starts the fragment. The value is stored as
     // passed, so white space and characters that would need escaping are rejected. The pattern ends with \z, not $, which
     // would also match before a trailing newline.
+    // NonBacktracking: the value can come from another service (ErrorUri.Parse and TryParse), and this engine runs in linear time
+    // whatever the pattern (#189). The source generator does not generate code for this option; it creates the Regex instead.
     [GeneratedRegex(
         @"^[A-Za-z][A-Za-z0-9+\-.]*:" +
         @"(?:[A-Za-z0-9\-._~:/?\[\]@!$&'()*+,;=]|%[0-9A-Fa-f]{2})*" +
         @"(?:#(?:[A-Za-z0-9\-._~:/?\[\]@!$&'()*+,;=]|%[0-9A-Fa-f]{2})*)?\z",
-        RegexOptions.CultureInvariant)]
+        RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
     private static partial Regex AbsoluteUriPattern();
 
     /// <summary>

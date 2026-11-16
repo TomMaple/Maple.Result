@@ -35,7 +35,7 @@ The method validates the value against the *RFC 8141* syntax:
 * the `urn` scheme (case-insensitive);
 * the namespace identifier (NID): 2 to 32 letters, digits or hyphens, starting and ending with a letter or a digit;
 * the namespace-specific string (NSS): at least one character; letters, digits, `-._~!$&'()*+,;=:@/` and percent-encoded octets (`%XX`);
-* the optional `?+` (resolution), `?=` (query) and `#` (fragment) components.
+* the optional `?+` (resolution), `?=` (query) and `#` (fragment) components. The resolution component ends at the first `?=` or `#` (*RFC 8141*, section 2.3.1), so `urn:example:a?+b?=/c` is not valid: its query component `/c` does not start with a valid character.
 
 The value is stored as passed; it is not normalized.
 

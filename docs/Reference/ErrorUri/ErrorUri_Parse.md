@@ -31,6 +31,8 @@ The `value` is not of a known kind, or it is not valid for its kind (the excepti
 ## Remarks
 Use this method when the kind of the *URI* is not known in advance, e.g., when reading problem details from another service or writing a converter. When the kind is known, call its factory method directly.
 
+The value can come from an untrusted source: the validation runs in linear time in the length of the value (the patterns use `RegexOptions.NonBacktracking`), so a long or crafted value cannot make it slow.
+
 The kind is detected from the value:
 
 | Value | Factory method |

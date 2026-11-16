@@ -25,6 +25,8 @@ The [ErrorUri](ErrorUri.md) with the specified value, if it is valid; otherwise,
 ## Remarks
 The method never throws, and a rejected value is checked without throwing an exception internally, so it suits values that are often invalid.
 
+The validation runs in linear time in the length of the value (the patterns use `RegexOptions.NonBacktracking`), so a long or crafted value from an untrusted source cannot make it slow.
+
 On failure, `result` is the default [ErrorUri](ErrorUri.md), whose [Value](ErrorUri_Value.md) is `about:blank`; check the return value rather than `result`.
 
 ## Examples

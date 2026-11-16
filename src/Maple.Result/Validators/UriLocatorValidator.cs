@@ -20,10 +20,12 @@ internal static partial class UriLocatorValidator
     // new Uri trims surrounding whitespace and escapes characters such as spaces, invalid percent-encoding and non-ASCII characters,
     // but ErrorUri stores the string as passed. So the raw string must already be a valid URI: only the RFC 3986 characters
     // (unreserved, reserved and "%" as pct-encoded = "%" HEXDIG HEXDIG), and at most one "#", which starts the fragment.
+    // NonBacktracking: the value can come from another service (ErrorUri.Parse and TryParse), and this engine runs in linear time
+    // whatever the pattern (#189). The source generator does not generate code for this option; it creates the Regex instead.
     [GeneratedRegex(
         @"^(?:[A-Za-z0-9\-._~:/?\[\]@!$&'()*+,;=]|%[0-9A-Fa-f]{2})+" +
         @"(?:#(?:[A-Za-z0-9\-._~:/?\[\]@!$&'()*+,;=]|%[0-9A-Fa-f]{2})*)?\z",
-        RegexOptions.CultureInvariant)]
+        RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
     private static partial Regex RawUriPattern();
 
     /// <summary>
