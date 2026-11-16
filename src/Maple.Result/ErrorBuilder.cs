@@ -53,6 +53,12 @@ public sealed class ErrorBuilder
     private ImmutableStringDictionary _builtMetadata;
     private Dictionary<string, object?>? _pendingMetadata;
 
+    // The keys of the current metadata, compared case-insensitively, with their stored spelling: a key that differs only in case is found with a
+    // lookup instead of a scan of the other keys (#234). Created once the metadata has CaseIndexThreshold keys, so an error with a few entries
+    // allocates nothing more, and kept in step with every change of the keys until WithoutMetadata() clears them.
+    private const int CaseIndexThreshold = 8;
+    private Dictionary<string, string>? _metadataKeyIndex;
+
     #region constructors
 
     /// <summary>
@@ -414,9 +420,10 @@ public sealed class ErrorBuilder
     public ErrorBuilder WithMetadata(string key, object? value)
     {
         MetadataKeyValidator.Validate(key);
-        MetadataKeyValidator.ValidateCase(key, CurrentMetadata, nameof(key));
+        ValidateCase(key, nameof(key));
 
         GetPendingMetadata()[key] = value;
+        _metadataKeyIndex?.TryAdd(key, key);
 
         return this;
     }
@@ -446,22 +453,18 @@ public sealed class ErrorBuilder
         foreach (var pair in entries)
             MetadataKeyValidator.Validate(pair.Key);
 
-        var current = CurrentMetadata;
-        for (var i = 0; i < entries.Length; i++)
-        {
-            var key = entries[i].Key;
-            MetadataKeyValidator.ValidateCase(key, current, nameof(metadata));
-
-            for (var j = 0; j < i; j++)
-                MetadataKeyValidator.ValidateCase(entries[j].Key, key, nameof(metadata));
-        }
+        ReadOnlySpan<KeyValuePair<string, object?>> entriesSpan = entries;
+        ValidateCase(entriesSpan, static pair => pair.Key, nameof(metadata));
 
         if (entries.Length == 0)
             return this;
 
         var pending = GetPendingMetadata();
         foreach (var pair in entries)
+        {
             pending[pair.Key] = pair.Value;
+            _metadataKeyIndex?.TryAdd(pair.Key, pair.Key);
+        }
 
         return this;
     }
@@ -489,22 +492,17 @@ public sealed class ErrorBuilder
         foreach (var (key, _) in metadata)
             MetadataKeyValidator.Validate(key);
 
-        var current = CurrentMetadata;
-        for (var i = 0; i < metadata.Length; i++)
-        {
-            var key = metadata[i].Key;
-            MetadataKeyValidator.ValidateCase(key, current, nameof(metadata));
-
-            for (var j = 0; j < i; j++)
-                MetadataKeyValidator.ValidateCase(metadata[j].Key, key, nameof(metadata));
-        }
+        ValidateCase(metadata, static entry => entry.Key, nameof(metadata));
 
         if (metadata.IsEmpty)
             return this;
 
         var pending = GetPendingMetadata();
         foreach (var (key, value) in metadata)
+        {
             pending[key] = value;
+            _metadataKeyIndex?.TryAdd(key, key);
+        }
 
         return this;
     }
@@ -522,7 +520,12 @@ public sealed class ErrorBuilder
 
         IReadOnlyDictionary<string, object?> current = _pendingMetadata ?? (IReadOnlyDictionary<string, object?>)_builtMetadata;
         if (current.ContainsKey(key))
+        {
             GetPendingMetadata().Remove(key);
+
+            // The key is stored with this exact spelling, and no other key differs from it only in case.
+            _metadataKeyIndex?.Remove(key);
+        }
 
         return this;
     }
@@ -535,6 +538,7 @@ public sealed class ErrorBuilder
     {
         _builtMetadata = Error.EmptyMetadata;
         _pendingMetadata = null;
+        _metadataKeyIndex = null;
 
         return this;
     }
@@ -595,6 +599,80 @@ public sealed class ErrorBuilder
     private Dictionary<string, object?> GetPendingMetadata()
     {
         return _pendingMetadata ??= new Dictionary<string, object?>(_builtMetadata, StringComparer.Ordinal);
+    }
+
+    /// <summary>
+    ///     Throws if the key differs only in case from a key of the current metadata; the same key is allowed (it replaces the value).
+    /// </summary>
+    private void ValidateCase(string key, string paramName)
+    {
+        var current = CurrentMetadata;
+        if (current.ContainsKey(key))
+            return;
+
+        var existingKey = FindKeyDifferingOnlyInCase(key, current);
+        if (existingKey is not null)
+            throw MetadataKeyValidator.KeyDiffersOnlyInCase(key, existingKey, paramName);
+    }
+
+    /// <summary>
+    ///     Throws if a key of the entries differs only in case from a key of the current metadata or from an earlier key of the entries;
+    ///     the same key is allowed (the last value wins).
+    /// </summary>
+    /// <remarks>
+    ///     The keys of the entries are compared with a case-insensitive index from <see cref="CaseIndexThreshold" /> entries on, and with each
+    ///     other below it.
+    /// </remarks>
+    private void ValidateCase<TEntry>(ReadOnlySpan<TEntry> entries, Func<TEntry, string> keyOf, string paramName)
+    {
+        var earlierKeys = entries.Length >= CaseIndexThreshold
+            ? new Dictionary<string, string>(entries.Length, StringComparer.OrdinalIgnoreCase)
+            : null;
+
+        for (var i = 0; i < entries.Length; i++)
+        {
+            var key = keyOf(entries[i]);
+            ValidateCase(key, paramName);
+
+            if (earlierKeys is null)
+            {
+                for (var j = 0; j < i; j++)
+                {
+                    var earlierKey = keyOf(entries[j]);
+                    MetadataKeyValidator.ValidateCase(earlierKey, key, paramName);
+                }
+            }
+            else if (!earlierKeys.TryAdd(key, key))
+            {
+                var earlierKey = earlierKeys[key];
+                MetadataKeyValidator.ValidateCase(earlierKey, key, paramName);
+            }
+        }
+    }
+
+    /// <summary>
+    ///     Returns the key of the current metadata that differs only in case from the <paramref name="key" />, which is not in the metadata;
+    ///     <see langword="null" /> if there is none.
+    /// </summary>
+    private string? FindKeyDifferingOnlyInCase(string key, Dictionary<string, object?> current)
+    {
+        if (_metadataKeyIndex is null && current.Count >= CaseIndexThreshold)
+        {
+            _metadataKeyIndex = new Dictionary<string, string>(current.Count, StringComparer.OrdinalIgnoreCase);
+            foreach (var existingKey in current.Keys)
+                _metadataKeyIndex.Add(existingKey, existingKey);
+        }
+
+        if (_metadataKeyIndex is not null)
+            return _metadataKeyIndex.GetValueOrDefault(key);
+
+        foreach (var existingKey in current.Keys)
+        {
+            if (string.Equals(existingKey, key, StringComparison.OrdinalIgnoreCase))
+                return existingKey;
+        }
+
+        return null;
     }
 
     private static void ValidateCategory(ErrorCategory category)
