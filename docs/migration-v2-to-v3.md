@@ -381,6 +381,17 @@ var guestResult = userResult.Else(error => Result<User>.FromValue(User.Guest));
 userResult.IfSuccess(user => { seenIds.Add(user.Id); });
 ```
 
+An assignment or an increment has a value too, so `IfSuccess(user => lastUser = user)`, `IfSuccess(user => count++)` and `IfError(error => lastError = error)` are compile errors as well, and so is `Match(user => lastUser = user, error => lastError = error)` (see the next section). In 2.x the first one transformed the result into a `Result<User>` of the assigned value; it is the same side effect in a statement lambda:
+
+```csharp
+// 3.0: CS0619, the assignment has a value
+userResult.IfSuccess(user => lastUser = user);
+
+// 3.0: a statement lambda
+userResult.IfSuccess(user => { lastUser = user; });
+userResult.IfSuccess(user => { count++; });
+```
+
 ### `Match` with a success function and an error action
 `Match` and `MatchAsync` with a **success function** and an **error action** (e.g., `Match(user => CreateOrder(user), error => Log(error))`) transformed the result, as `Then(…).IfError(…)` does, and the same call with a statement lambda tapped it: which one ran depended on the return type of the lambda, as for `IfSuccess` above (`Match(x => set.Add(x), e => { })` was a `Result<bool>`). In 3.0 such a call is a compile error (CS0619) whose message names the replacement, in every form (`Match`, `MatchAsync` on a `Result`, a `Task` or a `ValueTask`, with synchronous or asynchronous delegates). `Match` keeps two meanings: two **functions** that return a value of the same type, and two **actions** for a side effect.
 
@@ -517,6 +528,7 @@ The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an
 | `result.IfError(e => …)` (a function returning the replacement result) | `result.Else(e => …)` |
 | `await result.IfErrorAsync(e => …)` (a function returning the replacement result in a task) | `await result.ElseAsync(e => …)` |
 | `result.IfSuccess(x => set.Add(x))` (a side effect whose expression returns a value) | `result.IfSuccess(x => { set.Add(x); })` |
+| `result.IfSuccess(x => last = x)`, `result.IfError(e => count++)` (an assignment or an increment, which has a value) | `result.IfSuccess(x => { last = x; })`, `result.IfError(e => { count++; })` |
 | `result.IfSuccess(() => SaveAsync())` (a function returning a task) | `await result.IfSuccessAsync(() => SaveAsync())` |
 | `result.IfError(e => LogAsync(e))` (an error action returning a task) | `await result.IfErrorAsync(e => LogAsync(e))` |
 | `result.Match(x => Log(x), e => LogAsync(e))` (an error action returning a task) | `await result.MatchAsync(x => LogAsync(x), e => LogAsync(e))` |

@@ -371,6 +371,11 @@ public sealed record Result<T> : IOperationResult
     ///     and the value is declared as that interface, the conversion does not compile (CS0029). Use
     ///     <see cref="FromValue(T)" /> instead; a value declared as a class converts as usual.
     ///     </para>
+    ///     <para>
+    ///     When <typeparamref name="T" /> is <see cref="object" />, every value converts, a result too: <c>Result&lt;object&gt; r = failed;</c>,
+    ///     with <c>failed</c> a failed <c>Result&lt;int&gt;</c>, is a <b>successful</b> result whose value is the failed result. Convert the
+    ///     value of a result explicitly instead (e.g., <c>failed.Then(x =&gt; (object)x)</c>).
+    ///     </para>
     /// </remarks>
     public static implicit operator Result<T>(T value)
     {

@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.cs#L375" target="_blank">Result.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.cs#L380" target="_blank">Result.cs</a>
 
 Defines an implicit conversion of a given value of the type `T` to a successful [Result&lt;T&gt;](ResultT.md) (with a value), with the provided value.
 
@@ -31,6 +31,9 @@ A `null` *value* is permitted when `T` is nullable (a nullable reference type or
 
 C# does not apply a user-defined conversion from an interface type. When `T` is an interface and the value is declared as that interface, the conversion does not compile (CS0029); use [FromValue(T)](ResultT_FromValue.md) instead. A value declared as a class converts as usual.
 
+> [!WARNING]
+> When `T` is `object`, every value converts, a result too: `Result<object> r = failed;`, with `failed` a failed `Result<int>`, is a **successful** result whose value is the failed result. Convert the value of a result explicitly instead (e.g., `failed.Then(x => (object)x)`, which keeps the error).
+
 ## Examples
 ```csharp
 Result<User> result = new User("John", "Doe");
@@ -38,4 +41,8 @@ Result<User> result = new User("John", "Doe");
 IUser user = GetUser();
 // Result<IUser> bad = user;               // CS0029: the value is declared as an interface
 Result<IUser> good = Result.FromValue(user);
+
+Result<int> failed = Error.NotFound(ErrorUri.None, "Missing");
+// Result<object> wrong = failed;          // compiles: a successful result whose value is the failed result
+Result<object> converted = failed.Then(x => (object)x);   // a failed Result<object> with the same error
 ```
