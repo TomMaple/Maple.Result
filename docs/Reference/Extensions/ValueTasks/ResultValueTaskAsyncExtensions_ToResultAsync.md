@@ -17,7 +17,7 @@ public static async ValueTask<Result> ToResultAsync<T>(this ValueTask<Result<T>>
 The type of the [Result](../../ResultT/ResultT.md)&lt;T&gt; `result` value to be converted.
 
 ### Parameters
-#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
+#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../ResultT/ResultT.md)&lt;T&gt;&gt;
 The value task that represents the asynchronous operation producing the [Result](../../ResultT/ResultT.md) record to be converted.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -26,7 +26,7 @@ The value task that represents the asynchronous operation producing the [Result]
 The default value is: `null`.
 
 ### Returns
-#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask)&lt;[Result](../../ResultT/ResultT.md)&lt;T&gt;&gt;
+#### [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../../Result/Result.md)&gt;
 The value task object representing the asynchronous operation.
 
 ### Exceptions
