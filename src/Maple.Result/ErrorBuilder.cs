@@ -259,7 +259,15 @@ public sealed class ErrorBuilder
     /// </remarks>
     public ErrorBuilder WithDetail(string? detail)
     {
+        if (detail is not null && string.IsNullOrWhiteSpace(detail))
+        {
+            throw new ArgumentException(
+                "The detail must not be empty or whitespace-only; pass null when there is no detail.",
+                nameof(detail));
+        }
+
         _detail = detail;
+
         return this;
     }
 

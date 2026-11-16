@@ -55,10 +55,20 @@ public sealed record ErrorDetail(string? PropertyPointer, string Detail, Templat
     /// <summary>
     ///     The human-readable explanation specific to this individual error occurrence (never <see langword="null" />).
     /// </summary>
-    public string Detail { get; } = Detail ?? throw new ArgumentNullException(nameof(Detail));
+    public string Detail { get; } = ValidateDetail(Detail, nameof(Detail));
 
     /// <summary>
     ///     The message template with the human-readable explanation.
     /// </summary>
     public TemplatedMessage? DetailTemplated { get; } = DetailTemplated;
+
+    private static string ValidateDetail(string detail, string parameterName)
+    {
+        ArgumentNullException.ThrowIfNull(detail, parameterName);
+
+        if (string.IsNullOrWhiteSpace(detail))
+            throw new ArgumentException("The detail of an error occurrence must not be empty or whitespace-only.", parameterName);
+
+        return detail;
+    }
 }

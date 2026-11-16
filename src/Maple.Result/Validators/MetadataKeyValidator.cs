@@ -29,6 +29,10 @@ namespace Maple.Results.Validators;
 ///         For the same reason, two keys of one error must not differ only in case (<see cref="ValidateCase(string, Dictionary{string, object?}, string)" />).
 ///     </para>
 ///     <para>
+///         A key does not start or end with white space (<see cref="NameValidator" />): <c>" type"</c> would get past the reserved-name check
+///         and be written next to <c>type</c>. White space inside a key is allowed.
+///     </para>
+///     <para>
 ///         The naming recommendations of <i>RFC 9457</i> (section 4: letters, digits and <c>_</c>, starting with a letter, at least 3 characters)
 ///         are not enforced, because they are not mandatory and problem details received from other services must be accepted as they are.
 ///     </para>
@@ -55,15 +59,23 @@ internal static class MetadataKeyValidator
     }
 
     /// <summary>
-    ///     Throws if the key is null, empty, whitespace-only or reserved.
+    ///     Throws if the key is null, empty, whitespace-only, starts or ends with white space, or is reserved.
     /// </summary>
     /// <exception cref="ArgumentNullException">If the <paramref name="key" /> is <see langword="null" />.</exception>
     /// <exception cref="ArgumentException">
-    ///     If the <paramref name="key" /> is empty, whitespace-only or matches a standard problem details member name.
+    ///     If the <paramref name="key" /> is empty, whitespace-only, starts or ends with white space, or matches a standard problem details member
+    ///     name.
     /// </exception>
     internal static void Validate(string key)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(key);
+
+        if (!NameValidator.IsValid(key))
+        {
+            throw new ArgumentException(
+                $"The metadata key ‘{key}’ starts or ends with white space. A key is not trimmed; remove the white space.",
+                nameof(key));
+        }
 
         if (IsReserved(key))
         {
