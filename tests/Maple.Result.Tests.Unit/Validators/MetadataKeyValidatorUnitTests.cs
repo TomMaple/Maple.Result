@@ -85,4 +85,42 @@ public class MetadataKeyValidatorUnitTests
         // Act & Assert
         Should.Throw<ArgumentException>(() => MetadataKeyValidator.Validate(key));
     }
+
+    #region padded keys (issue #203)
+
+    [Theory]
+    [InlineData(" type")]
+    [InlineData("type ")]
+    [InlineData("\tlimit")]
+    [InlineData(" limit ")]
+    public void Validate_PaddedKey_ThrowsArgumentException(string key)
+    {
+        // Act
+        var exception = Record.Exception(() => MetadataKeyValidator.Validate(key));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentException>();
+        ((ArgumentException)exception).ParamName.ShouldBe("key");
+    }
+
+    [Fact]
+    public void Validate_PaddedKey_MessageShowsKey()
+    {
+        // Act
+        var exception = Record.Exception(() => MetadataKeyValidator.Validate(" type"));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.Message.ShouldContain("‘ type’");
+    }
+
+    [Fact]
+    public void Validate_KeyWithWhiteSpaceInside_DoesNotThrow()
+    {
+        // Act & Assert
+        Should.NotThrow(() => MetadataKeyValidator.Validate("retry after"));
+    }
+
+    #endregion
 }

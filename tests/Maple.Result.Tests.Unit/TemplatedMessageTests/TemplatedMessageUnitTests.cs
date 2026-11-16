@@ -399,4 +399,111 @@ public class TemplatedMessageUnitTests
     }
 
     #endregion
+
+    #region empty and padded names (issue #203)
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
+    [InlineData(" min")]
+    [InlineData("min ")]
+    [InlineData("\tmin")]
+    public void Ctor_EmptyOrPaddedTupleName_ThrowsArgumentException(string name)
+    {
+        // Act
+        var exception = Record.Exception(() => new TemplatedMessage("errors.length", (name, 3)));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentException>();
+        ((ArgumentException)exception).ParamName.ShouldBe("parameters");
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
+    [InlineData(" min")]
+    [InlineData("min ")]
+    [InlineData("\tmin")]
+    public void Ctor_EmptyOrPaddedPairName_ThrowsArgumentException(string name)
+    {
+        // Arrange
+        var parameters = new List<KeyValuePair<string, object?>> { new(name, 3) };
+
+        // Act
+        var exception = Record.Exception(() => new TemplatedMessage("errors.length", parameters));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentException>();
+        ((ArgumentException)exception).ParamName.ShouldBe("parameters");
+    }
+
+    [Fact]
+    public void Ctor_PaddedName_MessageShowsName()
+    {
+        // Act
+        var exception = Record.Exception(() => new TemplatedMessage("errors.length", (" min", 3)));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.Message.ShouldContain("‘ min’");
+    }
+
+    [Fact]
+    public void Ctor_NameWithWhiteSpaceInside_BuildsParams()
+    {
+        // Act
+        var sut = new TemplatedMessage("errors.length", ("min length", 3));
+
+        // Assert
+        sut.Params.ShouldNotBeNull();
+        sut.Params["min length"].ShouldBe(3);
+    }
+
+    [Theory]
+    [InlineData(" errors.length")]
+    [InlineData("errors.length ")]
+    [InlineData("\terrors.length")]
+    public void Ctor_PaddedTemplateId_ThrowsArgumentException(string templateId)
+    {
+        // Act
+        var exception = Record.Exception(() => new TemplatedMessage(templateId, ("min", 3)));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentException>();
+        ((ArgumentException)exception).ParamName.ShouldBe("templateId");
+    }
+
+    [Theory]
+    [InlineData(" errors.length")]
+    [InlineData("errors.length ")]
+    [InlineData("\terrors.length")]
+    public void Ctor_PaddedTemplateIdWithPairs_ThrowsArgumentException(string templateId)
+    {
+        // Arrange
+        var parameters = new List<KeyValuePair<string, object?>> { new("min", 3) };
+
+        // Act
+        var exception = Record.Exception(() => new TemplatedMessage(templateId, parameters));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentException>();
+        ((ArgumentException)exception).ParamName.ShouldBe("templateId");
+    }
+
+    [Fact]
+    public void Ctor_PaddedTemplateId_MessageShowsTemplateId()
+    {
+        // Act
+        var exception = Record.Exception(() => new TemplatedMessage("errors.length "));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.Message.ShouldContain("‘errors.length ’");
+    }
+
+    #endregion
 }

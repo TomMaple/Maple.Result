@@ -1990,4 +1990,115 @@ public class ErrorUnitTests
     }
 
     #endregion
+
+    #region empty texts and padded names (issue #203)
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
+    [InlineData("\n")]
+    public void FactoryMethod_EmptyOrWhitespaceDetail_ThrowsArgumentException(string detail)
+    {
+        // Act
+        var exception = Record.Exception(() => Sut.Validation(ErrorUri.None, "Test title", detail));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentException>();
+        ((ArgumentException)exception).ParamName.ShouldBe("detail");
+    }
+
+    [Fact]
+    public void FactoryMethod_NullDetail_HasNoDetail()
+    {
+        // Act
+        var sut = Sut.Validation(ErrorUri.None, "Test title", null);
+
+        // Assert
+        sut.Detail.ShouldBeNull();
+    }
+
+    [Fact]
+    public void FactoryMethod_DetailWithSurroundingWhiteSpace_StoresItUnchanged()
+    {
+        // Act
+        var sut = Sut.Validation(ErrorUri.None, "Test title", " Too short. ");
+
+        // Assert
+        sut.Detail.ShouldBe(" Too short. ");
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
+    [InlineData(" min")]
+    [InlineData("min ")]
+    [InlineData("\tmin")]
+    public void FactoryMethod_EmptyOrPaddedParameterName_ThrowsArgumentException(string name)
+    {
+        // Act
+        var exception = Record.Exception(() => Sut.Validation(ErrorUri.None, "Test title",
+            detailTemplateId: "errors.length", detailNamedValues: [(name, 3)]));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentException>();
+        ((ArgumentException)exception).ParamName.ShouldBe("detailNamedValues");
+    }
+
+    [Theory]
+    [InlineData(" errors.length")]
+    [InlineData("errors.length ")]
+    [InlineData("\terrors.length")]
+    public void FactoryMethod_PaddedTemplateId_ThrowsArgumentException(string templateId)
+    {
+        // Act
+        var exception = Record.Exception(() => Sut.Validation(ErrorUri.None, "Test title", detailTemplateId: templateId));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentException>();
+        ((ArgumentException)exception).ParamName.ShouldBe("detailTemplateId");
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
+    [InlineData("\n")]
+    public void WithErrorDetail_EmptyOrWhitespaceDetailText_ThrowsArgumentExceptionAndKeepsError(string detail)
+    {
+        // Arrange
+        var sut = Sut.Validation(ErrorUri.None, "Test title");
+
+        // Act
+        var exception = Record.Exception(() => sut.WithErrorDetail("/name", detail));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentException>();
+        ((ArgumentException)exception).ParamName.ShouldBe("Detail");
+        sut.ErrorDetails.ShouldBeEmpty();
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
+    [InlineData(" min")]
+    [InlineData("min ")]
+    [InlineData("\tmin")]
+    public void WithErrorDetail_EmptyOrPaddedParameterName_ThrowsArgumentException(string name)
+    {
+        // Arrange
+        var sut = Sut.Validation(ErrorUri.None, "Test title");
+
+        // Act
+        var exception = Record.Exception(() => sut.WithErrorDetail("/name", "Too short.", "errors.length", (name, 3)));
+
+        // Assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ArgumentException>();
+        ((ArgumentException)exception).ParamName.ShouldBe("detailNamedValues");
+    }
+
+    #endregion
 }
