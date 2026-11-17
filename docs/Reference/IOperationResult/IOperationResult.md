@@ -12,6 +12,12 @@ public interface IOperationResult
 
 Derived [Maple.Results.Result](../Result/Result.md), [Maple.Results.Result&lt;T&gt;](../ResultT/ResultT.md)
 
+## Remarks
+Use the interface for code that handles both kinds of result: as the type of a parameter or a variable, as a type argument (e.g., `List<IOperationResult>`) or as a generic constraint (`where TResult : IOperationResult`).
+
+> [!IMPORTANT]
+> The interface is closed: [Result](../Result/Result.md) and [Result&lt;T&gt;](../ResultT/ResultT.md) are its only implementations, so a failed result always has an [Error](IOperationResult_Error.md). A type outside the library that implements the interface does not compile (CS0535), and a mocking library cannot create a mock of it. In a test, create a result instead, e.g., with `Result.Success()`, `Result.FromError(error)` or `Result.FromValue(value)`.
+
 ## Properties
 | Name | Description |
 | ---- | ----------- |
