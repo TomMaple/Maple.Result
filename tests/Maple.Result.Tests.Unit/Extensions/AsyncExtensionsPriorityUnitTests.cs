@@ -54,6 +54,34 @@ public class AsyncExtensionsPriorityUnitTests
         mismatched.ShouldBeEmpty();
     }
 
+    // On a task of a result, an async lambda binds to the overload for a function that returns a Task, on both kinds of receiver
+    // (#226): every overload whose delegates return a Task has priority 1, and every overload whose delegates return a ValueTask has
+    // priority 0. The receiver decides the kind of the returned task.
+    [Theory]
+    [InlineData(typeof(ThenAsyncExtensions))]
+    [InlineData(typeof(ElseAsyncExtensions))]
+    [InlineData(typeof(IfSuccessAsyncExtensions))]
+    [InlineData(typeof(IfErrorAsyncExtensions))]
+    [InlineData(typeof(MatchAsyncExtensions))]
+    public void OverloadOnATaskOfAResult_HasPriorityOneForTaskDelegatesAndZeroForValueTaskDelegates(Type type)
+    {
+        // Arrange
+        var onATask = type.GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(m => !OverloadTrapHelper.HasSynchronousReceiver(m))
+            .ToList();
+
+        // Act
+        var mismatched = onATask
+            .Where(m => (Delegates(m).All(OverloadTrapHelper.IsTaskFunction) && OverloadTrapHelper.Priority(m) != 1)
+                        || (Delegates(m).All(OverloadTrapHelper.IsValueTaskFunction) && OverloadTrapHelper.Priority(m) != 0))
+            .Select(m => m.ToString())
+            .ToList();
+
+        // Assert
+        onATask.Count(m => Delegates(m).All(OverloadTrapHelper.IsValueTaskFunction)).ShouldBeGreaterThan(0);
+        mismatched.ShouldBeEmpty();
+    }
+
     [Theory]
     [InlineData(typeof(MatchAsyncExtensions))]
     [InlineData(typeof(SwitchAsyncExtensions))]
@@ -67,6 +95,17 @@ public class AsyncExtensionsPriorityUnitTests
 
         // Assert
         onAResult.ShouldBeEmpty();
+    }
+
+    // The delegate parameters of the method (an empty list is never "all of a kind").
+    private static Type[] Delegates(MethodInfo method)
+    {
+        var delegates = method.GetParameters()
+            .Select(p => p.ParameterType)
+            .Where(t => typeof(Delegate).IsAssignableFrom(t))
+            .ToArray();
+
+        return delegates.Length == 0 ? [typeof(object)] : delegates;
     }
 
     // The name, the number of type parameters and the parameter types; with withValueTaskFunction, a Task in the type of the first

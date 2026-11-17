@@ -51,6 +51,7 @@ public class ElseAsyncValueOrErrorBindingUnitTests
     [InlineData("Task<Result<int>> r = failedTask.ElseAsync(e => GetErrorAsync());")]
     [InlineData("Task<Result<int>> r = failedTask.ElseAsync(IntFromErrorAsync);")]
     [InlineData("Task<Result<int>> r = failed.ElseAsync(e => GetIntAsync());")]
+    [InlineData("Task<Result<int>> r = failedTask.ElseAsync(e => IntFromErrorVt(e));")]
     [InlineData("Task<Result<int>> r = failed.ElseAsync(e => GetErrorAsync());")]
     [InlineData("Task<Result> r = plainTask.ElseAsync(async e => e.WithMetadata(\"k\", 1));")]
     [InlineData("Task<Result> r = plain.ElseAsync(e => GetErrorAsync());")]
@@ -85,8 +86,7 @@ public class ElseAsyncValueOrErrorBindingUnitTests
 
     [Theory]
     [InlineData("_ = failedTask.ElseAsync(e => LogAsync(e));", "The function returns a task without a value.")]
-    [InlineData("_ = failedTask.ElseAsync(e => LogVt(e));", "The function returns a ValueTask")]
-    [InlineData("_ = failedTask.ElseAsync(e => IntFromErrorVt(e));", "The function returns a ValueTask")]
+    [InlineData("_ = failedTask.ElseAsync(e => LogVt(e));", "The function returns a task without a value.")]
     [InlineData("_ = failedTask.ElseAsync(async e => { await LogAsync(e); });", "The function returns a task without a value.")]
     public void TaskBased_TrappedShape_StillReportsCS0619OnTheSameTrap(string statements, string message)
     {
@@ -113,6 +113,7 @@ public class ElseAsyncValueOrErrorBindingUnitTests
     [InlineData("ValueTask<Result<int>> r = failedVt.ElseAsync(e => GetErrorVt());")]
     [InlineData("ValueTask<Result<int>> r = failedVt.ElseAsync(IntFromErrorVt);")]
     [InlineData("ValueTask<Result<int>> r = failed.ElseAsync(e => IntFromErrorVt(e));")]
+    [InlineData("ValueTask<Result<int>> r = failedVt.ElseAsync(e => IntFromErrorAsync(e));")]
     [InlineData("ValueTask<Result<int>> r = failed.ElseAsync(e => GetErrorVt());")]
     [InlineData("ValueTask<Result> r = plainVt.ElseAsync(async e => e.WithMetadata(\"k\", 1));")]
     [InlineData("ValueTask<Result> r = plain.ElseAsync(e => GetErrorVt());")]
@@ -150,8 +151,7 @@ public class ElseAsyncValueOrErrorBindingUnitTests
 
     [Theory]
     [InlineData("_ = failedVt.ElseAsync(e => LogVt(e));", "The function returns a task without a value.")]
-    [InlineData("_ = failedVt.ElseAsync(e => LogAsync(e));", "The function returns a Task")]
-    [InlineData("_ = failedVt.ElseAsync(e => IntFromErrorAsync(e));", "The function returns a Task")]
+    [InlineData("_ = failedVt.ElseAsync(e => LogAsync(e));", "The function returns a task without a value.")]
     [InlineData("_ = failedVt.ElseAsync(async e => { await LogVt(e); });", "The function returns a task without a value.")]
     public void ValueTaskBased_TrappedShape_StillReportsCS0619OnTheSameTrap(string statements, string message)
     {

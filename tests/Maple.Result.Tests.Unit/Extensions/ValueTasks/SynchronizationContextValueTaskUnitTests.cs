@@ -112,6 +112,53 @@ public sealed class SynchronizationContextValueTaskUnitTests : IDisposable
 
     #region helper methods
 
+    #region ThenAsync with a function of the other kind of task
+
+    // A function that returns a Task is awaited with the same continueOnCapturedContext as one of the own kind (#226).
+
+    [Fact]
+    public void ThenAsync_TaskFunctionAndArgumentTrue_RunsDelegateOnCapturedContext()
+    {
+        // Act
+        var (context, callbackContext) = RunThenAsyncWithTaskFunction(continueOnCapturedContext: true);
+
+        // Assert
+        callbackContext.ShouldBeSameAs(context);
+    }
+
+    [Fact]
+    public void ThenAsync_TaskFunctionAndArgumentFalse_RunsDelegateOffCapturedContext()
+    {
+        // Act
+        var (context, callbackContext) = RunThenAsyncWithTaskFunction(continueOnCapturedContext: false);
+
+        // Assert
+        callbackContext.ShouldNotBeSameAs(context);
+    }
+
+    #endregion
+
+    private static (SynchronizationContext Context, SynchronizationContext? CallbackContext) RunThenAsyncWithTaskFunction(
+        bool? continueOnCapturedContext)
+    {
+        return SingleThreadSynchronizationContext.Run(async context =>
+        {
+            var source = new TaskCompletionSource<Result<int>>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var holder = new ContextHolder();
+            Func<int, Task<int>> function = x =>
+            {
+                holder.Value = SynchronizationContext.Current;
+                return Task.FromResult(x);
+            };
+
+            var chain = new ValueTask<Result<int>>(source.Task).ThenAsync(function, continueOnCapturedContext);
+            CompleteOnThreadPool(source, 1);
+            await chain;
+
+            return (context, holder.Value);
+        });
+    }
+
     private static (SynchronizationContext Context, SynchronizationContext? CallbackContext) RunIfSuccessAsync(
         bool? continueOnCapturedContext)
     {

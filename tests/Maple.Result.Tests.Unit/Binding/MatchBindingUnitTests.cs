@@ -76,6 +76,13 @@ public class MatchBindingUnitTests
     [InlineData("ValueTask<int> r = doneVt.MatchAsync(() => 1, e => 0);")]
     [InlineData("ValueTask<int> r = doneVt.MatchAsync(() => GetIntVt(1), e => GetIntVt(0));")]
     [InlineData("ValueTask r = doneVt.MatchAsync(() => SaveVt(1), e => LogVt(e));")]
+    // Two functions of the other kind of task are awaited, and the receiver decides the kind (#226).
+    [InlineData("Task<int> r = okTask.MatchAsync(x => GetIntVt(x), e => GetIntVt(0));")]
+    [InlineData("Task r = okTask.MatchAsync(x => SaveVt(x), e => LogVt(e));")]
+    [InlineData("Task r = doneTask.MatchAsync(() => SaveVt(1), e => LogVt(e));")]
+    [InlineData("ValueTask<int> r = okVt.MatchAsync(x => GetIntAsync(x), e => GetIntAsync(0));")]
+    [InlineData("ValueTask r = okVt.MatchAsync(x => SaveAsync(x), e => LogAsync(e));")]
+    [InlineData("ValueTask r = doneVt.MatchAsync(() => SaveAsync(1), e => LogAsync(e));")]
     public void MatchAsync_TwoFunctions_CompilesToATaskOfTheirType(string statements)
     {
         // Act
@@ -103,10 +110,6 @@ public class MatchBindingUnitTests
     [InlineData("_ = okTask.MatchAsync(x => x, e => GetIntAsync(0));", "CS0029,CS0201,CS1662")]
     [InlineData("_ = okTask.MatchAsync(x => GetIntAsync(x), e => 0);", "CS0029,CS0201,CS1662")]
     [InlineData("_ = okTask.MatchAsync(x => GetIntAsync(x), e => GetIntVt(0));", "CS0619")]
-    [InlineData("_ = okTask.MatchAsync(x => GetIntVt(x), e => GetIntVt(0));", "CS0619")]
-    [InlineData("_ = okTask.MatchAsync(x => SaveVt(x), e => LogVt(e));", "CS0619")]
-    [InlineData("_ = okVt.MatchAsync(x => GetIntAsync(x), e => GetIntAsync(0));", "CS0619")]
-    [InlineData("_ = okVt.MatchAsync(x => SaveAsync(x), e => LogAsync(e));", "CS0619")]
     [InlineData("_ = ok.MatchAsync(x => GetIntAsync(x), e => GetIntAsync(0));", "CS1929")]
     [InlineData("_ = done.MatchAsync(() => GetIntVt(1), e => GetIntVt(0));", "CS1929")]
     public void Match_UnsupportedShape_ReportsOnlyTheStatedErrors(string statements, string errorIds)
@@ -148,20 +151,5 @@ public class MatchBindingUnitTests
         var message = snippet.Errors.Single(d => d.Id == "CS0619").GetMessage(CultureInfo.InvariantCulture);
         message.ShouldEndWith("is obsolete: 'MatchAsync takes two functions that return a value. Use SwitchAsync for two side effects, or "
                               + "ThenAsync(…).IfErrorAsync(…) to transform the value and handle the error.'");
-    }
-
-    [Theory]
-    [InlineData("_ = okTask.MatchAsync(x => GetIntVt(x), e => GetIntVt(0));", "ValueTask")]
-    [InlineData("_ = doneTask.MatchAsync(() => SaveVt(1), e => LogVt(e));", "ValueTask")]
-    [InlineData("_ = okVt.MatchAsync(x => GetIntAsync(x), e => GetIntAsync(0));", "Task")]
-    [InlineData("_ = doneVt.MatchAsync(() => SaveAsync(1), e => LogAsync(e));", "Task")]
-    public void MatchAsync_FunctionsReturningTheOtherKindOfTask_MessageNamesIt(string statements, string otherKind)
-    {
-        // Act
-        var snippet = SnippetCompiler.Compile(statements, members: Members);
-
-        // Assert
-        var message = snippet.Errors.Single(d => d.Id == "CS0619").GetMessage(CultureInfo.InvariantCulture);
-        message.ShouldContain($"The delegates return a {otherKind}, which MatchAsync on a ");
     }
 }
