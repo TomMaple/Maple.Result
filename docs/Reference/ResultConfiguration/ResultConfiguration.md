@@ -22,4 +22,3 @@ Set the properties once at application startup, before any other code of the lib
 
 ## See Also
 * [Maple.Results.Extensions namespace](../Extensions/namespace.md)
-* [Maple.Results.Extensions.ValueTasks namespace](../Extensions/ValueTasks/namespace.md)

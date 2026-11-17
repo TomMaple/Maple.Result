@@ -59,7 +59,7 @@ public class ElseAsyncValueOrErrorBindingUnitTests
     public void TaskBased_FunctionReturningAValueOrAnErrorInATask_Compiles(string statements)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Task, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         snippet.ErrorIds.ShouldBeEmpty(string.Join(Environment.NewLine, snippet.Errors));
@@ -77,7 +77,7 @@ public class ElseAsyncValueOrErrorBindingUnitTests
     public void TaskBased_ShapeThatCompiledBefore_StillCompiles(string statements)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Task, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         snippet.ErrorIds.ShouldBeEmpty(string.Join(Environment.NewLine, snippet.Errors));
@@ -91,7 +91,7 @@ public class ElseAsyncValueOrErrorBindingUnitTests
     public void TaskBased_TrappedShape_StillReportsCS0619OnTheSameTrap(string statements, string message)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Task, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         snippet.ErrorIds.ShouldNotBeEmpty();
@@ -116,12 +116,15 @@ public class ElseAsyncValueOrErrorBindingUnitTests
     [InlineData("ValueTask<Result<int>> r = failed.ElseAsync(e => GetErrorVt());")]
     [InlineData("ValueTask<Result> r = plainVt.ElseAsync(async e => e.WithMetadata(\"k\", 1));")]
     [InlineData("ValueTask<Result> r = plain.ElseAsync(e => GetErrorVt());")]
-    [InlineData("ValueTask<Result<int>> r = failed.ElseAsync(async e => 0);")]
-    [InlineData("ValueTask<Result<int>> r = failed.ElseAsync(async e => { await LogVt(e); return 0; });")]
+    // An async lambda on a result gives a Task (#248); an explicit return type gives a ValueTask.
+    [InlineData("Task<Result<int>> r = failed.ElseAsync(async e => 0);")]
+    [InlineData("Task<Result<int>> r = failed.ElseAsync(async e => { await LogVt(e); return 0; });")]
+    [InlineData("ValueTask<Result<int>> r = failed.ElseAsync(async ValueTask<int> (Error e) => 0);")]
+    [InlineData("ValueTask<Result<int>> r = failed.ElseAsync(async ValueTask<int> (Error e) => { await LogVt(e); return 0; });")]
     public void ValueTaskBased_FunctionReturningAValueOrAnErrorInAValueTask_Compiles(string statements)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.ValueTask, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         snippet.ErrorIds.ShouldBeEmpty(string.Join(Environment.NewLine, snippet.Errors));
@@ -139,7 +142,7 @@ public class ElseAsyncValueOrErrorBindingUnitTests
     public void ValueTaskBased_ShapeThatCompiledBefore_StillCompiles(string statements)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.ValueTask, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         snippet.ErrorIds.ShouldBeEmpty(string.Join(Environment.NewLine, snippet.Errors));
@@ -153,7 +156,7 @@ public class ElseAsyncValueOrErrorBindingUnitTests
     public void ValueTaskBased_TrappedShape_StillReportsCS0619OnTheSameTrap(string statements, string message)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.ValueTask, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         snippet.ErrorIds.ShouldNotBeEmpty();

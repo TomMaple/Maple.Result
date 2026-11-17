@@ -23,7 +23,7 @@ The asynchronous extension methods that take a `Task` or `ValueTask` of a result
 | ASP.NET Core, console applications, Azure Functions, background services | none | `false` (the default); the value makes no difference |
 | WPF, Windows Forms, .NET MAUI, Blazor Server | yes | `true` when the delegates access UI elements or other context-bound state |
 
-An explicit `continueOnCapturedContext` argument always takes precedence over this setting. The LINQ query syntax cannot pass the argument, so the LINQ operators ([Select](../Extensions/LinqTaskAsyncExtensions_Select.md), [SelectMany](../Extensions/LinqTaskAsyncExtensions_SelectMany.md) and their [ValueTask](../Extensions/ValueTasks/LinqValueTaskAsyncExtensions.md) versions) always use this setting.
+An explicit `continueOnCapturedContext` argument always takes precedence over this setting. The LINQ query syntax cannot pass the argument, so the LINQ operators ([Select](../Extensions/LinqAsyncExtensions_Select.md), [SelectMany](../Extensions/LinqAsyncExtensions_SelectMany.md) and their [ValueTask](../Extensions/LinqAsyncExtensions.md) versions) always use this setting.
 
 > [!NOTE]
 > Set the property once at application startup. It applies to the whole process; changing it while asynchronous operations are running affects only the awaits that start afterwards.

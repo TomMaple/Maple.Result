@@ -180,8 +180,7 @@ This library minimizes the amount of extension methods:
 
 ### Reference
 * [Maple.Results](docs/Reference/namespace.md) — `Result`, `Error`, and other types
-* [Maple.Results.Extensions](docs/Reference/Extensions/namespace.md) — extension methods
-* [Maple.Results.Extensions.ValueTasks](docs/Reference/Extensions/ValueTasks/namespace.md) — `ValueTask`-based extension methods
+* [Maple.Results.Extensions](docs/Reference/Extensions/namespace.md) — extension methods, for `Task` and `ValueTask` alike
 
 ### See also
 * [Problem Details for HTTP APIs - RFC 7807 is dead, long live RFC 9457](https://blog.frankel.ch/problem-details-http-apis/)

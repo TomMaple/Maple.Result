@@ -590,7 +590,7 @@ public class ElseTaskAsyncExtensionsUnitTests
     public void ElseAsync_FunctionReturningTaskWithoutValueOverloads_AreHiddenCompileErrorsOnTaskResults()
     {
         // Act
-        var traps = typeof(ElseTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+        var traps = OverloadTrapHelper.TaskPartMethods(typeof(ElseAsyncExtensions))
             .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a task without a value. ElseAsync needs"))
             .ToList();
 
@@ -676,7 +676,7 @@ public class ElseTaskAsyncExtensionsUnitTests
     public void ElseAsync_NoOverloadTakesASynchronousAction()
     {
         // Act
-        var overloads = typeof(ElseTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+        var overloads = OverloadTrapHelper.TaskPartMethods(typeof(ElseAsyncExtensions))
             .Where(m => m.Name == "ElseAsync" && m.GetParameters().Any(p => OverloadTrapHelper.IsAction(p.ParameterType)))
             .ToList();
 
@@ -688,8 +688,8 @@ public class ElseTaskAsyncExtensionsUnitTests
     public void ElseAsync_FunctionReturningValueTaskOverloads_AreHiddenCompileErrors()
     {
         // Act
-        var traps = typeof(ElseTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a ValueTask, which the Task-based ElseAsync does not await"))
+        var traps = OverloadTrapHelper.TaskPartMethods(typeof(ElseAsyncExtensions))
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a ValueTask, which ElseAsync on a Task of a result does not await"))
             .ToList();
 
         // Assert
@@ -703,7 +703,7 @@ public class ElseTaskAsyncExtensionsUnitTests
     public void ElseAsync_OverloadsWithTaskDelegatesOnTaskResults_HavePriorityOne()
     {
         // Act
-        var priorities = typeof(ElseTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+        var priorities = OverloadTrapHelper.TaskPartMethods(typeof(ElseAsyncExtensions))
             .Where(m => m.GetParameters()[0].ParameterType is { IsGenericType: true } receiver && receiver.GetGenericTypeDefinition() == typeof(Task<>)
                         && OverloadTrapHelper.IsTaskFunction(m.GetParameters()[1].ParameterType))
             .Select(OverloadTrapHelper.Priority)
@@ -718,7 +718,7 @@ public class ElseTaskAsyncExtensionsUnitTests
     public void ElseAsync_SynchronousOverloadsOnTaskResults_HavePriorityZero()
     {
         // Act
-        var priorities = typeof(ElseTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+        var priorities = OverloadTrapHelper.TaskPartMethods(typeof(ElseAsyncExtensions))
             .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is null
                         && m.GetParameters()[0].ParameterType is { IsGenericType: true } receiver && receiver.GetGenericTypeDefinition() == typeof(Task<>)
                         && !OverloadTrapHelper.IsTaskFunction(m.GetParameters()[1].ParameterType)

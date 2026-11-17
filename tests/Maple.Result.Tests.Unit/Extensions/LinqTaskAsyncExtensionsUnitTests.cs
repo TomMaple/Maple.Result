@@ -921,7 +921,7 @@ public class LinqTaskAsyncExtensionsUnitTests
     public void Select_SelectorReturningTaskOverloads_AreHiddenCompileErrors()
     {
         // Arrange
-        var overloads = typeof(LinqTaskAsyncExtensions).GetMethods()
+        var overloads = OverloadTrapHelper.TaskPartMethods(typeof(LinqAsyncExtensions))
             .Where(m => m.Name == "Select" && OverloadTrapHelper.IsTrap(m, "The selector returns a task"))
             .ToArray();
 
@@ -935,7 +935,7 @@ public class LinqTaskAsyncExtensionsUnitTests
     public void SelectMany_ResultSelectorReturningTaskOverloads_AreHiddenCompileErrors()
     {
         // Arrange
-        var overloads = typeof(LinqTaskAsyncExtensions).GetMethods()
+        var overloads = OverloadTrapHelper.TaskPartMethods(typeof(LinqAsyncExtensions))
             .Where(m => m.Name == "SelectMany" && OverloadTrapHelper.IsTrap(m, "The selector returns a task"))
             .ToArray();
 
@@ -945,32 +945,33 @@ public class LinqTaskAsyncExtensionsUnitTests
                                    && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
     }
 
+    // On a result, the Task-based traps have a priority one above their ValueTask-based twins (#248).
     [Fact]
     public void SelectAndSelectMany_Traps_HavePriorityOneForTaskSelectors()
     {
         // Arrange
-        var overloads = typeof(LinqTaskAsyncExtensions).GetMethods()
+        var overloads = OverloadTrapHelper.TaskPartMethods(typeof(LinqAsyncExtensions))
             .Where(m => OverloadTrapHelper.IsTrap(m, "The selector returns a task")
                         && OverloadTrapHelper.IsTaskFunction(m.GetParameters()[^1].ParameterType))
             .ToArray();
 
         // Act & Assert
         overloads.Length.ShouldBe(28);
-        overloads.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 1);
+        overloads.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == (OverloadTrapHelper.HasSynchronousReceiver(m) ? 2 : 1));
     }
 
     [Fact]
     public void SelectAndSelectMany_Traps_HaveDefaultPriorityForValueTaskSelectors()
     {
         // Arrange
-        var overloads = typeof(LinqTaskAsyncExtensions).GetMethods()
+        var overloads = OverloadTrapHelper.TaskPartMethods(typeof(LinqAsyncExtensions))
             .Where(m => OverloadTrapHelper.IsTrap(m, "The selector returns a task")
                         && !OverloadTrapHelper.IsTaskFunction(m.GetParameters()[^1].ParameterType))
             .ToArray();
 
         // Act & Assert
         overloads.Length.ShouldBe(28);
-        overloads.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 0);
+        overloads.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == (OverloadTrapHelper.HasSynchronousReceiver(m) ? 1 : 0));
     }
 
     [Fact]

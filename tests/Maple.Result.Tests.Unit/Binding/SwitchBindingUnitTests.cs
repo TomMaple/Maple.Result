@@ -48,7 +48,7 @@ public class SwitchBindingUnitTests
     public void Switch_TwoActions_Compiles(string statements)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Both, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         snippet.ErrorIds.ShouldBeEmpty(string.Join(Environment.NewLine, snippet.Errors));
@@ -90,7 +90,7 @@ public class SwitchBindingUnitTests
     public void Switch_ActionReturningTask_ReportsOnlyTheStatedErrors(string statements, string errorIds)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Both, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         var reported = string.Join(",", snippet.ErrorIds.Distinct().Order(StringComparer.Ordinal));
@@ -104,7 +104,7 @@ public class SwitchBindingUnitTests
     public void Switch_ActionReturningTask_MessageNamesMatch(string statements)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Both, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         var message = snippet.Errors.Single(d => d.Id == "CS0619").GetMessage(CultureInfo.InvariantCulture);
@@ -120,7 +120,7 @@ public class SwitchBindingUnitTests
     public void SwitchAsync_ActionReturningTask_MessageNamesMatchAsync(string statements)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Both, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         var message = snippet.Errors.Single(d => d.Id == "CS0619").GetMessage(CultureInfo.InvariantCulture);

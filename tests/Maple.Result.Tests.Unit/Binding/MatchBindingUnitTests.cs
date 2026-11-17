@@ -47,7 +47,7 @@ public class MatchBindingUnitTests
     public void Match_TwoFunctions_CompilesToTheirType(string statements)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Both, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         snippet.ErrorIds.ShouldBeEmpty(string.Join(Environment.NewLine, snippet.Errors));
@@ -79,7 +79,7 @@ public class MatchBindingUnitTests
     public void MatchAsync_TwoFunctions_CompilesToATaskOfTheirType(string statements)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Both, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         snippet.ErrorIds.ShouldBeEmpty(string.Join(Environment.NewLine, snippet.Errors));
@@ -112,7 +112,7 @@ public class MatchBindingUnitTests
     public void Match_UnsupportedShape_ReportsOnlyTheStatedErrors(string statements, string errorIds)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Both, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         var reported = string.Join(",", snippet.ErrorIds.Distinct().Order(StringComparer.Ordinal));
@@ -126,7 +126,7 @@ public class MatchBindingUnitTests
     public void Match_TwoActions_MessageNamesSwitchAndThenIfError(string statements)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Both, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         var message = snippet.Errors.Single(d => d.Id == "CS0619").GetMessage(CultureInfo.InvariantCulture);
@@ -142,7 +142,7 @@ public class MatchBindingUnitTests
     public void MatchAsync_TwoActions_MessageNamesSwitchAsyncAndThenAsyncIfErrorAsync(string statements)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Both, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         var message = snippet.Errors.Single(d => d.Id == "CS0619").GetMessage(CultureInfo.InvariantCulture);
@@ -158,10 +158,10 @@ public class MatchBindingUnitTests
     public void MatchAsync_FunctionsReturningTheOtherKindOfTask_MessageNamesIt(string statements, string otherKind)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Both, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         var message = snippet.Errors.Single(d => d.Id == "CS0619").GetMessage(CultureInfo.InvariantCulture);
-        message.ShouldContain($"The delegates return a {otherKind}, which the ");
+        message.ShouldContain($"The delegates return a {otherKind}, which MatchAsync on a ");
     }
 }

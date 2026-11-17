@@ -11,7 +11,7 @@ Runs a side effect if the instance of `TResult` represents a failed operation (i
 | [IfError&lt;TResult&gt;(TResult, Action&lt;Error&gt;)](#iferrortresulttresult-actionerror) | Executes the provided action if the `TResult` instance represents a failed operation. |
 
 ## Remarks
-To replace a failed result (recover with a value, or return another error), use [Else](ElseExtensions_Else.md). A function that returns a value passed to `IfError` is a compile error (CS0619) that names `Else`, so that a failure is not turned into a success by mistake (e.g., `e => Interlocked.Increment(ref failures)`). For a side effect, use a statement lambda. An error action that returns a task is a compile error (CS0619) that names [IfErrorAsync](IfErrorTaskAsyncExtensions_IfErrorAsync.md). A lambda that only throws is not a task, and compiles (e.g., `IfError(e => throw new OrderException(e.Title))`).
+To replace a failed result (recover with a value, or return another error), use [Else](ElseExtensions_Else.md). A function that returns a value passed to `IfError` is a compile error (CS0619) that names `Else`, so that a failure is not turned into a success by mistake (e.g., `e => Interlocked.Increment(ref failures)`). For a side effect, use a statement lambda. An error action that returns a task is a compile error (CS0619) that names [IfErrorAsync](IfErrorAsyncExtensions_IfErrorAsync.md). A lambda that only throws is not a task, and compiles (e.g., `IfError(e => throw new OrderException(e.Title))`).
 
 
 ## IfError&lt;TResult&gt;(TResult, Action&lt;Error&gt;)

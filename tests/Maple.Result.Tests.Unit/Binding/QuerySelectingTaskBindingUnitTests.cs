@@ -59,7 +59,7 @@ public class QuerySelectingTaskBindingUnitTests
     public void Query_SelectingTask_ReportsOnlyCS0619(string statements)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Both, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         snippet.ErrorIds.ShouldNotBeEmpty();
@@ -74,7 +74,7 @@ public class QuerySelectingTaskBindingUnitTests
     public void Select_TaskKeptOnPurpose_KeepsTheTask(string statements)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Both, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         snippet.ErrorIds.ShouldBeEmpty(string.Join(Environment.NewLine, snippet.Errors));
@@ -89,7 +89,7 @@ public class QuerySelectingTaskBindingUnitTests
     public void Query_SelectingTask_MessageNamesThenAsync(string statements)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Both, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         var message = snippet.Errors.Single(d => d.Id == "CS0619").GetMessage(CultureInfo.InvariantCulture);

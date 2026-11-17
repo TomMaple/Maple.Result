@@ -59,7 +59,7 @@ public class ThrowingLambdaBindingUnitTests
     public void LambdaThatOnlyThrows_BindsToTheOverloadThatRuns(string statements, string method, string expectedSignature)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Task, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         snippet.ErrorIds.ShouldBeEmpty(string.Join(Environment.NewLine, snippet.Errors));
@@ -77,7 +77,7 @@ public class ThrowingLambdaBindingUnitTests
     public void AsynchronousMethod_LambdaThatOnlyThrows_StillCompiles(string statements)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Task, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         snippet.ErrorIds.ShouldBeEmpty(string.Join(Environment.NewLine, snippet.Errors));
@@ -92,7 +92,7 @@ public class ThrowingLambdaBindingUnitTests
     public void BothNamespaces_LambdaThatOnlyThrows_Compiles(string statements)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Both, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         snippet.ErrorIds.ShouldBeEmpty(string.Join(Environment.NewLine, snippet.Errors));
@@ -110,7 +110,7 @@ public class ThrowingLambdaBindingUnitTests
     public void ShapeThatRanBefore_StillBindsToTheOverloadThatRuns(string statements, string method, string expectedSignature)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Task, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         snippet.ErrorIds.ShouldBeEmpty(string.Join(Environment.NewLine, snippet.Errors));
@@ -161,7 +161,7 @@ public class ThrowingLambdaBindingUnitTests
     public void FunctionReturningATaskOrAValue_StillReportsItsTrap(string statements, string message)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Task, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         snippet.ErrorIds.ShouldNotBeEmpty();
@@ -175,7 +175,7 @@ public class ThrowingLambdaBindingUnitTests
     public void IfError_AsyncLambdaWhoseExpressionOnlyThrows_BindsToTheActionOverload()
     {
         // Act
-        var snippet = SnippetCompiler.Compile("var r = ok.IfError(async e => throw Fail());", SnippetImports.Task, Members);
+        var snippet = SnippetCompiler.Compile("var r = ok.IfError(async e => throw Fail());", members: Members);
 
         // Assert
         snippet.ErrorIds.ShouldBeEmpty(string.Join(Environment.NewLine, snippet.Errors));
@@ -190,7 +190,7 @@ public class ThrowingLambdaBindingUnitTests
     public void ElseAsync_LambdaThatOnlyThrows_IsStillAmbiguous(string statements)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Task, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         var reported = string.Join(",", snippet.ErrorIds.Distinct().Order(StringComparer.Ordinal));
@@ -205,7 +205,7 @@ public class ThrowingLambdaBindingUnitTests
     public void ExplicitTypeArgumentsForATask_ReportTheTaskTrap(string statements, string message)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Task, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         snippet.ErrorIds.ShouldNotBeEmpty();
@@ -220,7 +220,7 @@ public class ThrowingLambdaBindingUnitTests
     public void TaskInAResult_IsKept(string statements)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Task, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         snippet.ErrorIds.ShouldBeEmpty(string.Join(Environment.NewLine, snippet.Errors));

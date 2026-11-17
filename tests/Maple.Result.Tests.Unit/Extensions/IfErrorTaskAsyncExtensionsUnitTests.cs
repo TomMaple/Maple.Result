@@ -522,7 +522,7 @@ public class IfErrorTaskAsyncExtensionsUnitTests
     public void IfErrorAsync_FunctionReturningValueOverloads_AreHiddenCompileErrors()
     {
         // Act
-        var traps = typeof(IfErrorTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+        var traps = OverloadTrapHelper.TaskPartMethods(typeof(IfErrorAsyncExtensions))
             .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a value in a task, which IfErrorAsync discards"))
             .ToList();
 
@@ -595,7 +595,7 @@ public class IfErrorTaskAsyncExtensionsUnitTests
     public void IfErrorAsync_SyncFunctionReturningValueOverloads_AreHiddenCompileErrors()
     {
         // Act
-        var traps = typeof(IfErrorTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+        var traps = OverloadTrapHelper.TaskPartMethods(typeof(IfErrorAsyncExtensions))
             .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a value, which IfErrorAsync discards"))
             .ToList();
 
@@ -610,8 +610,8 @@ public class IfErrorTaskAsyncExtensionsUnitTests
     public void IfErrorAsync_FunctionReturningValueTaskOverloads_AreHiddenCompileErrors()
     {
         // Act
-        var traps = typeof(IfErrorTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a ValueTask, which the Task-based IfErrorAsync does not await"))
+        var traps = OverloadTrapHelper.TaskPartMethods(typeof(IfErrorAsyncExtensions))
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a ValueTask, which IfErrorAsync on a Task of a result does not await"))
             .ToList();
 
         // Assert
@@ -625,7 +625,7 @@ public class IfErrorTaskAsyncExtensionsUnitTests
     public void IfErrorAsync_OverloadsWithTaskDelegatesOnTaskResults_HavePriorityOne()
     {
         // Act
-        var priorities = typeof(IfErrorTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+        var priorities = OverloadTrapHelper.TaskPartMethods(typeof(IfErrorAsyncExtensions))
             .Where(m => m.GetParameters()[0].ParameterType is { IsGenericType: true } receiver && receiver.GetGenericTypeDefinition() == typeof(Task<>)
                         && OverloadTrapHelper.IsTaskFunction(m.GetParameters()[1].ParameterType))
             .Select(OverloadTrapHelper.Priority)
@@ -640,7 +640,7 @@ public class IfErrorTaskAsyncExtensionsUnitTests
     public void IfErrorAsync_SynchronousOverloadsOnTaskResults_HavePriorityZero()
     {
         // Act
-        var priorities = typeof(IfErrorTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+        var priorities = OverloadTrapHelper.TaskPartMethods(typeof(IfErrorAsyncExtensions))
             .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is null
                         && m.GetParameters()[0].ParameterType is { IsGenericType: true } receiver && receiver.GetGenericTypeDefinition() == typeof(Task<>)
                         && !OverloadTrapHelper.IsTaskFunction(m.GetParameters()[1].ParameterType)

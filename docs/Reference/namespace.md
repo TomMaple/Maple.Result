@@ -30,4 +30,3 @@ Provides records and interfaces with the types to use as a returned value of an 
 
 ## See Also
 * [Maple.Results.Extensions namespace](Extensions/namespace.md)
-* [Maple.Results.Extensions.ValueTasks namespace](Extensions/ValueTasks/namespace.md)

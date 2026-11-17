@@ -16,7 +16,7 @@ Folds a [Result](../Result/Result.md) or a [Result&lt;T&gt;](../ResultT/ResultT.
 
 * a value: `result.Match(user => user.Name, error => "unknown")` is a `string`;
 * a result: a function that returns a `Result<T>` and an error function that returns the [Error](../Error/Error.md) give a `Result<T>`, because an `Error` converts to it (`result.Match(x => Validate(x), e => e)`);
-* a task: `await result.Match(x => CountAsync(x), e => CountAsync(0))` awaits the task of the function that ran. There is no `MatchAsync` on a result; `MatchAsync` takes a task of a result ([MatchTaskAsyncExtensions](MatchTaskAsyncExtensions_MatchAsync.md), [MatchValueTaskAsyncExtensions](ValueTasks/MatchValueTaskAsyncExtensions_MatchAsync.md)).
+* a task: `await result.Match(x => CountAsync(x), e => CountAsync(0))` awaits the task of the function that ran. There is no `MatchAsync` on a result; `MatchAsync` takes a task of a result ([MatchAsyncExtensions](MatchAsyncExtensions_MatchAsync.md), [MatchAsyncExtensions](MatchAsyncExtensions_MatchAsync.md)).
 
 A function that returns `null` gives `null`, also when `TOut` is a [Result](../Result/Result.md) or a [Result&lt;T&gt;](../ResultT/ResultT.md): the fold does not check the value.
 

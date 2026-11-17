@@ -13,7 +13,7 @@ Runs a function if the instance of `TResult` represents a failed operation (i.e.
 ## Remarks
 A successful result is returned unchanged, and the function is not called. An action (a function that returns nothing) does not compile: the compiler reports that it returns no value (e.g., CS0029). Use [IfError](IfErrorExtensions_IfError.md) for a side effect; it returns the result unchanged.
 
-A function that returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>` is not supported: `Else` does not await it, so such a call is a compile error (CS0619). Use [ElseAsync](ElseTaskAsyncExtensions_ElseAsync.md) instead. A lambda that only throws is not a task, and compiles (e.g., `Else(e => throw new OrderException(e.Title))`).
+A function that returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>` is not supported: `Else` does not await it, so such a call is a compile error (CS0619). Use [ElseAsync](ElseAsyncExtensions_ElseAsync.md) instead. A lambda that only throws is not a task, and compiles (e.g., `Else(e => throw new OrderException(e.Title))`).
 
 
 ## Else&lt;TResult&gt;(TResult, Func&lt;Error, TResult&gt;)

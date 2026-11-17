@@ -8,7 +8,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using Maple.Results.Extensions.ValueTasks;
+using Maple.Results.Extensions;
 using System;
 using System.Threading.Tasks;
 

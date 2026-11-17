@@ -8,7 +8,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using Maple.Results.Extensions.ValueTasks;
+using Maple.Results.Extensions;
 using Maple.Results.Tests.Unit.TestingInfrastructure.Helpers;
 using Moq;
 using System;
@@ -897,7 +897,7 @@ public class LinqValueTaskAsyncExtensionsUnitTests
     public void Select_SelectorReturningTaskOverloads_AreHiddenCompileErrors()
     {
         // Arrange
-        var overloads = typeof(LinqValueTaskAsyncExtensions).GetMethods()
+        var overloads = OverloadTrapHelper.ValueTaskPartMethods(typeof(LinqAsyncExtensions))
             .Where(m => m.Name == "Select" && OverloadTrapHelper.IsTrap(m, "The selector returns a task"))
             .ToArray();
 
@@ -911,7 +911,7 @@ public class LinqValueTaskAsyncExtensionsUnitTests
     public void SelectMany_ResultSelectorReturningTaskOverloads_AreHiddenCompileErrors()
     {
         // Arrange
-        var overloads = typeof(LinqValueTaskAsyncExtensions).GetMethods()
+        var overloads = OverloadTrapHelper.ValueTaskPartMethods(typeof(LinqAsyncExtensions))
             .Where(m => m.Name == "SelectMany" && OverloadTrapHelper.IsTrap(m, "The selector returns a task"))
             .ToArray();
 
@@ -925,7 +925,7 @@ public class LinqValueTaskAsyncExtensionsUnitTests
     public void SelectAndSelectMany_Traps_HavePriorityOneForTaskSelectors()
     {
         // Arrange
-        var overloads = typeof(LinqValueTaskAsyncExtensions).GetMethods()
+        var overloads = OverloadTrapHelper.ValueTaskPartMethods(typeof(LinqAsyncExtensions))
             .Where(m => OverloadTrapHelper.IsTrap(m, "The selector returns a task")
                         && OverloadTrapHelper.IsTaskFunction(m.GetParameters()[^1].ParameterType))
             .ToArray();
@@ -939,7 +939,7 @@ public class LinqValueTaskAsyncExtensionsUnitTests
     public void SelectAndSelectMany_Traps_HaveDefaultPriorityForValueTaskSelectors()
     {
         // Arrange
-        var overloads = typeof(LinqValueTaskAsyncExtensions).GetMethods()
+        var overloads = OverloadTrapHelper.ValueTaskPartMethods(typeof(LinqAsyncExtensions))
             .Where(m => OverloadTrapHelper.IsTrap(m, "The selector returns a task")
                         && !OverloadTrapHelper.IsTaskFunction(m.GetParameters()[^1].ParameterType))
             .ToArray();

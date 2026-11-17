@@ -98,7 +98,7 @@ public class SyncDelegatesOnValueTaskResultsBindingUnitTests
     public void Call_SupportedShape_CompilesToExpectedType(string statements)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.ValueTask, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         snippet.ErrorIds.ShouldBeEmpty(string.Join(Environment.NewLine, snippet.Errors));
@@ -141,7 +141,7 @@ public class SyncDelegatesOnValueTaskResultsBindingUnitTests
     public void Call_UnsupportedShape_ReportsOnlyCS0619(string statements)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.ValueTask, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         snippet.ErrorIds.ShouldNotBeEmpty();
@@ -160,7 +160,7 @@ public class SyncDelegatesOnValueTaskResultsBindingUnitTests
     public void Call_SynchronousActionInATransformation_ReportsTheCompilerErrors(string statements, string errorIds)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.ValueTask, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         var reported = string.Join(",", snippet.ErrorIds.Distinct().Order(StringComparer.Ordinal));

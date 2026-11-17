@@ -8,7 +8,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using Maple.Results.Extensions.ValueTasks;
+using Maple.Results.Extensions;
 using Maple.Results.Tests.Unit.TestingInfrastructure.Helpers;
 using System;
 using System.ComponentModel;
@@ -433,7 +433,7 @@ public class MatchValueTaskAsyncExtensionsUnitTests
     public void MatchAsync_TwoActionsOverloads_AreHiddenCompileErrorsThatNameSwitchAsync()
     {
         // Act
-        var traps = typeof(MatchValueTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+        var traps = OverloadTrapHelper.ValueTaskPartMethods(typeof(MatchAsyncExtensions))
             .Where(m => OverloadTrapHelper.IsTrap(m, "MatchAsync takes two functions that return a value. Use SwitchAsync"))
             .ToList();
 
@@ -448,7 +448,7 @@ public class MatchValueTaskAsyncExtensionsUnitTests
     public void MatchAsync_TaskFunctionsOverloads_AreHiddenCompileErrors()
     {
         // Act
-        var traps = typeof(MatchValueTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+        var traps = OverloadTrapHelper.ValueTaskPartMethods(typeof(MatchAsyncExtensions))
             .Where(m => OverloadTrapHelper.IsTrap(m, "The delegates return a Task"))
             .ToList();
 
@@ -463,7 +463,7 @@ public class MatchValueTaskAsyncExtensionsUnitTests
     public void MatchAsync_AllMethods_AreOverloadsOnAValueTaskOrTheTwoKindsOfTraps()
     {
         // Act
-        var methods = typeof(MatchValueTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly).ToList();
+        var methods = OverloadTrapHelper.ValueTaskPartMethods(typeof(MatchAsyncExtensions)).ToList();
 
         // Assert
         methods.Count.ShouldBe(6 + 2 + 4);
@@ -474,7 +474,7 @@ public class MatchValueTaskAsyncExtensionsUnitTests
     public void MatchAsync_OverloadsWithValueTaskFunctions_HavePriorityOne()
     {
         // Act
-        var overloads = typeof(MatchValueTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+        var overloads = OverloadTrapHelper.ValueTaskPartMethods(typeof(MatchAsyncExtensions))
             .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is null && OverloadTrapHelper.IsValueTaskFunction(m.GetParameters()[1].ParameterType))
             .ToList();
 
