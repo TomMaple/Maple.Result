@@ -1,4 +1,4 @@
-# TemplatedMessage record
+# TemplatedMessage Record
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
@@ -50,6 +50,13 @@ It is not a positional record and has no `Deconstruct` method; use a property pa
 | ---- | ----------- |
 | [Params](TemplatedMessage_Params.md) | Gets a read-only dictionary of named values to be used when rendering the templated message. |
 | [TemplateId](TemplatedMessage_TemplateId.md) | Gets the template identifier to be used to generate an error message. |
+
+
+## Methods
+| Name | Description |
+| ---- | ----------- |
+| [Equals(TemplatedMessage)](TemplatedMessage_Equals.md) | Determines whether the specified message is equal to the current one, comparing the parameters by content. |
+| [GetHashCode()](TemplatedMessage_GetHashCode.md) | Returns a hash code consistent with [Equals(TemplatedMessage)](TemplatedMessage_Equals.md), incorporating the content of the parameters. |
 
 
 ## See Also

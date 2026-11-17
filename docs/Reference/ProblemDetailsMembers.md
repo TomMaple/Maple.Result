@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Results](namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ProblemDetailsMembers.cs#L29" target="_blank">ProblemDetailsMembers.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ProblemDetailsMembers.cs" target="_blank">ProblemDetailsMembers.cs</a>
 
 The member names of the problem details object ([RFC 9457](https://datatracker.ietf.org/doc/html/rfc9457)) that represents an [Error](Error/Error.md).
 

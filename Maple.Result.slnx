@@ -5,6 +5,7 @@
   </Folder>
   <Folder Name="/.github/scripts/">
     <File Path=".github/scripts/changes.py" />
+    <File Path=".github/scripts/check_reference_docs.py" />
     <File Path=".github/scripts/conventional_commit.py" />
     <File Path=".github/scripts/filter_sarif.py" />
     <File Path=".github/scripts/release_state.py" />
@@ -194,6 +195,8 @@
   <Folder Name="/docs/Reference/TemplatedMessage/">
     <File Path="docs/Reference/TemplatedMessage/TemplatedMessage.md" />
     <File Path="docs/Reference/TemplatedMessage/TemplatedMessage_constructors.md" />
+    <File Path="docs/Reference/TemplatedMessage/TemplatedMessage_Equals.md" />
+    <File Path="docs/Reference/TemplatedMessage/TemplatedMessage_GetHashCode.md" />
     <File Path="docs/Reference/TemplatedMessage/TemplatedMessage_Params.md" />
     <File Path="docs/Reference/TemplatedMessage/TemplatedMessage_TemplateId.md" />
   </Folder>

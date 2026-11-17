@@ -11,7 +11,7 @@ public string Value { get; }
 ```
 
 ### Property Value
-[string](https://learn.microsoft.com/dotnet/api/system.string)
+[String](https://learn.microsoft.com/dotnet/api/system.string)
 
 A *URI* value that can be a *URI Locator*, *URI Tag*, or the `about:blank` value.
 

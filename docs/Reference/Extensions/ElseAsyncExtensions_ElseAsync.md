@@ -8,32 +8,32 @@ Runs a asynchronous function if the instance of `TResult` represents a failed op
 ## Overloads
 | Name | Description |
 | ---- | ----------- |
-| [ElseAsync&lt;TResult&gt;(TResult, Func&lt;Error, Task&lt;TResult&gt;&gt;, Boolean)](#elseasynctresulttresult-funcerror-tasktresult-boolean) | Executes the provided asynchronous function, if the `TResult` instance represents a failed operation and returns its result, as an asynchronous operation. |
-| [ElseAsync&lt;TResult&gt;(Task&lt;TResult&gt;, Func&lt;Error, Task&lt;TResult&gt;&gt;, Boolean)](#elseasynctresulttasktresult-funcerror-tasktresult-boolean) | Executes the provided asynchronous function, if the provided asynchronous operation returns a failed `TResult` instance, and returns its result as an asynchronous operation. |
-| [ElseAsync&lt;TResult&gt;(Task&lt;TResult&gt;, Func&lt;Error, TResult&gt;, Boolean)](#elseasynctresulttasktresult-funcerror-tresult-boolean) | Runs the synchronous function if the result that the `resultTask` returns is failed, and returns the result that the function returns instead (e.g., a recovered value or another error). |
-| [ElseAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;Error, Task&lt;T&gt;&gt;, Boolean)](#elseasynctresultt-funcerror-taskt-boolean) | Runs the asynchronous function if the `result` is failed, and returns a successful [Result&lt;T&gt;](../ResultT/ResultT.md) with the value that the function returns; otherwise, returns the original result. |
-| [ElseAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;Error, Task&lt;Error&gt;&gt;, Boolean)](#elseasynctresultt-funcerror-taskerror-boolean) | Runs the asynchronous function if the `result` is failed, and returns a failed [Result&lt;T&gt;](../ResultT/ResultT.md) with the [Error](../Error/Error.md) that the function returns; otherwise, returns the original result. |
-| [ElseAsync(Result, Func&lt;Error, Task&lt;Error&gt;&gt;, Boolean)](#elseasyncresult-funcerror-taskerror-boolean) | Runs the asynchronous function if the `result` is failed, and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) that the function returns; otherwise, returns the original result. |
-| [ElseAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;Error, Task&lt;T&gt;&gt;, Boolean)](#elseasyncttaskresultt-funcerror-taskt-boolean) | Runs the asynchronous function if the result that the `resultTask` returns is failed, and returns a successful [Result&lt;T&gt;](../ResultT/ResultT.md) with the value that the function returns; otherwise, returns the original result. |
-| [ElseAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;Error, Task&lt;Error&gt;&gt;, Boolean)](#elseasyncttaskresultt-funcerror-taskerror-boolean) | Runs the asynchronous function if the result that the `resultTask` returns is failed, and returns a failed [Result&lt;T&gt;](../ResultT/ResultT.md) with the [Error](../Error/Error.md) that the function returns; otherwise, returns the original result. |
-| [ElseAsync(Task&lt;Result&gt;, Func&lt;Error, Task&lt;Error&gt;&gt;, Boolean)](#elseasynctaskresult-funcerror-taskerror-boolean) | Runs the asynchronous function if the result that the `resultTask` returns is failed, and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) that the function returns; otherwise, returns the original result. |
-| [ElseAsync&lt;TResult&gt;(Task&lt;TResult&gt;, Func&lt;Error, ValueTask&lt;TResult&gt;&gt;, Boolean)](#elseasynctresulttasktresult-funcerror-valuetasktresult-boolean) | Executes the provided asynchronous function, if the provided asynchronous operation returns a failed `TResult` instance, and returns its result as an asynchronous operation. |
-| [ElseAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;Error, ValueTask&lt;T&gt;&gt;, Boolean)](#elseasyncttaskresultt-funcerror-valuetaskt-boolean) | Runs the asynchronous function if the result that the `resultTask` returns is failed, and returns a successful [Result&lt;T&gt;](../ResultT/ResultT.md) with the value that the function returns; otherwise, returns the original result. |
-| [ElseAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;Error, ValueTask&lt;Error&gt;&gt;, Boolean)](#elseasyncttaskresultt-funcerror-valuetaskerror-boolean) | Runs the asynchronous function if the result that the `resultTask` returns is failed, and returns a failed [Result&lt;T&gt;](../ResultT/ResultT.md) with the [Error](../Error/Error.md) that the function returns; otherwise, returns the original result. |
-| [ElseAsync(Task&lt;Result&gt;, Func&lt;Error, ValueTask&lt;Error&gt;&gt;, Boolean)](#elseasynctaskresult-funcerror-valuetaskerror-boolean) | Runs the asynchronous function if the result that the `resultTask` returns is failed, and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) that the function returns; otherwise, returns the original result. |
-| [ElseAsync&lt;TResult&gt;(TResult, Func&lt;Error, ValueTask&lt;TResult&gt;&gt;, Boolean)](#elseasynctresulttresult-funcerror-valuetasktresult-boolean) | Executes the provided asynchronous function, if the `TResult` instance represents a failed operation and returns its result, as an asynchronous operation. |
-| [ElseAsync&lt;TResult&gt;(ValueTask&lt;TResult&gt;, Func&lt;Error, ValueTask&lt;TResult&gt;&gt;, Boolean)](#elseasynctresultvaluetasktresult-funcerror-valuetasktresult-boolean) | Executes the provided asynchronous function, if the provided asynchronous operation returns a failed `TResult` instance, and returns its result as an asynchronous operation. |
-| [ElseAsync&lt;TResult&gt;(ValueTask&lt;TResult&gt;, Func&lt;Error, TResult&gt;, Boolean)](#elseasynctresultvaluetasktresult-funcerror-tresult-boolean) | Runs the synchronous function if the result that the `resultTask` returns is failed, and returns the result that the function returns instead (e.g., a recovered value or another error). |
-| [ElseAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;Error, ValueTask&lt;T&gt;&gt;, Boolean)](#elseasynctresultt-funcerror-valuetaskt-boolean) | Runs the asynchronous function if the `result` is failed, and returns a successful [Result&lt;T&gt;](../ResultT/ResultT.md) with the value that the function returns; otherwise, returns the original result. |
-| [ElseAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;Error, ValueTask&lt;Error&gt;&gt;, Boolean)](#elseasynctresultt-funcerror-valuetaskerror-boolean) | Runs the asynchronous function if the `result` is failed, and returns a failed [Result&lt;T&gt;](../ResultT/ResultT.md) with the [Error](../Error/Error.md) that the function returns; otherwise, returns the original result. |
-| [ElseAsync(Result, Func&lt;Error, ValueTask&lt;Error&gt;&gt;, Boolean)](#elseasyncresult-funcerror-valuetaskerror-boolean) | Runs the asynchronous function if the `result` is failed, and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) that the function returns; otherwise, returns the original result. |
-| [ElseAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;Error, ValueTask&lt;T&gt;&gt;, Boolean)](#elseasynctvaluetaskresultt-funcerror-valuetaskt-boolean) | Runs the asynchronous function if the result that the `resultTask` returns is failed, and returns a successful [Result&lt;T&gt;](../ResultT/ResultT.md) with the value that the function returns; otherwise, returns the original result. |
-| [ElseAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;Error, ValueTask&lt;Error&gt;&gt;, Boolean)](#elseasynctvaluetaskresultt-funcerror-valuetaskerror-boolean) | Runs the asynchronous function if the result that the `resultTask` returns is failed, and returns a failed [Result&lt;T&gt;](../ResultT/ResultT.md) with the [Error](../Error/Error.md) that the function returns; otherwise, returns the original result. |
-| [ElseAsync(ValueTask&lt;Result&gt;, Func&lt;Error, ValueTask&lt;Error&gt;&gt;, Boolean)](#elseasyncvaluetaskresult-funcerror-valuetaskerror-boolean) | Runs the asynchronous function if the result that the `resultTask` returns is failed, and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) that the function returns; otherwise, returns the original result. |
-| [ElseAsync&lt;TResult&gt;(ValueTask&lt;TResult&gt;, Func&lt;Error, Task&lt;TResult&gt;&gt;, Boolean)](#elseasynctresultvaluetasktresult-funcerror-tasktresult-boolean) | Executes the provided asynchronous function, if the provided asynchronous operation returns a failed `TResult` instance, and returns its result as an asynchronous operation. |
-| [ElseAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;Error, Task&lt;T&gt;&gt;, Boolean)](#elseasynctvaluetaskresultt-funcerror-taskt-boolean) | Runs the asynchronous function if the result that the `resultTask` returns is failed, and returns a successful [Result&lt;T&gt;](../ResultT/ResultT.md) with the value that the function returns; otherwise, returns the original result. |
-| [ElseAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;Error, Task&lt;Error&gt;&gt;, Boolean)](#elseasynctvaluetaskresultt-funcerror-taskerror-boolean) | Runs the asynchronous function if the result that the `resultTask` returns is failed, and returns a failed [Result&lt;T&gt;](../ResultT/ResultT.md) with the [Error](../Error/Error.md) that the function returns; otherwise, returns the original result. |
-| [ElseAsync(ValueTask&lt;Result&gt;, Func&lt;Error, Task&lt;Error&gt;&gt;, Boolean)](#elseasyncvaluetaskresult-funcerror-taskerror-boolean) | Runs the asynchronous function if the result that the `resultTask` returns is failed, and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) that the function returns; otherwise, returns the original result. |
+| [ElseAsync&lt;TResult&gt;(TResult, Func&lt;Error, Task&lt;TResult&gt;&gt;, Nullable&lt;Boolean&gt;)](#elseasynctresulttresult-funcerror-tasktresult-nullableboolean) | Executes the provided asynchronous function, if the `TResult` instance represents a failed operation and returns its result, as an asynchronous operation. |
+| [ElseAsync&lt;TResult&gt;(Task&lt;TResult&gt;, Func&lt;Error, Task&lt;TResult&gt;&gt;, Nullable&lt;Boolean&gt;)](#elseasynctresulttasktresult-funcerror-tasktresult-nullableboolean) | Executes the provided asynchronous function, if the provided asynchronous operation returns a failed `TResult` instance, and returns its result as an asynchronous operation. |
+| [ElseAsync&lt;TResult&gt;(Task&lt;TResult&gt;, Func&lt;Error, TResult&gt;, Nullable&lt;Boolean&gt;)](#elseasynctresulttasktresult-funcerror-tresult-nullableboolean) | Runs the synchronous function if the result that the `resultTask` returns is failed, and returns the result that the function returns instead (e.g., a recovered value or another error). |
+| [ElseAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;Error, Task&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)](#elseasynctresultt-funcerror-taskt-nullableboolean) | Runs the asynchronous function if the `result` is failed, and returns a successful [Result&lt;T&gt;](../ResultT/ResultT.md) with the value that the function returns; otherwise, returns the original result. |
+| [ElseAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;Error, Task&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)](#elseasynctresultt-funcerror-taskerror-nullableboolean) | Runs the asynchronous function if the `result` is failed, and returns a failed [Result&lt;T&gt;](../ResultT/ResultT.md) with the [Error](../Error/Error.md) that the function returns; otherwise, returns the original result. |
+| [ElseAsync(Result, Func&lt;Error, Task&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)](#elseasyncresult-funcerror-taskerror-nullableboolean) | Runs the asynchronous function if the `result` is failed, and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) that the function returns; otherwise, returns the original result. |
+| [ElseAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;Error, Task&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)](#elseasyncttaskresultt-funcerror-taskt-nullableboolean) | Runs the asynchronous function if the result that the `resultTask` returns is failed, and returns a successful [Result&lt;T&gt;](../ResultT/ResultT.md) with the value that the function returns; otherwise, returns the original result. |
+| [ElseAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;Error, Task&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)](#elseasyncttaskresultt-funcerror-taskerror-nullableboolean) | Runs the asynchronous function if the result that the `resultTask` returns is failed, and returns a failed [Result&lt;T&gt;](../ResultT/ResultT.md) with the [Error](../Error/Error.md) that the function returns; otherwise, returns the original result. |
+| [ElseAsync(Task&lt;Result&gt;, Func&lt;Error, Task&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)](#elseasynctaskresult-funcerror-taskerror-nullableboolean) | Runs the asynchronous function if the result that the `resultTask` returns is failed, and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) that the function returns; otherwise, returns the original result. |
+| [ElseAsync&lt;TResult&gt;(Task&lt;TResult&gt;, Func&lt;Error, ValueTask&lt;TResult&gt;&gt;, Nullable&lt;Boolean&gt;)](#elseasynctresulttasktresult-funcerror-valuetasktresult-nullableboolean) | Executes the provided asynchronous function, if the provided asynchronous operation returns a failed `TResult` instance, and returns its result as an asynchronous operation. |
+| [ElseAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;Error, ValueTask&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)](#elseasyncttaskresultt-funcerror-valuetaskt-nullableboolean) | Runs the asynchronous function if the result that the `resultTask` returns is failed, and returns a successful [Result&lt;T&gt;](../ResultT/ResultT.md) with the value that the function returns; otherwise, returns the original result. |
+| [ElseAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;Error, ValueTask&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)](#elseasyncttaskresultt-funcerror-valuetaskerror-nullableboolean) | Runs the asynchronous function if the result that the `resultTask` returns is failed, and returns a failed [Result&lt;T&gt;](../ResultT/ResultT.md) with the [Error](../Error/Error.md) that the function returns; otherwise, returns the original result. |
+| [ElseAsync(Task&lt;Result&gt;, Func&lt;Error, ValueTask&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)](#elseasynctaskresult-funcerror-valuetaskerror-nullableboolean) | Runs the asynchronous function if the result that the `resultTask` returns is failed, and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) that the function returns; otherwise, returns the original result. |
+| [ElseAsync&lt;TResult&gt;(TResult, Func&lt;Error, ValueTask&lt;TResult&gt;&gt;, Nullable&lt;Boolean&gt;)](#elseasynctresulttresult-funcerror-valuetasktresult-nullableboolean) | Executes the provided asynchronous function, if the `TResult` instance represents a failed operation and returns its result, as an asynchronous operation. |
+| [ElseAsync&lt;TResult&gt;(ValueTask&lt;TResult&gt;, Func&lt;Error, ValueTask&lt;TResult&gt;&gt;, Nullable&lt;Boolean&gt;)](#elseasynctresultvaluetasktresult-funcerror-valuetasktresult-nullableboolean) | Executes the provided asynchronous function, if the provided asynchronous operation returns a failed `TResult` instance, and returns its result as an asynchronous operation. |
+| [ElseAsync&lt;TResult&gt;(ValueTask&lt;TResult&gt;, Func&lt;Error, TResult&gt;, Nullable&lt;Boolean&gt;)](#elseasynctresultvaluetasktresult-funcerror-tresult-nullableboolean) | Runs the synchronous function if the result that the `resultTask` returns is failed, and returns the result that the function returns instead (e.g., a recovered value or another error). |
+| [ElseAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;Error, ValueTask&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)](#elseasynctresultt-funcerror-valuetaskt-nullableboolean) | Runs the asynchronous function if the `result` is failed, and returns a successful [Result&lt;T&gt;](../ResultT/ResultT.md) with the value that the function returns; otherwise, returns the original result. |
+| [ElseAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;Error, ValueTask&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)](#elseasynctresultt-funcerror-valuetaskerror-nullableboolean) | Runs the asynchronous function if the `result` is failed, and returns a failed [Result&lt;T&gt;](../ResultT/ResultT.md) with the [Error](../Error/Error.md) that the function returns; otherwise, returns the original result. |
+| [ElseAsync(Result, Func&lt;Error, ValueTask&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)](#elseasyncresult-funcerror-valuetaskerror-nullableboolean) | Runs the asynchronous function if the `result` is failed, and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) that the function returns; otherwise, returns the original result. |
+| [ElseAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;Error, ValueTask&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)](#elseasynctvaluetaskresultt-funcerror-valuetaskt-nullableboolean) | Runs the asynchronous function if the result that the `resultTask` returns is failed, and returns a successful [Result&lt;T&gt;](../ResultT/ResultT.md) with the value that the function returns; otherwise, returns the original result. |
+| [ElseAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;Error, ValueTask&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)](#elseasynctvaluetaskresultt-funcerror-valuetaskerror-nullableboolean) | Runs the asynchronous function if the result that the `resultTask` returns is failed, and returns a failed [Result&lt;T&gt;](../ResultT/ResultT.md) with the [Error](../Error/Error.md) that the function returns; otherwise, returns the original result. |
+| [ElseAsync(ValueTask&lt;Result&gt;, Func&lt;Error, ValueTask&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)](#elseasyncvaluetaskresult-funcerror-valuetaskerror-nullableboolean) | Runs the asynchronous function if the result that the `resultTask` returns is failed, and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) that the function returns; otherwise, returns the original result. |
+| [ElseAsync&lt;TResult&gt;(ValueTask&lt;TResult&gt;, Func&lt;Error, Task&lt;TResult&gt;&gt;, Nullable&lt;Boolean&gt;)](#elseasynctresultvaluetasktresult-funcerror-tasktresult-nullableboolean) | Executes the provided asynchronous function, if the provided asynchronous operation returns a failed `TResult` instance, and returns its result as an asynchronous operation. |
+| [ElseAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;Error, Task&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)](#elseasynctvaluetaskresultt-funcerror-taskt-nullableboolean) | Runs the asynchronous function if the result that the `resultTask` returns is failed, and returns a successful [Result&lt;T&gt;](../ResultT/ResultT.md) with the value that the function returns; otherwise, returns the original result. |
+| [ElseAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;Error, Task&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)](#elseasynctvaluetaskresultt-funcerror-taskerror-nullableboolean) | Runs the asynchronous function if the result that the `resultTask` returns is failed, and returns a failed [Result&lt;T&gt;](../ResultT/ResultT.md) with the [Error](../Error/Error.md) that the function returns; otherwise, returns the original result. |
+| [ElseAsync(ValueTask&lt;Result&gt;, Func&lt;Error, Task&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)](#elseasyncvaluetaskresult-funcerror-taskerror-nullableboolean) | Runs the asynchronous function if the result that the `resultTask` returns is failed, and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) that the function returns; otherwise, returns the original result. |
 
 ## Remarks
 On a `Result` or a `Result<T>`, the function decides the kind of task: a function that returns a `ValueTask` gives a `ValueTask`, and an `async` lambda gives a `Task` (with an explicit return type, e.g., `async ValueTask<int> (int x) => …`, it gives a `ValueTask`). On a `Task` or a `ValueTask` of a result, the kind of the receiver is kept.
@@ -52,12 +52,13 @@ A successful result is returned unchanged, and the function is not called. A fun
 > [!NOTE]
 > A [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask) can only be awaited once. Because of this, the overloads accepting `this ValueTask<TResult> resultTask` consume the passed operation as part of evaluating its result, and they do not perform a `null` check on it (a `ValueTask<TResult>` is a non-nullable value type).
 
-## ElseAsync&lt;TResult&gt;(TResult, Func&lt;Error, Task&lt;TResult&gt;&gt;, Boolean)
+## ElseAsync&lt;TResult&gt;(TResult, Func&lt;Error, Task&lt;TResult&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ElseAsyncExtensions.Task.cs#L71" target="_blank">ElseAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the instance of `TResult` represents a failed operation (i.e., contains an [Error](../Error/Error.md)), as an asynchronous operation.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<TResult> ElseAsync<TResult>(this TResult result, Func<Error, Task<TResult>> ifErrorFunction, bool? continueOnCapturedContext = null)
         where TResult : IOperationResult;
 ```
@@ -70,7 +71,7 @@ The type of the `result` that implements the [IOperationResult](../IOperationRes
 #### `result` TResult
 The instance of `TResult` (that implements [IOperationResult](../IOperationResult/IOperationResult.md) interface—[Result](../Result/Result.md) or [Result&lt;T&gt;](../ResultT/ResultT.md) record) that represents the result of the operation to be evaluated.
 
-#### `ifErrorFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Error](../Error/Error.md), [Task](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.task-1)&lt;TResult&gt;&gt;
+#### `ifErrorFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Error](../Error/Error.md), [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;TResult&gt;&gt;
 The asynchronous function to be executed, only if the current instance of `TResult` represents a failed operation, as an asynchronous operation. The [Error](../Error/Error.md) instance contained in the `TResult` will be passed as a parameter to this function.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -109,12 +110,13 @@ await userResult.ElseAsync(async error =>
 ```
 
 
-## ElseAsync&lt;TResult&gt;(Task&lt;TResult&gt;, Func&lt;Error, Task&lt;TResult&gt;&gt;, Boolean)
+## ElseAsync&lt;TResult&gt;(Task&lt;TResult&gt;, Func&lt;Error, Task&lt;TResult&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ElseAsyncExtensions.Task.cs#L136" target="_blank">ElseAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, if the provided asynchronous operation returns a failed`TResult` instance (i.e., contains an [Error](../Error/Error.md)), and returns its result as an asynchronous operation.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<TResult> ElseAsync<TResult>(this Task<TResult> resultTask,
     Func<Error, Task<TResult>> ifErrorFunction, bool? continueOnCapturedContext = null)
     where TResult : IOperationResult;
@@ -125,10 +127,10 @@ public static Task<TResult> ElseAsync<TResult>(this Task<TResult> resultTask,
 The type of the `resultTask` that implements the [IOperationResult](../IOperationResult/IOperationResult.md) interface—[Result](../Result/Result.md) or [Result&lt;T&gt;](../ResultT/ResultT.md) record.
 
 ### Parameters
-#### `resultTask` TResult
+#### `resultTask` [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;TResult&gt;
 The asynchronous operation that represents an instance of `TResult` (that implements [IOperationResult](../IOperationResult/IOperationResult.md) interface—[Result](../Result/Result.md) or [Result&lt;T&gt;](../ResultT/ResultT.md) record) to be executed and which result is to be evaluated.
 
-#### `ifErrorFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Error](../Error/Error.md), [Task](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.task-1)&lt;TResult&gt;&gt;
+#### `ifErrorFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Error](../Error/Error.md), [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;TResult&gt;&gt;
 The asynchronous function to be executed, only if the current instance of `TResult` represents a failed operation, as an asynchronous operation. The [Error](../Error/Error.md) instance contained in the outcome will be passed as a parameter to this function.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -169,7 +171,7 @@ var userResult = await _userService.GetUserAsync(userData)
 ```
 
 
-## ElseAsync&lt;TResult&gt;(Task&lt;TResult&gt;, Func&lt;Error, TResult&gt;, Boolean)
+## ElseAsync&lt;TResult&gt;(Task&lt;TResult&gt;, Func&lt;Error, TResult&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ElseAsyncExtensions.Task.cs#L508" target="_blank">ElseAsyncExtensions.Task.cs</a>
 
 Runs the synchronous function if the result that the `resultTask` returns is failed, and returns the result that the function returns instead (e.g., a recovered value or another error).
@@ -215,12 +217,13 @@ var userResult = await _userService.GetUserAsync(id)
     .ElseAsync(error => Result.FromValue(User.Guest));
 ```
 
-## ElseAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;Error, Task&lt;T&gt;&gt;, Boolean)
+## ElseAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;Error, Task&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ElseAsyncExtensions.Task.cs#L198" target="_blank">ElseAsyncExtensions.Task.cs</a>
 
 Runs the asynchronous function if the `result` is failed, and returns a successful [Result&lt;T&gt;](../ResultT/ResultT.md) with the value that the function returns; otherwise, returns the original result.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result<T>> ElseAsync<T>(this Result<T> result, Func<Error, Task<T>> ifErrorFunction, bool? continueOnCapturedContext = null);
 ```
 
@@ -260,12 +263,13 @@ Result<int> countResult = _counterService.GetCount(id);
 var recovered = await countResult.ElseAsync(async error => await _cache.GetLastCountAsync(id));
 ```
 
-## ElseAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;Error, Task&lt;Error&gt;&gt;, Boolean)
+## ElseAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;Error, Task&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ElseAsyncExtensions.Task.cs#L249" target="_blank">ElseAsyncExtensions.Task.cs</a>
 
 Runs the asynchronous function if the `result` is failed, and returns a failed [Result&lt;T&gt;](../ResultT/ResultT.md) with the [Error](../Error/Error.md) that the function returns; otherwise, returns the original result.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result<T>> ElseAsync<T>(this Result<T> result, Func<Error, Task<Error>> ifErrorFunction, bool? continueOnCapturedContext = null);
 ```
 
@@ -305,12 +309,13 @@ Result<User> userResult = _userService.GetUser(id);
 var translated = await userResult.ElseAsync(async error => await _errorTranslator.TranslateAsync(error));
 ```
 
-## ElseAsync(Result, Func&lt;Error, Task&lt;Error&gt;&gt;, Boolean)
+## ElseAsync(Result, Func&lt;Error, Task&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ElseAsyncExtensions.Task.cs#L297" target="_blank">ElseAsyncExtensions.Task.cs</a>
 
 Runs the asynchronous function if the `result` is failed, and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) that the function returns; otherwise, returns the original result.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result> ElseAsync(this Result result, Func<Error, Task<Error>> ifErrorFunction, bool? continueOnCapturedContext = null);
 ```
 
@@ -346,12 +351,13 @@ Result deleteResult = _userService.DeleteUser(id);
 var translated = await deleteResult.ElseAsync(async error => await _errorTranslator.TranslateAsync(error));
 ```
 
-## ElseAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;Error, Task&lt;T&gt;&gt;, Boolean)
+## ElseAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;Error, Task&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ElseAsyncExtensions.Task.cs#L347" target="_blank">ElseAsyncExtensions.Task.cs</a>
 
 Runs the asynchronous function if the result that the `resultTask` returns is failed, and returns a successful [Result&lt;T&gt;](../ResultT/ResultT.md) with the value that the function returns; otherwise, returns the original result.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result<T>> ElseAsync<T>(this Task<Result<T>> resultTask, Func<Error, Task<T>> ifErrorFunction, bool? continueOnCapturedContext = null);
 ```
 
@@ -391,12 +397,13 @@ var countResult = await _counterService.GetCountAsync(id)
     .ElseAsync(async error => await _cache.GetLastCountAsync(id));
 ```
 
-## ElseAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;Error, Task&lt;Error&gt;&gt;, Boolean)
+## ElseAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;Error, Task&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ElseAsyncExtensions.Task.cs#L403" target="_blank">ElseAsyncExtensions.Task.cs</a>
 
 Runs the asynchronous function if the result that the `resultTask` returns is failed, and returns a failed [Result&lt;T&gt;](../ResultT/ResultT.md) with the [Error](../Error/Error.md) that the function returns; otherwise, returns the original result.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result<T>> ElseAsync<T>(this Task<Result<T>> resultTask, Func<Error, Task<Error>> ifErrorFunction, bool? continueOnCapturedContext = null);
 ```
 
@@ -436,12 +443,13 @@ var userResult = await _userService.GetUserAsync(id)
     .ElseAsync(async error => await _errorTranslator.TranslateAsync(error));
 ```
 
-## ElseAsync(Task&lt;Result&gt;, Func&lt;Error, Task&lt;Error&gt;&gt;, Boolean)
+## ElseAsync(Task&lt;Result&gt;, Func&lt;Error, Task&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ElseAsyncExtensions.Task.cs#L455" target="_blank">ElseAsyncExtensions.Task.cs</a>
 
 Runs the asynchronous function if the result that the `resultTask` returns is failed, and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) that the function returns; otherwise, returns the original result.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result> ElseAsync(this Task<Result> resultTask, Func<Error, Task<Error>> ifErrorFunction, bool? continueOnCapturedContext = null);
 ```
 
@@ -477,7 +485,7 @@ var deleteResult = await _userService.DeleteUserAsync(id)
     .ElseAsync(async error => await _errorTranslator.TranslateAsync(error));
 ```
 
-## ElseAsync&lt;TResult&gt;(Task&lt;TResult&gt;, Func&lt;Error, ValueTask&lt;TResult&gt;&gt;, Boolean)
+## ElseAsync&lt;TResult&gt;(Task&lt;TResult&gt;, Func&lt;Error, ValueTask&lt;TResult&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ElseAsyncExtensions.Task.cs#L575" target="_blank">ElseAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, if the provided asynchronous operation returns a failed`TResult` instance (i.e., contains an [Error](../Error/Error.md)), and returns its result as an asynchronous operation.
@@ -493,10 +501,10 @@ public static Task<TResult> ElseAsync<TResult>(this Task<TResult> resultTask,
 The type of the `resultTask` that implements the [IOperationResult](../IOperationResult/IOperationResult.md) interface—[Result](../Result/Result.md) or [Result&lt;T&gt;](../ResultT/ResultT.md) record.
 
 ### Parameters
-#### `resultTask` TResult
+#### `resultTask` [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;TResult&gt;
 The asynchronous operation that represents an instance of `TResult` (that implements [IOperationResult](../IOperationResult/IOperationResult.md) interface—[Result](../Result/Result.md) or [Result&lt;T&gt;](../ResultT/ResultT.md) record) to be executed and which result is to be evaluated.
 
-#### `ifErrorFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Error](../Error/Error.md), [ValueTask](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.valuetask-1)&lt;TResult&gt;&gt;
+#### `ifErrorFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Error](../Error/Error.md), [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;TResult&gt;&gt;
 The asynchronous function to be executed, only if the current instance of `TResult` represents a failed operation, as an asynchronous operation. The [Error](../Error/Error.md) instance contained in the outcome will be passed as a parameter to this function.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -520,7 +528,7 @@ The function returns a `ValueTask`, the other kind of task: it is awaited, and a
 
 The `ElseAsync` method executes the provided asynchronous operation represented by `resultTask` to evaluate its result. This enables chaining multiple asynchronous operations that return `Task<TResult>`.
 
-## ElseAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;Error, ValueTask&lt;T&gt;&gt;, Boolean)
+## ElseAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;Error, ValueTask&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ElseAsyncExtensions.Task.cs#L633" target="_blank">ElseAsyncExtensions.Task.cs</a>
 
 Runs the asynchronous function if the result that the `resultTask` returns is failed, and returns a successful [Result&lt;T&gt;](../ResultT/ResultT.md) with the value that the function returns; otherwise, returns the original result.
@@ -561,7 +569,7 @@ The function returns a `ValueTask`, the other kind of task: it is awaited, and a
 
 Use it to recover from an error with a value, as `Else(error => 0)` does. A `null` value is a valid value (for a nullable `T`).
 
-## ElseAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;Error, ValueTask&lt;Error&gt;&gt;, Boolean)
+## ElseAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;Error, ValueTask&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ElseAsyncExtensions.Task.cs#L692" target="_blank">ElseAsyncExtensions.Task.cs</a>
 
 Runs the asynchronous function if the result that the `resultTask` returns is failed, and returns a failed [Result&lt;T&gt;](../ResultT/ResultT.md) with the [Error](../Error/Error.md) that the function returns; otherwise, returns the original result.
@@ -602,7 +610,7 @@ The function returns a `ValueTask`, the other kind of task: it is awaited, and a
 
 Use it to replace an error with another one, as `Else(error => error.WithMetadata(…))` does.
 
-## ElseAsync(Task&lt;Result&gt;, Func&lt;Error, ValueTask&lt;Error&gt;&gt;, Boolean)
+## ElseAsync(Task&lt;Result&gt;, Func&lt;Error, ValueTask&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ElseAsyncExtensions.Task.cs#L747" target="_blank">ElseAsyncExtensions.Task.cs</a>
 
 Runs the asynchronous function if the result that the `resultTask` returns is failed, and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) that the function returns; otherwise, returns the original result.
@@ -639,7 +647,7 @@ The function returns a `ValueTask`, the other kind of task: it is awaited, and a
 
 Use it to replace an error with another one, as `Else(error => error.WithMetadata(…))` does.
 
-## ElseAsync&lt;TResult&gt;(TResult, Func&lt;Error, ValueTask&lt;TResult&gt;&gt;, Boolean)
+## ElseAsync&lt;TResult&gt;(TResult, Func&lt;Error, ValueTask&lt;TResult&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ElseAsyncExtensions.ValueTask.cs#L33" target="_blank">ElseAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the instance of `TResult` represents a failed operation (i.e., contains an [Error](../Error/Error.md)), as an asynchronous operation.
@@ -696,7 +704,7 @@ await userResult.ElseAsync(async error =>
 ```
 
 
-## ElseAsync&lt;TResult&gt;(ValueTask&lt;TResult&gt;, Func&lt;Error, ValueTask&lt;TResult&gt;&gt;, Boolean)
+## ElseAsync&lt;TResult&gt;(ValueTask&lt;TResult&gt;, Func&lt;Error, ValueTask&lt;TResult&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ElseAsyncExtensions.ValueTask.cs#L95" target="_blank">ElseAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, if the provided asynchronous operation returns a failed`TResult` instance (i.e., contains an [Error](../Error/Error.md)), and returns its result as an asynchronous operation.
@@ -712,10 +720,10 @@ public static ValueTask<TResult> ElseAsync<TResult>(this ValueTask<TResult> resu
 The type of the `resultTask` that implements the [IOperationResult](../IOperationResult/IOperationResult.md) interface—[Result](../Result/Result.md) or [Result&lt;T&gt;](../ResultT/ResultT.md) record.
 
 ### Parameters
-#### `resultTask` TResult
+#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;TResult&gt;
 The asynchronous operation that represents an instance of `TResult` (that implements [IOperationResult](../IOperationResult/IOperationResult.md) interface—[Result](../Result/Result.md) or [Result&lt;T&gt;](../ResultT/ResultT.md) record) to be executed and which result is to be evaluated.
 
-#### `ifErrorFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Error](../Error/Error.md), [ValueTask](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.valuetask-1)&lt;TResult&gt;&gt;
+#### `ifErrorFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Error](../Error/Error.md), [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;TResult&gt;&gt;
 The asynchronous function to be executed, only if the current instance of `TResult` represents a failed operation, as an asynchronous operation. The [Error](../Error/Error.md) instance contained in the outcome will be passed as a parameter to this function.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -756,7 +764,7 @@ var userResult = await _userService.GetUserAsync(userData)
 ```
 
 
-## ElseAsync&lt;TResult&gt;(ValueTask&lt;TResult&gt;, Func&lt;Error, TResult&gt;, Boolean)
+## ElseAsync&lt;TResult&gt;(ValueTask&lt;TResult&gt;, Func&lt;Error, TResult&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ElseAsyncExtensions.ValueTask.cs#L333" target="_blank">ElseAsyncExtensions.ValueTask.cs</a>
 
 Runs the synchronous function if the result that the `resultTask` returns is failed, and returns the result that the function returns instead (e.g., a recovered value or another error).
@@ -802,7 +810,7 @@ var userResult = await _userService.GetUserAsync(id)
     .ElseAsync(error => Result.FromValue(User.Guest));
 ```
 
-## ElseAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;Error, ValueTask&lt;T&gt;&gt;, Boolean)
+## ElseAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;Error, ValueTask&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ElseAsyncExtensions.ValueTask.cs#L134" target="_blank">ElseAsyncExtensions.ValueTask.cs</a>
 
 Runs the asynchronous function if the `result` is failed, and returns a successful [Result&lt;T&gt;](../ResultT/ResultT.md) with the value that the function returns; otherwise, returns the original result.
@@ -844,7 +852,7 @@ Result<int> countResult = _counterService.GetCount(id);
 var recovered = await countResult.ElseAsync(async error => await _cache.GetLastCountAsync(id));
 ```
 
-## ElseAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;Error, ValueTask&lt;Error&gt;&gt;, Boolean)
+## ElseAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;Error, ValueTask&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ElseAsyncExtensions.ValueTask.cs#L162" target="_blank">ElseAsyncExtensions.ValueTask.cs</a>
 
 Runs the asynchronous function if the `result` is failed, and returns a failed [Result&lt;T&gt;](../ResultT/ResultT.md) with the [Error](../Error/Error.md) that the function returns; otherwise, returns the original result.
@@ -889,7 +897,7 @@ Result<User> userResult = _userService.GetUser(id);
 var translated = await userResult.ElseAsync(async error => await _errorTranslator.TranslateAsync(error));
 ```
 
-## ElseAsync(Result, Func&lt;Error, ValueTask&lt;Error&gt;&gt;, Boolean)
+## ElseAsync(Result, Func&lt;Error, ValueTask&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ElseAsyncExtensions.ValueTask.cs#L190" target="_blank">ElseAsyncExtensions.ValueTask.cs</a>
 
 Runs the asynchronous function if the `result` is failed, and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) that the function returns; otherwise, returns the original result.
@@ -930,7 +938,7 @@ Result deleteResult = _userService.DeleteUser(id);
 var translated = await deleteResult.ElseAsync(async error => await _errorTranslator.TranslateAsync(error));
 ```
 
-## ElseAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;Error, ValueTask&lt;T&gt;&gt;, Boolean)
+## ElseAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;Error, ValueTask&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ElseAsyncExtensions.ValueTask.cs#L218" target="_blank">ElseAsyncExtensions.ValueTask.cs</a>
 
 Runs the asynchronous function if the result that the `resultTask` returns is failed, and returns a successful [Result&lt;T&gt;](../ResultT/ResultT.md) with the value that the function returns; otherwise, returns the original result.
@@ -975,7 +983,7 @@ var countResult = await _counterService.GetCountAsync(id)
     .ElseAsync(async error => await _cache.GetLastCountAsync(id));
 ```
 
-## ElseAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;Error, ValueTask&lt;Error&gt;&gt;, Boolean)
+## ElseAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;Error, ValueTask&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ElseAsyncExtensions.ValueTask.cs#L250" target="_blank">ElseAsyncExtensions.ValueTask.cs</a>
 
 Runs the asynchronous function if the result that the `resultTask` returns is failed, and returns a failed [Result&lt;T&gt;](../ResultT/ResultT.md) with the [Error](../Error/Error.md) that the function returns; otherwise, returns the original result.
@@ -1020,7 +1028,7 @@ var userResult = await _userService.GetUserAsync(id)
     .ElseAsync(async error => await _errorTranslator.TranslateAsync(error));
 ```
 
-## ElseAsync(ValueTask&lt;Result&gt;, Func&lt;Error, ValueTask&lt;Error&gt;&gt;, Boolean)
+## ElseAsync(ValueTask&lt;Result&gt;, Func&lt;Error, ValueTask&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ElseAsyncExtensions.ValueTask.cs#L282" target="_blank">ElseAsyncExtensions.ValueTask.cs</a>
 
 Runs the asynchronous function if the result that the `resultTask` returns is failed, and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) that the function returns; otherwise, returns the original result.
@@ -1061,12 +1069,13 @@ var deleteResult = await _userService.DeleteUserAsync(id)
     .ElseAsync(async error => await _errorTranslator.TranslateAsync(error));
 ```
 
-## ElseAsync&lt;TResult&gt;(ValueTask&lt;TResult&gt;, Func&lt;Error, Task&lt;TResult&gt;&gt;, Boolean)
+## ElseAsync&lt;TResult&gt;(ValueTask&lt;TResult&gt;, Func&lt;Error, Task&lt;TResult&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ElseAsyncExtensions.ValueTask.cs#L398" target="_blank">ElseAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, if the provided asynchronous operation returns a failed`TResult` instance (i.e., contains an [Error](../Error/Error.md)), and returns its result as an asynchronous operation.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static ValueTask<TResult> ElseAsync<TResult>(this ValueTask<TResult> resultTask,
     Func<Error, Task<TResult>> ifErrorFunction, bool? continueOnCapturedContext = null)
     where TResult : IOperationResult;
@@ -1077,10 +1086,10 @@ public static ValueTask<TResult> ElseAsync<TResult>(this ValueTask<TResult> resu
 The type of the `resultTask` that implements the [IOperationResult](../IOperationResult/IOperationResult.md) interface—[Result](../Result/Result.md) or [Result&lt;T&gt;](../ResultT/ResultT.md) record.
 
 ### Parameters
-#### `resultTask` TResult
+#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;TResult&gt;
 The asynchronous operation that represents an instance of `TResult` (that implements [IOperationResult](../IOperationResult/IOperationResult.md) interface—[Result](../Result/Result.md) or [Result&lt;T&gt;](../ResultT/ResultT.md) record) to be executed and which result is to be evaluated.
 
-#### `ifErrorFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Error](../Error/Error.md), [Task](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.task-1)&lt;TResult&gt;&gt;
+#### `ifErrorFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;[Error](../Error/Error.md), [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;TResult&gt;&gt;
 The asynchronous function to be executed, only if the current instance of `TResult` represents a failed operation, as an asynchronous operation. The [Error](../Error/Error.md) instance contained in the outcome will be passed as a parameter to this function.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -1104,12 +1113,13 @@ The function returns a `Task`, the other kind of task: it is awaited, and a `Val
 
 The `ElseAsync` method awaits the provided asynchronous operation represented by `resultTask` to evaluate its result. This enables chaining multiple asynchronous operations that return `ValueTask<TResult>`.
 
-## ElseAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;Error, Task&lt;T&gt;&gt;, Boolean)
+## ElseAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;Error, Task&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ElseAsyncExtensions.ValueTask.cs#L433" target="_blank">ElseAsyncExtensions.ValueTask.cs</a>
 
 Runs the asynchronous function if the result that the `resultTask` returns is failed, and returns a successful [Result&lt;T&gt;](../ResultT/ResultT.md) with the value that the function returns; otherwise, returns the original result.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static ValueTask<Result<T>> ElseAsync<T>(this ValueTask<Result<T>> resultTask, Func<Error, Task<T>> ifErrorFunction, bool? continueOnCapturedContext = null);
 ```
 
@@ -1145,12 +1155,13 @@ The function returns a `Task`, the other kind of task: it is awaited, and a `Val
 
 Use it to recover from an error with a value, as `Else(error => 0)` does. A `null` value is a valid value (for a nullable `T`).
 
-## ElseAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;Error, Task&lt;Error&gt;&gt;, Boolean)
+## ElseAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;Error, Task&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ElseAsyncExtensions.ValueTask.cs#L466" target="_blank">ElseAsyncExtensions.ValueTask.cs</a>
 
 Runs the asynchronous function if the result that the `resultTask` returns is failed, and returns a failed [Result&lt;T&gt;](../ResultT/ResultT.md) with the [Error](../Error/Error.md) that the function returns; otherwise, returns the original result.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static ValueTask<Result<T>> ElseAsync<T>(this ValueTask<Result<T>> resultTask, Func<Error, Task<Error>> ifErrorFunction, bool? continueOnCapturedContext = null);
 ```
 
@@ -1186,12 +1197,13 @@ The function returns a `Task`, the other kind of task: it is awaited, and a `Val
 
 Use it to replace an error with another one, as `Else(error => error.WithMetadata(…))` does.
 
-## ElseAsync(ValueTask&lt;Result&gt;, Func&lt;Error, Task&lt;Error&gt;&gt;, Boolean)
+## ElseAsync(ValueTask&lt;Result&gt;, Func&lt;Error, Task&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ElseAsyncExtensions.ValueTask.cs#L498" target="_blank">ElseAsyncExtensions.ValueTask.cs</a>
 
 Runs the asynchronous function if the result that the `resultTask` returns is failed, and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) that the function returns; otherwise, returns the original result.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static ValueTask<Result> ElseAsync(this ValueTask<Result> resultTask, Func<Error, Task<Error>> ifErrorFunction, bool? continueOnCapturedContext = null);
 ```
 

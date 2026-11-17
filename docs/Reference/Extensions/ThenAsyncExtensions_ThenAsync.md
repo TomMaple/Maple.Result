@@ -8,70 +8,70 @@ Runs a asynchronous function if the instance of [Result](../Result/Result.md) or
 ## Overloads
 | Name | Description |
 | ---- | ----------- |
-| [ThenAsync(Result, Func&lt;Task&lt;Result&gt;&gt;, Boolean)](#thenasyncresult-functaskresult-boolean) | Executes the specified asynchronous function, if the [Result](../Result/Result.md) represents a successful operation, as an asynchronous operation. |
-| [ThenAsync(Result, Func&lt;Task&lt;Error&gt;&gt;, Boolean)](#thenasyncresult-functaskerror-boolean) | Executes the specified asynchronous function, if the [Result](../Result/Result.md) represents a successful operation, and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) it returns. |
-| [ThenAsync&lt;T&gt;(Result, Func&lt;Task&lt;T&gt;&gt;, Boolean)](#thenasynctresult-functaskt-boolean) | Executes the specified asynchronous function, if the [Result](../Result/Result.md) represents a successful operation, as an asynchronous operation. |
-| [ThenAsync&lt;T&gt;(Result, Func&lt;Task&lt;Result&lt;T&gt;&gt;&gt;, Boolean)](#thenasynctresult-functaskresultt-boolean) | Executes the specified asynchronous function, if the [Result](../Result/Result.md) represents a successful operation, as an asynchronous operation. |
-| [ThenAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, Task&lt;Result&gt;&gt;, Boolean)](#thenasynctresultt-funct-taskresult-boolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
-| [ThenAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, Task&lt;Error&gt;&gt;, Boolean)](#thenasynctresultt-funct-taskerror-boolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) it returns. |
-| [ThenAsync&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, Task&lt;TNext&gt;&gt;, Boolean)](#thenasynct-tnextresultt-funct-tasktnext-boolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
-| [ThenAsync&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, Task&lt;Result&lt;TNext&gt;&gt;&gt;, Boolean)](#thenasynct-tnextresultt-funct-taskresulttnext-boolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
-| [ThenAsync(Task&lt;Result&gt;, Func&lt;Task&lt;Result&gt;&gt;, Boolean)](#thenasynctaskresult-functaskresult-boolean) | Executes the specified asynchronous function, if the provided asynchronous operation returns a successful [Result](../Result/Result.md), as an asynchronous operation. |
-| [ThenAsync(Task&lt;Result&gt;, Func&lt;Task&lt;Error&gt;&gt;, Boolean)](#thenasynctaskresult-functaskerror-boolean) | Executes the specified asynchronous function, if the asynchronous operation `resultTask` represents a successful [Result](../Result/Result.md), and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) it returns. |
-| [ThenAsync&lt;T&gt;(Task&lt;Result&gt;, Func&lt;Task&lt;T&gt;&gt;, Boolean)](#thenasyncttaskresult-functaskt-boolean) | Executes the specified asynchronous function, if the provided asynchronous operation returns a successful [Result](../Result/Result.md), as an asynchronous operation. |
-| [ThenAsync&lt;T&gt;(Task&lt;Result&gt;, Func&lt;Task&lt;Result&lt;T&gt;&gt;&gt;, Boolean)](#thenasyncttaskresult-functaskresultt-boolean) | Executes the specified asynchronous function, if the provided asynchronous operation returns a successful [Result](../Result/Result.md), as an asynchronous operation. |
-| [ThenAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;Result&gt;&gt;, Boolean)](#thenasyncttaskresultt-funct-taskresult-boolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
-| [ThenAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;Error&gt;&gt;, Boolean)](#thenasyncttaskresultt-funct-taskerror-boolean) | Executes the specified asynchronous function, if the asynchronous operation `resultTask` represents a successful [Result&lt;T&gt;](../ResultT/ResultT.md), and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) it returns. |
-| [ThenAsync&lt;T, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;TNext&gt;&gt;, Boolean)](#thenasynct-tnexttaskresultt-funct-tasktnext-boolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
-| [ThenAsync&lt;T, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;Result&lt;TNext&gt;&gt;&gt;, Boolean)](#thenasynct-tnexttaskresultt-funct-taskresulttnext-boolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
-| [ThenAsync&lt;T&gt;(Task&lt;Result&gt;, Func&lt;T&gt;, Boolean)](#thenasyncttaskresult-funct-boolean) | Runs the synchronous function if the result that the `resultTask` returns is successful, and returns a result with its value. |
-| [ThenAsync(Task&lt;Result&gt;, Func&lt;Result&gt;, Boolean)](#thenasynctaskresult-funcresult-boolean) | Runs the synchronous function if the result that the `resultTask` returns is successful, and returns the result that it returns. |
-| [ThenAsync&lt;T&gt;(Task&lt;Result&gt;, Func&lt;Result&lt;T&gt;&gt;, Boolean)](#thenasyncttaskresult-funcresultt-boolean) | Runs the synchronous function if the result that the `resultTask` returns is successful, and returns the result that it returns. |
-| [ThenAsync(Task&lt;Result&gt;, Func&lt;Error&gt;, Boolean)](#thenasynctaskresult-funcerror-boolean) | Runs the synchronous function if the result that the `resultTask` returns is successful, and returns a failed result with the error that it returns. |
-| [ThenAsync&lt;T, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, TNext&gt;, Boolean)](#thenasynct-tnexttaskresultt-funct-tnext-boolean) | Runs the synchronous function on the value if the result that the `resultTask` returns is successful, and returns a result with the value that it returns. |
-| [ThenAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&gt;, Boolean)](#thenasyncttaskresultt-funct-result-boolean) | Runs the synchronous function on the value if the result that the `resultTask` returns is successful, and returns the result that it returns. |
-| [ThenAsync&lt;T, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&lt;TNext&gt;&gt;, Boolean)](#thenasynct-tnexttaskresultt-funct-resulttnext-boolean) | Runs the synchronous function on the value if the result that the `resultTask` returns is successful, and returns the result that it returns. |
-| [ThenAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Error&gt;, Boolean)](#thenasyncttaskresultt-funct-error-boolean) | Runs the synchronous function on the value if the result that the `resultTask` returns is successful, and returns a failed result with the error that it returns. |
-| [ThenAsync(Task&lt;Result&gt;, Func&lt;ValueTask&lt;Result&gt;&gt;, Boolean)](#thenasynctaskresult-funcvaluetaskresult-boolean) | Executes the specified asynchronous function, if the provided asynchronous operation returns a successful [Result](../Result/Result.md), as an asynchronous operation. |
-| [ThenAsync(Task&lt;Result&gt;, Func&lt;ValueTask&lt;Error&gt;&gt;, Boolean)](#thenasynctaskresult-funcvaluetaskerror-boolean) | Executes the specified asynchronous function, if the asynchronous operation `resultTask` represents a successful [Result](../Result/Result.md), and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) it returns. |
-| [ThenAsync&lt;T&gt;(Task&lt;Result&gt;, Func&lt;ValueTask&lt;T&gt;&gt;, Boolean)](#thenasyncttaskresult-funcvaluetaskt-boolean) | Executes the specified asynchronous function, if the provided asynchronous operation returns a successful [Result](../Result/Result.md), as an asynchronous operation. |
-| [ThenAsync&lt;T&gt;(Task&lt;Result&gt;, Func&lt;ValueTask&lt;Result&lt;T&gt;&gt;&gt;, Boolean)](#thenasyncttaskresult-funcvaluetaskresultt-boolean) | Executes the specified asynchronous function, if the provided asynchronous operation returns a successful [Result](../Result/Result.md), as an asynchronous operation. |
-| [ThenAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Boolean)](#thenasyncttaskresultt-funct-valuetaskresult-boolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
-| [ThenAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Error&gt;&gt;, Boolean)](#thenasyncttaskresultt-funct-valuetaskerror-boolean) | Executes the specified asynchronous function, if the asynchronous operation `resultTask` represents a successful [Result&lt;T&gt;](../ResultT/ResultT.md), and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) it returns. |
-| [ThenAsync&lt;T, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;TNext&gt;&gt;, Boolean)](#thenasynct-tnexttaskresultt-funct-valuetasktnext-boolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
-| [ThenAsync&lt;T, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&lt;TNext&gt;&gt;&gt;, Boolean)](#thenasynct-tnexttaskresultt-funct-valuetaskresulttnext-boolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
-| [ThenAsync(Result, Func&lt;ValueTask&lt;Result&gt;&gt;, Boolean)](#thenasyncresult-funcvaluetaskresult-boolean) | Executes the specified asynchronous function, if the [Result](../Result/Result.md) represents a successful operation, as an asynchronous operation. |
-| [ThenAsync(Result, Func&lt;ValueTask&lt;Error&gt;&gt;, Boolean)](#thenasyncresult-funcvaluetaskerror-boolean) | Executes the specified asynchronous function, if the [Result](../Result/Result.md) represents a successful operation, and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) it returns. |
-| [ThenAsync&lt;T&gt;(Result, Func&lt;ValueTask&lt;T&gt;&gt;, Boolean)](#thenasynctresult-funcvaluetaskt-boolean) | Executes the specified asynchronous function, if the [Result](../Result/Result.md) represents a successful operation, as an asynchronous operation. |
-| [ThenAsync&lt;T&gt;(Result, Func&lt;ValueTask&lt;Result&lt;T&gt;&gt;&gt;, Boolean)](#thenasynctresult-funcvaluetaskresultt-boolean) | Executes the specified asynchronous function, if the [Result](../Result/Result.md) represents a successful operation, as an asynchronous operation. |
-| [ThenAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Boolean)](#thenasynctresultt-funct-valuetaskresult-boolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
-| [ThenAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Error&gt;&gt;, Boolean)](#thenasynctresultt-funct-valuetaskerror-boolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) it returns. |
-| [ThenAsync&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;TNext&gt;&gt;, Boolean)](#thenasynct-tnextresultt-funct-valuetasktnext-boolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
-| [ThenAsync&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Result&lt;TNext&gt;&gt;&gt;, Boolean)](#thenasynct-tnextresultt-funct-valuetaskresulttnext-boolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
-| [ThenAsync(ValueTask&lt;Result&gt;, Func&lt;ValueTask&lt;Result&gt;&gt;, Boolean)](#thenasyncvaluetaskresult-funcvaluetaskresult-boolean) | Executes the specified asynchronous function, if the provided asynchronous operation returns a successful [Result](../Result/Result.md), as an asynchronous operation. |
-| [ThenAsync(ValueTask&lt;Result&gt;, Func&lt;ValueTask&lt;Error&gt;&gt;, Boolean)](#thenasyncvaluetaskresult-funcvaluetaskerror-boolean) | Executes the specified asynchronous function, if the asynchronous operation `resultTask` represents a successful [Result](../Result/Result.md), and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) it returns. |
-| [ThenAsync&lt;T&gt;(ValueTask&lt;Result&gt;, Func&lt;ValueTask&lt;T&gt;&gt;, Boolean)](#thenasynctvaluetaskresult-funcvaluetaskt-boolean) | Executes the specified asynchronous function, if the provided asynchronous operation returns a successful [Result](../Result/Result.md), as an asynchronous operation. |
-| [ThenAsync&lt;T&gt;(ValueTask&lt;Result&gt;, Func&lt;ValueTask&lt;Result&lt;T&gt;&gt;&gt;, Boolean)](#thenasynctvaluetaskresult-funcvaluetaskresultt-boolean) | Executes the specified asynchronous function, if the provided asynchronous operation returns a successful [Result](../Result/Result.md), as an asynchronous operation. |
-| [ThenAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Boolean)](#thenasynctvaluetaskresultt-funct-valuetaskresult-boolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
-| [ThenAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Error&gt;&gt;, Boolean)](#thenasynctvaluetaskresultt-funct-valuetaskerror-boolean) | Executes the specified asynchronous function, if the asynchronous operation `resultTask` represents a successful [Result&lt;T&gt;](../ResultT/ResultT.md), and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) it returns. |
-| [ThenAsync&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;TNext&gt;&gt;, Boolean)](#thenasynct-tnextvaluetaskresultt-funct-valuetasktnext-boolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
-| [ThenAsync&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&lt;TNext&gt;&gt;&gt;, Boolean)](#thenasynct-tnextvaluetaskresultt-funct-valuetaskresulttnext-boolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
-| [ThenAsync&lt;T&gt;(ValueTask&lt;Result&gt;, Func&lt;T&gt;, Boolean)](#thenasynctvaluetaskresult-funct-boolean) | Runs the synchronous function if the result that the `resultTask` returns is successful, and returns a result with its value. |
-| [ThenAsync(ValueTask&lt;Result&gt;, Func&lt;Result&gt;, Boolean)](#thenasyncvaluetaskresult-funcresult-boolean) | Runs the synchronous function if the result that the `resultTask` returns is successful, and returns the result that it returns. |
-| [ThenAsync&lt;T&gt;(ValueTask&lt;Result&gt;, Func&lt;Result&lt;T&gt;&gt;, Boolean)](#thenasynctvaluetaskresult-funcresultt-boolean) | Runs the synchronous function if the result that the `resultTask` returns is successful, and returns the result that it returns. |
-| [ThenAsync(ValueTask&lt;Result&gt;, Func&lt;Error&gt;, Boolean)](#thenasyncvaluetaskresult-funcerror-boolean) | Runs the synchronous function if the result that the `resultTask` returns is successful, and returns a failed result with the error that it returns. |
-| [ThenAsync&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, TNext&gt;, Boolean)](#thenasynct-tnextvaluetaskresultt-funct-tnext-boolean) | Runs the synchronous function on the value if the result that the `resultTask` returns is successful, and returns a result with the value that it returns. |
-| [ThenAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&gt;, Boolean)](#thenasynctvaluetaskresultt-funct-result-boolean) | Runs the synchronous function on the value if the result that the `resultTask` returns is successful, and returns the result that it returns. |
-| [ThenAsync&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&lt;TNext&gt;&gt;, Boolean)](#thenasynct-tnextvaluetaskresultt-funct-resulttnext-boolean) | Runs the synchronous function on the value if the result that the `resultTask` returns is successful, and returns the result that it returns. |
-| [ThenAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Error&gt;, Boolean)](#thenasynctvaluetaskresultt-funct-error-boolean) | Runs the synchronous function on the value if the result that the `resultTask` returns is successful, and returns a failed result with the error that it returns. |
-| [ThenAsync(ValueTask&lt;Result&gt;, Func&lt;Task&lt;Result&gt;&gt;, Boolean)](#thenasyncvaluetaskresult-functaskresult-boolean) | Executes the specified asynchronous function, if the provided asynchronous operation returns a successful [Result](../Result/Result.md), as an asynchronous operation. |
-| [ThenAsync(ValueTask&lt;Result&gt;, Func&lt;Task&lt;Error&gt;&gt;, Boolean)](#thenasyncvaluetaskresult-functaskerror-boolean) | Executes the specified asynchronous function, if the asynchronous operation `resultTask` represents a successful [Result](../Result/Result.md), and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) it returns. |
-| [ThenAsync&lt;T&gt;(ValueTask&lt;Result&gt;, Func&lt;Task&lt;T&gt;&gt;, Boolean)](#thenasynctvaluetaskresult-functaskt-boolean) | Executes the specified asynchronous function, if the provided asynchronous operation returns a successful [Result](../Result/Result.md), as an asynchronous operation. |
-| [ThenAsync&lt;T&gt;(ValueTask&lt;Result&gt;, Func&lt;Task&lt;Result&lt;T&gt;&gt;&gt;, Boolean)](#thenasynctvaluetaskresult-functaskresultt-boolean) | Executes the specified asynchronous function, if the provided asynchronous operation returns a successful [Result](../Result/Result.md), as an asynchronous operation. |
-| [ThenAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;Result&gt;&gt;, Boolean)](#thenasynctvaluetaskresultt-funct-taskresult-boolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
-| [ThenAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;Error&gt;&gt;, Boolean)](#thenasynctvaluetaskresultt-funct-taskerror-boolean) | Executes the specified asynchronous function, if the asynchronous operation `resultTask` represents a successful [Result&lt;T&gt;](../ResultT/ResultT.md), and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) it returns. |
-| [ThenAsync&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;TNext&gt;&gt;, Boolean)](#thenasynct-tnextvaluetaskresultt-funct-tasktnext-boolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
-| [ThenAsync&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;Result&lt;TNext&gt;&gt;&gt;, Boolean)](#thenasynct-tnextvaluetaskresultt-funct-taskresulttnext-boolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
+| [ThenAsync(Result, Func&lt;Task&lt;Result&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasyncresult-functaskresult-nullableboolean) | Executes the specified asynchronous function, if the [Result](../Result/Result.md) represents a successful operation, as an asynchronous operation. |
+| [ThenAsync(Result, Func&lt;Task&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasyncresult-functaskerror-nullableboolean) | Executes the specified asynchronous function, if the [Result](../Result/Result.md) represents a successful operation, and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) it returns. |
+| [ThenAsync&lt;T&gt;(Result, Func&lt;Task&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasynctresult-functaskt-nullableboolean) | Executes the specified asynchronous function, if the [Result](../Result/Result.md) represents a successful operation, as an asynchronous operation. |
+| [ThenAsync&lt;T&gt;(Result, Func&lt;Task&lt;Result&lt;T&gt;&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasynctresult-functaskresultt-nullableboolean) | Executes the specified asynchronous function, if the [Result](../Result/Result.md) represents a successful operation, as an asynchronous operation. |
+| [ThenAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, Task&lt;Result&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasynctresultt-funct-taskresult-nullableboolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
+| [ThenAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, Task&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasynctresultt-funct-taskerror-nullableboolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) it returns. |
+| [ThenAsync&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, Task&lt;TNext&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasynct-tnextresultt-funct-tasktnext-nullableboolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
+| [ThenAsync&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, Task&lt;Result&lt;TNext&gt;&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasynct-tnextresultt-funct-taskresulttnext-nullableboolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
+| [ThenAsync(Task&lt;Result&gt;, Func&lt;Task&lt;Result&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasynctaskresult-functaskresult-nullableboolean) | Executes the specified asynchronous function, if the provided asynchronous operation returns a successful [Result](../Result/Result.md), as an asynchronous operation. |
+| [ThenAsync(Task&lt;Result&gt;, Func&lt;Task&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasynctaskresult-functaskerror-nullableboolean) | Executes the specified asynchronous function, if the asynchronous operation `resultTask` represents a successful [Result](../Result/Result.md), and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) it returns. |
+| [ThenAsync&lt;T&gt;(Task&lt;Result&gt;, Func&lt;Task&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasyncttaskresult-functaskt-nullableboolean) | Executes the specified asynchronous function, if the provided asynchronous operation returns a successful [Result](../Result/Result.md), as an asynchronous operation. |
+| [ThenAsync&lt;T&gt;(Task&lt;Result&gt;, Func&lt;Task&lt;Result&lt;T&gt;&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasyncttaskresult-functaskresultt-nullableboolean) | Executes the specified asynchronous function, if the provided asynchronous operation returns a successful [Result](../Result/Result.md), as an asynchronous operation. |
+| [ThenAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;Result&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasyncttaskresultt-funct-taskresult-nullableboolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
+| [ThenAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasyncttaskresultt-funct-taskerror-nullableboolean) | Executes the specified asynchronous function, if the asynchronous operation `resultTask` represents a successful [Result&lt;T&gt;](../ResultT/ResultT.md), and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) it returns. |
+| [ThenAsync&lt;T, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;TNext&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasynct-tnexttaskresultt-funct-tasktnext-nullableboolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
+| [ThenAsync&lt;T, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;Result&lt;TNext&gt;&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasynct-tnexttaskresultt-funct-taskresulttnext-nullableboolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
+| [ThenAsync&lt;T&gt;(Task&lt;Result&gt;, Func&lt;T&gt;, Nullable&lt;Boolean&gt;)](#thenasyncttaskresult-funct-nullableboolean) | Runs the synchronous function if the result that the `resultTask` returns is successful, and returns a result with its value. |
+| [ThenAsync(Task&lt;Result&gt;, Func&lt;Result&gt;, Nullable&lt;Boolean&gt;)](#thenasynctaskresult-funcresult-nullableboolean) | Runs the synchronous function if the result that the `resultTask` returns is successful, and returns the result that it returns. |
+| [ThenAsync&lt;T&gt;(Task&lt;Result&gt;, Func&lt;Result&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasyncttaskresult-funcresultt-nullableboolean) | Runs the synchronous function if the result that the `resultTask` returns is successful, and returns the result that it returns. |
+| [ThenAsync(Task&lt;Result&gt;, Func&lt;Error&gt;, Nullable&lt;Boolean&gt;)](#thenasynctaskresult-funcerror-nullableboolean) | Runs the synchronous function if the result that the `resultTask` returns is successful, and returns a failed result with the error that it returns. |
+| [ThenAsync&lt;T, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, TNext&gt;, Nullable&lt;Boolean&gt;)](#thenasynct-tnexttaskresultt-funct-tnext-nullableboolean) | Runs the synchronous function on the value if the result that the `resultTask` returns is successful, and returns a result with the value that it returns. |
+| [ThenAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&gt;, Nullable&lt;Boolean&gt;)](#thenasyncttaskresultt-funct-result-nullableboolean) | Runs the synchronous function on the value if the result that the `resultTask` returns is successful, and returns the result that it returns. |
+| [ThenAsync&lt;T, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&lt;TNext&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasynct-tnexttaskresultt-funct-resulttnext-nullableboolean) | Runs the synchronous function on the value if the result that the `resultTask` returns is successful, and returns the result that it returns. |
+| [ThenAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Error&gt;, Nullable&lt;Boolean&gt;)](#thenasyncttaskresultt-funct-error-nullableboolean) | Runs the synchronous function on the value if the result that the `resultTask` returns is successful, and returns a failed result with the error that it returns. |
+| [ThenAsync(Task&lt;Result&gt;, Func&lt;ValueTask&lt;Result&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasynctaskresult-funcvaluetaskresult-nullableboolean) | Executes the specified asynchronous function, if the provided asynchronous operation returns a successful [Result](../Result/Result.md), as an asynchronous operation. |
+| [ThenAsync(Task&lt;Result&gt;, Func&lt;ValueTask&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasynctaskresult-funcvaluetaskerror-nullableboolean) | Executes the specified asynchronous function, if the asynchronous operation `resultTask` represents a successful [Result](../Result/Result.md), and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) it returns. |
+| [ThenAsync&lt;T&gt;(Task&lt;Result&gt;, Func&lt;ValueTask&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasyncttaskresult-funcvaluetaskt-nullableboolean) | Executes the specified asynchronous function, if the provided asynchronous operation returns a successful [Result](../Result/Result.md), as an asynchronous operation. |
+| [ThenAsync&lt;T&gt;(Task&lt;Result&gt;, Func&lt;ValueTask&lt;Result&lt;T&gt;&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasyncttaskresult-funcvaluetaskresultt-nullableboolean) | Executes the specified asynchronous function, if the provided asynchronous operation returns a successful [Result](../Result/Result.md), as an asynchronous operation. |
+| [ThenAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasyncttaskresultt-funct-valuetaskresult-nullableboolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
+| [ThenAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasyncttaskresultt-funct-valuetaskerror-nullableboolean) | Executes the specified asynchronous function, if the asynchronous operation `resultTask` represents a successful [Result&lt;T&gt;](../ResultT/ResultT.md), and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) it returns. |
+| [ThenAsync&lt;T, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;TNext&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasynct-tnexttaskresultt-funct-valuetasktnext-nullableboolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
+| [ThenAsync&lt;T, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&lt;TNext&gt;&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasynct-tnexttaskresultt-funct-valuetaskresulttnext-nullableboolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
+| [ThenAsync(Result, Func&lt;ValueTask&lt;Result&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasyncresult-funcvaluetaskresult-nullableboolean) | Executes the specified asynchronous function, if the [Result](../Result/Result.md) represents a successful operation, as an asynchronous operation. |
+| [ThenAsync(Result, Func&lt;ValueTask&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasyncresult-funcvaluetaskerror-nullableboolean) | Executes the specified asynchronous function, if the [Result](../Result/Result.md) represents a successful operation, and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) it returns. |
+| [ThenAsync&lt;T&gt;(Result, Func&lt;ValueTask&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasynctresult-funcvaluetaskt-nullableboolean) | Executes the specified asynchronous function, if the [Result](../Result/Result.md) represents a successful operation, as an asynchronous operation. |
+| [ThenAsync&lt;T&gt;(Result, Func&lt;ValueTask&lt;Result&lt;T&gt;&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasynctresult-funcvaluetaskresultt-nullableboolean) | Executes the specified asynchronous function, if the [Result](../Result/Result.md) represents a successful operation, as an asynchronous operation. |
+| [ThenAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasynctresultt-funct-valuetaskresult-nullableboolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
+| [ThenAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasynctresultt-funct-valuetaskerror-nullableboolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) it returns. |
+| [ThenAsync&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;TNext&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasynct-tnextresultt-funct-valuetasktnext-nullableboolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
+| [ThenAsync&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Result&lt;TNext&gt;&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasynct-tnextresultt-funct-valuetaskresulttnext-nullableboolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
+| [ThenAsync(ValueTask&lt;Result&gt;, Func&lt;ValueTask&lt;Result&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasyncvaluetaskresult-funcvaluetaskresult-nullableboolean) | Executes the specified asynchronous function, if the provided asynchronous operation returns a successful [Result](../Result/Result.md), as an asynchronous operation. |
+| [ThenAsync(ValueTask&lt;Result&gt;, Func&lt;ValueTask&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasyncvaluetaskresult-funcvaluetaskerror-nullableboolean) | Executes the specified asynchronous function, if the asynchronous operation `resultTask` represents a successful [Result](../Result/Result.md), and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) it returns. |
+| [ThenAsync&lt;T&gt;(ValueTask&lt;Result&gt;, Func&lt;ValueTask&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasynctvaluetaskresult-funcvaluetaskt-nullableboolean) | Executes the specified asynchronous function, if the provided asynchronous operation returns a successful [Result](../Result/Result.md), as an asynchronous operation. |
+| [ThenAsync&lt;T&gt;(ValueTask&lt;Result&gt;, Func&lt;ValueTask&lt;Result&lt;T&gt;&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasynctvaluetaskresult-funcvaluetaskresultt-nullableboolean) | Executes the specified asynchronous function, if the provided asynchronous operation returns a successful [Result](../Result/Result.md), as an asynchronous operation. |
+| [ThenAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasynctvaluetaskresultt-funct-valuetaskresult-nullableboolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
+| [ThenAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasynctvaluetaskresultt-funct-valuetaskerror-nullableboolean) | Executes the specified asynchronous function, if the asynchronous operation `resultTask` represents a successful [Result&lt;T&gt;](../ResultT/ResultT.md), and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) it returns. |
+| [ThenAsync&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;TNext&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasynct-tnextvaluetaskresultt-funct-valuetasktnext-nullableboolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
+| [ThenAsync&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&lt;TNext&gt;&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasynct-tnextvaluetaskresultt-funct-valuetaskresulttnext-nullableboolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
+| [ThenAsync&lt;T&gt;(ValueTask&lt;Result&gt;, Func&lt;T&gt;, Nullable&lt;Boolean&gt;)](#thenasynctvaluetaskresult-funct-nullableboolean) | Runs the synchronous function if the result that the `resultTask` returns is successful, and returns a result with its value. |
+| [ThenAsync(ValueTask&lt;Result&gt;, Func&lt;Result&gt;, Nullable&lt;Boolean&gt;)](#thenasyncvaluetaskresult-funcresult-nullableboolean) | Runs the synchronous function if the result that the `resultTask` returns is successful, and returns the result that it returns. |
+| [ThenAsync&lt;T&gt;(ValueTask&lt;Result&gt;, Func&lt;Result&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasynctvaluetaskresult-funcresultt-nullableboolean) | Runs the synchronous function if the result that the `resultTask` returns is successful, and returns the result that it returns. |
+| [ThenAsync(ValueTask&lt;Result&gt;, Func&lt;Error&gt;, Nullable&lt;Boolean&gt;)](#thenasyncvaluetaskresult-funcerror-nullableboolean) | Runs the synchronous function if the result that the `resultTask` returns is successful, and returns a failed result with the error that it returns. |
+| [ThenAsync&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, TNext&gt;, Nullable&lt;Boolean&gt;)](#thenasynct-tnextvaluetaskresultt-funct-tnext-nullableboolean) | Runs the synchronous function on the value if the result that the `resultTask` returns is successful, and returns a result with the value that it returns. |
+| [ThenAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&gt;, Nullable&lt;Boolean&gt;)](#thenasynctvaluetaskresultt-funct-result-nullableboolean) | Runs the synchronous function on the value if the result that the `resultTask` returns is successful, and returns the result that it returns. |
+| [ThenAsync&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&lt;TNext&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasynct-tnextvaluetaskresultt-funct-resulttnext-nullableboolean) | Runs the synchronous function on the value if the result that the `resultTask` returns is successful, and returns the result that it returns. |
+| [ThenAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Error&gt;, Nullable&lt;Boolean&gt;)](#thenasynctvaluetaskresultt-funct-error-nullableboolean) | Runs the synchronous function on the value if the result that the `resultTask` returns is successful, and returns a failed result with the error that it returns. |
+| [ThenAsync(ValueTask&lt;Result&gt;, Func&lt;Task&lt;Result&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasyncvaluetaskresult-functaskresult-nullableboolean) | Executes the specified asynchronous function, if the provided asynchronous operation returns a successful [Result](../Result/Result.md), as an asynchronous operation. |
+| [ThenAsync(ValueTask&lt;Result&gt;, Func&lt;Task&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasyncvaluetaskresult-functaskerror-nullableboolean) | Executes the specified asynchronous function, if the asynchronous operation `resultTask` represents a successful [Result](../Result/Result.md), and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) it returns. |
+| [ThenAsync&lt;T&gt;(ValueTask&lt;Result&gt;, Func&lt;Task&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasynctvaluetaskresult-functaskt-nullableboolean) | Executes the specified asynchronous function, if the provided asynchronous operation returns a successful [Result](../Result/Result.md), as an asynchronous operation. |
+| [ThenAsync&lt;T&gt;(ValueTask&lt;Result&gt;, Func&lt;Task&lt;Result&lt;T&gt;&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasynctvaluetaskresult-functaskresultt-nullableboolean) | Executes the specified asynchronous function, if the provided asynchronous operation returns a successful [Result](../Result/Result.md), as an asynchronous operation. |
+| [ThenAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;Result&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasynctvaluetaskresultt-funct-taskresult-nullableboolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
+| [ThenAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasynctvaluetaskresultt-funct-taskerror-nullableboolean) | Executes the specified asynchronous function, if the asynchronous operation `resultTask` represents a successful [Result&lt;T&gt;](../ResultT/ResultT.md), and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) it returns. |
+| [ThenAsync&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;TNext&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasynct-tnextvaluetaskresultt-funct-tasktnext-nullableboolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
+| [ThenAsync&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;Result&lt;TNext&gt;&gt;&gt;, Nullable&lt;Boolean&gt;)](#thenasynct-tnextvaluetaskresultt-funct-taskresulttnext-nullableboolean) | Executes the specified asynchronous function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
 
 ## Remarks
 On a `Result` or a `Result<T>`, the function decides the kind of task: a function that returns a `ValueTask` gives a `ValueTask`, and an `async` lambda gives a `Task` (with an explicit return type, e.g., `async ValueTask<int> (int x) => …`, it gives a `ValueTask`). On a `Task` or a `ValueTask` of a result, the kind of the receiver is kept.
@@ -88,12 +88,13 @@ A returned `Result` or `Result<T>` is flattened, and a returned [Error](../Error
 > [!NOTE]
 > A [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask) can only be awaited once. Because of this, the overloads accepting `this ValueTask<TResult> resultTask` consume the passed operation as part of evaluating its result, and they do not perform a `null` check on it (a `ValueTask<TResult>` is a non-nullable value type).
 
-## ThenAsync(Result, Func&lt;Task&lt;Result&gt;&gt;, Boolean)
+## ThenAsync(Result, Func&lt;Task&lt;Result&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L67" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the instance of [Result](../Result/Result.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), as an asynchronous operation.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result> ThenAsync(this Result result, Func<Task<Result>> ifSuccessFunction,
     bool? continueOnCapturedContext = null);
 ```
@@ -102,7 +103,7 @@ public static Task<Result> ThenAsync(this Result result, Func<Task<Result>> ifSu
 #### `result` [Result](../Result/Result.md)
 The instance of [Result](../Result/Result.md) record that represents the result of the operation to be evaluated.
 
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[Task](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.task-1)&lt;[Result](../Result/Result.md)&gt;&gt;
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result](../Result/Result.md)&gt;&gt;
 The asynchronous function to be executed, only if the current instance of [Result](../Result/Result.md) represents a successful operation, as an asynchronous operation.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -132,12 +133,13 @@ var userAddedResult = await createUserResult.ThenAsync(async () =>
 ```
 
 
-## ThenAsync(Result, Func&lt;Task&lt;Error&gt;&gt;, Boolean)
+## ThenAsync(Result, Func&lt;Task&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L121" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function only if the [Result](../Result/Result.md) represents a successful operation, and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) returned by the function.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result> ThenAsync(this Result result, Func<Task<Error>> ifSuccessFunction, bool? continueOnCapturedContext = null);
 ```
 
@@ -174,12 +176,13 @@ var result = await _userService.DeleteUser(userId)
 ```
 
 
-## ThenAsync&lt;T&gt;(Result, Func&lt;Task&lt;T&gt;&gt;, Boolean)
+## ThenAsync&lt;T&gt;(Result, Func&lt;Task&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L172" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the instance of [Result](../Result/Result.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), as an asynchronous operation.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result<T>> ThenAsync<T>(this Result result, Func<Task<T>> ifSuccessFunction,
     bool? continueOnCapturedContext = null);
 ```
@@ -192,7 +195,7 @@ The type of the value returned by the asynchronous `ifSuccessFunction`.
 #### `result` [Result](../Result/Result.md)
 The instance of [Result](../Result/Result.md) record that represents the result of the operation to be evaluated.
 
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[Task](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.task-1)&lt;T&gt;&gt;
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;T&gt;&gt;
 The asynchronous function to be executed, only if the current instance of [Result](../Result/Result.md) represents a successful operation, as an asynchronous operation.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -222,12 +225,13 @@ var companyResult = await createUserResult.ThenAsync(async () =>
 ```
 
 
-## ThenAsync&lt;T&gt;(Result, Func&lt;Task&lt;Result&lt;T&gt;&gt;&gt;, Boolean)
+## ThenAsync&lt;T&gt;(Result, Func&lt;Task&lt;Result&lt;T&gt;&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L223" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the instance of [Result](../Result/Result.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), as an asynchronous operation.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result<T>> ThenAsync<T>(this Result result, Func<Task<Result<T>>> ifSuccessFunction,
     bool? continueOnCapturedContext = null);
 ```
@@ -240,7 +244,7 @@ The type of the [Result&lt;T&gt;](../ResultT/ResultT.md) value returned by the a
 #### `result` [Result](../Result/Result.md)
 The instance of [Result](../Result/Result.md) record that represents the result of the operation to be evaluated.
 
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[Task](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.task-1)&lt;[Result](../ResultT/ResultT.md)&lt;T&gt;&gt;&gt;
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result](../ResultT/ResultT.md)&lt;T&gt;&gt;&gt;
 The asynchronous function to be executed, only if the current instance of [Result](../Result/Result.md) represents a successful operation, as an asynchronous operation.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -270,12 +274,13 @@ var companyResult = await createUserResult.ThenAsync(async () =>
 ```
 
 
-## ThenAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, Task&lt;Result&gt;&gt;, Boolean)
+## ThenAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, Task&lt;Result&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L279" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), as an asynchronous operation.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result> ThenAsync<T>(this Result<T> result, Func<T, Task<Result>> ifSuccessFunction,
     bool? continueOnCapturedContext = null);
 ```
@@ -288,7 +293,7 @@ The type of the value associated with successful `result` and passed to the asyn
 #### `result` [Result&lt;T&gt;](../ResultT/ResultT.md)
 The instance of [Result&lt;T&gt;](../ResultT/ResultT.md) record that represents the result of the operation with a value to be evaluated.
 
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [Task](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.task-1)&lt;[Result](../Result/Result.md)&gt;&gt;
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result](../Result/Result.md)&gt;&gt;
 The asynchronous function to be executed, only if the current instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. The value of type `T` contained in the [Result&lt;T&gt;](../ResultT/ResultT.md) instance will be passed as a parameter to this function.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -318,12 +323,13 @@ var userAddedResult = await createUserResult.ThenAsync(async (user) =>
 ```
 
 
-## ThenAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, Task&lt;Error&gt;&gt;, Boolean)
+## ThenAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, Task&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L336" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function only if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) returned by the function.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result> ThenAsync<T>(this Result<T> result,
     Func<T, Task<Error>> ifSuccessFunction, bool? continueOnCapturedContext = null);
 ```
@@ -365,12 +371,13 @@ var result = await _userService.GetUser(userId)
 ```
 
 
-## ThenAsync&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, Task&lt;TNext&gt;&gt;, Boolean)
+## ThenAsync&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, Task&lt;TNext&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L392" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), as an asynchronous operation.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result<TNext>> ThenAsync<T, TNext>(this Result<T> result,
     Func<T, Task<TNext>> ifSuccessFunction, bool? continueOnCapturedContext = null);
 ```
@@ -386,7 +393,7 @@ The type of the value returned by the asynchronous `ifSuccessFunction`.
 #### `result` [Result&lt;T&gt;](../ResultT/ResultT.md)
 The instance of [Result&lt;T&gt;](../ResultT/ResultT.md) record that represents the result of the operation with a value to be evaluated.
 
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [Task](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.task-1)&lt;TNext&gt;&gt;
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;TNext&gt;&gt;
 The asynchronous function to be executed, only if the current instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. The value of type `T` contained in the [Result&lt;T&gt;](../ResultT/ResultT.md) instance will be passed as a parameter to this function.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -416,12 +423,13 @@ var companyResult = await createUserResult.ThenAsync(async (user) =>
 ```
 
 
-## ThenAsync&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, Task&lt;Result&lt;TNext&gt;&gt;&gt;, Boolean)
+## ThenAsync&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, Task&lt;Result&lt;TNext&gt;&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L451" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), as an asynchronous operation.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result<TNext>> ThenAsync<T, TNext>(this Result<T> result,
     Func<T, Task<Result<TNext>>> ifSuccessFunction, bool? continueOnCapturedContext = null);
 ```
@@ -437,7 +445,7 @@ The type of the [Result&lt;TNext&gt;](../ResultT/ResultT.md) value returned by t
 #### `result` [Result&lt;T&gt;](../ResultT/ResultT.md)
 The instance of [Result&lt;T&gt;](../ResultT/ResultT.md) record that represents the result of the operation to be evaluated.
 
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[Task](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.task-1)&lt;[Result](../ResultT/ResultT.md)&lt;T&gt;&gt;&gt;
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result&lt;TNext&gt;](../ResultT/ResultT.md)&gt;&gt;
 The asynchronous function to be executed, only if the current instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. The value of type `T` contained in the [Result&lt;T&gt;](../ResultT/ResultT.md) instance will be passed as a parameter to this function.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -467,12 +475,13 @@ var companyResult = await createUserResult.ThenAsync(async (user) =>
 ```
 
 
-## ThenAsync(Task&lt;Result&gt;, Func&lt;Task&lt;Result&gt;&gt;, Boolean)
+## ThenAsync(Task&lt;Result&gt;, Func&lt;Task&lt;Result&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L512" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result](../Result/Result.md).
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result> ThenAsync(this Task<Result> resultTask, Func<Task<Result>> ifSuccessFunction,
     bool? continueOnCapturedContext = null);
 ```
@@ -481,7 +490,7 @@ public static Task<Result> ThenAsync(this Task<Result> resultTask, Func<Task<Res
 #### `resultTask` [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result](../Result/Result.md)&gt;
 The asynchronous operation that represents an instance of [Result](../Result/Result.md) record to be evaluated.
 
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[Task](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.task-1)&lt;[Result](../Result/Result.md)&gt;&gt;
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result](../Result/Result.md)&gt;&gt;
 The asynchronous function to be executed, only if the `resultTask` represents a successful operation.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -513,12 +522,13 @@ var createUserResult = await _userService.CreateUserAsync(userData)
 ```
 
 
-## ThenAsync(Task&lt;Result&gt;, Func&lt;Task&lt;Error&gt;&gt;, Boolean)
+## ThenAsync(Task&lt;Result&gt;, Func&lt;Task&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L571" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function only if the asynchronous operation `resultTask` represents a successful [Result](../Result/Result.md), and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) returned by the function.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result> ThenAsync(this Task<Result> resultTask,
     Func<Task<Error>> ifSuccessFunction, bool? continueOnCapturedContext = null);
 ```
@@ -556,12 +566,13 @@ var result = await _userService.DeleteUserAsync(userId)
 ```
 
 
-## ThenAsync&lt;T&gt;(Task&lt;Result&gt;, Func&lt;Task&lt;T&gt;&gt;, Boolean)
+## ThenAsync&lt;T&gt;(Task&lt;Result&gt;, Func&lt;Task&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L634" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result](../Result/Result.md).
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result<T>> ThenAsync<T>(this Task<Result> resultTask, Func<Task<T>> ifSuccessFunction,
     bool? continueOnCapturedContext = null);
 ```
@@ -574,7 +585,7 @@ The type of the value returned by the asynchronous `ifSuccessFunction`.
 #### `resultTask` [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result](../Result/Result.md)&gt;
 The asynchronous operation that represents an instance of [Result](../Result/Result.md) record to be evaluated.
 
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[Task](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.task-1)&lt;T&gt;&gt;
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;T&gt;&gt;
 The asynchronous function to be executed, only if the `resultTask` represents a successful operation.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -606,12 +617,13 @@ var createUserResult = await _userService.CreateUserAsync(userData)
 ```
 
 
-## ThenAsync&lt;T&gt;(Task&lt;Result&gt;, Func&lt;Task&lt;Result&lt;T&gt;&gt;&gt;, Boolean)
+## ThenAsync&lt;T&gt;(Task&lt;Result&gt;, Func&lt;Task&lt;Result&lt;T&gt;&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L695" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result](../Result/Result.md).
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result<T>> ThenAsync<T>(
     this Task<Result> resultTask,
     Func<Task<Result<T>>> ifSuccessFunction,
@@ -626,7 +638,7 @@ The type of the [Result&lt;T&gt;](../ResultT/ResultT.md) value returned by the a
 #### `resultTask` [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result](../Result/Result.md)&gt;
 The asynchronous operation that represents an instance of [Result](../Result/Result.md) record to be evaluated.
 
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[Task](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.task-1)&lt;[Result](../ResultT/ResultT.md)&lt;T&gt;&gt;&gt;
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result](../ResultT/ResultT.md)&lt;T&gt;&gt;&gt;
 The asynchronous function to be executed, only if the `resultTask` represents a successful operation.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -658,12 +670,13 @@ var createUserResult = await _userService.CreateUserAsync(userData)
 ```
 
 
-## ThenAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;Result&gt;&gt;, Boolean)
+## ThenAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;Result&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L763" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result&lt;T&gt;](../ResultT/ResultT.md).
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result> ThenAsync<T>(this Task<Result<T>> resultTask,
     Func<T, Task<Result>> ifSuccessFunction, bool? continueOnCapturedContext = null);
 ```
@@ -673,10 +686,10 @@ public static Task<Result> ThenAsync<T>(this Task<Result<T>> resultTask,
 The type of the value associated with successful `resultTask` and passed to the asynchronous `ifSuccessFunction`.
 
 ### Parameters
-#### `resultTask` [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result](../Result/Result.md)&gt;
+#### `resultTask` [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result&lt;T&gt;](../ResultT/ResultT.md)&gt;
 The asynchronous operation that represents an instance of [Result](../Result/Result.md) record to be evaluated.
 
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [Task](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.task-1)&lt;[Result](../Result/Result.md)&gt;&gt;
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result](../Result/Result.md)&gt;&gt;
 The asynchronous action to be executed, only if the `resultTask` represents a successful operation. The value of type `T` contained in the [Result&lt;T&gt;](../ResultT/ResultT.md) instance will be passed as a parameter to this action.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -708,12 +721,13 @@ var createUserResult = await _userService.CreateUserAsync(userData)
 ```
 
 
-## ThenAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;Error&gt;&gt;, Boolean)
+## ThenAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L827" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function only if the asynchronous operation `resultTask` represents a successful [Result&lt;T&gt;](../ResultT/ResultT.md), and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) returned by the function.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result> ThenAsync<T>(this Task<Result<T>> resultTask,
     Func<T, Task<Error>> ifSuccessFunction, bool? continueOnCapturedContext = null);
 ```
@@ -755,12 +769,13 @@ var result = await _userService.GetUserAsync(userId)
 ```
 
 
-## ThenAsync&lt;T, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;TNext&gt;&gt;, Boolean)
+## ThenAsync&lt;T, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;TNext&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L897" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result&lt;T&gt;](../ResultT/ResultT.md).
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result<TNext>> ThenAsync<T, TNext>(this Task<Result<T>> resultTask,
     Func<T, Task<TNext>> ifSuccessFunction, bool? continueOnCapturedContext = null);
 ```
@@ -773,10 +788,10 @@ The type of the value associated with successful `resultTask` and passed to the 
 The type of the value returned by the asynchronous `ifSuccessFunction`.
 
 ### Parameters
-#### `resultTask` [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result](../Result/Result.md)&gt;
+#### `resultTask` [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result&lt;T&gt;](../ResultT/ResultT.md)&gt;
 The asynchronous operation that represents an instance of [Result](../Result/Result.md) record to be evaluated.
 
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [Task](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.task-1)&lt;TNext&gt;&gt;
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;TNext&gt;&gt;
 The asynchronous action to be executed, only if the `resultTask` represents a successful operation. The value of type `T` contained in the [Result&lt;T&gt;](../ResultT/ResultT.md) instance will be passed as a parameter to this action.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -808,12 +823,13 @@ var createUserResult = await _userService.CreateUserAsync(userData)
 ```
 
 
-## ThenAsync&lt;T, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;Result&lt;TNext&gt;&gt;&gt;, Boolean)
+## ThenAsync&lt;T, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;Result&lt;TNext&gt;&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L967" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result&lt;T&gt;](../ResultT/ResultT.md).
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result<TNext>> ThenAsync<T, TNext>(this Task<Result<T>> resultTask,
     Func<T, Task<Result<TNext>>> ifSuccessFunction, bool? continueOnCapturedContext = null);
 ```
@@ -826,10 +842,10 @@ The type of the value associated with successful `resultTask` and passed to the 
 The type of the [Result&lt;TNext&gt;](../ResultT/ResultT.md) value returned by the asynchronous `ifSuccessFunction`.
 
 ### Parameters
-#### `resultTask` [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result](../Result/Result.md)&gt;
+#### `resultTask` [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result&lt;T&gt;](../ResultT/ResultT.md)&gt;
 The asynchronous operation that represents an instance of [Result](../Result/Result.md) record to be evaluated.
 
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[Task](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.task-1)&lt;[Result](../ResultT/ResultT.md)&lt;T&gt;&gt;&gt;
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result&lt;TNext&gt;](../ResultT/ResultT.md)&gt;&gt;
 The asynchronous action to be executed, only if the `resultTask` represents a successful operation. The value of type `T` contained in the [Result&lt;T&gt;](../ResultT/ResultT.md) instance will be passed as a parameter to this action.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -861,7 +877,7 @@ var createUserResult = await _userService.CreateUserAsync(userData)
 ```
 
 
-## ThenAsync&lt;T&gt;(Task&lt;Result&gt;, Func&lt;T&gt;, Boolean)
+## ThenAsync&lt;T&gt;(Task&lt;Result&gt;, Func&lt;T&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1018" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Runs the synchronous function if the result that the `resultTask` returns is successful, and returns a result with its value.
@@ -907,7 +923,7 @@ var result = await _service.DeleteAsync(id)
 ```
 
 
-## ThenAsync(Task&lt;Result&gt;, Func&lt;Result&gt;, Boolean)
+## ThenAsync(Task&lt;Result&gt;, Func&lt;Result&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1056" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Runs the synchronous function if the result that the `resultTask` returns is successful, and returns the result that it returns.
@@ -949,7 +965,7 @@ var result = await _service.DeleteAsync(id)
 ```
 
 
-## ThenAsync&lt;T&gt;(Task&lt;Result&gt;, Func&lt;Result&lt;T&gt;&gt;, Boolean)
+## ThenAsync&lt;T&gt;(Task&lt;Result&gt;, Func&lt;Result&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1095" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Runs the synchronous function if the result that the `resultTask` returns is successful, and returns the result that it returns.
@@ -995,7 +1011,7 @@ var result = await _service.DeleteAsync(id)
 ```
 
 
-## ThenAsync(Task&lt;Result&gt;, Func&lt;Error&gt;, Boolean)
+## ThenAsync(Task&lt;Result&gt;, Func&lt;Error&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1134" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Runs the synchronous function if the result that the `resultTask` returns is successful, and returns a failed result with the error that it returns.
@@ -1037,7 +1053,7 @@ var result = await _service.DeleteAsync(id)
 ```
 
 
-## ThenAsync&lt;T, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, TNext&gt;, Boolean)
+## ThenAsync&lt;T, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, TNext&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1176" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Runs the synchronous function on the value if the result that the `resultTask` returns is successful, and returns a result with the value that it returns.
@@ -1086,7 +1102,7 @@ var nameResult = await _userService.GetUserAsync(id)
 ```
 
 
-## ThenAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&gt;, Boolean)
+## ThenAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1218" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Runs the synchronous function on the value if the result that the `resultTask` returns is successful, and returns the result that it returns.
@@ -1132,7 +1148,7 @@ var result = await _userService.GetUserAsync(id)
 ```
 
 
-## ThenAsync&lt;T, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&lt;TNext&gt;&gt;, Boolean)
+## ThenAsync&lt;T, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&lt;TNext&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1261" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Runs the synchronous function on the value if the result that the `resultTask` returns is successful, and returns the result that it returns.
@@ -1181,7 +1197,7 @@ var addressResult = await _userService.GetUserAsync(id)
 ```
 
 
-## ThenAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Error&gt;, Boolean)
+## ThenAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Error&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1301" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Runs the synchronous function on the value if the result that the `resultTask` returns is successful, and returns a failed result with the error that it returns.
@@ -1226,7 +1242,7 @@ var result = await _userService.GetUserAsync(id)
     .ThenAsync(user => Error.PermissionDenied(typeUri, $"{user.Name} cannot do this."));
 ```
 
-## ThenAsync(Task&lt;Result&gt;, Func&lt;ValueTask&lt;Result&gt;&gt;, Boolean)
+## ThenAsync(Task&lt;Result&gt;, Func&lt;ValueTask&lt;Result&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1362" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result](../Result/Result.md).
@@ -1240,7 +1256,7 @@ public static Task<Result> ThenAsync(this Task<Result> resultTask, Func<ValueTas
 #### `resultTask` [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result](../Result/Result.md)&gt;
 The asynchronous operation that represents an instance of [Result](../Result/Result.md) record to be evaluated.
 
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[ValueTask](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../Result/Result.md)&gt;&gt;
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../Result/Result.md)&gt;&gt;
 The asynchronous function to be executed, only if the `resultTask` represents a successful operation.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -1264,7 +1280,7 @@ The function returns a `ValueTask`, the other kind of task: it is awaited, and a
 
 The `ThenAsync` method executes the provided asynchronous operation represented by `resultTask` to evaluate its result. This enables chaining multiple asynchronous operations that return `Task<TResult>`.
 
-## ThenAsync(Task&lt;Result&gt;, Func&lt;ValueTask&lt;Error&gt;&gt;, Boolean)
+## ThenAsync(Task&lt;Result&gt;, Func&lt;ValueTask&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1424" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function only if the asynchronous operation `resultTask` represents a successful [Result](../Result/Result.md), and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) returned by the function.
@@ -1302,7 +1318,7 @@ The function returns a `ValueTask`, the other kind of task: it is awaited, and a
 
 Without this overload, an asynchronous function returning an [Error](../Error/Error.md) would return a **successful** `Result<Error>`. To get that on purpose, specify the type arguments: `ThenAsync<Error>(…)`.
 
-## ThenAsync&lt;T&gt;(Task&lt;Result&gt;, Func&lt;ValueTask&lt;T&gt;&gt;, Boolean)
+## ThenAsync&lt;T&gt;(Task&lt;Result&gt;, Func&lt;ValueTask&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1489" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result](../Result/Result.md).
@@ -1320,7 +1336,7 @@ The type of the value returned by the asynchronous `ifSuccessFunction`.
 #### `resultTask` [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result](../Result/Result.md)&gt;
 The asynchronous operation that represents an instance of [Result](../Result/Result.md) record to be evaluated.
 
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[ValueTask](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.valuetask-1)&lt;T&gt;&gt;
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;T&gt;&gt;
 The asynchronous function to be executed, only if the `resultTask` represents a successful operation.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -1344,7 +1360,7 @@ The function returns a `ValueTask`, the other kind of task: it is awaited, and a
 
 The `ThenAsync` method executes the provided asynchronous operation represented by `resultTask` to evaluate its result. This enables chaining multiple asynchronous operations that return `Task<TResult>`.
 
-## ThenAsync&lt;T&gt;(Task&lt;Result&gt;, Func&lt;ValueTask&lt;Result&lt;T&gt;&gt;&gt;, Boolean)
+## ThenAsync&lt;T&gt;(Task&lt;Result&gt;, Func&lt;ValueTask&lt;Result&lt;T&gt;&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1553" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result](../Result/Result.md).
@@ -1364,7 +1380,7 @@ The type of the [Result&lt;T&gt;](../ResultT/ResultT.md) value returned by the a
 #### `resultTask` [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result](../Result/Result.md)&gt;
 The asynchronous operation that represents an instance of [Result](../Result/Result.md) record to be evaluated.
 
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[ValueTask](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../ResultT/ResultT.md)&lt;T&gt;&gt;&gt;
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../ResultT/ResultT.md)&lt;T&gt;&gt;&gt;
 The asynchronous function to be executed, only if the `resultTask` represents a successful operation.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -1388,7 +1404,7 @@ The function returns a `ValueTask`, the other kind of task: it is awaited, and a
 
 The `ThenAsync` method executes the provided asynchronous operation represented by `resultTask` to evaluate its result. This enables chaining multiple asynchronous operations that return `Task<TResult>`.
 
-## ThenAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Boolean)
+## ThenAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1621" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result&lt;T&gt;](../ResultT/ResultT.md).
@@ -1403,10 +1419,10 @@ public static Task<Result> ThenAsync<T>(this Task<Result<T>> resultTask,
 The type of the value associated with successful `resultTask` and passed to the asynchronous `ifSuccessFunction`.
 
 ### Parameters
-#### `resultTask` [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result](../Result/Result.md)&gt;
+#### `resultTask` [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result&lt;T&gt;](../ResultT/ResultT.md)&gt;
 The asynchronous operation that represents an instance of [Result](../Result/Result.md) record to be evaluated.
 
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [ValueTask](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../Result/Result.md)&gt;&gt;
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../Result/Result.md)&gt;&gt;
 The asynchronous action to be executed, only if the `resultTask` represents a successful operation. The value of type `T` contained in the [Result&lt;T&gt;](../ResultT/ResultT.md) instance will be passed as a parameter to this action.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -1430,7 +1446,7 @@ The function returns a `ValueTask`, the other kind of task: it is awaited, and a
 
 The `ThenAsync` method executes the provided asynchronous operation represented by `resultTask` to evaluate its result. This enables chaining multiple asynchronous operations that return `Task<TResult>`.
 
-## ThenAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Error&gt;&gt;, Boolean)
+## ThenAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1688" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function only if the asynchronous operation `resultTask` represents a successful [Result&lt;T&gt;](../ResultT/ResultT.md), and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) returned by the function.
@@ -1472,7 +1488,7 @@ The function returns a `ValueTask`, the other kind of task: it is awaited, and a
 
 Without this overload, an asynchronous function returning an [Error](../Error/Error.md) would return a **successful** `Result<Error>`. To get that on purpose, specify the type arguments: `ThenAsync<T, Error>(…)`.
 
-## ThenAsync&lt;T, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;TNext&gt;&gt;, Boolean)
+## ThenAsync&lt;T, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;TNext&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1761" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result&lt;T&gt;](../ResultT/ResultT.md).
@@ -1490,10 +1506,10 @@ The type of the value associated with successful `resultTask` and passed to the 
 The type of the value returned by the asynchronous `ifSuccessFunction`.
 
 ### Parameters
-#### `resultTask` [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result](../Result/Result.md)&gt;
+#### `resultTask` [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result&lt;T&gt;](../ResultT/ResultT.md)&gt;
 The asynchronous operation that represents an instance of [Result](../Result/Result.md) record to be evaluated.
 
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [ValueTask](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.valuetask-1)&lt;TNext&gt;&gt;
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;TNext&gt;&gt;
 The asynchronous action to be executed, only if the `resultTask` represents a successful operation. The value of type `T` contained in the [Result&lt;T&gt;](../ResultT/ResultT.md) instance will be passed as a parameter to this action.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -1517,7 +1533,7 @@ The function returns a `ValueTask`, the other kind of task: it is awaited, and a
 
 The `ThenAsync` method executes the provided asynchronous operation represented by `resultTask` to evaluate its result. This enables chaining multiple asynchronous operations that return `Task<TResult>`.
 
-## ThenAsync&lt;T, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&lt;TNext&gt;&gt;&gt;, Boolean)
+## ThenAsync&lt;T, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&lt;TNext&gt;&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1834" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result&lt;T&gt;](../ResultT/ResultT.md).
@@ -1535,10 +1551,10 @@ The type of the value associated with successful `resultTask` and passed to the 
 The type of the [Result&lt;TNext&gt;](../ResultT/ResultT.md) value returned by the asynchronous `ifSuccessFunction`.
 
 ### Parameters
-#### `resultTask` [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result](../Result/Result.md)&gt;
+#### `resultTask` [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result&lt;T&gt;](../ResultT/ResultT.md)&gt;
 The asynchronous operation that represents an instance of [Result](../Result/Result.md) record to be evaluated.
 
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[ValueTask](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../ResultT/ResultT.md)&lt;T&gt;&gt;&gt;
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result&lt;TNext&gt;](../ResultT/ResultT.md)&gt;&gt;
 The asynchronous action to be executed, only if the `resultTask` represents a successful operation. The value of type `T` contained in the [Result&lt;T&gt;](../ResultT/ResultT.md) instance will be passed as a parameter to this action.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -1562,7 +1578,7 @@ The function returns a `ValueTask`, the other kind of task: it is awaited, and a
 
 The `ThenAsync` method executes the provided asynchronous operation represented by `resultTask` to evaluate its result. This enables chaining multiple asynchronous operations that return `Task<TResult>`.
 
-## ThenAsync(Result, Func&lt;ValueTask&lt;Result&gt;&gt;, Boolean)
+## ThenAsync(Result, Func&lt;ValueTask&lt;Result&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L51" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the instance of [Result](../Result/Result.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), as an asynchronous operation.
@@ -1576,7 +1592,7 @@ public static ValueTask<Result> ThenAsync(this Result result, Func<ValueTask<Res
 #### `result` [Result](../Result/Result.md)
 The instance of [Result](../Result/Result.md) record that represents the result of the operation to be evaluated.
 
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[ValueTask](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../Result/Result.md)&gt;&gt;
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../Result/Result.md)&gt;&gt;
 The asynchronous function to be executed, only if the current instance of [Result](../Result/Result.md) represents a successful operation, as an asynchronous operation.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -1606,7 +1622,7 @@ var userAddedResult = await createUserResult.ThenAsync(async () =>
 ```
 
 
-## ThenAsync(Result, Func&lt;ValueTask&lt;Error&gt;&gt;, Boolean)
+## ThenAsync(Result, Func&lt;ValueTask&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L104" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function only if the [Result](../Result/Result.md) represents a successful operation, and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) returned by the function.
@@ -1648,7 +1664,7 @@ var result = await _userService.DeleteUser(userId)
 ```
 
 
-## ThenAsync&lt;T&gt;(Result, Func&lt;ValueTask&lt;T&gt;&gt;, Boolean)
+## ThenAsync&lt;T&gt;(Result, Func&lt;ValueTask&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L136" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the instance of [Result](../Result/Result.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), as an asynchronous operation.
@@ -1666,7 +1682,7 @@ The type of the value returned by the asynchronous `ifSuccessFunction`.
 #### `result` [Result](../Result/Result.md)
 The instance of [Result](../Result/Result.md) record that represents the result of the operation to be evaluated.
 
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[ValueTask](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.valuetask-1)&lt;T&gt;&gt;
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;T&gt;&gt;
 The asynchronous function to be executed, only if the current instance of [Result](../Result/Result.md) represents a successful operation, as an asynchronous operation.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -1693,7 +1709,7 @@ var companyResult = await createUserResult.ThenAsync(async () =>
 ```
 
 
-## ThenAsync&lt;T&gt;(Result, Func&lt;ValueTask&lt;Result&lt;T&gt;&gt;&gt;, Boolean)
+## ThenAsync&lt;T&gt;(Result, Func&lt;ValueTask&lt;Result&lt;T&gt;&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L161" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the instance of [Result](../Result/Result.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), as an asynchronous operation.
@@ -1711,7 +1727,7 @@ The type of the [Result&lt;T&gt;](../ResultT/ResultT.md) value returned by the a
 #### `result` [Result](../Result/Result.md)
 The instance of [Result](../Result/Result.md) record that represents the result of the operation to be evaluated.
 
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[ValueTask](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../ResultT/ResultT.md)&lt;T&gt;&gt;&gt;
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../ResultT/ResultT.md)&lt;T&gt;&gt;&gt;
 The asynchronous function to be executed, only if the current instance of [Result](../Result/Result.md) represents a successful operation, as an asynchronous operation.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -1741,7 +1757,7 @@ var companyResult = await createUserResult.ThenAsync(async () =>
 ```
 
 
-## ThenAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Boolean)
+## ThenAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L217" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), as an asynchronous operation.
@@ -1759,7 +1775,7 @@ The type of the value associated with successful `result` and passed to the asyn
 #### `result` [Result&lt;T&gt;](../ResultT/ResultT.md)
 The instance of [Result&lt;T&gt;](../ResultT/ResultT.md) record that represents the result of the operation with a value to be evaluated.
 
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [ValueTask](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../Result/Result.md)&gt;&gt;
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../Result/Result.md)&gt;&gt;
 The asynchronous function to be executed, only if the current instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. The value of type `T` contained in the [Result&lt;T&gt;](../ResultT/ResultT.md) instance will be passed as a parameter to this function.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -1789,7 +1805,7 @@ var userAddedResult = await createUserResult.ThenAsync(async (user) =>
 ```
 
 
-## ThenAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Error&gt;&gt;, Boolean)
+## ThenAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L274" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function only if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) returned by the function.
@@ -1836,7 +1852,7 @@ var result = await _userService.GetUser(userId)
 ```
 
 
-## ThenAsync&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;TNext&gt;&gt;, Boolean)
+## ThenAsync&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;TNext&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L302" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), as an asynchronous operation.
@@ -1857,7 +1873,7 @@ The type of the value returned by the asynchronous `ifSuccessFunction`.
 #### `result` [Result&lt;T&gt;](../ResultT/ResultT.md)
 The instance of [Result&lt;T&gt;](../ResultT/ResultT.md) record that represents the result of the operation with a value to be evaluated.
 
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [ValueTask](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.valuetask-1)&lt;TNext&gt;&gt;
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;TNext&gt;&gt;
 The asynchronous function to be executed, only if the current instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. The value of type `T` contained in the [Result&lt;T&gt;](../ResultT/ResultT.md) instance will be passed as a parameter to this function.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -1884,7 +1900,7 @@ var companyResult = await createUserResult.ThenAsync(async (user) =>
 ```
 
 
-## ThenAsync&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Result&lt;TNext&gt;&gt;&gt;, Boolean)
+## ThenAsync&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Result&lt;TNext&gt;&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L355" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), as an asynchronous operation.
@@ -1905,7 +1921,7 @@ The type of the [Result&lt;TNext&gt;](../ResultT/ResultT.md) value returned by t
 #### `result` [Result&lt;T&gt;](../ResultT/ResultT.md)
 The instance of [Result&lt;T&gt;](../ResultT/ResultT.md) record that represents the result of the operation to be evaluated.
 
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[ValueTask](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../ResultT/ResultT.md)&lt;T&gt;&gt;&gt;
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result&lt;TNext&gt;](../ResultT/ResultT.md)&gt;&gt;
 The asynchronous function to be executed, only if the current instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. The value of type `T` contained in the [Result&lt;T&gt;](../ResultT/ResultT.md) instance will be passed as a parameter to this function.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -1935,7 +1951,7 @@ var companyResult = await createUserResult.ThenAsync(async (user) =>
 ```
 
 
-## ThenAsync(ValueTask&lt;Result&gt;, Func&lt;ValueTask&lt;Result&gt;&gt;, Boolean)
+## ThenAsync(ValueTask&lt;Result&gt;, Func&lt;ValueTask&lt;Result&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L413" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result](../Result/Result.md).
@@ -1949,7 +1965,7 @@ public static ValueTask<Result> ThenAsync(this ValueTask<Result> resultTask, Fun
 #### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../Result/Result.md)&gt;
 The asynchronous operation that represents an instance of [Result](../Result/Result.md) record to be evaluated.
 
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[ValueTask](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../Result/Result.md)&gt;&gt;
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../Result/Result.md)&gt;&gt;
 The asynchronous function to be executed, only if the `resultTask` represents a successful operation.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -1981,7 +1997,7 @@ var createUserResult = await _userService.CreateUserAsync(userData)
 ```
 
 
-## ThenAsync(ValueTask&lt;Result&gt;, Func&lt;ValueTask&lt;Error&gt;&gt;, Boolean)
+## ThenAsync(ValueTask&lt;Result&gt;, Func&lt;ValueTask&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L471" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function only if the asynchronous operation `resultTask` represents a successful [Result](../Result/Result.md), and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) returned by the function.
@@ -2024,7 +2040,7 @@ var result = await _userService.DeleteUserAsync(userId)
 ```
 
 
-## ThenAsync&lt;T&gt;(ValueTask&lt;Result&gt;, Func&lt;ValueTask&lt;T&gt;&gt;, Boolean)
+## ThenAsync&lt;T&gt;(ValueTask&lt;Result&gt;, Func&lt;ValueTask&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L530" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result](../Result/Result.md).
@@ -2042,7 +2058,7 @@ The type of the value returned by the asynchronous `ifSuccessFunction`.
 #### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../Result/Result.md)&gt;
 The asynchronous operation that represents an instance of [Result](../Result/Result.md) record to be evaluated.
 
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[ValueTask](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.valuetask-1)&lt;T&gt;&gt;
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;T&gt;&gt;
 The asynchronous function to be executed, only if the `resultTask` represents a successful operation.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -2074,7 +2090,7 @@ var createUserResult = await _userService.CreateUserAsync(userData)
 ```
 
 
-## ThenAsync&lt;T&gt;(ValueTask&lt;Result&gt;, Func&lt;ValueTask&lt;Result&lt;T&gt;&gt;&gt;, Boolean)
+## ThenAsync&lt;T&gt;(ValueTask&lt;Result&gt;, Func&lt;ValueTask&lt;Result&lt;T&gt;&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L586" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result](../Result/Result.md).
@@ -2094,7 +2110,7 @@ The type of the [Result&lt;T&gt;](../ResultT/ResultT.md) value returned by the a
 #### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../Result/Result.md)&gt;
 The asynchronous operation that represents an instance of [Result](../Result/Result.md) record to be evaluated.
 
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[ValueTask](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../ResultT/ResultT.md)&lt;T&gt;&gt;&gt;
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../ResultT/ResultT.md)&lt;T&gt;&gt;&gt;
 The asynchronous function to be executed, only if the `resultTask` represents a successful operation.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -2126,7 +2142,7 @@ var createUserResult = await _userService.CreateUserAsync(userData)
 ```
 
 
-## ThenAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Boolean)
+## ThenAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L651" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result&lt;T&gt;](../ResultT/ResultT.md).
@@ -2141,10 +2157,10 @@ public static ValueTask<Result> ThenAsync<T>(this ValueTask<Result<T>> resultTas
 The type of the value associated with successful `resultTask` and passed to the asynchronous `ifSuccessFunction`.
 
 ### Parameters
-#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../Result/Result.md)&gt;
+#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result&lt;T&gt;](../ResultT/ResultT.md)&gt;
 The asynchronous operation that represents an instance of [Result](../Result/Result.md) record to be evaluated.
 
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [ValueTask](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../Result/Result.md)&gt;&gt;
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../Result/Result.md)&gt;&gt;
 The asynchronous action to be executed, only if the `resultTask` represents a successful operation. The value of type `T` contained in the [Result&lt;T&gt;](../ResultT/ResultT.md) instance will be passed as a parameter to this action.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -2176,7 +2192,7 @@ var createUserResult = await _userService.CreateUserAsync(userData)
 ```
 
 
-## ThenAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Error&gt;&gt;, Boolean)
+## ThenAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L713" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function only if the asynchronous operation `resultTask` represents a successful [Result&lt;T&gt;](../ResultT/ResultT.md), and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) returned by the function.
@@ -2223,7 +2239,7 @@ var result = await _userService.GetUserAsync(userId)
 ```
 
 
-## ThenAsync&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;TNext&gt;&gt;, Boolean)
+## ThenAsync&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;TNext&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L779" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result&lt;T&gt;](../ResultT/ResultT.md).
@@ -2241,10 +2257,10 @@ The type of the value associated with successful `resultTask` and passed to the 
 The type of the value returned by the asynchronous `ifSuccessFunction`.
 
 ### Parameters
-#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../Result/Result.md)&gt;
+#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result&lt;T&gt;](../ResultT/ResultT.md)&gt;
 The asynchronous operation that represents an instance of [Result](../Result/Result.md) record to be evaluated.
 
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [ValueTask](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.valuetask-1)&lt;TNext&gt;&gt;
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;TNext&gt;&gt;
 The asynchronous action to be executed, only if the `resultTask` represents a successful operation. The value of type `T` contained in the [Result&lt;T&gt;](../ResultT/ResultT.md) instance will be passed as a parameter to this action.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -2276,7 +2292,7 @@ var createUserResult = await _userService.CreateUserAsync(userData)
 ```
 
 
-## ThenAsync&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&lt;TNext&gt;&gt;&gt;, Boolean)
+## ThenAsync&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&lt;TNext&gt;&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L840" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result&lt;T&gt;](../ResultT/ResultT.md).
@@ -2294,10 +2310,10 @@ The type of the value associated with successful `resultTask` and passed to the 
 The type of the [Result&lt;TNext&gt;](../ResultT/ResultT.md) value returned by the asynchronous `ifSuccessFunction`.
 
 ### Parameters
-#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../Result/Result.md)&gt;
+#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result&lt;T&gt;](../ResultT/ResultT.md)&gt;
 The asynchronous operation that represents an instance of [Result](../Result/Result.md) record to be evaluated.
 
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[ValueTask](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../ResultT/ResultT.md)&lt;T&gt;&gt;&gt;
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result&lt;TNext&gt;](../ResultT/ResultT.md)&gt;&gt;
 The asynchronous action to be executed, only if the `resultTask` represents a successful operation. The value of type `T` contained in the [Result&lt;T&gt;](../ResultT/ResultT.md) instance will be passed as a parameter to this action.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -2329,7 +2345,7 @@ var createUserResult = await _userService.CreateUserAsync(userData)
 ```
 
 
-## ThenAsync&lt;T&gt;(ValueTask&lt;Result&gt;, Func&lt;T&gt;, Boolean)
+## ThenAsync&lt;T&gt;(ValueTask&lt;Result&gt;, Func&lt;T&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L891" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Runs the synchronous function if the result that the `resultTask` returns is successful, and returns a result with its value.
@@ -2375,7 +2391,7 @@ var result = await _service.DeleteAsync(id)
 ```
 
 
-## ThenAsync(ValueTask&lt;Result&gt;, Func&lt;Result&gt;, Boolean)
+## ThenAsync(ValueTask&lt;Result&gt;, Func&lt;Result&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L926" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Runs the synchronous function if the result that the `resultTask` returns is successful, and returns the result that it returns.
@@ -2417,7 +2433,7 @@ var result = await _service.DeleteAsync(id)
 ```
 
 
-## ThenAsync&lt;T&gt;(ValueTask&lt;Result&gt;, Func&lt;Result&lt;T&gt;&gt;, Boolean)
+## ThenAsync&lt;T&gt;(ValueTask&lt;Result&gt;, Func&lt;Result&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L962" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Runs the synchronous function if the result that the `resultTask` returns is successful, and returns the result that it returns.
@@ -2463,7 +2479,7 @@ var result = await _service.DeleteAsync(id)
 ```
 
 
-## ThenAsync(ValueTask&lt;Result&gt;, Func&lt;Error&gt;, Boolean)
+## ThenAsync(ValueTask&lt;Result&gt;, Func&lt;Error&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L998" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Runs the synchronous function if the result that the `resultTask` returns is successful, and returns a failed result with the error that it returns.
@@ -2505,7 +2521,7 @@ var result = await _service.DeleteAsync(id)
 ```
 
 
-## ThenAsync&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, TNext&gt;, Boolean)
+## ThenAsync&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, TNext&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L1037" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Runs the synchronous function on the value if the result that the `resultTask` returns is successful, and returns a result with the value that it returns.
@@ -2554,7 +2570,7 @@ var nameResult = await _userService.GetUserAsync(id)
 ```
 
 
-## ThenAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&gt;, Boolean)
+## ThenAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L1076" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Runs the synchronous function on the value if the result that the `resultTask` returns is successful, and returns the result that it returns.
@@ -2600,7 +2616,7 @@ var result = await _userService.GetUserAsync(id)
 ```
 
 
-## ThenAsync&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&lt;TNext&gt;&gt;, Boolean)
+## ThenAsync&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&lt;TNext&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L1116" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Runs the synchronous function on the value if the result that the `resultTask` returns is successful, and returns the result that it returns.
@@ -2649,7 +2665,7 @@ var addressResult = await _userService.GetUserAsync(id)
 ```
 
 
-## ThenAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Error&gt;, Boolean)
+## ThenAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Error&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L1153" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Runs the synchronous function on the value if the result that the `resultTask` returns is successful, and returns a failed result with the error that it returns.
@@ -2694,12 +2710,13 @@ var result = await _userService.GetUserAsync(id)
     .ThenAsync(user => Error.PermissionDenied(typeUri, $"{user.Name} cannot do this."));
 ```
 
-## ThenAsync(ValueTask&lt;Result&gt;, Func&lt;Task&lt;Result&gt;&gt;, Boolean)
+## ThenAsync(ValueTask&lt;Result&gt;, Func&lt;Task&lt;Result&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L1212" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result](../Result/Result.md).
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static ValueTask<Result> ThenAsync(this ValueTask<Result> resultTask, Func<Task<Result>> ifSuccessFunction,
     bool? continueOnCapturedContext = null);
 ```
@@ -2708,7 +2725,7 @@ public static ValueTask<Result> ThenAsync(this ValueTask<Result> resultTask, Fun
 #### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../Result/Result.md)&gt;
 The asynchronous operation that represents an instance of [Result](../Result/Result.md) record to be evaluated.
 
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[Task](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.task-1)&lt;[Result](../Result/Result.md)&gt;&gt;
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result](../Result/Result.md)&gt;&gt;
 The asynchronous function to be executed, only if the `resultTask` represents a successful operation.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -2732,12 +2749,13 @@ The function returns a `Task`, the other kind of task: it is awaited, and a `Val
 
 The `ThenAsync` method executes the provided asynchronous operation represented by `resultTask` to evaluate its result. This enables chaining multiple asynchronous operations that return `ValueTask<TResult>`.
 
-## ThenAsync(ValueTask&lt;Result&gt;, Func&lt;Task&lt;Error&gt;&gt;, Boolean)
+## ThenAsync(ValueTask&lt;Result&gt;, Func&lt;Task&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L1274" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function only if the asynchronous operation `resultTask` represents a successful [Result](../Result/Result.md), and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) returned by the function.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static ValueTask<Result> ThenAsync(this ValueTask<Result> resultTask,
     Func<Task<Error>> ifSuccessFunction, bool? continueOnCapturedContext = null);
 ```
@@ -2770,12 +2788,13 @@ The function returns a `Task`, the other kind of task: it is awaited, and a `Val
 
 Without this overload, an asynchronous function returning an [Error](../Error/Error.md) would return a **successful** `Result<Error>`. To get that on purpose, specify the type arguments: `ThenAsync<Error>(…)`.
 
-## ThenAsync&lt;T&gt;(ValueTask&lt;Result&gt;, Func&lt;Task&lt;T&gt;&gt;, Boolean)
+## ThenAsync&lt;T&gt;(ValueTask&lt;Result&gt;, Func&lt;Task&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L1338" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result](../Result/Result.md).
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static ValueTask<Result<T>> ThenAsync<T>(this ValueTask<Result> resultTask, Func<Task<T>> ifSuccessFunction,
     bool? continueOnCapturedContext = null);
 ```
@@ -2788,7 +2807,7 @@ The type of the value returned by the asynchronous `ifSuccessFunction`.
 #### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../Result/Result.md)&gt;
 The asynchronous operation that represents an instance of [Result](../Result/Result.md) record to be evaluated.
 
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[Task](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.task-1)&lt;T&gt;&gt;
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;T&gt;&gt;
 The asynchronous function to be executed, only if the `resultTask` represents a successful operation.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -2812,12 +2831,13 @@ The function returns a `Task`, the other kind of task: it is awaited, and a `Val
 
 The `ThenAsync` method executes the provided asynchronous operation represented by `resultTask` to evaluate its result. This enables chaining multiple asynchronous operations that return `ValueTask<TResult>`.
 
-## ThenAsync&lt;T&gt;(ValueTask&lt;Result&gt;, Func&lt;Task&lt;Result&lt;T&gt;&gt;&gt;, Boolean)
+## ThenAsync&lt;T&gt;(ValueTask&lt;Result&gt;, Func&lt;Task&lt;Result&lt;T&gt;&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L1400" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result](../Result/Result.md).
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static ValueTask<Result<T>> ThenAsync<T>(
     this ValueTask<Result> resultTask,
     Func<Task<Result<T>>> ifSuccessFunction,
@@ -2832,7 +2852,7 @@ The type of the [Result&lt;T&gt;](../ResultT/ResultT.md) value returned by the a
 #### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../Result/Result.md)&gt;
 The asynchronous operation that represents an instance of [Result](../Result/Result.md) record to be evaluated.
 
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[Task](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.task-1)&lt;[Result](../ResultT/ResultT.md)&lt;T&gt;&gt;&gt;
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result](../ResultT/ResultT.md)&lt;T&gt;&gt;&gt;
 The asynchronous function to be executed, only if the `resultTask` represents a successful operation.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -2856,12 +2876,13 @@ The function returns a `Task`, the other kind of task: it is awaited, and a `Val
 
 The `ThenAsync` method executes the provided asynchronous operation represented by `resultTask` to evaluate its result. This enables chaining multiple asynchronous operations that return `ValueTask<TResult>`.
 
-## ThenAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;Result&gt;&gt;, Boolean)
+## ThenAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;Result&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L1466" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result&lt;T&gt;](../ResultT/ResultT.md).
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static ValueTask<Result> ThenAsync<T>(this ValueTask<Result<T>> resultTask,
     Func<T, Task<Result>> ifSuccessFunction, bool? continueOnCapturedContext = null);
 ```
@@ -2871,10 +2892,10 @@ public static ValueTask<Result> ThenAsync<T>(this ValueTask<Result<T>> resultTas
 The type of the value associated with successful `resultTask` and passed to the asynchronous `ifSuccessFunction`.
 
 ### Parameters
-#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../Result/Result.md)&gt;
+#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result&lt;T&gt;](../ResultT/ResultT.md)&gt;
 The asynchronous operation that represents an instance of [Result](../Result/Result.md) record to be evaluated.
 
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [Task](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.task-1)&lt;[Result](../Result/Result.md)&gt;&gt;
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result](../Result/Result.md)&gt;&gt;
 The asynchronous action to be executed, only if the `resultTask` represents a successful operation. The value of type `T` contained in the [Result&lt;T&gt;](../ResultT/ResultT.md) instance will be passed as a parameter to this action.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -2898,12 +2919,13 @@ The function returns a `Task`, the other kind of task: it is awaited, and a `Val
 
 The `ThenAsync` method executes the provided asynchronous operation represented by `resultTask` to evaluate its result. This enables chaining multiple asynchronous operations that return `ValueTask<TResult>`.
 
-## ThenAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;Error&gt;&gt;, Boolean)
+## ThenAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L1533" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function only if the asynchronous operation `resultTask` represents a successful [Result&lt;T&gt;](../ResultT/ResultT.md), and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) returned by the function.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static ValueTask<Result> ThenAsync<T>(this ValueTask<Result<T>> resultTask,
     Func<T, Task<Error>> ifSuccessFunction, bool? continueOnCapturedContext = null);
 ```
@@ -2940,12 +2962,13 @@ The function returns a `Task`, the other kind of task: it is awaited, and a `Val
 
 Without this overload, an asynchronous function returning an [Error](../Error/Error.md) would return a **successful** `Result<Error>`. To get that on purpose, specify the type arguments: `ThenAsync<T, Error>(…)`.
 
-## ThenAsync&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;TNext&gt;&gt;, Boolean)
+## ThenAsync&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;TNext&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L1605" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result&lt;T&gt;](../ResultT/ResultT.md).
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static ValueTask<Result<TNext>> ThenAsync<T, TNext>(this ValueTask<Result<T>> resultTask,
     Func<T, Task<TNext>> ifSuccessFunction, bool? continueOnCapturedContext = null);
 ```
@@ -2958,10 +2981,10 @@ The type of the value associated with successful `resultTask` and passed to the 
 The type of the value returned by the asynchronous `ifSuccessFunction`.
 
 ### Parameters
-#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../Result/Result.md)&gt;
+#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result&lt;T&gt;](../ResultT/ResultT.md)&gt;
 The asynchronous operation that represents an instance of [Result](../Result/Result.md) record to be evaluated.
 
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [Task](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.task-1)&lt;TNext&gt;&gt;
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;TNext&gt;&gt;
 The asynchronous action to be executed, only if the `resultTask` represents a successful operation. The value of type `T` contained in the [Result&lt;T&gt;](../ResultT/ResultT.md) instance will be passed as a parameter to this action.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;
@@ -2985,12 +3008,13 @@ The function returns a `Task`, the other kind of task: it is awaited, and a `Val
 
 The `ThenAsync` method executes the provided asynchronous operation represented by `resultTask` to evaluate its result. This enables chaining multiple asynchronous operations that return `ValueTask<TResult>`.
 
-## ThenAsync&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;Result&lt;TNext&gt;&gt;&gt;, Boolean)
+## ThenAsync&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;Result&lt;TNext&gt;&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L1676" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result&lt;T&gt;](../ResultT/ResultT.md).
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static ValueTask<Result<TNext>> ThenAsync<T, TNext>(this ValueTask<Result<T>> resultTask,
     Func<T, Task<Result<TNext>>> ifSuccessFunction, bool? continueOnCapturedContext = null);
 ```
@@ -3003,10 +3027,10 @@ The type of the value associated with successful `resultTask` and passed to the 
 The type of the [Result&lt;TNext&gt;](../ResultT/ResultT.md) value returned by the asynchronous `ifSuccessFunction`.
 
 ### Parameters
-#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../Result/Result.md)&gt;
+#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result&lt;T&gt;](../ResultT/ResultT.md)&gt;
 The asynchronous operation that represents an instance of [Result](../Result/Result.md) record to be evaluated.
 
-#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-1)&lt;[Task](https://learn.microsoft.com/en-ca/dotnet/api/system.threading.tasks.task-1)&lt;[Result](../ResultT/ResultT.md)&lt;T&gt;&gt;&gt;
+#### `ifSuccessFunction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result&lt;TNext&gt;](../ResultT/ResultT.md)&gt;&gt;
 The asynchronous action to be executed, only if the `resultTask` represents a successful operation. The value of type `T` contained in the [Result&lt;T&gt;](../ResultT/ResultT.md) instance will be passed as a parameter to this action.
 
 #### `continueOnCapturedContext` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)&gt;

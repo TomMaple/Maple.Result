@@ -1,4 +1,4 @@
-# ErrorDetail.Pointer(Object[]) Method
+# ErrorDetail.Pointer(ReadOnlySpan&lt;Object&gt;) Method
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
@@ -15,7 +15,7 @@ public static string Pointer(params ReadOnlySpan<object> segments);
 The names ([string](https://learn.microsoft.com/dotnet/api/system.string)) and the array indexes (any built-in integer type, e.g., [int](https://learn.microsoft.com/dotnet/api/system.int32) or [long](https://learn.microsoft.com/dotnet/api/system.int64)), in order.
 
 ### Returns
-[string](https://learn.microsoft.com/dotnet/api/system.string)
+[String](https://learn.microsoft.com/dotnet/api/system.string)
 
 The pointer, e.g., `/items/0/name`; empty when there are no segments.
 

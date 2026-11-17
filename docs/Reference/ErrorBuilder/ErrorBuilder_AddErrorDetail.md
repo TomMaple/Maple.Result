@@ -9,7 +9,7 @@ Appends an individual error occurrence to the [ErrorDetails](../Error/Error_Erro
 | Name | Description |
 | ---- | ----------- |
 | [AddErrorDetail(ErrorDetail)](#adderrordetailerrordetail) | Appends the specified error detail. |
-| [AddErrorDetail(String, String, String, (String, Object)[])](#adderrordetailstring-string-string-string-object) | Appends a new error detail. |
+| [AddErrorDetail(String, String, String, ReadOnlySpan&lt;(String, Object)&gt;)](#adderrordetailstring-string-string-readonlyspanstring-object) | Appends a new error detail. |
 
 ## Remarks
 The details are kept in the order they were added. Unlike [Error.WithErrorDetail](../Error/Error_WithErrorDetail.md), which copies the error on every call, these methods append in place, so they are the better choice when adding several details (e.g., in a loop).
@@ -47,7 +47,7 @@ foreach (var errorDetail in validationResult.ErrorDetails)
 ```
 
 
-## AddErrorDetail(String, String, String, (String, Object)[])
+## AddErrorDetail(String, String, String, ReadOnlySpan&lt;(String, Object)&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L394" target="_blank">ErrorBuilder.cs</a>
 
 Appends a new individual error occurrence.

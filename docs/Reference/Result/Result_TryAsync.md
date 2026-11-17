@@ -8,26 +8,26 @@ Runs asynchronous code that can throw and turns the exception into a failed resu
 ## Overloads
 | Name | Description |
 | ---- | ----------- |
-| [TryAsync(Func&lt;Task&gt;, Func&lt;Exception, Error&gt;, Boolean?)](#tryasyncfunctask-funcexception-error-boolean) | Runs the asynchronous action; a [Result](Result.md). |
-| [TryAsync&lt;TException&gt;(Func&lt;Task&gt;, Func&lt;TException, Error&gt;, Boolean?)](#tryasynctexceptionfunctask-functexception-error-boolean) | Runs the asynchronous action and maps only the exceptions of the given type. |
-| [TryAsync&lt;T&gt;(Func&lt;Task&lt;T&gt;&gt;, Func&lt;Exception, Error&gt;, Boolean?)](#tryasynctfunctaskt-funcexception-error-boolean) | Runs the asynchronous function; a [Result&lt;T&gt;](../ResultT/ResultT.md) with its value. |
-| [TryAsync&lt;T, TException&gt;(Func&lt;Task&lt;T&gt;&gt;, Func&lt;TException, Error&gt;, Boolean?)](#tryasynct-texceptionfunctaskt-functexception-error-boolean) | Runs the asynchronous function and maps only the exceptions of the given type. |
-| [TryAsync(Func&lt;ValueTask&gt;, Func&lt;Exception, Error&gt;, Boolean?)](#tryasyncfuncvaluetask-funcexception-error-boolean) | The same for an action that returns a `ValueTask`. |
-| [TryAsync&lt;TException&gt;(Func&lt;ValueTask&gt;, Func&lt;TException, Error&gt;, Boolean?)](#tryasynctexceptionfuncvaluetask-functexception-error-boolean) | The same for an action that returns a `ValueTask`, mapping only the given type. |
-| [TryAsync&lt;T&gt;(Func&lt;ValueTask&lt;T&gt;&gt;, Func&lt;Exception, Error&gt;, Boolean?)](#tryasynctfuncvaluetaskt-funcexception-error-boolean) | The same for a function that returns a `ValueTask<T>`. |
-| [TryAsync&lt;T, TException&gt;(Func&lt;ValueTask&lt;T&gt;&gt;, Func&lt;TException, Error&gt;, Boolean?)](#tryasynct-texceptionfuncvaluetaskt-functexception-error-boolean) | The same for a function that returns a `ValueTask<T>`, mapping only the given type. |
-| [TryAsync(Func&lt;Task&lt;Result&gt;&gt;, Func&lt;Exception, Error&gt;, Boolean?)](#tryasyncfunctaskresult-funcexception-error-boolean) | The Task form for a function returning a [Result](Result.md). |
-| [TryAsync&lt;TException&gt;(Func&lt;Task&lt;Result&gt;&gt;, Func&lt;TException, Error&gt;, Boolean?)](#tryasynctexceptionfunctaskresult-functexception-error-boolean) | The Task form for a function returning a [Result](Result.md); maps only the exceptions of the given type. |
-| [TryAsync&lt;T&gt;(Func&lt;Task&lt;Result&lt;T&gt;&gt;&gt;, Func&lt;Exception, Error&gt;, Boolean?)](#tryasynctfunctaskresultt-funcexception-error-boolean) | The Task form for a function returning a [Result&lt;T&gt;](../ResultT/ResultT.md). |
-| [TryAsync&lt;T, TException&gt;(Func&lt;Task&lt;Result&lt;T&gt;&gt;&gt;, Func&lt;TException, Error&gt;, Boolean?)](#tryasynct-texceptionfunctaskresultt-functexception-error-boolean) | The Task form for a function returning a [Result&lt;T&gt;](../ResultT/ResultT.md); maps only the exceptions of the given type. |
-| [TryAsync(Func&lt;Task&lt;Error&gt;&gt;, Func&lt;Exception, Error&gt;, Boolean?)](#tryasyncfunctaskerror-funcexception-error-boolean) | The Task form for a function returning an [Error](../Error/Error.md). |
-| [TryAsync&lt;TException&gt;(Func&lt;Task&lt;Error&gt;&gt;, Func&lt;TException, Error&gt;, Boolean?)](#tryasynctexceptionfunctaskerror-functexception-error-boolean) | The Task form for a function returning an [Error](../Error/Error.md); maps only the exceptions of the given type. |
-| [TryAsync(Func&lt;ValueTask&lt;Result&gt;&gt;, Func&lt;Exception, Error&gt;, Boolean?)](#tryasyncfuncvaluetaskresult-funcexception-error-boolean) | The ValueTask form for a function returning a [Result](Result.md). |
-| [TryAsync&lt;TException&gt;(Func&lt;ValueTask&lt;Result&gt;&gt;, Func&lt;TException, Error&gt;, Boolean?)](#tryasynctexceptionfuncvaluetaskresult-functexception-error-boolean) | The ValueTask form for a function returning a [Result](Result.md); maps only the exceptions of the given type. |
-| [TryAsync&lt;T&gt;(Func&lt;ValueTask&lt;Result&lt;T&gt;&gt;&gt;, Func&lt;Exception, Error&gt;, Boolean?)](#tryasynctfuncvaluetaskresultt-funcexception-error-boolean) | The ValueTask form for a function returning a [Result&lt;T&gt;](../ResultT/ResultT.md). |
-| [TryAsync&lt;T, TException&gt;(Func&lt;ValueTask&lt;Result&lt;T&gt;&gt;&gt;, Func&lt;TException, Error&gt;, Boolean?)](#tryasynct-texceptionfuncvaluetaskresultt-functexception-error-boolean) | The ValueTask form for a function returning a [Result&lt;T&gt;](../ResultT/ResultT.md); maps only the exceptions of the given type. |
-| [TryAsync(Func&lt;ValueTask&lt;Error&gt;&gt;, Func&lt;Exception, Error&gt;, Boolean?)](#tryasyncfuncvaluetaskerror-funcexception-error-boolean) | The ValueTask form for a function returning an [Error](../Error/Error.md). |
-| [TryAsync&lt;TException&gt;(Func&lt;ValueTask&lt;Error&gt;&gt;, Func&lt;TException, Error&gt;, Boolean?)](#tryasynctexceptionfuncvaluetaskerror-functexception-error-boolean) | The ValueTask form for a function returning an [Error](../Error/Error.md); maps only the exceptions of the given type. |
+| [TryAsync(Func&lt;Task&gt;, Func&lt;Exception, Error&gt;, Nullable&lt;Boolean&gt;)](#tryasyncfunctask-funcexception-error-nullableboolean) | Runs the asynchronous action; a [Result](Result.md). |
+| [TryAsync&lt;TException&gt;(Func&lt;Task&gt;, Func&lt;TException, Error&gt;, Nullable&lt;Boolean&gt;)](#tryasynctexceptionfunctask-functexception-error-nullableboolean) | Runs the asynchronous action and maps only the exceptions of the given type. |
+| [TryAsync&lt;T&gt;(Func&lt;Task&lt;T&gt;&gt;, Func&lt;Exception, Error&gt;, Nullable&lt;Boolean&gt;)](#tryasynctfunctaskt-funcexception-error-nullableboolean) | Runs the asynchronous function; a [Result&lt;T&gt;](../ResultT/ResultT.md) with its value. |
+| [TryAsync&lt;T, TException&gt;(Func&lt;Task&lt;T&gt;&gt;, Func&lt;TException, Error&gt;, Nullable&lt;Boolean&gt;)](#tryasynct-texceptionfunctaskt-functexception-error-nullableboolean) | Runs the asynchronous function and maps only the exceptions of the given type. |
+| [TryAsync(Func&lt;ValueTask&gt;, Func&lt;Exception, Error&gt;, Nullable&lt;Boolean&gt;)](#tryasyncfuncvaluetask-funcexception-error-nullableboolean) | The same for an action that returns a `ValueTask`. |
+| [TryAsync&lt;TException&gt;(Func&lt;ValueTask&gt;, Func&lt;TException, Error&gt;, Nullable&lt;Boolean&gt;)](#tryasynctexceptionfuncvaluetask-functexception-error-nullableboolean) | The same for an action that returns a `ValueTask`, mapping only the given type. |
+| [TryAsync&lt;T&gt;(Func&lt;ValueTask&lt;T&gt;&gt;, Func&lt;Exception, Error&gt;, Nullable&lt;Boolean&gt;)](#tryasynctfuncvaluetaskt-funcexception-error-nullableboolean) | The same for a function that returns a `ValueTask<T>`. |
+| [TryAsync&lt;T, TException&gt;(Func&lt;ValueTask&lt;T&gt;&gt;, Func&lt;TException, Error&gt;, Nullable&lt;Boolean&gt;)](#tryasynct-texceptionfuncvaluetaskt-functexception-error-nullableboolean) | The same for a function that returns a `ValueTask<T>`, mapping only the given type. |
+| [TryAsync(Func&lt;Task&lt;Result&gt;&gt;, Func&lt;Exception, Error&gt;, Nullable&lt;Boolean&gt;)](#tryasyncfunctaskresult-funcexception-error-nullableboolean) | The Task form for a function returning a [Result](Result.md). |
+| [TryAsync&lt;TException&gt;(Func&lt;Task&lt;Result&gt;&gt;, Func&lt;TException, Error&gt;, Nullable&lt;Boolean&gt;)](#tryasynctexceptionfunctaskresult-functexception-error-nullableboolean) | The Task form for a function returning a [Result](Result.md); maps only the exceptions of the given type. |
+| [TryAsync&lt;T&gt;(Func&lt;Task&lt;Result&lt;T&gt;&gt;&gt;, Func&lt;Exception, Error&gt;, Nullable&lt;Boolean&gt;)](#tryasynctfunctaskresultt-funcexception-error-nullableboolean) | The Task form for a function returning a [Result&lt;T&gt;](../ResultT/ResultT.md). |
+| [TryAsync&lt;T, TException&gt;(Func&lt;Task&lt;Result&lt;T&gt;&gt;&gt;, Func&lt;TException, Error&gt;, Nullable&lt;Boolean&gt;)](#tryasynct-texceptionfunctaskresultt-functexception-error-nullableboolean) | The Task form for a function returning a [Result&lt;T&gt;](../ResultT/ResultT.md); maps only the exceptions of the given type. |
+| [TryAsync(Func&lt;Task&lt;Error&gt;&gt;, Func&lt;Exception, Error&gt;, Nullable&lt;Boolean&gt;)](#tryasyncfunctaskerror-funcexception-error-nullableboolean) | The Task form for a function returning an [Error](../Error/Error.md). |
+| [TryAsync&lt;TException&gt;(Func&lt;Task&lt;Error&gt;&gt;, Func&lt;TException, Error&gt;, Nullable&lt;Boolean&gt;)](#tryasynctexceptionfunctaskerror-functexception-error-nullableboolean) | The Task form for a function returning an [Error](../Error/Error.md); maps only the exceptions of the given type. |
+| [TryAsync(Func&lt;ValueTask&lt;Result&gt;&gt;, Func&lt;Exception, Error&gt;, Nullable&lt;Boolean&gt;)](#tryasyncfuncvaluetaskresult-funcexception-error-nullableboolean) | The ValueTask form for a function returning a [Result](Result.md). |
+| [TryAsync&lt;TException&gt;(Func&lt;ValueTask&lt;Result&gt;&gt;, Func&lt;TException, Error&gt;, Nullable&lt;Boolean&gt;)](#tryasynctexceptionfuncvaluetaskresult-functexception-error-nullableboolean) | The ValueTask form for a function returning a [Result](Result.md); maps only the exceptions of the given type. |
+| [TryAsync&lt;T&gt;(Func&lt;ValueTask&lt;Result&lt;T&gt;&gt;&gt;, Func&lt;Exception, Error&gt;, Nullable&lt;Boolean&gt;)](#tryasynctfuncvaluetaskresultt-funcexception-error-nullableboolean) | The ValueTask form for a function returning a [Result&lt;T&gt;](../ResultT/ResultT.md). |
+| [TryAsync&lt;T, TException&gt;(Func&lt;ValueTask&lt;Result&lt;T&gt;&gt;&gt;, Func&lt;TException, Error&gt;, Nullable&lt;Boolean&gt;)](#tryasynct-texceptionfuncvaluetaskresultt-functexception-error-nullableboolean) | The ValueTask form for a function returning a [Result&lt;T&gt;](../ResultT/ResultT.md); maps only the exceptions of the given type. |
+| [TryAsync(Func&lt;ValueTask&lt;Error&gt;&gt;, Func&lt;Exception, Error&gt;, Nullable&lt;Boolean&gt;)](#tryasyncfuncvaluetaskerror-funcexception-error-nullableboolean) | The ValueTask form for a function returning an [Error](../Error/Error.md). |
+| [TryAsync&lt;TException&gt;(Func&lt;ValueTask&lt;Error&gt;&gt;, Func&lt;TException, Error&gt;, Nullable&lt;Boolean&gt;)](#tryasynctexceptionfuncvaluetaskerror-functexception-error-nullableboolean) | The ValueTask form for a function returning an [Error](../Error/Error.md); maps only the exceptions of the given type. |
 
 ## Remarks
 The rules of [Try](Result_Try.md) apply: the mapper is required, nothing of the exception is copied into the error, an `OperationCanceledException` (e.g., a canceled task) is rethrown unless `TException` asks for it, and a mapper that returns `null` declines the exception, which is rethrown (see [Try](Result_Try.md) for the timeout of `HttpClient`). In addition:
@@ -38,12 +38,13 @@ The rules of [Try](Result_Try.md) apply: the mapper is required, nothing of the 
 * An async lambda binds to the `Task` overloads (they have a higher [overload resolution priority](https://learn.microsoft.com/dotnet/api/system.runtime.compilerservices.overloadresolutionpriorityattribute)); a method or a lambda that returns a `ValueTask` binds to the `ValueTask` overloads.
 
 > [!WARNING]
-> **Do not pass the exception type alone.** C# infers all type arguments or none, and a `Task<T>` is a `Task`, so `Result.TryAsync<IOException>(() => File.ReadAllTextAsync(path), e => …)` (or with `async () => await …`) binds to [TryAsync&lt;TException&gt;(Func&lt;Task&gt;, Func&lt;TException, Error&gt;, Boolean?)](#tryasynctexceptionfunctask-functexception-error-boolean): the text is discarded and the result is a non-generic `Result`, without a warning. Type the parameter of the mapper instead, `Result.TryAsync(() => File.ReadAllTextAsync(path), (IOException e) => …)`, or pass both type arguments, `Result.TryAsync<string, IOException>(…)`; both return a `Result<string>`. A function that returns a `ValueTask<T>` does not compile with the exception type alone.
+> **Do not pass the exception type alone.** C# infers all type arguments or none, and a `Task<T>` is a `Task`, so `Result.TryAsync<IOException>(() => File.ReadAllTextAsync(path), e => …)` (or with `async () => await …`) binds to [TryAsync&lt;TException&gt;(Func&lt;Task&gt;, Func&lt;TException, Error&gt;, Nullable&lt;Boolean&gt;)](#tryasynctexceptionfunctask-functexception-error-nullableboolean): the text is discarded and the result is a non-generic `Result`, without a warning. Type the parameter of the mapper instead, `Result.TryAsync(() => File.ReadAllTextAsync(path), (IOException e) => …)`, or pass both type arguments, `Result.TryAsync<string, IOException>(…)`; both return a `Result<string>`. A function that returns a `ValueTask<T>` does not compile with the exception type alone.
 
-## TryAsync(Func&lt;Task&gt;, Func&lt;Exception, Error&gt;, Boolean?)
+## TryAsync(Func&lt;Task&gt;, Func&lt;Exception, Error&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L225" target="_blank">Result.Try.cs</a>
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result> TryAsync(Func<Task> action, Func<Exception, Error?> mapException, bool? continueOnCapturedContext = null);
 ```
 
@@ -81,10 +82,11 @@ var result = await Result.TryAsync(
     ex => Error.Unavailable(ErrorUri.Tag("tag:exampleapp.com,2026:errors:mail:unavailable"), "The e-mail could not be sent."));
 ```
 
-## TryAsync&lt;TException&gt;(Func&lt;Task&gt;, Func&lt;TException, Error&gt;, Boolean?)
+## TryAsync&lt;TException&gt;(Func&lt;Task&gt;, Func&lt;TException, Error&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L263" target="_blank">Result.Try.cs</a>
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result> TryAsync<TException>(Func<Task> action, Func<TException, Error?> mapException, bool? continueOnCapturedContext = null)
     where TException : Exception;
 ```
@@ -120,10 +122,11 @@ A successful result if the `action` completes; otherwise, a failed one with the 
 
 `action` returns a `null` task.
 
-## TryAsync&lt;T&gt;(Func&lt;Task&lt;T&gt;&gt;, Func&lt;Exception, Error&gt;, Boolean?)
+## TryAsync&lt;T&gt;(Func&lt;Task&lt;T&gt;&gt;, Func&lt;Exception, Error&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L340" target="_blank">Result.Try.cs</a>
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result<T>> TryAsync<T>(Func<Task<T>> function, Func<Exception, Error?> mapException, bool? continueOnCapturedContext = null);
 ```
 
@@ -165,10 +168,11 @@ Result<Customer> customer = await Result.TryAsync(
     MapDatabaseError);
 ```
 
-## TryAsync&lt;T, TException&gt;(Func&lt;Task&lt;T&gt;&gt;, Func&lt;TException, Error&gt;, Boolean?)
+## TryAsync&lt;T, TException&gt;(Func&lt;Task&lt;T&gt;&gt;, Func&lt;TException, Error&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L376" target="_blank">Result.Try.cs</a>
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result<T>> TryAsync<T, TException>(Func<Task<T>> function, Func<TException, Error?> mapException, bool? continueOnCapturedContext = null)
     where TException : Exception;
 ```
@@ -207,7 +211,7 @@ A successful result with the value of the `function`; otherwise, a failed one wi
 
 `function` returns a `null` task.
 
-## TryAsync(Func&lt;ValueTask&gt;, Func&lt;Exception, Error&gt;, Boolean?)
+## TryAsync(Func&lt;ValueTask&gt;, Func&lt;Exception, Error&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L450" target="_blank">Result.Try.cs</a>
 
 ```csharp
@@ -237,7 +241,7 @@ A successful result if the `action` completes; otherwise, a failed one with the 
 
 `action` or `mapException` is `null`.
 
-## TryAsync&lt;TException&gt;(Func&lt;ValueTask&gt;, Func&lt;TException, Error&gt;, Boolean?)
+## TryAsync&lt;TException&gt;(Func&lt;ValueTask&gt;, Func&lt;TException, Error&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L477" target="_blank">Result.Try.cs</a>
 
 ```csharp
@@ -272,7 +276,7 @@ A successful result if the `action` completes; otherwise, a failed one with the 
 
 `action` or `mapException` is `null`.
 
-## TryAsync&lt;T&gt;(Func&lt;ValueTask&lt;T&gt;&gt;, Func&lt;Exception, Error&gt;, Boolean?)
+## TryAsync&lt;T&gt;(Func&lt;ValueTask&lt;T&gt;&gt;, Func&lt;Exception, Error&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L538" target="_blank">Result.Try.cs</a>
 
 ```csharp
@@ -306,7 +310,7 @@ A successful result with the value of the `function`; otherwise, a failed one wi
 
 `function` or `mapException` is `null`.
 
-## TryAsync&lt;T, TException&gt;(Func&lt;ValueTask&lt;T&gt;&gt;, Func&lt;TException, Error&gt;, Boolean?)
+## TryAsync&lt;T, TException&gt;(Func&lt;ValueTask&lt;T&gt;&gt;, Func&lt;TException, Error&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L571" target="_blank">Result.Try.cs</a>
 
 ```csharp
@@ -344,10 +348,11 @@ A successful result with the value of the `function`; otherwise, a failed one wi
 
 `function` or `mapException` is `null`.
 
-## TryAsync(Func&lt;Task&lt;Result&gt;&gt;, Func&lt;Exception, Error&gt;, Boolean?)
+## TryAsync(Func&lt;Task&lt;Result&gt;&gt;, Func&lt;Exception, Error&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L890" target="_blank">Result.Try.cs</a>
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result> TryAsync(Func<Task<Result>> function, Func<Exception, Error?> mapException, bool? continueOnCapturedContext = null);
 ```
 
@@ -378,10 +383,11 @@ A task with the [Result](Result.md) returned by the `function`, as it is; or a f
 
 `function` returns a `null` task or a `null` result.
 
-## TryAsync&lt;TException&gt;(Func&lt;Task&lt;Result&gt;&gt;, Func&lt;TException, Error&gt;, Boolean?)
+## TryAsync&lt;TException&gt;(Func&lt;Task&lt;Result&gt;&gt;, Func&lt;TException, Error&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L930" target="_blank">Result.Try.cs</a>
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result> TryAsync<TException>(Func<Task<Result>> function, Func<TException, Error?> mapException, bool? continueOnCapturedContext = null)
     where TException : Exception;
 ```
@@ -417,10 +423,11 @@ A task with the [Result](Result.md) returned by the `function`, as it is; or a f
 
 `function` returns a `null` task or a `null` result.
 
-## TryAsync&lt;T&gt;(Func&lt;Task&lt;Result&lt;T&gt;&gt;&gt;, Func&lt;Exception, Error&gt;, Boolean?)
+## TryAsync&lt;T&gt;(Func&lt;Task&lt;Result&lt;T&gt;&gt;&gt;, Func&lt;Exception, Error&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1013" target="_blank">Result.Try.cs</a>
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result<T>> TryAsync<T>(Func<Task<Result<T>>> function, Func<Exception, Error?> mapException, bool? continueOnCapturedContext = null);
 ```
 
@@ -455,10 +462,11 @@ A task with the [Result&lt;T&gt;](../ResultT/ResultT.md) returned by the `functi
 
 `function` returns a `null` task or a `null` result.
 
-## TryAsync&lt;T, TException&gt;(Func&lt;Task&lt;Result&lt;T&gt;&gt;&gt;, Func&lt;TException, Error&gt;, Boolean?)
+## TryAsync&lt;T, TException&gt;(Func&lt;Task&lt;Result&lt;T&gt;&gt;&gt;, Func&lt;TException, Error&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1054" target="_blank">Result.Try.cs</a>
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result<T>> TryAsync<T, TException>(Func<Task<Result<T>>> function, Func<TException, Error?> mapException, bool? continueOnCapturedContext = null)
     where TException : Exception;
 ```
@@ -497,10 +505,11 @@ A task with the [Result&lt;T&gt;](../ResultT/ResultT.md) returned by the `functi
 
 `function` returns a `null` task or a `null` result.
 
-## TryAsync(Func&lt;Task&lt;Error&gt;&gt;, Func&lt;Exception, Error&gt;, Boolean?)
+## TryAsync(Func&lt;Task&lt;Error&gt;&gt;, Func&lt;Exception, Error&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1136" target="_blank">Result.Try.cs</a>
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result> TryAsync(Func<Task<Error>> function, Func<Exception, Error?> mapException, bool? continueOnCapturedContext = null);
 ```
 
@@ -531,10 +540,11 @@ A task with a failed [Result](Result.md) with the [Error](../Error/Error.md) ret
 
 `function` returns a `null` task or a `null` error.
 
-## TryAsync&lt;TException&gt;(Func&lt;Task&lt;Error&gt;&gt;, Func&lt;TException, Error&gt;, Boolean?)
+## TryAsync&lt;TException&gt;(Func&lt;Task&lt;Error&gt;&gt;, Func&lt;TException, Error&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1176" target="_blank">Result.Try.cs</a>
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result> TryAsync<TException>(Func<Task<Error>> function, Func<TException, Error?> mapException, bool? continueOnCapturedContext = null)
     where TException : Exception;
 ```
@@ -570,7 +580,7 @@ A task with a failed [Result](Result.md) with the [Error](../Error/Error.md) ret
 
 `function` returns a `null` task or a `null` error.
 
-## TryAsync(Func&lt;ValueTask&lt;Result&gt;&gt;, Func&lt;Exception, Error&gt;, Boolean?)
+## TryAsync(Func&lt;ValueTask&lt;Result&gt;&gt;, Func&lt;Exception, Error&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1261" target="_blank">Result.Try.cs</a>
 
 ```csharp
@@ -604,7 +614,7 @@ A task with the [Result](Result.md) returned by the `function`, as it is; or a f
 
 `function` returns a `null` result.
 
-## TryAsync&lt;TException&gt;(Func&lt;ValueTask&lt;Result&gt;&gt;, Func&lt;TException, Error&gt;, Boolean?)
+## TryAsync&lt;TException&gt;(Func&lt;ValueTask&lt;Result&gt;&gt;, Func&lt;TException, Error&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1298" target="_blank">Result.Try.cs</a>
 
 ```csharp
@@ -643,7 +653,7 @@ A task with the [Result](Result.md) returned by the `function`, as it is; or a f
 
 `function` returns a `null` result.
 
-## TryAsync&lt;T&gt;(Func&lt;ValueTask&lt;Result&lt;T&gt;&gt;&gt;, Func&lt;Exception, Error&gt;, Boolean?)
+## TryAsync&lt;T&gt;(Func&lt;ValueTask&lt;Result&lt;T&gt;&gt;&gt;, Func&lt;Exception, Error&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1364" target="_blank">Result.Try.cs</a>
 
 ```csharp
@@ -681,7 +691,7 @@ A task with the [Result&lt;T&gt;](../ResultT/ResultT.md) returned by the `functi
 
 `function` returns a `null` result.
 
-## TryAsync&lt;T, TException&gt;(Func&lt;ValueTask&lt;Result&lt;T&gt;&gt;&gt;, Func&lt;TException, Error&gt;, Boolean?)
+## TryAsync&lt;T, TException&gt;(Func&lt;ValueTask&lt;Result&lt;T&gt;&gt;&gt;, Func&lt;TException, Error&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1402" target="_blank">Result.Try.cs</a>
 
 ```csharp
@@ -723,7 +733,7 @@ A task with the [Result&lt;T&gt;](../ResultT/ResultT.md) returned by the `functi
 
 `function` returns a `null` result.
 
-## TryAsync(Func&lt;ValueTask&lt;Error&gt;&gt;, Func&lt;Exception, Error&gt;, Boolean?)
+## TryAsync(Func&lt;ValueTask&lt;Error&gt;&gt;, Func&lt;Exception, Error&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1467" target="_blank">Result.Try.cs</a>
 
 ```csharp
@@ -757,7 +767,7 @@ A task with a failed [Result](Result.md) with the [Error](../Error/Error.md) ret
 
 `function` returns a `null` error.
 
-## TryAsync&lt;TException&gt;(Func&lt;ValueTask&lt;Error&gt;&gt;, Func&lt;TException, Error&gt;, Boolean?)
+## TryAsync&lt;TException&gt;(Func&lt;ValueTask&lt;Error&gt;&gt;, Func&lt;TException, Error&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1504" target="_blank">Result.Try.cs</a>
 
 ```csharp

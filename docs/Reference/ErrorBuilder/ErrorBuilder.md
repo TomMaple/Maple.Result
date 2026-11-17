@@ -1,4 +1,4 @@
-# ErrorBuilder class
+# ErrorBuilder Class
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
@@ -77,7 +77,7 @@ The builder is not thread-safe. Use one builder per thread, or synchronize acces
 | Name | Description |
 | ---- | ----------- |
 | [AddErrorDetail(ErrorDetail)](ErrorBuilder_AddErrorDetail.md#adderrordetailerrordetail) | Appends the specified error detail. |
-| [AddErrorDetail(String, String, String, (String, Object)[])](ErrorBuilder_AddErrorDetail.md#adderrordetailstring-string-string-string-object) | Appends a new error detail. |
+| [AddErrorDetail(String, String, String, ReadOnlySpan&lt;(String, Object)&gt;)](ErrorBuilder_AddErrorDetail.md#adderrordetailstring-string-string-readonlyspanstring-object) | Appends a new error detail. |
 | [Build()](ErrorBuilder_Build.md) | Returns a new [Error](../Error/Error.md) with the current members of the builder. |
 | [Conflict(ErrorUri, String)](ErrorBuilder_Conflict.md) | Returns a new builder of the *Conflict* category. |
 | [Critical(ErrorUri, String)](ErrorBuilder_Critical.md) | Returns a new builder of the *Critical* category. |
@@ -92,12 +92,12 @@ The builder is not thread-safe. Use one builder per thread, or synchronize acces
 | [Validation(ErrorUri, String)](ErrorBuilder_Validation.md) | Returns a new builder of the *Validation* category. |
 | [WithCategory(ErrorCategory)](ErrorBuilder_WithCategory.md) | Sets the category. |
 | [WithDetail(String)](ErrorBuilder_WithDetail.md) | Sets the human-readable explanation of the problem occurrence. |
+| [WithDetailTemplated(String, ReadOnlySpan&lt;(String, Object)&gt;)](ErrorBuilder_WithDetailTemplated.md#withdetailtemplatedstring-readonlyspanstring-object) | Sets the templated explanation from a template identifier and named values. |
 | [WithDetailTemplated(TemplatedMessage)](ErrorBuilder_WithDetailTemplated.md#withdetailtemplatedtemplatedmessage) | Sets the templated explanation of the problem occurrence. |
-| [WithDetailTemplated(String, (String, Object)[])](ErrorBuilder_WithDetailTemplated.md#withdetailtemplatedstring-string-object) | Sets the templated explanation from a template identifier and named values. |
-| [WithInstanceUri(ErrorUri)](ErrorBuilder_WithInstanceUri.md) | Sets the *URI* that identifies the problem occurrence. |
-| [WithMetadata(String, Object)](ErrorBuilder_WithMetadata.md#withmetadatastring-object) | Adds or replaces a metadata entry. |
+| [WithInstanceUri(Nullable&lt;ErrorUri&gt;)](ErrorBuilder_WithInstanceUri.md) | Sets the *URI* that identifies the problem occurrence. |
 | [WithMetadata(IEnumerable&lt;KeyValuePair&lt;String, Object&gt;&gt;)](ErrorBuilder_WithMetadata.md#withmetadataienumerablekeyvaluepairstring-object) | Adds or replaces metadata entries. |
 | [WithMetadata(ReadOnlySpan&lt;(String, Object)&gt;)](ErrorBuilder_WithMetadata.md#withmetadatareadonlyspanstring-object) | Adds or replaces metadata entries given as key-value tuples. |
+| [WithMetadata(String, Object)](ErrorBuilder_WithMetadata.md#withmetadatastring-object) | Adds or replaces a metadata entry. |
 | [WithoutMetadata()](ErrorBuilder_WithoutMetadata.md#withoutmetadata) | Removes all metadata entries. |
 | [WithoutMetadata(String)](ErrorBuilder_WithoutMetadata.md#withoutmetadatastring) | Removes the metadata entry of the specified key. |
 | [WithTitle(String)](ErrorBuilder_WithTitle.md) | Sets the short, human-readable summary of the problem type. |

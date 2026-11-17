@@ -8,8 +8,8 @@ Creates a new instance of the [Error](Error.md) object of the *Unauthenticated* 
 ## Overloads
 | Name | Description |
 | ---- | ----------- |
-| [Unauthenticated(ErrorUri, String, String, ErrorUri, String, (String, Object)[])](#unauthenticatederroruri-string-string-erroruri-string-string-object) | Creates a new unauthenticated error with specified parameters. |
-| [Unauthenticated(ErrorUri, String, String, ErrorUri, String, IEnumerable<KeyValuePair<String, Object>>)](#unauthenticatederroruri-string-string-erroruri-string-ienumerablekeyvaluepairstring-object) | Creates a new unauthenticated error with specified parameters. |
+| [Unauthenticated(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, String, ReadOnlySpan&lt;(String, Object)&gt;)](#unauthenticatederroruri-string-string-nullableerroruri-string-readonlyspanstring-object) | Creates a new unauthenticated error with specified parameters. |
+| [Unauthenticated(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, String, IEnumerable&lt;KeyValuePair&lt;String, Object&gt;&gt;)](#unauthenticatederroruri-string-string-nullableerroruri-string-ienumerablekeyvaluepairstring-object) | Creates a new unauthenticated error with specified parameters. |
 
 ## Remarks
 This error category represents authentication errors. To be used, e.g. if the authentication is missing or invalid.
@@ -17,7 +17,7 @@ This error category represents authentication errors. To be used, e.g. if the au
 It relates to `401` HTTP status code (Unauthorized), but can also be used in other contexts where authentication errors need to be reported.
 
 
-## Unauthenticated(ErrorUri, String, String, ErrorUri, String, (String, Object)[])
+## Unauthenticated(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, String, ReadOnlySpan&lt;(String, Object)&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L873" target="_blank">Error.cs</a>
 
 Creates a new instance of the [Error](Error.md) object of the *Unauthenticated* category with specified parameters.
@@ -42,7 +42,7 @@ A mandatory short, human-readable summary of the problem.
 #### `detail` [String](https://learn.microsoft.com/dotnet/api/system.string)
 An optional, human-readable explanation specific to this occurrence of the problem.
 
-#### `instanceUri` [ErrorUri](../ErrorUri/ErrorUri.md)
+#### `instanceUri` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[ErrorUri](../ErrorUri/ErrorUri.md)&gt;
 An optional *URI* reference that identifies the specific occurrence of the problem. It must not be `about:blank` ([ErrorUri.None](../ErrorUri/ErrorUri_None.md) or a default [ErrorUri](../ErrorUri/ErrorUri.md)); pass `null` when there is no instance.
 
 #### `detailTemplateId` [String](https://learn.microsoft.com/dotnet/api/system.string)
@@ -81,7 +81,7 @@ var error = Error.Unauthenticated(
 ```
 
 
-## Unauthenticated(ErrorUri, String, String, ErrorUri, String, IEnumerable&lt;KeyValuePair&lt;String, Object&gt;&gt;)
+## Unauthenticated(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, String, IEnumerable&lt;KeyValuePair&lt;String, Object&gt;&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L889" target="_blank">Error.cs</a>
 
 Creates a new instance of the [Error](Error.md) object of the *Unauthenticated* category with specified parameters.
@@ -107,13 +107,13 @@ A mandatory short, human-readable summary of the problem.
 #### `detail` [String](https://learn.microsoft.com/dotnet/api/system.string)
 An optional, human-readable explanation specific to this occurrence of the problem.
 
-#### `instanceUri` [ErrorUri](../ErrorUri/ErrorUri.md)
+#### `instanceUri` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[ErrorUri](../ErrorUri/ErrorUri.md)&gt;
 An optional *URI* reference that identifies the specific occurrence of the problem. It must not be `about:blank` ([ErrorUri.None](../ErrorUri/ErrorUri_None.md) or a default [ErrorUri](../ErrorUri/ErrorUri.md)); pass `null` when there is no instance.
 
 #### `detailTemplateId` [String](https://learn.microsoft.com/dotnet/api/system.string)
 An optional identifier of the message template to generate custom, localized message.
 
-#### `detailNamedValues` [IEnumerable](https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1)&lt;[KeyValuePair](https://learn.microsoft.com/dotnet/api/system.collections.generic.keyvaluepair-2)&lt;[String](https://learn.microsoft.com/dotnet/api/system.string), [Object](https://learn.microsoft.com/en-us/dotnet/api/system.object)&gt;&gt;
+#### `detailNamedValues` [IEnumerable](https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1)&lt;[KeyValuePair](https://learn.microsoft.com/dotnet/api/system.collections.generic.keyvaluepair-2)&lt;[String](https://learn.microsoft.com/dotnet/api/system.string), [Object](https://learn.microsoft.com/dotnet/api/system.object)&gt;&gt;
 An optional sequence of key-value pairs to be used when rendering the templated message. Values can be `null`; names must be unique and not `null`. Requires `detailTemplateId`: passing values without it throws an [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception).
 
 ### Returns

@@ -1,4 +1,4 @@
-# ErrorBuilder.WithInstanceUri(ErrorUri) Method
+# ErrorBuilder.WithInstanceUri(Nullable&lt;ErrorUri&gt;) Method
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
@@ -11,7 +11,7 @@ public ErrorBuilder WithInstanceUri(ErrorUri? instanceUri);
 ```
 
 ### Parameters
-#### `instanceUri` [ErrorUri](../ErrorUri/ErrorUri.md)
+#### `instanceUri` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[ErrorUri](../ErrorUri/ErrorUri.md)&gt;
 A *URI* reference that identifies the specific occurrence of the problem, or `null` to clear it.
 
 ### Returns

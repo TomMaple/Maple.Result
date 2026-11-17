@@ -11,7 +11,7 @@ public string Detail { get; }
 ```
 
 ### Property Value
-[string](https://learn.microsoft.com/dotnet/api/system.string)
+[String](https://learn.microsoft.com/dotnet/api/system.string)
 
 A description of the specific problem detail of the [Error](../Error/Error.md).
 

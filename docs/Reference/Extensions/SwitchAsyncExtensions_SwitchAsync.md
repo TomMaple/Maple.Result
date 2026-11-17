@@ -8,10 +8,10 @@ Awaits a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.ta
 ## Overloads
 | Name | Description |
 | ---- | ----------- |
-| [SwitchAsync(Task&lt;Result&gt;, Action, Action&lt;Error&gt;, Boolean)](#switchasynctaskresult-action-actionerror-boolean) | Awaits the `resultTask` and invokes one of the specified actions depending on whether the [Result](../Result/Result.md) is successful. |
-| [SwitchAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Action&lt;T&gt;, Action&lt;Error&gt;, Boolean)](#switchasyncttaskresultt-actiont-actionerror-boolean) | Awaits the `resultTask` and invokes one of the specified actions depending on whether the [Result&lt;T&gt;](../ResultT/ResultT.md) is successful. |
-| [SwitchAsync(ValueTask&lt;Result&gt;, Action, Action&lt;Error&gt;, Boolean)](#switchasyncvaluetaskresult-action-actionerror-boolean) | Awaits the `resultTask` and invokes one of the specified actions depending on whether the [Result](../Result/Result.md) is successful. |
-| [SwitchAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Action&lt;T&gt;, Action&lt;Error&gt;, Boolean)](#switchasynctvaluetaskresultt-actiont-actionerror-boolean) | Awaits the `resultTask` and invokes one of the specified actions depending on whether the [Result&lt;T&gt;](../ResultT/ResultT.md) is successful. |
+| [SwitchAsync(Task&lt;Result&gt;, Action, Action&lt;Error&gt;, Nullable&lt;Boolean&gt;)](#switchasynctaskresult-action-actionerror-nullableboolean) | Awaits the `resultTask` and invokes one of the specified actions depending on whether the [Result](../Result/Result.md) is successful. |
+| [SwitchAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Action&lt;T&gt;, Action&lt;Error&gt;, Nullable&lt;Boolean&gt;)](#switchasyncttaskresultt-actiont-actionerror-nullableboolean) | Awaits the `resultTask` and invokes one of the specified actions depending on whether the [Result&lt;T&gt;](../ResultT/ResultT.md) is successful. |
+| [SwitchAsync(ValueTask&lt;Result&gt;, Action, Action&lt;Error&gt;, Nullable&lt;Boolean&gt;)](#switchasyncvaluetaskresult-action-actionerror-nullableboolean) | Awaits the `resultTask` and invokes one of the specified actions depending on whether the [Result](../Result/Result.md) is successful. |
+| [SwitchAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Action&lt;T&gt;, Action&lt;Error&gt;, Nullable&lt;Boolean&gt;)](#switchasynctvaluetaskresultt-actiont-actionerror-nullableboolean) | Awaits the `resultTask` and invokes one of the specified actions depending on whether the [Result&lt;T&gt;](../ResultT/ResultT.md) is successful. |
 
 ## Remarks
 The overloads on a `Task` of a result return a `Task`, and those on a `ValueTask` of a result return a `ValueTask`.
@@ -30,7 +30,7 @@ An action that returns a `Task`, a `Task<T>`, a `ValueTask` or a `ValueTask<T>` 
 > [!NOTE]
 > A [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask) can only be awaited once. Because of this, the overloads accepting `this ValueTask<Result> resultTask` / `this ValueTask<Result<T>> resultTask` consume the passed operation as part of evaluating its result, and they do not perform a `null` check on it (a `ValueTask<TResult>` is a non-nullable value type).
 
-## SwitchAsync(Task&lt;Result&gt;, Action, Action&lt;Error&gt;, Boolean)
+## SwitchAsync(Task&lt;Result&gt;, Action, Action&lt;Error&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/SwitchAsyncExtensions.Task.cs#L57" target="_blank">SwitchAsyncExtensions.Task.cs</a>
 
 Awaits the `resultTask` and invokes the provided `ifSuccessAction` if the [Result](../Result/Result.md) represents a successful operation, or the provided `ifErrorAction` otherwise.
@@ -74,7 +74,7 @@ await _userService.CreateUserAsync(userData).SwitchAsync(
 ```
 
 
-## SwitchAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Action&lt;T&gt;, Action&lt;Error&gt;, Boolean)
+## SwitchAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Action&lt;T&gt;, Action&lt;Error&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/SwitchAsyncExtensions.Task.cs#L101" target="_blank">SwitchAsyncExtensions.Task.cs</a>
 
 Awaits the `resultTask` and invokes the provided `ifSuccessAction` with the value if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, or the provided `ifErrorAction` otherwise.
@@ -121,7 +121,7 @@ await _userService.GetUserAsync(id).SwitchAsync(
     error => _logger.LogWarning("No user: {Title}", error.Title));
 ```
 
-## SwitchAsync(ValueTask&lt;Result&gt;, Action, Action&lt;Error&gt;, Boolean)
+## SwitchAsync(ValueTask&lt;Result&gt;, Action, Action&lt;Error&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/SwitchAsyncExtensions.ValueTask.cs#L44" target="_blank">SwitchAsyncExtensions.ValueTask.cs</a>
 
 Awaits the `resultTask` and invokes the provided `ifSuccessAction` if the [Result](../Result/Result.md) represents a successful operation, or the provided `ifErrorAction` otherwise.
@@ -165,7 +165,7 @@ await _userService.CreateUserAsync(userData).SwitchAsync(
 ```
 
 
-## SwitchAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Action&lt;T&gt;, Action&lt;Error&gt;, Boolean)
+## SwitchAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Action&lt;T&gt;, Action&lt;Error&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/SwitchAsyncExtensions.ValueTask.cs#L86" target="_blank">SwitchAsyncExtensions.ValueTask.cs</a>
 
 Awaits the `resultTask` and invokes the provided `ifSuccessAction` with the value if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, or the provided `ifErrorAction` otherwise.

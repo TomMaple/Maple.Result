@@ -1,4 +1,4 @@
-# ErrorUri record
+# ErrorUri Record
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>

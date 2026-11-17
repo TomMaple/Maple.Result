@@ -7,7 +7,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Gets the error of a failed [Result](Result.md).
 
 ```csharp
-public bool TryGetError([NotNullWhen(true)] out Error? error);
+public bool TryGetError(out Error? error);
 ```
 
 ### Parameters

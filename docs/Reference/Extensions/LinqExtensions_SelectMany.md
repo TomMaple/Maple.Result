@@ -814,4 +814,4 @@ var result =
 
 ## See Also
 * [Result&lt;T&gt;](../ResultT/ResultT.md)
-* [Write C# Linq Queries](https://learn.microsoft.com/en-us/dotnet/csharp/linq/get-started/write-linq-queries)
+* [Write C# Linq Queries](https://learn.microsoft.com/dotnet/csharp/linq/get-started/write-linq-queries)
