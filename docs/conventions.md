@@ -96,6 +96,11 @@ are marked breaking. Preview the notes locally with `git cliff --unreleased --st
 	* Formatting: `.editorconfig`; lines up to 160 characters.
 	* Every source file starts with the SPDX license identifier and the copyright header.
 	* Members are ordered alphabetically within each `#region`.
+	* An overload trap (an `[Obsolete(…, error: true)]` and `[EditorBrowsable(EditorBrowsableState.Never)]` overload that turns
+	  an unsupported call into a compile error) goes into the `.Traps.cs` file of its class, next to it (e.g.,
+	  `ThenExtensions.Traps.cs`, `ThenAsyncExtensions.Task.Traps.cs`, `Result.Try.Traps.cs`), in a `Not supported: …` region
+	  with its message constant and a comment that says why it exists; the class is `partial`. The file of the class keeps the
+	  methods that run.
 	* Chained calls go one per line, unless the whole statement fits on one line.
 	* Empty lines:
 		* before a `return`, unless the block has only two one-line statements;

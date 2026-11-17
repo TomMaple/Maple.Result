@@ -10,10 +10,7 @@
 
 using Maple.Results.Helpers;
 using System;
-using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 
 namespace Maple.Results.Extensions;
 
@@ -25,7 +22,7 @@ namespace Maple.Results.Extensions;
 ///     A successful result is returned unchanged, and the function is not called. For a side effect that keeps the result unchanged, use
 ///     <c>IfError</c>.
 /// </remarks>
-public static class ElseExtensions
+public static partial class ElseExtensions
 {
     #region None
 
@@ -59,60 +56,6 @@ public static class ElseExtensions
         var errorResult = ifErrorFunction(result.Error);
 
         return Guard.EnsureNotNullReturned(errorResult, nameof(ifErrorFunction));
-    }
-
-    #endregion
-
-    #region Not supported: functions returning a task
-
-    // These overloads turn a call with a function that returns a task into a compile error (CS0619): Else does not await it. Without
-    // them, the task would replace the result (the function returns the replacement) and nobody would await it. They are generic and
-    // constrained to the task type (#251): a lambda that only throws has no return type to infer, so it does not reach them and binds
-    // to the overload that runs, and a lambda that returns another value fails the constraint. The constraint to a Task also covers a
-    // Task<T>; IEquatable<ValueTask> is implemented by ValueTask only, and a ValueTask<T> has an overload of its own, whose type argument
-    // cannot be inferred from a lambda that only throws either. The unused optional parameter only makes the signatures differ. The
-    // overloads constrained to a Task or a ValueTask have priority 1; an async lambda gives a Task, which fails the ValueTask
-    // constraint, so the two are never ambiguous.
-
-    private const string ElseTaskNotAwaitedMessage =
-        "The function returns a task, which Else does not await. Use ElseAsync.";
-
-    /// <summary>
-    ///     Not supported: the function returns a task, which <c>Else</c> does not await; use <c>ElseAsync</c>.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(ElseTaskNotAwaitedMessage, error: true)]
-    [OverloadResolutionPriority(1)]
-    public static TResult Else<TResult, TTask>([DisallowNull] this TResult result, Func<Error, TTask> ifErrorAction, Task? unused = null)
-        where TResult : IOperationResult
-        where TTask : Task
-    {
-        throw new NotSupportedException(ElseTaskNotAwaitedMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the function returns a task, which <c>Else</c> does not await; use <c>ElseAsync</c>.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(ElseTaskNotAwaitedMessage, error: true)]
-    [OverloadResolutionPriority(1)]
-    public static TResult Else<TResult, TValueTask>([DisallowNull] this TResult result, Func<Error, TValueTask> ifErrorAction,
-        ValueTask unused = default)
-        where TResult : IOperationResult
-        where TValueTask : struct, IEquatable<ValueTask>
-    {
-        throw new NotSupportedException(ElseTaskNotAwaitedMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the function returns a task, which <c>Else</c> does not await; use <c>ElseAsync</c>.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(ElseTaskNotAwaitedMessage, error: true)]
-    public static TResult Else<TResult, TIgnored>([DisallowNull] this TResult result, Func<Error, ValueTask<TIgnored>> ifErrorFunction)
-        where TResult : IOperationResult
-    {
-        throw new NotSupportedException(ElseTaskNotAwaitedMessage);
     }
 
     #endregion

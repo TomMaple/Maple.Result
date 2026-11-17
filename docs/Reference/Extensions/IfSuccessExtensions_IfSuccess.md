@@ -18,7 +18,7 @@ A function that returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>` is no
 
 
 ## IfSuccess(Result, Action)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/IfSuccessExtensions.cs#L50" target="_blank">IfSuccessExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/IfSuccessExtensions.cs#L46" target="_blank">IfSuccessExtensions.cs</a>
 
 Executes the provided action, only if the instance of [Result](../Result/Result.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)).
 
@@ -53,7 +53,7 @@ createUserResult.IfSuccess(() =>
 
 
 ## IfSuccess&lt;T&gt;(Result&lt;T&gt;, Action&lt;T&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/IfSuccessExtensions.cs#L83" target="_blank">IfSuccessExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/IfSuccessExtensions.cs#L79" target="_blank">IfSuccessExtensions.cs</a>
 
 Executes the provided action, only if the instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)).
 

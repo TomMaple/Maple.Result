@@ -17,7 +17,7 @@ A function that returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>` is no
 
 
 ## Else&lt;TResult&gt;(TResult, Func&lt;Error, TResult&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ElseExtensions.cs#L50" target="_blank">ElseExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ElseExtensions.cs#L47" target="_blank">ElseExtensions.cs</a>
 
 Executes the provided function only if the instance of `TResult` represents a failed operation (i.e., contains an [Error](../Error/Error.md)).
 
