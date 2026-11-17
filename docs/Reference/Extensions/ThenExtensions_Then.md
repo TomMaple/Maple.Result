@@ -18,7 +18,7 @@ Runs a function if the instance of [Result](../Result/Result.md) or [Result&lt;T
 | [Then&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, Result&lt;TNext&gt;&gt;)](#thent-tnextresultt-funct-resulttnext) | Executes the specified function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation. |
 
 ## Remarks
-A returned `Result` or `Result<T>` is flattened, and a returned [Error](../Error/Error.md) makes the result fail. Explicit type arguments keep a nested result on purpose. An action (a function that returns nothing) is a compile error (CS0619) that names [IfSuccess](IfSuccessExtensions_IfSuccess.md), which runs a side effect and returns the result unchanged.
+A returned `Result` or `Result<T>` is flattened, and a returned [Error](../Error/Error.md) makes the result fail. Explicit type arguments keep a nested result on purpose. An action (a function that returns nothing) does not compile: the compiler reports that it returns no value (e.g., CS0029). Use [IfSuccess](IfSuccessExtensions_IfSuccess.md) for a side effect; it returns the result unchanged.
 
 A function that returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>` is not supported: `Then` does not await it, so such a call is a compile error (CS0619). Use [ThenAsync](ThenTaskAsyncExtensions_ThenAsync.md) instead, or specify the type arguments (e.g., `Then<Task>(…)` or `Then<T, Task>(…)`) to keep the task in the result on purpose.
 

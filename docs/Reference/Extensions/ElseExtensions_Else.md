@@ -11,7 +11,7 @@ Runs a function if the instance of `TResult` represents a failed operation (i.e.
 | [Else&lt;TResult&gt;(TResult, Func&lt;Error, TResult&gt;)](#elsetresulttresult-funcerror-tresult) | Executes the provided function if the `TResult` instance represents a failed operation and returns its result. |
 
 ## Remarks
-A successful result is returned unchanged, and the function is not called. An action (a function that returns nothing) is a compile error (CS0619) that names [IfError](IfErrorExtensions_IfError.md), which runs a side effect and returns the result unchanged.
+A successful result is returned unchanged, and the function is not called. An action (a function that returns nothing) does not compile: the compiler reports that it returns no value (e.g., CS0029). Use [IfError](IfErrorExtensions_IfError.md) for a side effect; it returns the result unchanged.
 
 A function that returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>` is not supported: `Else` does not await it, so such a call is a compile error (CS0619). Use [ElseAsync](ElseTaskAsyncExtensions_ElseAsync.md) instead.
 
