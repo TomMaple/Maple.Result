@@ -32,6 +32,8 @@ public static partial class ThenExtensions
     // gives a Task, which fails the ValueTask constraint, so the two are never ambiguous. The parameter has the name of the generic
     // overload (ifSuccessFunction): a trap applies only to a call that uses its names, so a call that names the argument reaches the
     // trap too (#273).
+    // They return a result of the task, the type that the call would have without them, so that a call that continues with the
+    // result (e.g., ok.Then(x => GetIntAsync(x)).Value) reports this error only (#274).
 
     private const string ThenTaskNotAwaitedMessage =
         "The function returns a task, which Then does not await. Use ThenAsync, or return the task in a result to keep it " +
@@ -43,7 +45,7 @@ public static partial class ThenExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ThenTaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result Then<TTask>(this Result result, Func<TTask> ifSuccessFunction, Task? unused = null)
+    public static Result<TTask> Then<TTask>(this Result result, Func<TTask> ifSuccessFunction, Task? unused = null)
         where TTask : Task
     {
         throw new NotSupportedException(ThenTaskNotAwaitedMessage);
@@ -55,7 +57,7 @@ public static partial class ThenExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ThenTaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result Then<TValueTask>(this Result result, Func<TValueTask> ifSuccessFunction, ValueTask unused = default)
+    public static Result<TValueTask> Then<TValueTask>(this Result result, Func<TValueTask> ifSuccessFunction, ValueTask unused = default)
         where TValueTask : struct, IEquatable<ValueTask>
     {
         throw new NotSupportedException(ThenTaskNotAwaitedMessage);
@@ -66,7 +68,7 @@ public static partial class ThenExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ThenTaskNotAwaitedMessage, error: true)]
-    public static Result Then<TIgnored>(this Result result, Func<ValueTask<TIgnored>> ifSuccessFunction)
+    public static Result<ValueTask<TIgnored>> Then<TIgnored>(this Result result, Func<ValueTask<TIgnored>> ifSuccessFunction)
     {
         throw new NotSupportedException(ThenTaskNotAwaitedMessage);
     }
@@ -77,7 +79,7 @@ public static partial class ThenExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ThenTaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result Then<T, TTask>(this Result<T> result, Func<T, TTask> ifSuccessFunction, Task? unused = null)
+    public static Result<TTask> Then<T, TTask>(this Result<T> result, Func<T, TTask> ifSuccessFunction, Task? unused = null)
         where TTask : Task
     {
         throw new NotSupportedException(ThenTaskNotAwaitedMessage);
@@ -89,7 +91,7 @@ public static partial class ThenExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ThenTaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result Then<T, TValueTask>(this Result<T> result, Func<T, TValueTask> ifSuccessFunction, ValueTask unused = default)
+    public static Result<TValueTask> Then<T, TValueTask>(this Result<T> result, Func<T, TValueTask> ifSuccessFunction, ValueTask unused = default)
         where TValueTask : struct, IEquatable<ValueTask>
     {
         throw new NotSupportedException(ThenTaskNotAwaitedMessage);
@@ -100,7 +102,7 @@ public static partial class ThenExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ThenTaskNotAwaitedMessage, error: true)]
-    public static Result Then<T, TIgnored>(this Result<T> result, Func<T, ValueTask<TIgnored>> ifSuccessFunction)
+    public static Result<ValueTask<TIgnored>> Then<T, TIgnored>(this Result<T> result, Func<T, ValueTask<TIgnored>> ifSuccessFunction)
     {
         throw new NotSupportedException(ThenTaskNotAwaitedMessage);
     }
