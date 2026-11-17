@@ -82,7 +82,6 @@ public static partial class IfErrorAsyncExtensions
     /// <exception cref="InvalidOperationException">
     ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />.
     /// </exception>
-    [OverloadResolutionPriority(1)]
     public static ValueTask<TResult> IfErrorAsync<TResult>(
         this ValueTask<TResult> resultTask,
         Func<Error, ValueTask> ifErrorAction,
@@ -129,13 +128,24 @@ public static partial class IfErrorAsyncExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ValueDiscardedMessage, error: true)]
-    [OverloadResolutionPriority(1)]
     public static ValueTask<TResult> IfErrorAsync<TResult, TValue>(this ValueTask<TResult> resultTask, Func<Error, ValueTask<TValue>> ifErrorAction, bool? continueOnCapturedContext = null)
         where TResult : IOperationResult
     {
         throw new NotSupportedException(ValueDiscardedMessage);
     }
 
+    /// <summary>
+    ///     Not supported: the function returns a value in a task, which <c>IfErrorAsync</c> discards; use <c>ElseAsync</c>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ValueDiscardedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static ValueTask<TResult> IfErrorAsync<TResult, TTaskResult>(this ValueTask<TResult> resultTask,
+        Func<Error, Task<TTaskResult>> ifErrorAction, bool? continueOnCapturedContext = null)
+        where TResult : IOperationResult
+    {
+        throw new NotSupportedException(ValueDiscardedMessage);
+    }
     #endregion
 
     #region ValueTask results with synchronous delegates
@@ -177,21 +187,84 @@ public static partial class IfErrorAsyncExtensions
             return result.IfError(ifErrorAction);
         }
     }
-
     #endregion
 
-    #region Not supported: synchronous delegates of the wrong kind, and functions returning a Task
+    #region ValueTask results with functions returning a Task
+
+    // See issue #226.
+
+    /// <summary>
+    ///     Invokes the specified asynchronous action if the <paramref name="resultTask" /> represents an error operation,
+    ///     and returns its <typeparamref name="TResult" />.
+    /// </summary>
+    /// <remarks>
+    ///     <para>
+    ///         Use this method to perform side effects, such as logging or error handling,
+    ///         when a <paramref name="resultTask" /> indicates an asynchronous error operation, without altering the operation result.
+    ///     </para>
+    ///     <para>
+    ///         The method executes passed <paramref name="resultTask" /> asynchronous operation, does not modify its result.
+    ///     </para>
+    ///     <para>
+    ///         The function returns a <see cref="Task" />, the other kind of task: it is awaited, and a <see cref="ValueTask" />
+    ///         is returned, as for a function that returns a <see cref="ValueTask" />.
+    ///     </para>
+    /// </remarks>
+    /// <typeparam name="TResult">
+    ///     The type of the operation result object, which must implement the <see cref="IOperationResult" /> interface.
+    /// </typeparam>
+    /// <param name="resultTask">The asynchronous operation to be executed and which result is to be inspected.</param>
+    /// <param name="ifErrorAction">
+    ///     The asynchronous action to execute if the <paramref name="resultTask" /> returns an error. The <see cref="Error" /> associated with
+    ///     the <paramref name="resultTask" /> result is passed to this asynchronous action. Must not be <see langword="null" />.
+    /// </param>
+    /// <param name="continueOnCapturedContext">
+    ///     <see langword="true" /> to run the continuations, including the passed delegates when they run after an <c>await</c>,
+    ///     on the captured context (e.g., the UI thread); <see langword="false" /> to run them on any thread;
+    ///     <see langword="null" /> (the default) to use <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
+    /// </param>
+    /// <returns>
+    ///     A <see cref="ValueTask{IOperationResult}" /> that represents the outcome of the <paramref name="resultTask" /> asynchronous operation,
+    ///     regardless of whether the action was invoked.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    ///     If the <paramref name="ifErrorAction" /> parameter is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />,
+    ///     or <paramref name="ifErrorAction" /> returns a <see langword="null" /> task.
+    /// </exception>
+    [OverloadResolutionPriority(1)]
+    public static ValueTask<TResult> IfErrorAsync<TResult>(
+        this ValueTask<TResult> resultTask,
+        Func<Error, Task> ifErrorAction,
+        bool? continueOnCapturedContext = null
+    )
+        where TResult : IOperationResult
+    {
+        ArgumentNullException.ThrowIfNull(ifErrorAction);
+
+        return Core(resultTask, ifErrorAction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+
+        static async ValueTask<TResult> Core(ValueTask<TResult> resultTask, Func<Error, Task> ifErrorAction, bool continueOnCapturedContext)
+        {
+            var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
+
+            if (result.IsError)
+            {
+                var errorTask = ifErrorAction(result.Error);
+                await Guard.EnsureNotNullTask(errorTask, nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+            }
+
+            return result;
+        }
+    }
+    #endregion
+
+    #region Not supported: synchronous functions returning a value
 
     // A synchronous function that returns a value, passed to IfSuccessAsync or IfErrorAsync, is a compile error (CS0619) that names
     // the method to use, as in #197.
-    // A function that returns a Task would bind to the overloads with a synchronous delegate and give a result holding a task
-    // that nobody awaits (#214): these overloads turn the call into a compile error (CS0619) that names the conversion.
-    // The overloads whose delegate returns a ValueTask have priority 1 (#214): an async lambda converts to a Task and to a ValueTask,
-    // so without it, a call with an async lambda would be ambiguous (CS0121) between them and the traps for the other kind of task.
-
-    private const string TaskFunctionMessage =
-        "The function returns a Task, which IfErrorAsync on a ValueTask of a result does not await. Wrap it in a ValueTask " +
-        "(e.g., new ValueTask<T>(task)), or await it in an async lambda (e.g., async x => await GetAsync(x)).";
 
     /// <summary>
     ///     Not supported: the function returns a value (an assignment or an increment has one too), which <c>IfErrorAsync</c> discards;
@@ -205,30 +278,5 @@ public static partial class IfErrorAsyncExtensions
     {
         throw new NotSupportedException(SyncValueDiscardedMessage);
     }
-
-    /// <summary>
-    ///     Not supported: the function returns a <c>Task</c>, which this method does not await.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(TaskFunctionMessage, error: true)]
-    public static ValueTask<TResult> IfErrorAsync<TResult>(this ValueTask<TResult> resultTask,
-        Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
-        where TResult : IOperationResult
-    {
-        throw new NotSupportedException(TaskFunctionMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the function returns a <c>Task</c>, which this method does not await.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(TaskFunctionMessage, error: true)]
-    public static ValueTask<TResult> IfErrorAsync<TResult, TTaskResult>(this ValueTask<TResult> resultTask,
-        Func<Error, Task<TTaskResult>> ifErrorAction, bool? continueOnCapturedContext = null)
-        where TResult : IOperationResult
-    {
-        throw new NotSupportedException(TaskFunctionMessage);
-    }
-
     #endregion
 }

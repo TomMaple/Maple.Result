@@ -57,7 +57,6 @@ public static partial class SwitchAsyncExtensions
             result.Switch(ifSuccessAction, ifErrorAction);
         }
     }
-
     #endregion
 
     #region ValueTask<Result<T>>
@@ -99,7 +98,6 @@ public static partial class SwitchAsyncExtensions
             result.Switch(ifSuccessAction, ifErrorAction);
         }
     }
-
     #endregion
 
     #region Not supported: actions returning a task
@@ -285,6 +283,5 @@ public static partial class SwitchAsyncExtensions
     {
         throw new NotSupportedException(ActionReturningTaskMessage);
     }
-
     #endregion
 }
