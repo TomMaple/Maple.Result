@@ -15,24 +15,10 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-namespace Maple.Results.Extensions.ValueTasks;
+namespace Maple.Results.Extensions;
 
-/// <summary>
-///     The collection of extension methods that replace a failed <see cref="IOperationResult" />: a function, represented by a
-///     <see cref="ValueTask" />, that receives the <see cref="Error" /> returns the replacement result, e.g., a recovered value or another error.
-/// </summary>
-/// <remarks>
-///     A successful result is returned unchanged, and the function is not called. For a side effect that keeps the result unchanged, use
-///     <c>IfErrorAsync</c>.
-///     <para>
-///         These methods are declared in the <c>Maple.Results.Extensions.ValueTasks</c> namespace, separately from their
-///         <see cref="System.Threading.Tasks.Task" />-based counterparts in <c>Maple.Results.Extensions</c>, because both sets declare the same
-///         method names and
-///         an asynchronous lambda is convertible to a <c>Func&lt;Task&gt;</c> as well as to a <c>Func&lt;ValueTask&gt;</c> delegate.
-///         Importing only one of these namespaces keeps such calls unambiguous.
-///     </para>
-/// </remarks>
-public static class ElseValueTaskAsyncExtensions
+// The ValueTask-based methods of ElseAsyncExtensions (#248); the class is documented in ElseAsyncExtensions.Task.cs.
+public static partial class ElseAsyncExtensions
 {
     #region None
 
@@ -44,7 +30,7 @@ public static class ElseValueTaskAsyncExtensions
     /// <exception cref="InvalidOperationException">
     ///     If <paramref name="ifErrorFunction" /> returns a value task with a <see langword="null" /> result.
     /// </exception>
-    /// <inheritdoc cref="ElseTaskAsyncExtensions.ElseAsync{TResult}(TResult, Func{Error, Task{TResult}}, bool?)" />
+    /// <inheritdoc cref="ElseAsyncExtensions.ElseAsync{TResult}(TResult, Func{Error, Task{TResult}}, bool?)" />
     public static ValueTask<TResult> ElseAsync<TResult>(
         [DisallowNull] this TResult result,
         Func<Error, ValueTask<TResult>> ifErrorFunction,
@@ -146,7 +132,7 @@ public static class ElseValueTaskAsyncExtensions
     /// <exception cref="ArgumentNullException">
     ///     If any of the <paramref name="result" /> or <paramref name="ifErrorFunction" /> parameters are <see langword="null" />.
     /// </exception>
-    /// <inheritdoc cref="ElseTaskAsyncExtensions.ElseAsync{T}(Result{T}, Func{Error, Task{T}}, bool?)" path="/*[not(self::exception)]" />
+    /// <inheritdoc cref="ElseAsyncExtensions.ElseAsync{T}(Result{T}, Func{Error, Task{T}}, bool?)" path="/*[not(self::exception)]" />
     public static ValueTask<Result<T>> ElseAsync<T>(this Result<T> result, Func<Error, ValueTask<T>> ifErrorFunction,
         bool? continueOnCapturedContext = null)
     {
@@ -174,7 +160,7 @@ public static class ElseValueTaskAsyncExtensions
     /// <exception cref="InvalidOperationException">
     ///     If <paramref name="ifErrorFunction" /> returns a value task with a <see langword="null" /> result.
     /// </exception>
-    /// <inheritdoc cref="ElseTaskAsyncExtensions.ElseAsync{T}(Result{T}, Func{Error, Task{Error}}, bool?)" />
+    /// <inheritdoc cref="ElseAsyncExtensions.ElseAsync{T}(Result{T}, Func{Error, Task{Error}}, bool?)" />
     public static ValueTask<Result<T>> ElseAsync<T>(this Result<T> result, Func<Error, ValueTask<Error>> ifErrorFunction,
         bool? continueOnCapturedContext = null)
     {
@@ -202,7 +188,7 @@ public static class ElseValueTaskAsyncExtensions
     /// <exception cref="InvalidOperationException">
     ///     If <paramref name="ifErrorFunction" /> returns a value task with a <see langword="null" /> result.
     /// </exception>
-    /// <inheritdoc cref="ElseTaskAsyncExtensions.ElseAsync(Result, Func{Error, Task{Error}}, bool?)" />
+    /// <inheritdoc cref="ElseAsyncExtensions.ElseAsync(Result, Func{Error, Task{Error}}, bool?)" />
     public static ValueTask<Result> ElseAsync(this Result result, Func<Error, ValueTask<Error>> ifErrorFunction, bool? continueOnCapturedContext = null)
     {
         ArgumentNullException.ThrowIfNull(result);
@@ -230,7 +216,7 @@ public static class ElseValueTaskAsyncExtensions
     /// <exception cref="InvalidOperationException">
     ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />.
     /// </exception>
-    /// <inheritdoc cref="ElseTaskAsyncExtensions.ElseAsync{T}(Task{Result{T}}, Func{Error, Task{T}}, bool?)" path="/*[not(self::exception)]" />
+    /// <inheritdoc cref="ElseAsyncExtensions.ElseAsync{T}(Task{Result{T}}, Func{Error, Task{T}}, bool?)" path="/*[not(self::exception)]" />
     [OverloadResolutionPriority(1)]
     public static ValueTask<Result<T>> ElseAsync<T>(this ValueTask<Result<T>> resultTask, Func<Error, ValueTask<T>> ifErrorFunction,
         bool? continueOnCapturedContext = null)
@@ -263,7 +249,7 @@ public static class ElseValueTaskAsyncExtensions
     ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />,
     ///     or <paramref name="ifErrorFunction" /> returns a value task with a <see langword="null" /> result.
     /// </exception>
-    /// <inheritdoc cref="ElseTaskAsyncExtensions.ElseAsync{T}(Task{Result{T}}, Func{Error, Task{Error}}, bool?)" />
+    /// <inheritdoc cref="ElseAsyncExtensions.ElseAsync{T}(Task{Result{T}}, Func{Error, Task{Error}}, bool?)" />
     [OverloadResolutionPriority(1)]
     public static ValueTask<Result<T>> ElseAsync<T>(this ValueTask<Result<T>> resultTask, Func<Error, ValueTask<Error>> ifErrorFunction,
         bool? continueOnCapturedContext = null)
@@ -296,7 +282,7 @@ public static class ElseValueTaskAsyncExtensions
     ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />,
     ///     or <paramref name="ifErrorFunction" /> returns a value task with a <see langword="null" /> result.
     /// </exception>
-    /// <inheritdoc cref="ElseTaskAsyncExtensions.ElseAsync(Task{Result}, Func{Error, Task{Error}}, bool?)" />
+    /// <inheritdoc cref="ElseAsyncExtensions.ElseAsync(Task{Result}, Func{Error, Task{Error}}, bool?)" />
     [OverloadResolutionPriority(1)]
     public static ValueTask<Result> ElseAsync(this ValueTask<Result> resultTask, Func<Error, ValueTask<Error>> ifErrorFunction,
         bool? continueOnCapturedContext = null)
@@ -327,10 +313,6 @@ public static class ElseValueTaskAsyncExtensions
     // Result<object>, it would bind to the overload with a synchronous function and give a successful result that holds the task, which
     // nobody awaits: this overload turns the call into a compile error (CS0619) that names the method to use. On a result, and for a
     // synchronous action, the compiler reports the call by itself (e.g., CS0029, CS0266 or CS1643), so there are no overloads for them (#256).
-
-    private const string ActionMessage =
-        "The function returns a task without a value. ElseAsync needs a function whose task returns the replacement " +
-        "result; use IfErrorAsync for a side effect.";
 
     /// <summary>
     ///     Not supported: the function returns a task without a value; use <c>IfErrorAsync</c> for a side effect.
@@ -394,37 +376,36 @@ public static class ElseValueTaskAsyncExtensions
     #region Not supported: functions returning a Task
 
     // A function that returns a Task would bind to the overloads with a synchronous delegate and give a result holding a task
-    // that nobody awaits (#214): these overloads turn the call into a compile error (CS0619) that names the namespace to import.
+    // that nobody awaits (#214): these overloads turn the call into a compile error (CS0619) that names the conversion.
     // The overloads whose delegate returns a ValueTask have priority 1 (#214): an async lambda converts to a Task and to a ValueTask,
     // so without it, a call with an async lambda would be ambiguous (CS0121) between them and the traps for the other kind of task.
 
-    private const string OtherTaskMessage =
-        "The function returns a Task, which the ValueTask-based ElseAsync does not await. Import " +
-        "Maple.Results.Extensions instead of Maple.Results.Extensions.ValueTasks, or wrap it in a ValueTask (e.g., new " +
-        "ValueTask<T>(task)).";
+    private const string TaskFunctionMessage =
+        "The function returns a Task, which ElseAsync on a ValueTask of a result does not await. Wrap it in a ValueTask " +
+        "(e.g., new ValueTask<T>(task)), or await it in an async lambda (e.g., async x => await GetAsync(x)).";
 
     /// <summary>
     ///     Not supported: the function returns a <c>Task</c>, which this method does not await.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(OtherTaskMessage, error: true)]
+    [Obsolete(TaskFunctionMessage, error: true)]
     public static ValueTask<TResult> ElseAsync<TResult>(this ValueTask<TResult> resultTask,
         Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
         where TResult : IOperationResult
     {
-        throw new NotSupportedException(OtherTaskMessage);
+        throw new NotSupportedException(TaskFunctionMessage);
     }
 
     /// <summary>
     ///     Not supported: the function returns a <c>Task</c>, which this method does not await.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(OtherTaskMessage, error: true)]
+    [Obsolete(TaskFunctionMessage, error: true)]
     public static ValueTask<TResult> ElseAsync<TResult, TTaskResult>(this ValueTask<TResult> resultTask,
         Func<Error, Task<TTaskResult>> ifErrorFunction, bool? continueOnCapturedContext = null)
         where TResult : IOperationResult
     {
-        throw new NotSupportedException(OtherTaskMessage);
+        throw new NotSupportedException(TaskFunctionMessage);
     }
 
     #endregion

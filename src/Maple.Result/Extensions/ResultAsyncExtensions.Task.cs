@@ -10,6 +10,7 @@
 
 using Maple.Results.Helpers;
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Maple.Results.Extensions;
@@ -17,7 +18,13 @@ namespace Maple.Results.Extensions;
 /// <summary>
 ///     The collection of asynchronous extension methods for the <see cref="Result{T}" /> type.
 /// </summary>
-public static class ResultTaskAsyncExtensions
+/// <remarks>
+///     <para>
+///         The methods for a <see cref="System.Threading.Tasks.Task" /> and for a <see cref="System.Threading.Tasks.ValueTask" /> of a result
+///         are in this one class; the kind of the task is kept.
+///     </para>
+/// </remarks>
+public static partial class ResultAsyncExtensions
 {
     /// <summary>
     ///     Asynchronously converts a task that produces a generic result into a non-generic result, preserving success or <see cref="Error" />.

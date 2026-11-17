@@ -14,22 +14,10 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-namespace Maple.Results.Extensions.ValueTasks;
+namespace Maple.Results.Extensions;
 
-/// <summary>
-///     The collection of extension methods that await a <see cref="ValueTask{TResult}" /> of a <see cref="Result" /> or <see cref="Result{T}" />
-///     and run one of two actions depending on whether the result is successful.
-/// </summary>
-/// <remarks>
-///     <c>SwitchAsync</c> ends a chain for side effects, as <c>MatchAsync</c> ends it for a value; the returned task completes when the action
-///     has run. The actions are synchronous: they run after the task completes. An action that returns a task is a compile error (CS0619),
-///     because <c>SwitchAsync</c> would not await it; use <c>MatchAsync</c> with two functions that return a task.
-///     <para>
-///         These methods are declared in the <c>Maple.Results.Extensions.ValueTasks</c> namespace, separately from their
-///         <see cref="Task" />-based counterparts in <c>Maple.Results.Extensions</c>, because both sets declare the same method names.
-///     </para>
-/// </remarks>
-public static class SwitchValueTaskAsyncExtensions
+// The ValueTask-based methods of SwitchAsyncExtensions (#248); the class is documented in SwitchAsyncExtensions.Task.cs.
+public static partial class SwitchAsyncExtensions
 {
     #region ValueTask<Result>
 
@@ -120,9 +108,6 @@ public static class SwitchValueTaskAsyncExtensions
     // overloads turn such a call into a compile error (CS0619) that names MatchAsync; they follow the traps of the synchronous Switch (see
     // SwitchExtensions), with the continueOnCapturedContext parameter before the unused one.
     // See issue #255.
-
-    private const string ActionReturningTaskMessage =
-        "An action returns a task, which SwitchAsync does not await. Use MatchAsync with two functions that return a task.";
 
     /// <summary>
     ///     Not supported: an action returns a task, which <c>SwitchAsync</c> does not await; use <c>MatchAsync</c>.

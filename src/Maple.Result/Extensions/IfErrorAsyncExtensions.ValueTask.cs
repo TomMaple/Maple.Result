@@ -15,32 +15,16 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-namespace Maple.Results.Extensions.ValueTasks;
+namespace Maple.Results.Extensions;
 
-/// <summary>
-///     The collection of extension methods that run a side effect when an <see cref="IOperationResult" /> is failed: an asynchronous action (a function
-///     that returns a <see cref="ValueTask" />) receives
-///     the <see cref="Error" />, and the result is returned unchanged.
-/// </summary>
-/// <remarks>
-///     A successful result is returned unchanged, and the action is not called. To replace a failed result (e.g., recover with a
-///     value, or return another error), use <c>ElseAsync</c>; a function that returns a value is a compile error here (CS0619), so that a failure
-///     is not turned into a success by mistake.
-///     <para>
-///         These methods are declared in the <c>Maple.Results.Extensions.ValueTasks</c> namespace, separately from their
-///         <see cref="System.Threading.Tasks.Task" />-based counterparts in <c>Maple.Results.Extensions</c>, because both sets declare the same method
-///     names and
-///         an asynchronous lambda is convertible to a <c>Func&lt;Task&gt;</c> as well as to a <c>Func&lt;ValueTask&gt;</c> delegate.
-///         Importing only one of these namespaces keeps such calls unambiguous.
-///     </para>
-/// </remarks>
-public static class IfErrorValueTaskAsyncExtensions
+// The ValueTask-based methods of IfErrorAsyncExtensions (#248); the class is documented in IfErrorAsyncExtensions.Task.cs.
+public static partial class IfErrorAsyncExtensions
 {
     /// <returns>
     ///     A <see cref="ValueTask{IOperationResult}" /> that represents the original <paramref name="result" /> instance,
     ///     regardless of whether the action was invoked.
     /// </returns>
-    /// <inheritdoc cref="IfErrorTaskAsyncExtensions.IfErrorAsync{TResult}(TResult, Func{Error, Task}, bool?)" />
+    /// <inheritdoc cref="IfErrorAsyncExtensions.IfErrorAsync{TResult}(TResult, Func{Error, Task}, bool?)" />
     public static ValueTask<TResult> IfErrorAsync<TResult>(
         [DisallowNull] this TResult result,
         Func<Error, ValueTask> ifErrorAction,
@@ -127,11 +111,6 @@ public static class IfErrorValueTaskAsyncExtensions
     // error (CS0619) that names the method to use, instead of discarding the value. A statement lambda (e.g., x => { list.Add(x); })
     // or a method that returns nothing is a side effect and binds to the action overload.
 
-    private const string ValueDiscardedMessage =
-        "The function returns a value in a task, which IfErrorAsync discards; an assignment or an increment in an async lambda " +
-        "(e.g., async e => last = await LoadAsync(e)) has a value too. " +
-        "Use ElseAsync to replace the result with the value, or an async statement lambda (e.g., async e => { await LogAsync(e); }) for a side effect.";
-
     /// <summary>
     ///     Not supported: the function returns a value in a task (an assignment or an increment in an async lambda has one too), which
     ///     <c>IfErrorAsync</c> discards; use <c>ElseAsync</c>.
@@ -206,20 +185,13 @@ public static class IfErrorValueTaskAsyncExtensions
     // A synchronous function that returns a value, passed to IfSuccessAsync or IfErrorAsync, is a compile error (CS0619) that names
     // the method to use, as in #197.
     // A function that returns a Task would bind to the overloads with a synchronous delegate and give a result holding a task
-    // that nobody awaits (#214): these overloads turn the call into a compile error (CS0619) that names the namespace to import.
+    // that nobody awaits (#214): these overloads turn the call into a compile error (CS0619) that names the conversion.
     // The overloads whose delegate returns a ValueTask have priority 1 (#214): an async lambda converts to a Task and to a ValueTask,
     // so without it, a call with an async lambda would be ambiguous (CS0121) between them and the traps for the other kind of task.
 
-    private const string SyncValueDiscardedMessage =
-        "The function returns a value, which IfErrorAsync discards; an assignment or an increment (e.g., e => last = e or e => count++) " +
-        "has a value too. " +
-        "Use ElseAsync to replace the result with the value, or a statement lambda (e.g., e => { titles.Add(e.Title); } or e => { count++; }) " +
-        "for a side effect.";
-
-    private const string OtherTaskMessage =
-        "The function returns a Task, which the ValueTask-based IfErrorAsync does not await. Import " +
-        "Maple.Results.Extensions instead of Maple.Results.Extensions.ValueTasks, or wrap it in a ValueTask (e.g., new " +
-        "ValueTask<T>(task)).";
+    private const string TaskFunctionMessage =
+        "The function returns a Task, which IfErrorAsync on a ValueTask of a result does not await. Wrap it in a ValueTask " +
+        "(e.g., new ValueTask<T>(task)), or await it in an async lambda (e.g., async x => await GetAsync(x)).";
 
     /// <summary>
     ///     Not supported: the function returns a value (an assignment or an increment has one too), which <c>IfErrorAsync</c> discards;
@@ -238,24 +210,24 @@ public static class IfErrorValueTaskAsyncExtensions
     ///     Not supported: the function returns a <c>Task</c>, which this method does not await.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(OtherTaskMessage, error: true)]
+    [Obsolete(TaskFunctionMessage, error: true)]
     public static ValueTask<TResult> IfErrorAsync<TResult>(this ValueTask<TResult> resultTask,
         Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
         where TResult : IOperationResult
     {
-        throw new NotSupportedException(OtherTaskMessage);
+        throw new NotSupportedException(TaskFunctionMessage);
     }
 
     /// <summary>
     ///     Not supported: the function returns a <c>Task</c>, which this method does not await.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(OtherTaskMessage, error: true)]
+    [Obsolete(TaskFunctionMessage, error: true)]
     public static ValueTask<TResult> IfErrorAsync<TResult, TTaskResult>(this ValueTask<TResult> resultTask,
         Func<Error, Task<TTaskResult>> ifErrorAction, bool? continueOnCapturedContext = null)
         where TResult : IOperationResult
     {
-        throw new NotSupportedException(OtherTaskMessage);
+        throw new NotSupportedException(TaskFunctionMessage);
     }
 
     #endregion

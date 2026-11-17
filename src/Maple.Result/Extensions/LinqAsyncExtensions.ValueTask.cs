@@ -14,27 +14,10 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-namespace Maple.Results.Extensions.ValueTasks;
+namespace Maple.Results.Extensions;
 
-/// <summary>
-///     The collection of LINQ extension methods for a <see cref="Result" /> instance that support asynchronous operations represented by
-///     <see cref="ValueTask" />.
-/// </summary>
-/// <remarks>
-///     These methods enable fluent chaining of asynchronous operations and using LINQ query syntax with asynchronous workflows.
-///     They help simplify error handling and reduce boilerplate code when working with <see cref="Result{T}" />-based asynchronous workflows.
-///     <para>
-///         These methods are declared in the <c>Maple.Results.Extensions.ValueTasks</c> namespace, separately from their
-///         <see cref="System.Threading.Tasks.Task" />-based counterparts in <c>Maple.Results.Extensions</c>, because both sets declare the same method names and
-///         an asynchronous lambda is convertible to a <c>Func&lt;Task&gt;</c> as well as to a <c>Func&lt;ValueTask&gt;</c> delegate.
-///         Importing only one of these namespaces keeps such calls unambiguous.
-///     </para>
-///     <para>
-///         The query syntax cannot pass a <c>continueOnCapturedContext</c> argument, so these methods use
-///         <see cref="ResultConfiguration.ContinueOnCapturedContext" /> to decide whether the selectors run on the captured context (e.g., the UI thread).
-///     </para>
-/// </remarks>
-public static class LinqValueTaskAsyncExtensions
+// The ValueTask-based methods of LinqAsyncExtensions (#248); the class is documented in LinqAsyncExtensions.Task.cs.
+public static partial class LinqAsyncExtensions
 {
     /// <summary>
     ///     Projects the value of a successful <see cref="Result{T}" /> produced by the awaited <paramref name="result" /> into a new
@@ -503,11 +486,6 @@ public static class LinqValueTaskAsyncExtensions
     // generic overloads, so they are chosen first; explicit type arguments (method syntax) exclude them and keep the task on purpose.
     // The Task overloads have a higher priority than the ValueTask ones: an async lambda (possible in method syntax) converts to both,
     // which would be ambiguous (CS0121).
-
-    private const string SelectorTaskNotAwaitedMessage =
-        "The selector returns a task, which the query does not await. " +
-        "Use ThenAsync (or IfSuccessAsync for a task without a value), or a from clause whose function returns a ValueTask<Result<T>>, " +
-        "or specify the type arguments (e.g., Select<T, Task>(…)) to keep the task.";
 
     /// <summary>
     ///     Not supported: the selector returns a task, which the query does not await;

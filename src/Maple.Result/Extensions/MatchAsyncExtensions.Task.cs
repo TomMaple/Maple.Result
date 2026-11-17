@@ -25,8 +25,12 @@ namespace Maple.Results.Extensions;
 ///     <c>MatchAsync</c> returns what the function that ran returns, and does not look at it. There is no <c>MatchAsync</c> on a result:
 ///     <c>Match</c> returns the task of the function that ran. For two side effects, use <c>SwitchAsync</c>; two actions are a compile error
 ///     here (CS0619).
+///     <para>
+///         The methods for a <see cref="System.Threading.Tasks.Task" /> and for a <see cref="System.Threading.Tasks.ValueTask" /> of a result
+///         are in this one class; the kind of the task is kept.
+///     </para>
 /// </remarks>
-public static class MatchTaskAsyncExtensions
+public static partial class MatchAsyncExtensions
 {
     #region Task<Result>
 
@@ -392,56 +396,56 @@ public static class MatchTaskAsyncExtensions
     #region Not supported: functions returning a ValueTask
 
     // Two functions that return a ValueTask would bind to the overload with synchronous functions, which would return the ValueTask in a
-    // Task without awaiting it (e.g., a Task<ValueTask<int>>). These overloads turn such a call into a compile error (CS0619) until the
-    // Task-based and the ValueTask-based methods share one namespace (#248).
+    // Task without awaiting it (e.g., a Task<ValueTask<int>>). These overloads turn such a call into a compile error (CS0619) that names
+    // the conversion.
     // See issue #214.
 
-    private const string OtherTaskMessage =
-        "The delegates return a ValueTask, which the Task-based MatchAsync does not await. Import " +
-        "Maple.Results.Extensions.ValueTasks instead of Maple.Results.Extensions, or convert them with AsTask().";
+    private const string ValueTaskFunctionMessage =
+        "The delegates return a ValueTask, which MatchAsync on a Task of a result does not await. Convert them with AsTask(), " +
+        "or await them in async lambdas (e.g., async x => await GetAsync(x)).";
 
     /// <summary>
     ///     Not supported: the functions return a <c>ValueTask</c>, which this method does not await.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(OtherTaskMessage, error: true)]
+    [Obsolete(ValueTaskFunctionMessage, error: true)]
     public static Task<TOut> MatchAsync<TOut>(this Task<Result> resultTask, Func<ValueTask<TOut>> ifSuccessFunction,
         Func<Error, ValueTask<TOut>> ifErrorFunction, bool? continueOnCapturedContext = null)
     {
-        throw new NotSupportedException(OtherTaskMessage);
+        throw new NotSupportedException(ValueTaskFunctionMessage);
     }
 
     /// <summary>
     ///     Not supported: the functions return a <c>ValueTask</c>, which this method does not await.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(OtherTaskMessage, error: true)]
+    [Obsolete(ValueTaskFunctionMessage, error: true)]
     public static Task MatchAsync(this Task<Result> resultTask, Func<ValueTask> ifSuccessAction, Func<Error, ValueTask> ifErrorAction,
         bool? continueOnCapturedContext = null)
     {
-        throw new NotSupportedException(OtherTaskMessage);
+        throw new NotSupportedException(ValueTaskFunctionMessage);
     }
 
     /// <summary>
     ///     Not supported: the functions return a <c>ValueTask</c>, which this method does not await.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(OtherTaskMessage, error: true)]
+    [Obsolete(ValueTaskFunctionMessage, error: true)]
     public static Task<TOut> MatchAsync<T, TOut>(this Task<Result<T>> resultTask, Func<T, ValueTask<TOut>> ifSuccessFunction,
         Func<Error, ValueTask<TOut>> ifErrorFunction, bool? continueOnCapturedContext = null)
     {
-        throw new NotSupportedException(OtherTaskMessage);
+        throw new NotSupportedException(ValueTaskFunctionMessage);
     }
 
     /// <summary>
     ///     Not supported: the functions return a <c>ValueTask</c>, which this method does not await.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(OtherTaskMessage, error: true)]
+    [Obsolete(ValueTaskFunctionMessage, error: true)]
     public static Task MatchAsync<T>(this Task<Result<T>> resultTask, Func<T, ValueTask> ifSuccessAction, Func<Error, ValueTask> ifErrorAction,
         bool? continueOnCapturedContext = null)
     {
-        throw new NotSupportedException(OtherTaskMessage);
+        throw new NotSupportedException(ValueTaskFunctionMessage);
     }
 
     #endregion

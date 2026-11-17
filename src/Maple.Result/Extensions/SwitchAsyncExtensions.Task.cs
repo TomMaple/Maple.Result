@@ -24,8 +24,12 @@ namespace Maple.Results.Extensions;
 ///     <c>SwitchAsync</c> ends a chain for side effects, as <c>MatchAsync</c> ends it for a value; the returned task completes when the action
 ///     has run. The actions are synchronous: they run after the task completes. An action that returns a task is a compile error (CS0619),
 ///     because <c>SwitchAsync</c> would not await it; use <c>MatchAsync</c> with two functions that return a task.
+///     <para>
+///         The methods for a <see cref="System.Threading.Tasks.Task" /> and for a <see cref="System.Threading.Tasks.ValueTask" /> of a result
+///         are in this one class; the kind of the task is kept.
+///     </para>
 /// </remarks>
-public static class SwitchTaskAsyncExtensions
+public static partial class SwitchAsyncExtensions
 {
     #region Task<Result>
 

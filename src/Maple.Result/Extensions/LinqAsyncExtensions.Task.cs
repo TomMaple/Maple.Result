@@ -24,8 +24,14 @@ namespace Maple.Results.Extensions;
 ///     handling and reduce boilerplate code when working with <see cref="Result{T}" />-based asynchronous workflows. The query syntax cannot pass
 ///     a <c>continueOnCapturedContext</c> argument, so these methods use <see cref="ResultConfiguration.ContinueOnCapturedContext" /> to decide whether
 ///     the selectors run on the captured context (e.g., the UI thread).
+///     <para>
+///         The methods for a <see cref="System.Threading.Tasks.Task" /> and for a <see cref="System.Threading.Tasks.ValueTask" /> are in this
+///         one class. On a task of a result, the kind of the task is kept. On a result, the function decides it: a function that returns a
+///         <c>ValueTask</c> gives a <c>ValueTask</c>, and an <see langword="async" /> lambda gives a <c>Task</c> (with an explicit return
+///         type, e.g., <c>async ValueTask&lt;int&gt; (int x) =&gt; …</c>, it gives a <c>ValueTask</c>).
+///     </para>
 /// </remarks>
-public static class LinqTaskAsyncExtensions
+public static partial class LinqAsyncExtensions
 {
     /// <summary>
     ///     Projects the value of a successful <see cref="Result{T}" /> produced by the awaited <paramref name="result" /> into a new
@@ -272,6 +278,7 @@ public static class LinqTaskAsyncExtensions
     /// <exception cref="InvalidOperationException">
     ///     If <paramref name="collectionSelector" /> returns a <see langword="null" /> task or a task with a <see langword="null" /> result.
     /// </exception>
+    [OverloadResolutionPriority(1)]
     public static Task<Result<TNext>> SelectMany<T, TMiddle, TNext>(
         this Result<T> result,
         Func<T, Task<Result<TMiddle>>> collectionSelector,
@@ -459,6 +466,7 @@ public static class LinqTaskAsyncExtensions
     ///         Without this overload, such a query would return a <b>successful</b> <c>Result&lt;Error&gt;</c>.
     ///     </para>
     /// </remarks>
+    [OverloadResolutionPriority(1)]
     public static Task<Result> SelectMany<T, TMiddle>(
         this Result<T> result,
         Func<T, Task<Result<TMiddle>>> collectionSelector,
@@ -496,7 +504,8 @@ public static class LinqTaskAsyncExtensions
 
     private const string SelectorTaskNotAwaitedMessage =
         "The selector returns a task, which the query does not await. " +
-        "Use ThenAsync (or IfSuccessAsync for a task without a value), or a from clause whose function returns a Task<Result<T>>, " +
+        "Use ThenAsync (or IfSuccessAsync for a task without a value), or a from clause whose function returns a Task<Result<T>> " +
+        "(or a ValueTask<Result<T>> on a ValueTask), " +
         "or specify the type arguments (e.g., Select<T, Task>(…)) to keep the task.";
 
     /// <summary>
@@ -667,7 +676,7 @@ public static class LinqTaskAsyncExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
-    [OverloadResolutionPriority(1)]
+    [OverloadResolutionPriority(2)]
     public static Task<Result> SelectMany<T, TMiddle>(
         this Result<T> result,
         Func<T, Task<Result<TMiddle>>> collectionSelector,
@@ -682,7 +691,7 @@ public static class LinqTaskAsyncExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
-    [OverloadResolutionPriority(1)]
+    [OverloadResolutionPriority(2)]
     public static Task<Result<TNext>> SelectMany<T, TMiddle, TNext>(
         this Result<T> result,
         Func<T, Task<Result<TMiddle>>> collectionSelector,
@@ -697,6 +706,7 @@ public static class LinqTaskAsyncExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
     public static Task<Result> SelectMany<T, TMiddle>(
         this Result<T> result,
         Func<T, Task<Result<TMiddle>>> collectionSelector,
@@ -711,6 +721,7 @@ public static class LinqTaskAsyncExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
     public static Task<Result<TNext>> SelectMany<T, TMiddle, TNext>(
         this Result<T> result,
         Func<T, Task<Result<TMiddle>>> collectionSelector,
@@ -2609,6 +2620,7 @@ public static class LinqTaskAsyncExtensions
     ///     If the <paramref name="collectionSelector" /> returns <see langword="null" /> or a task with a <see langword="null" /> result, or
     ///     the <paramref name="resultSelector" /> returns <see langword="null" />.
     /// </exception>
+    [OverloadResolutionPriority(1)]
     public static Task<Result> SelectMany<T, TMiddle>(
         this Result<T> result,
         Func<T, Task<Result<TMiddle>>> collectionSelector,
@@ -2668,6 +2680,7 @@ public static class LinqTaskAsyncExtensions
     ///     If the <paramref name="collectionSelector" /> returns <see langword="null" /> or a task with a <see langword="null" /> result, or
     ///     the <paramref name="resultSelector" /> returns <see langword="null" />.
     /// </exception>
+    [OverloadResolutionPriority(1)]
     public static Task<Result<TNext>> SelectMany<T, TMiddle, TNext>(
         this Result<T> result,
         Func<T, Task<Result<TMiddle>>> collectionSelector,
@@ -2729,6 +2742,7 @@ public static class LinqTaskAsyncExtensions
     /// <exception cref="InvalidOperationException">
     ///     If the <paramref name="collectionSelector" /> returns <see langword="null" /> or a task with a <see langword="null" /> result.
     /// </exception>
+    [OverloadResolutionPriority(1)]
     public static Task<Result<TNext>> SelectMany<T, TNext>(
         this Result<T> result,
         Func<T, Task<Result>> collectionSelector,
@@ -2783,6 +2797,7 @@ public static class LinqTaskAsyncExtensions
     ///     If the <paramref name="collectionSelector" /> returns <see langword="null" /> or a task with a <see langword="null" /> result, or
     ///     the <paramref name="resultSelector" /> returns <see langword="null" />.
     /// </exception>
+    [OverloadResolutionPriority(1)]
     public static Task<Result> SelectMany<T>(this Result<T> result, Func<T, Task<Result>> collectionSelector, Func<T, Result, Error> resultSelector)
     {
         ArgumentNullException.ThrowIfNull(result);
@@ -2842,6 +2857,7 @@ public static class LinqTaskAsyncExtensions
     ///     If the <paramref name="collectionSelector" /> returns <see langword="null" /> or a task with a <see langword="null" /> result, or
     ///     the <paramref name="resultSelector" /> returns <see langword="null" />.
     /// </exception>
+    [OverloadResolutionPriority(1)]
     public static Task<Result> SelectMany<T>(this Result<T> result, Func<T, Task<Result>> collectionSelector, Func<T, Result, Result> resultSelector)
     {
         ArgumentNullException.ThrowIfNull(result);
@@ -2902,6 +2918,7 @@ public static class LinqTaskAsyncExtensions
     ///     If the <paramref name="collectionSelector" /> returns <see langword="null" /> or a task with a <see langword="null" /> result, or
     ///     the <paramref name="resultSelector" /> returns <see langword="null" />.
     /// </exception>
+    [OverloadResolutionPriority(1)]
     public static Task<Result<TNext>> SelectMany<T, TNext>(
         this Result<T> result,
         Func<T, Task<Result>> collectionSelector,
@@ -2964,6 +2981,7 @@ public static class LinqTaskAsyncExtensions
     /// <exception cref="InvalidOperationException">
     ///     If the <paramref name="collectionSelector" /> returns <see langword="null" /> or a task with a <see langword="null" /> result.
     /// </exception>
+    [OverloadResolutionPriority(1)]
     public static Task<Result<TNext>> SelectMany<TMiddle, TNext>(
         this Result result,
         Func<Result, Task<Result<TMiddle>>> collectionSelector,
@@ -3022,6 +3040,7 @@ public static class LinqTaskAsyncExtensions
     ///     If the <paramref name="collectionSelector" /> returns <see langword="null" /> or a task with a <see langword="null" /> result, or
     ///     the <paramref name="resultSelector" /> returns <see langword="null" />.
     /// </exception>
+    [OverloadResolutionPriority(1)]
     public static Task<Result> SelectMany<TMiddle>(
         this Result result,
         Func<Result, Task<Result<TMiddle>>> collectionSelector,
@@ -3088,6 +3107,7 @@ public static class LinqTaskAsyncExtensions
     ///     If the <paramref name="collectionSelector" /> returns <see langword="null" /> or a task with a <see langword="null" /> result, or
     ///     the <paramref name="resultSelector" /> returns <see langword="null" />.
     /// </exception>
+    [OverloadResolutionPriority(1)]
     public static Task<Result> SelectMany<TMiddle>(
         this Result result,
         Func<Result, Task<Result<TMiddle>>> collectionSelector,
@@ -3155,6 +3175,7 @@ public static class LinqTaskAsyncExtensions
     ///     If the <paramref name="collectionSelector" /> returns <see langword="null" /> or a task with a <see langword="null" /> result, or
     ///     the <paramref name="resultSelector" /> returns <see langword="null" />.
     /// </exception>
+    [OverloadResolutionPriority(1)]
     public static Task<Result<TNext>> SelectMany<TMiddle, TNext>(
         this Result result,
         Func<Result, Task<Result<TMiddle>>> collectionSelector,
@@ -3216,6 +3237,7 @@ public static class LinqTaskAsyncExtensions
     /// <exception cref="InvalidOperationException">
     ///     If the <paramref name="collectionSelector" /> returns <see langword="null" /> or a task with a <see langword="null" /> result.
     /// </exception>
+    [OverloadResolutionPriority(1)]
     public static Task<Result<TNext>> SelectMany<TNext>(
         this Result result,
         Func<Result, Task<Result>> collectionSelector,
@@ -3273,6 +3295,7 @@ public static class LinqTaskAsyncExtensions
     ///     If the <paramref name="collectionSelector" /> returns <see langword="null" /> or a task with a <see langword="null" /> result, or
     ///     the <paramref name="resultSelector" /> returns <see langword="null" />.
     /// </exception>
+    [OverloadResolutionPriority(1)]
     public static Task<Result> SelectMany(
         this Result result,
         Func<Result, Task<Result>> collectionSelector,
@@ -3335,6 +3358,7 @@ public static class LinqTaskAsyncExtensions
     ///     If the <paramref name="collectionSelector" /> returns <see langword="null" /> or a task with a <see langword="null" /> result, or
     ///     the <paramref name="resultSelector" /> returns <see langword="null" />.
     /// </exception>
+    [OverloadResolutionPriority(1)]
     public static Task<Result> SelectMany(
         this Result result,
         Func<Result, Task<Result>> collectionSelector,
@@ -3398,6 +3422,7 @@ public static class LinqTaskAsyncExtensions
     ///     If the <paramref name="collectionSelector" /> returns <see langword="null" /> or a task with a <see langword="null" /> result, or
     ///     the <paramref name="resultSelector" /> returns <see langword="null" />.
     /// </exception>
+    [OverloadResolutionPriority(1)]
     public static Task<Result<TNext>> SelectMany<TNext>(
         this Result result,
         Func<Result, Task<Result>> collectionSelector,
@@ -3804,7 +3829,7 @@ public static class LinqTaskAsyncExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
-    [OverloadResolutionPriority(1)]
+    [OverloadResolutionPriority(2)]
     public static Task<Result> SelectMany<T>(this Result<T> result, Func<T, Task<Result>> collectionSelector, Func<T, Result, Task> resultSelector)
     {
         throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
@@ -3815,7 +3840,7 @@ public static class LinqTaskAsyncExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
-    [OverloadResolutionPriority(1)]
+    [OverloadResolutionPriority(2)]
     public static Task<Result<TNext>> SelectMany<T, TNext>(
         this Result<T> result,
         Func<T, Task<Result>> collectionSelector,
@@ -3829,6 +3854,7 @@ public static class LinqTaskAsyncExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
     public static Task<Result> SelectMany<T>(
         this Result<T> result,
         Func<T, Task<Result>> collectionSelector,
@@ -3842,6 +3868,7 @@ public static class LinqTaskAsyncExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
     public static Task<Result<TNext>> SelectMany<T, TNext>(
         this Result<T> result,
         Func<T, Task<Result>> collectionSelector,
@@ -3855,7 +3882,7 @@ public static class LinqTaskAsyncExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
-    [OverloadResolutionPriority(1)]
+    [OverloadResolutionPriority(2)]
     public static Task<Result> SelectMany<TMiddle>(
         this Result result,
         Func<Result, Task<Result<TMiddle>>> collectionSelector,
@@ -3869,7 +3896,7 @@ public static class LinqTaskAsyncExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
-    [OverloadResolutionPriority(1)]
+    [OverloadResolutionPriority(2)]
     public static Task<Result<TNext>> SelectMany<TMiddle, TNext>(
         this Result result,
         Func<Result, Task<Result<TMiddle>>> collectionSelector,
@@ -3883,6 +3910,7 @@ public static class LinqTaskAsyncExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
     public static Task<Result> SelectMany<TMiddle>(
         this Result result,
         Func<Result, Task<Result<TMiddle>>> collectionSelector,
@@ -3896,6 +3924,7 @@ public static class LinqTaskAsyncExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
     public static Task<Result<TNext>> SelectMany<TMiddle, TNext>(
         this Result result,
         Func<Result, Task<Result<TMiddle>>> collectionSelector,
@@ -3909,7 +3938,7 @@ public static class LinqTaskAsyncExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
-    [OverloadResolutionPriority(1)]
+    [OverloadResolutionPriority(2)]
     public static Task<Result> SelectMany(
         this Result result,
         Func<Result, Task<Result>> collectionSelector,
@@ -3923,7 +3952,7 @@ public static class LinqTaskAsyncExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
-    [OverloadResolutionPriority(1)]
+    [OverloadResolutionPriority(2)]
     public static Task<Result<TNext>> SelectMany<TNext>(
         this Result result,
         Func<Result, Task<Result>> collectionSelector,
@@ -3937,6 +3966,7 @@ public static class LinqTaskAsyncExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
     public static Task<Result> SelectMany(
         this Result result,
         Func<Result, Task<Result>> collectionSelector,
@@ -3950,6 +3980,7 @@ public static class LinqTaskAsyncExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
     public static Task<Result<TNext>> SelectMany<TNext>(
         this Result result,
         Func<Result, Task<Result>> collectionSelector,

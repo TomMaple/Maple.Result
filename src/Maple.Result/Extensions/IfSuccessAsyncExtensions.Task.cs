@@ -25,8 +25,14 @@ namespace Maple.Results.Extensions;
 ///     A failed result is returned unchanged, and the action is not called. To transform or chain the result with a function that
 ///     returns a value, a <see cref="Result" />, a <see cref="Result{T}" /> or an <see cref="Error" />, use <c>ThenAsync</c>; a function that returns
 ///     a value is a compile error here (CS0619), so that the value is not discarded by mistake.
+///     <para>
+///         The methods for a <see cref="System.Threading.Tasks.Task" /> and for a <see cref="System.Threading.Tasks.ValueTask" /> are in this
+///         one class. On a task of a result, the kind of the task is kept. On a result, the function decides it: a function that returns a
+///         <c>ValueTask</c> gives a <c>ValueTask</c>, and an <see langword="async" /> lambda gives a <c>Task</c> (with an explicit return
+///         type, e.g., <c>async ValueTask&lt;int&gt; (int x) =&gt; …</c>, it gives a <c>ValueTask</c>).
+///     </para>
 /// </remarks>
-public static class IfSuccessTaskAsyncExtensions
+public static partial class IfSuccessAsyncExtensions
 {
     #region Result extensions
 
@@ -53,6 +59,7 @@ public static class IfSuccessTaskAsyncExtensions
     ///     If any of the <paramref name="result" /> or <paramref name="ifSuccessAction" /> parameters are <see langword="null" />.
     /// </exception>
     /// <exception cref="InvalidOperationException">If <paramref name="ifSuccessAction" /> returns a <see langword="null" /> task.</exception>
+    [OverloadResolutionPriority(1)]
     public static Task<Result> IfSuccessAsync(this Result result, Func<Task> ifSuccessAction, bool? continueOnCapturedContext = null)
     {
         ArgumentNullException.ThrowIfNull(result);
@@ -104,6 +111,7 @@ public static class IfSuccessTaskAsyncExtensions
     ///     If any of the <paramref name="result" /> or <paramref name="ifSuccessAction" /> parameters are <see langword="null" />.
     /// </exception>
     /// <exception cref="InvalidOperationException">If <paramref name="ifSuccessAction" /> returns a <see langword="null" /> task.</exception>
+    [OverloadResolutionPriority(1)]
     public static Task<Result<T>> IfSuccessAsync<T>(this Result<T> result, Func<T, Task> ifSuccessAction, bool? continueOnCapturedContext = null)
     {
         ArgumentNullException.ThrowIfNull(result);
@@ -272,6 +280,7 @@ public static class IfSuccessTaskAsyncExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ValueDiscardedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
     public static Task<Result> IfSuccessAsync<TValue>(this Result result, Func<Task<TValue>> ifSuccessAction, bool? continueOnCapturedContext = null)
     {
         throw new NotSupportedException(ValueDiscardedMessage);
@@ -283,6 +292,7 @@ public static class IfSuccessTaskAsyncExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ValueDiscardedMessage, error: true)]
+    [OverloadResolutionPriority(1)]
     public static Task<Result<T>> IfSuccessAsync<T, TValue>(this Result<T> result, Func<T, Task<TValue>> ifSuccessAction, bool? continueOnCapturedContext = null)
     {
         throw new NotSupportedException(ValueDiscardedMessage);
@@ -400,7 +410,7 @@ public static class IfSuccessTaskAsyncExtensions
     // A synchronous function that returns a value, passed to IfSuccessAsync or IfErrorAsync, is a compile error (CS0619) that names
     // the method to use, as in #197.
     // A function that returns a ValueTask would bind to the overloads with a synchronous delegate and give a result holding a task
-    // that nobody awaits (#214): these overloads turn the call into a compile error (CS0619) that names the namespace to import.
+    // that nobody awaits (#214): these overloads turn the call into a compile error (CS0619) that names the conversion.
     // The overloads whose delegate returns a Task have priority 1 (#214): an async lambda converts to a Task and to a ValueTask,
     // so without it, a call with an async lambda would be ambiguous (CS0121) between them and the traps for the other kind of task.
 
@@ -409,9 +419,9 @@ public static class IfSuccessTaskAsyncExtensions
         "has a value too. " +
         "Use ThenAsync to keep the value, or a statement lambda (e.g., x => { list.Add(x); } or x => { count++; }) for a side effect.";
 
-    private const string OtherTaskMessage =
-        "The function returns a ValueTask, which the Task-based IfSuccessAsync does not await. Import " +
-        "Maple.Results.Extensions.ValueTasks instead of Maple.Results.Extensions, or convert it with AsTask().";
+    private const string ValueTaskFunctionMessage =
+        "The function returns a ValueTask, which IfSuccessAsync on a Task of a result does not await. Convert it with AsTask(), " +
+        "or await it in an async lambda (e.g., async x => await GetAsync(x)).";
 
     /// <summary>
     ///     Not supported: the function returns a value (an assignment or an increment has one too), which <c>IfSuccessAsync</c> discards;
@@ -440,42 +450,42 @@ public static class IfSuccessTaskAsyncExtensions
     ///     Not supported: the function returns a <c>ValueTask</c>, which this method does not await.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(OtherTaskMessage, error: true)]
+    [Obsolete(ValueTaskFunctionMessage, error: true)]
     public static Task<Result> IfSuccessAsync(this Task<Result> resultTask, Func<ValueTask> ifSuccessAction, bool? continueOnCapturedContext = null)
     {
-        throw new NotSupportedException(OtherTaskMessage);
+        throw new NotSupportedException(ValueTaskFunctionMessage);
     }
 
     /// <summary>
     ///     Not supported: the function returns a <c>ValueTask</c>, which this method does not await.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(OtherTaskMessage, error: true)]
+    [Obsolete(ValueTaskFunctionMessage, error: true)]
     public static Task<Result> IfSuccessAsync<TTaskResult>(this Task<Result> resultTask,
         Func<ValueTask<TTaskResult>> ifSuccessAction, bool? continueOnCapturedContext = null)
     {
-        throw new NotSupportedException(OtherTaskMessage);
+        throw new NotSupportedException(ValueTaskFunctionMessage);
     }
 
     /// <summary>
     ///     Not supported: the function returns a <c>ValueTask</c>, which this method does not await.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(OtherTaskMessage, error: true)]
+    [Obsolete(ValueTaskFunctionMessage, error: true)]
     public static Task<Result<T>> IfSuccessAsync<T>(this Task<Result<T>> resultTask, Func<T, ValueTask> ifSuccessAction, bool? continueOnCapturedContext = null)
     {
-        throw new NotSupportedException(OtherTaskMessage);
+        throw new NotSupportedException(ValueTaskFunctionMessage);
     }
 
     /// <summary>
     ///     Not supported: the function returns a <c>ValueTask</c>, which this method does not await.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(OtherTaskMessage, error: true)]
+    [Obsolete(ValueTaskFunctionMessage, error: true)]
     public static Task<Result<T>> IfSuccessAsync<T, TTaskResult>(this Task<Result<T>> resultTask,
         Func<T, ValueTask<TTaskResult>> ifSuccessAction, bool? continueOnCapturedContext = null)
     {
-        throw new NotSupportedException(OtherTaskMessage);
+        throw new NotSupportedException(ValueTaskFunctionMessage);
     }
 
     #endregion

@@ -14,26 +14,10 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-namespace Maple.Results.Extensions.ValueTasks;
+namespace Maple.Results.Extensions;
 
-/// <summary>
-///     The collection of extension methods that transform or chain a successful <see cref="Result" /> or <see cref="Result{T}" />: a function,
-///     represented by a <see cref="ValueTask" />, that returns a value, a <see cref="Result" />, a <see cref="Result{T}" /> or an
-///     <see cref="Error" /> gives the next result.
-/// </summary>
-/// <remarks>
-///     A failed result is returned unchanged, and the function is not called. A returned <see cref="Result" /> or <see cref="Result{T}" /> is
-///     flattened, and a returned <see cref="Error" /> gives a failed result. For a side effect that keeps the result unchanged, use
-///     <c>IfSuccessAsync</c>.
-///     <para>
-///         These methods are declared in the <c>Maple.Results.Extensions.ValueTasks</c> namespace, separately from their
-///         <see cref="System.Threading.Tasks.Task" />-based counterparts in <c>Maple.Results.Extensions</c>, because both sets declare the same
-///         method names and
-///         an asynchronous lambda is convertible to a <c>Func&lt;Task&gt;</c> as well as to a <c>Func&lt;ValueTask&gt;</c> delegate.
-///         Importing only one of these namespaces keeps such calls unambiguous.
-///     </para>
-/// </remarks>
-public static class ThenValueTaskAsyncExtensions
+// The ValueTask-based methods of ThenAsyncExtensions (#248); the class is documented in ThenAsyncExtensions.Task.cs.
+public static partial class ThenAsyncExtensions
 {
     #region Result extensions
 
@@ -149,7 +133,7 @@ public static class ThenValueTaskAsyncExtensions
     ///     <paramref name="ifSuccessFunction" /> if <paramref name="result" /> is successful;
     ///     otherwise, a <see cref="ValueTask{TResult}" /> that represents the failed <see cref="Result{T}" /> with the original <see cref="Error" />.
     /// </returns>
-    /// <inheritdoc cref="ThenTaskAsyncExtensions.ThenAsync{T}(Result, Func{Task{T}}, bool?)" />
+    /// <inheritdoc cref="ThenAsyncExtensions.ThenAsync{T}(Result, Func{Task{T}}, bool?)" />
     public static ValueTask<Result<T>> ThenAsync<T>(this Result result, Func<ValueTask<T>> ifSuccessFunction, bool? continueOnCapturedContext = null)
     {
         ArgumentNullException.ThrowIfNull(result);
@@ -174,7 +158,7 @@ public static class ThenValueTaskAsyncExtensions
     /// <exception cref="InvalidOperationException">
     ///     If <paramref name="ifSuccessFunction" /> returns a value task with a <see langword="null" /> result.
     /// </exception>
-    /// <inheritdoc cref="ThenTaskAsyncExtensions.ThenAsync{T}(Result, Func{Task{Result{T}}}, bool?)" />
+    /// <inheritdoc cref="ThenAsyncExtensions.ThenAsync{T}(Result, Func{Task{Result{T}}}, bool?)" />
     public static ValueTask<Result<T>> ThenAsync<T>(this Result result,
         Func<ValueTask<Result<T>>> ifSuccessFunction, bool? continueOnCapturedContext = null)
     {
@@ -315,7 +299,7 @@ public static class ThenValueTaskAsyncExtensions
     ///     <paramref name="ifSuccessFunction" /> if <paramref name="result" /> is successful;
     ///     otherwise, a failed <see cref="Result{TNext}" /> with the original <see cref="Error" />.
     /// </returns>
-    /// <inheritdoc cref="ThenTaskAsyncExtensions.ThenAsync{T, TNext}(Result{T}, Func{T, Task{TNext}}, bool?)" />
+    /// <inheritdoc cref="ThenAsyncExtensions.ThenAsync{T, TNext}(Result{T}, Func{T, Task{TNext}}, bool?)" />
     public static ValueTask<Result<TNext>> ThenAsync<T, TNext>(this Result<T> result,
         Func<T, ValueTask<TNext>> ifSuccessFunction, bool? continueOnCapturedContext = null)
     {
@@ -895,10 +879,6 @@ public static class ThenValueTaskAsyncExtensions
     // the call into a compile error (CS0619) that names the method to use. On a result, and for a synchronous action, the compiler
     // reports the call by itself (e.g., CS0029, CS0266 or CS1643), so there are no overloads for them (#256).
 
-    private const string ActionMessage =
-        "The function returns a task without a value. ThenAsync needs a function whose task returns a value, a result " +
-        "or an error; use IfSuccessAsync for a side effect.";
-
     /// <summary>
     ///     Not supported: the function returns a task without a value; use <c>IfSuccessAsync</c> for a side effect.
     /// </summary>
@@ -1229,56 +1209,55 @@ public static class ThenValueTaskAsyncExtensions
     #region Not supported: functions returning a Task
 
     // A function that returns a Task would bind to the overloads with a synchronous delegate and give a result holding a task
-    // that nobody awaits (#214): these overloads turn the call into a compile error (CS0619) that names the namespace to import.
+    // that nobody awaits (#214): these overloads turn the call into a compile error (CS0619) that names the conversion.
     // The overloads whose delegate returns a ValueTask have priority 1 (#214): an async lambda converts to a Task and to a ValueTask,
     // so without it, a call with an async lambda would be ambiguous (CS0121) between them and the traps for the other kind of task.
 
-    private const string OtherTaskMessage =
-        "The function returns a Task, which the ValueTask-based ThenAsync does not await. Import " +
-        "Maple.Results.Extensions instead of Maple.Results.Extensions.ValueTasks, or wrap it in a ValueTask (e.g., new " +
-        "ValueTask<T>(task)).";
+    private const string TaskFunctionMessage =
+        "The function returns a Task, which ThenAsync on a ValueTask of a result does not await. Wrap it in a ValueTask " +
+        "(e.g., new ValueTask<T>(task)), or await it in an async lambda (e.g., async x => await GetAsync(x)).";
 
     /// <summary>
     ///     Not supported: the function returns a <c>Task</c>, which this method does not await.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(OtherTaskMessage, error: true)]
+    [Obsolete(TaskFunctionMessage, error: true)]
     public static ValueTask<Result> ThenAsync(this ValueTask<Result> resultTask, Func<Task> ifSuccessAction, bool? continueOnCapturedContext = null)
     {
-        throw new NotSupportedException(OtherTaskMessage);
+        throw new NotSupportedException(TaskFunctionMessage);
     }
 
     /// <summary>
     ///     Not supported: the function returns a <c>Task</c>, which this method does not await.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(OtherTaskMessage, error: true)]
+    [Obsolete(TaskFunctionMessage, error: true)]
     public static ValueTask<Result> ThenAsync<TTaskResult>(this ValueTask<Result> resultTask,
         Func<Task<TTaskResult>> ifSuccessFunction, bool? continueOnCapturedContext = null)
     {
-        throw new NotSupportedException(OtherTaskMessage);
+        throw new NotSupportedException(TaskFunctionMessage);
     }
 
     /// <summary>
     ///     Not supported: the function returns a <c>Task</c>, which this method does not await.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(OtherTaskMessage, error: true)]
+    [Obsolete(TaskFunctionMessage, error: true)]
     public static ValueTask<Result<T>> ThenAsync<T>(this ValueTask<Result<T>> resultTask,
         Func<T, Task> ifSuccessAction, bool? continueOnCapturedContext = null)
     {
-        throw new NotSupportedException(OtherTaskMessage);
+        throw new NotSupportedException(TaskFunctionMessage);
     }
 
     /// <summary>
     ///     Not supported: the function returns a <c>Task</c>, which this method does not await.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(OtherTaskMessage, error: true)]
+    [Obsolete(TaskFunctionMessage, error: true)]
     public static ValueTask<Result<T>> ThenAsync<T, TTaskResult>(this ValueTask<Result<T>> resultTask,
         Func<T, Task<TTaskResult>> ifSuccessFunction, bool? continueOnCapturedContext = null)
     {
-        throw new NotSupportedException(OtherTaskMessage);
+        throw new NotSupportedException(TaskFunctionMessage);
     }
 
     #endregion
