@@ -1,29 +1,29 @@
-# Error.Unauthorized Method
+# Error.PermissionDenied Method
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
 
-Creates a new instance of the [Error](Error.md) object of the *Unauthorized* category.
+Creates a new instance of the [Error](Error.md) object of the *PermissionDenied* category.
 
 ## Overloads
 | Name | Description |
 | ---- | ----------- |
-| [Unauthorized(ErrorUri, String, String, ErrorUri, String, (String, Object)[])](#unauthorizederroruri-string-string-erroruri-string-string-object) | Creates a new unauthorized error with specified parameters. |
-| [Unauthorized(ErrorUri, String, String, ErrorUri, String, IEnumerable<KeyValuePair<String, Object>>)](#unauthorizederroruri-string-string-erroruri-string-ienumerablekeyvaluepairstring-object) | Creates a new unauthorized error with specified parameters. |
+| [PermissionDenied(ErrorUri, String, String, ErrorUri, String, (String, Object)[])](#permissiondeniederroruri-string-string-erroruri-string-string-object) | Creates a new permission denied error with specified parameters. |
+| [PermissionDenied(ErrorUri, String, String, ErrorUri, String, IEnumerable<KeyValuePair<String, Object>>)](#permissiondeniederroruri-string-string-erroruri-string-ienumerablekeyvaluepairstring-object) | Creates a new permission denied error with specified parameters. |
 
 ## Remarks
-This error category represent authorization errors. To be used, e.g. if the authentication might be valid, but the identity does not have the required permissions.
+This error category represents a denied permission: the authentication might be valid, but the identity does not have the required permissions.
 
-It relates to `403` HTTP status code (Forbidden), but can also be used in other contexts where authorization errors need to be reported.
+It relates to `403` HTTP status code (Forbidden), but can also be used in other contexts where a denied permission needs to be reported.
 
 
-## Unauthorized(ErrorUri, String, String, ErrorUri, String, (String, Object)[])
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L873" target="_blank">Error.cs</a>
+## PermissionDenied(ErrorUri, String, String, ErrorUri, String, (String, Object)[])
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L809" target="_blank">Error.cs</a>
 
-Creates a new instance of the [Error](Error.md) object of the *Unauthorized* category with specified parameters.
+Creates a new instance of the [Error](Error.md) object of the *PermissionDenied* category with specified parameters.
 
 ```csharp
-public static Error Unauthorized(
+public static Error PermissionDenied(
         ErrorUri typeUri,
         string title,
         string? detail = null,
@@ -54,7 +54,7 @@ Optional named values (inline, an array or a collection expression) to be used w
 ### Returns
 [Error](Error.md)
 
-A new instance of the [Error](Error.md) record of the *Unauthorized* [ErrorCategory](../ErrorCategory.md) initialized with provided parameters.
+A new instance of the [Error](Error.md) record of the *PermissionDenied* [ErrorCategory](../ErrorCategory.md) initialized with provided parameters.
 
 ### Exceptions
 [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
@@ -71,7 +71,7 @@ The `title` or the `detail` is empty or consists only of white-space characters,
 
 ### Examples
 ```csharp
-var error = Error.Unauthorized(
+var error = Error.PermissionDenied(
                 ErrorUri.Tag("tag:exampleapp.com,2026:errors:authorization:unauthorized"),
                 "Cannot update the account.",
                 "The user is not authorized to update the account.",
@@ -81,14 +81,14 @@ var error = Error.Unauthorized(
 ```
 
 
-## Unauthorized(ErrorUri, String, String, ErrorUri, String, IEnumerable&lt;KeyValuePair&lt;String, Object&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L889" target="_blank">Error.cs</a>
+## PermissionDenied(ErrorUri, String, String, ErrorUri, String, IEnumerable&lt;KeyValuePair&lt;String, Object&gt;&gt;)
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L825" target="_blank">Error.cs</a>
 
-Creates a new instance of the [Error](Error.md) object of the *Unauthorized* category with specified parameters.
+Creates a new instance of the [Error](Error.md) object of the *PermissionDenied* category with specified parameters.
 
 ```csharp
 [OverloadResolutionPriority(1)]
-public static Error Unauthorized(
+public static Error PermissionDenied(
         ErrorUri typeUri,
         string title,
         string? detail = null,
@@ -119,7 +119,7 @@ An optional sequence of key-value pairs to be used when rendering the templated 
 ### Returns
 [Error](Error.md)
 
-A new instance of the [Error](Error.md) record of the *Unauthorized* [ErrorCategory](../ErrorCategory.md) initialized with provided parameters.
+A new instance of the [Error](Error.md) record of the *PermissionDenied* [ErrorCategory](../ErrorCategory.md) initialized with provided parameters.
 
 ### Exceptions
 [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
@@ -136,7 +136,7 @@ The `title` or the `detail` is empty or consists only of white-space characters,
 
 ### Examples
 ```csharp
-var error = Error.Unauthorized(
+var error = Error.PermissionDenied(
                 ErrorUri.Tag("tag:exampleapp.com,2026:errors:authorization:unauthorized"),
                 "Cannot update the account.",
                 "The user is not authorized to update the account.",

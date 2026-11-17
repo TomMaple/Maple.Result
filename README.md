@@ -162,6 +162,8 @@ By the *HTTP* reference from *Mozilla* [[link](https://developer.mozilla.org/en-
 
 > A 401 Unauthorized is similar to the 403 Forbidden response, except that a 403 is returned when a request contains valid credentials, but the client does not have permissions to perform a certain action.
 
+The `403` (Forbidden) status code corresponds to `PermissionDenied`: the identity is known, but it does not have the permission. The library does not use the name "Unauthorized", which means the other case in HTTP.
+
 ### Why are methods like `Bind()`, `Map()` and `Tap()` not available?
 This library minimizes the amount of extension methods:
 * `Bind()` and `Map()` are both `Then()`: a function that returns a value maps it (e.g., `Then<T, TNext>(Result<T>, Func<T, TNext>)`), and a function that returns a `Result<TNext>` binds it (e.g., `Then<T, TNext>(Result<T>, Func<T, Result<TNext>>)`),

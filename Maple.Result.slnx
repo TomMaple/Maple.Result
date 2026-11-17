@@ -56,13 +56,13 @@
     <File Path="docs/Reference/Error/Error_Metadata.md" />
     <File Path="docs/Reference/Error/Error_NotFound.md" />
     <File Path="docs/Reference/Error/Error_NotImplemented.md" />
+    <File Path="docs/Reference/Error/Error_PermissionDenied.md" />
     <File Path="docs/Reference/Error/Error_Timeout.md" />
     <File Path="docs/Reference/Error/Error_Title.md" />
     <File Path="docs/Reference/Error/Error_ToBuilder.md" />
     <File Path="docs/Reference/Error/Error_TryGetMetadata.md" />
     <File Path="docs/Reference/Error/Error_TypeUri.md" />
     <File Path="docs/Reference/Error/Error_Unauthenticated.md" />
-    <File Path="docs/Reference/Error/Error_Unauthorized.md" />
     <File Path="docs/Reference/Error/Error_Unavailable.md" />
     <File Path="docs/Reference/Error/Error_Validation.md" />
     <File Path="docs/Reference/Error/Error_WithErrorDetail.md" />
@@ -80,9 +80,9 @@
     <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_LimitExceeded.md" />
     <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_NotFound.md" />
     <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_NotImplemented.md" />
+    <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_PermissionDenied.md" />
     <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_Timeout.md" />
     <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_Unauthenticated.md" />
-    <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_Unauthorized.md" />
     <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_Unavailable.md" />
     <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_Validation.md" />
     <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_WithCategory.md" />
