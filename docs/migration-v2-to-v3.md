@@ -510,7 +510,7 @@ var result = userResult.IfError(error => { _ = LogAsync(error); });
 ```
 
 ### LINQ queries that select a task
-In 2.x, a query whose `select` returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>` wrapped the task in a successful result (e.g., `Result<Task<int>>`) and **never awaited** it. This applies to every source (`Result<T>`, `Task<Result<T>>`, `ValueTask<Result<T>>`) and to queries with several `from` clauses. In 3.0 such a query is a compile error (CS0619). Chain the operation in a `from` clause whose function returns a `Task<Result<T>>` (or `ValueTask<Result<T>>`), or use `ThenAsync`. To keep the task in the result on purpose, select it in a result (`select Result.FromValue(…)`); on a `Result<T>`, `Select` with explicit type arguments is a compile error too.
+In 2.x, a query whose `select` returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>` wrapped the task in a successful result (e.g., `Result<Task<int>>`) and **never awaited** it. This applies to every source (`Result<T>`, `Task<Result<T>>`, `ValueTask<Result<T>>`) and to queries with several `from` clauses. In 3.0 such a query is a compile error (CS0619). Chain the operation in a `from` clause whose function returns a `Task<Result<T>>` (or `ValueTask<Result<T>>`), or use `ThenAsync`. To keep the task in the result on purpose, select it in a result (`select Result.FromValue(…)`); `Select` and `SelectMany` with explicit type arguments (e.g., `Select<T, Task>(…)`) are a compile error too, on every source.
 
 ```csharp
 // 2.x: a Result<Task<int>> whose task was never awaited; 3.0: a compile error
