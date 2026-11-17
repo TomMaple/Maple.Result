@@ -8,26 +8,26 @@ Awaits a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.ta
 ## Overloads
 | Name | Description |
 | ---- | ----------- |
-| [MatchAsync&lt;TOut&gt;(Task&lt;Result&gt;, Func&lt;TOut&gt;, Func&lt;Error, TOut&gt;, Boolean)](#matchasynctouttaskresult-functout-funcerror-tout-boolean) | Awaits the `resultTask`, invokes one of the specified synchronous functions depending on whether the [Result](../Result/Result.md) is successful and returns the value that it returns. |
-| [MatchAsync&lt;TOut&gt;(Task&lt;Result&gt;, Func&lt;Task&lt;TOut&gt;&gt;, Func&lt;Error, Task&lt;TOut&gt;&gt;, Boolean)](#matchasynctouttaskresult-functasktout-funcerror-tasktout-boolean) | Awaits the `resultTask`, invokes one of the specified asynchronous functions depending on whether the [Result](../Result/Result.md) is successful, awaits it and returns the value that it returns. |
-| [MatchAsync(Task&lt;Result&gt;, Func&lt;Task&gt;, Func&lt;Error, Task&gt;, Boolean)](#matchasynctaskresult-functask-funcerror-task-boolean) | Awaits the `resultTask`, invokes one of the specified asynchronous functions depending on whether the [Result](../Result/Result.md) is successful, and awaits it. |
-| [MatchAsync&lt;T, TOut&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, TOut&gt;, Func&lt;Error, TOut&gt;, Boolean)](#matchasynct-touttaskresultt-funct-tout-funcerror-tout-boolean) | Awaits the `resultTask`, invokes one of the specified synchronous functions depending on whether the [Result&lt;T&gt;](../ResultT/ResultT.md) is successful and returns the value that it returns. |
-| [MatchAsync&lt;T, TOut&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;TOut&gt;&gt;, Func&lt;Error, Task&lt;TOut&gt;&gt;, Boolean)](#matchasynct-touttaskresultt-funct-tasktout-funcerror-tasktout-boolean) | Awaits the `resultTask`, invokes one of the specified asynchronous functions depending on whether the [Result&lt;T&gt;](../ResultT/ResultT.md) is successful, awaits it and returns the value that it returns. |
-| [MatchAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&gt;, Func&lt;Error, Task&gt;, Boolean)](#matchasyncttaskresultt-funct-task-funcerror-task-boolean) | Awaits the `resultTask`, invokes one of the specified asynchronous functions depending on whether the [Result&lt;T&gt;](../ResultT/ResultT.md) is successful, and awaits it. |
-| [MatchAsync&lt;TOut&gt;(Task&lt;Result&gt;, Func&lt;ValueTask&lt;TOut&gt;&gt;, Func&lt;Error, ValueTask&lt;TOut&gt;&gt;, Boolean)](#matchasynctouttaskresult-funcvaluetasktout-funcerror-valuetasktout-boolean) | Awaits the `resultTask`, invokes one of the specified asynchronous functions depending on whether the [Result](../Result/Result.md) is successful, awaits it and returns the value that it returns. |
-| [MatchAsync(Task&lt;Result&gt;, Func&lt;ValueTask&gt;, Func&lt;Error, ValueTask&gt;, Boolean)](#matchasynctaskresult-funcvaluetask-funcerror-valuetask-boolean) | Awaits the `resultTask`, invokes one of the specified asynchronous functions depending on whether the [Result](../Result/Result.md) is successful, and awaits it. |
-| [MatchAsync&lt;T, TOut&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;TOut&gt;&gt;, Func&lt;Error, ValueTask&lt;TOut&gt;&gt;, Boolean)](#matchasynct-touttaskresultt-funct-valuetasktout-funcerror-valuetasktout-boolean) | Awaits the `resultTask`, invokes one of the specified asynchronous functions depending on whether the [Result&lt;T&gt;](../ResultT/ResultT.md) is successful, awaits it and returns the value that it returns. |
-| [MatchAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&gt;, Func&lt;Error, ValueTask&gt;, Boolean)](#matchasyncttaskresultt-funct-valuetask-funcerror-valuetask-boolean) | Awaits the `resultTask`, invokes one of the specified asynchronous functions depending on whether the [Result&lt;T&gt;](../ResultT/ResultT.md) is successful, and awaits it. |
-| [MatchAsync&lt;TOut&gt;(ValueTask&lt;Result&gt;, Func&lt;TOut&gt;, Func&lt;Error, TOut&gt;, Boolean)](#matchasynctoutvaluetaskresult-functout-funcerror-tout-boolean) | Awaits the `resultTask`, invokes one of the specified synchronous functions depending on whether the [Result](../Result/Result.md) is successful and returns the value that it returns. |
-| [MatchAsync&lt;TOut&gt;(ValueTask&lt;Result&gt;, Func&lt;ValueTask&lt;TOut&gt;&gt;, Func&lt;Error, ValueTask&lt;TOut&gt;&gt;, Boolean)](#matchasynctoutvaluetaskresult-funcvaluetasktout-funcerror-valuetasktout-boolean) | Awaits the `resultTask`, invokes one of the specified asynchronous functions depending on whether the [Result](../Result/Result.md) is successful, awaits it and returns the value that it returns. |
-| [MatchAsync(ValueTask&lt;Result&gt;, Func&lt;ValueTask&gt;, Func&lt;Error, ValueTask&gt;, Boolean)](#matchasyncvaluetaskresult-funcvaluetask-funcerror-valuetask-boolean) | Awaits the `resultTask`, invokes one of the specified asynchronous functions depending on whether the [Result](../Result/Result.md) is successful, and awaits it. |
-| [MatchAsync&lt;T, TOut&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, TOut&gt;, Func&lt;Error, TOut&gt;, Boolean)](#matchasynct-toutvaluetaskresultt-funct-tout-funcerror-tout-boolean) | Awaits the `resultTask`, invokes one of the specified synchronous functions depending on whether the [Result&lt;T&gt;](../ResultT/ResultT.md) is successful and returns the value that it returns. |
-| [MatchAsync&lt;T, TOut&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;TOut&gt;&gt;, Func&lt;Error, ValueTask&lt;TOut&gt;&gt;, Boolean)](#matchasynct-toutvaluetaskresultt-funct-valuetasktout-funcerror-valuetasktout-boolean) | Awaits the `resultTask`, invokes one of the specified asynchronous functions depending on whether the [Result&lt;T&gt;](../ResultT/ResultT.md) is successful, awaits it and returns the value that it returns. |
-| [MatchAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&gt;, Func&lt;Error, ValueTask&gt;, Boolean)](#matchasynctvaluetaskresultt-funct-valuetask-funcerror-valuetask-boolean) | Awaits the `resultTask`, invokes one of the specified asynchronous functions depending on whether the [Result&lt;T&gt;](../ResultT/ResultT.md) is successful, and awaits it. |
-| [MatchAsync&lt;TOut&gt;(ValueTask&lt;Result&gt;, Func&lt;Task&lt;TOut&gt;&gt;, Func&lt;Error, Task&lt;TOut&gt;&gt;, Boolean)](#matchasynctoutvaluetaskresult-functasktout-funcerror-tasktout-boolean) | Awaits the `resultTask`, invokes one of the specified asynchronous functions depending on whether the [Result](../Result/Result.md) is successful, awaits it and returns the value that it returns. |
-| [MatchAsync(ValueTask&lt;Result&gt;, Func&lt;Task&gt;, Func&lt;Error, Task&gt;, Boolean)](#matchasyncvaluetaskresult-functask-funcerror-task-boolean) | Awaits the `resultTask`, invokes one of the specified asynchronous functions depending on whether the [Result](../Result/Result.md) is successful, and awaits it. |
-| [MatchAsync&lt;T, TOut&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;TOut&gt;&gt;, Func&lt;Error, Task&lt;TOut&gt;&gt;, Boolean)](#matchasynct-toutvaluetaskresultt-funct-tasktout-funcerror-tasktout-boolean) | Awaits the `resultTask`, invokes one of the specified asynchronous functions depending on whether the [Result&lt;T&gt;](../ResultT/ResultT.md) is successful, awaits it and returns the value that it returns. |
-| [MatchAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&gt;, Func&lt;Error, Task&gt;, Boolean)](#matchasynctvaluetaskresultt-funct-task-funcerror-task-boolean) | Awaits the `resultTask`, invokes one of the specified asynchronous functions depending on whether the [Result&lt;T&gt;](../ResultT/ResultT.md) is successful, and awaits it. |
+| [MatchAsync&lt;TOut&gt;(Task&lt;Result&gt;, Func&lt;TOut&gt;, Func&lt;Error, TOut&gt;, Nullable&lt;Boolean&gt;)](#matchasynctouttaskresult-functout-funcerror-tout-nullableboolean) | Awaits the `resultTask`, invokes one of the specified synchronous functions depending on whether the [Result](../Result/Result.md) is successful and returns the value that it returns. |
+| [MatchAsync&lt;TOut&gt;(Task&lt;Result&gt;, Func&lt;Task&lt;TOut&gt;&gt;, Func&lt;Error, Task&lt;TOut&gt;&gt;, Nullable&lt;Boolean&gt;)](#matchasynctouttaskresult-functasktout-funcerror-tasktout-nullableboolean) | Awaits the `resultTask`, invokes one of the specified asynchronous functions depending on whether the [Result](../Result/Result.md) is successful, awaits it and returns the value that it returns. |
+| [MatchAsync(Task&lt;Result&gt;, Func&lt;Task&gt;, Func&lt;Error, Task&gt;, Nullable&lt;Boolean&gt;)](#matchasynctaskresult-functask-funcerror-task-nullableboolean) | Awaits the `resultTask`, invokes one of the specified asynchronous functions depending on whether the [Result](../Result/Result.md) is successful, and awaits it. |
+| [MatchAsync&lt;T, TOut&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, TOut&gt;, Func&lt;Error, TOut&gt;, Nullable&lt;Boolean&gt;)](#matchasynct-touttaskresultt-funct-tout-funcerror-tout-nullableboolean) | Awaits the `resultTask`, invokes one of the specified synchronous functions depending on whether the [Result&lt;T&gt;](../ResultT/ResultT.md) is successful and returns the value that it returns. |
+| [MatchAsync&lt;T, TOut&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;TOut&gt;&gt;, Func&lt;Error, Task&lt;TOut&gt;&gt;, Nullable&lt;Boolean&gt;)](#matchasynct-touttaskresultt-funct-tasktout-funcerror-tasktout-nullableboolean) | Awaits the `resultTask`, invokes one of the specified asynchronous functions depending on whether the [Result&lt;T&gt;](../ResultT/ResultT.md) is successful, awaits it and returns the value that it returns. |
+| [MatchAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&gt;, Func&lt;Error, Task&gt;, Nullable&lt;Boolean&gt;)](#matchasyncttaskresultt-funct-task-funcerror-task-nullableboolean) | Awaits the `resultTask`, invokes one of the specified asynchronous functions depending on whether the [Result&lt;T&gt;](../ResultT/ResultT.md) is successful, and awaits it. |
+| [MatchAsync&lt;TOut&gt;(Task&lt;Result&gt;, Func&lt;ValueTask&lt;TOut&gt;&gt;, Func&lt;Error, ValueTask&lt;TOut&gt;&gt;, Nullable&lt;Boolean&gt;)](#matchasynctouttaskresult-funcvaluetasktout-funcerror-valuetasktout-nullableboolean) | Awaits the `resultTask`, invokes one of the specified asynchronous functions depending on whether the [Result](../Result/Result.md) is successful, awaits it and returns the value that it returns. |
+| [MatchAsync(Task&lt;Result&gt;, Func&lt;ValueTask&gt;, Func&lt;Error, ValueTask&gt;, Nullable&lt;Boolean&gt;)](#matchasynctaskresult-funcvaluetask-funcerror-valuetask-nullableboolean) | Awaits the `resultTask`, invokes one of the specified asynchronous functions depending on whether the [Result](../Result/Result.md) is successful, and awaits it. |
+| [MatchAsync&lt;T, TOut&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;TOut&gt;&gt;, Func&lt;Error, ValueTask&lt;TOut&gt;&gt;, Nullable&lt;Boolean&gt;)](#matchasynct-touttaskresultt-funct-valuetasktout-funcerror-valuetasktout-nullableboolean) | Awaits the `resultTask`, invokes one of the specified asynchronous functions depending on whether the [Result&lt;T&gt;](../ResultT/ResultT.md) is successful, awaits it and returns the value that it returns. |
+| [MatchAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&gt;, Func&lt;Error, ValueTask&gt;, Nullable&lt;Boolean&gt;)](#matchasyncttaskresultt-funct-valuetask-funcerror-valuetask-nullableboolean) | Awaits the `resultTask`, invokes one of the specified asynchronous functions depending on whether the [Result&lt;T&gt;](../ResultT/ResultT.md) is successful, and awaits it. |
+| [MatchAsync&lt;TOut&gt;(ValueTask&lt;Result&gt;, Func&lt;TOut&gt;, Func&lt;Error, TOut&gt;, Nullable&lt;Boolean&gt;)](#matchasynctoutvaluetaskresult-functout-funcerror-tout-nullableboolean) | Awaits the `resultTask`, invokes one of the specified synchronous functions depending on whether the [Result](../Result/Result.md) is successful and returns the value that it returns. |
+| [MatchAsync&lt;TOut&gt;(ValueTask&lt;Result&gt;, Func&lt;ValueTask&lt;TOut&gt;&gt;, Func&lt;Error, ValueTask&lt;TOut&gt;&gt;, Nullable&lt;Boolean&gt;)](#matchasynctoutvaluetaskresult-funcvaluetasktout-funcerror-valuetasktout-nullableboolean) | Awaits the `resultTask`, invokes one of the specified asynchronous functions depending on whether the [Result](../Result/Result.md) is successful, awaits it and returns the value that it returns. |
+| [MatchAsync(ValueTask&lt;Result&gt;, Func&lt;ValueTask&gt;, Func&lt;Error, ValueTask&gt;, Nullable&lt;Boolean&gt;)](#matchasyncvaluetaskresult-funcvaluetask-funcerror-valuetask-nullableboolean) | Awaits the `resultTask`, invokes one of the specified asynchronous functions depending on whether the [Result](../Result/Result.md) is successful, and awaits it. |
+| [MatchAsync&lt;T, TOut&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, TOut&gt;, Func&lt;Error, TOut&gt;, Nullable&lt;Boolean&gt;)](#matchasynct-toutvaluetaskresultt-funct-tout-funcerror-tout-nullableboolean) | Awaits the `resultTask`, invokes one of the specified synchronous functions depending on whether the [Result&lt;T&gt;](../ResultT/ResultT.md) is successful and returns the value that it returns. |
+| [MatchAsync&lt;T, TOut&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;TOut&gt;&gt;, Func&lt;Error, ValueTask&lt;TOut&gt;&gt;, Nullable&lt;Boolean&gt;)](#matchasynct-toutvaluetaskresultt-funct-valuetasktout-funcerror-valuetasktout-nullableboolean) | Awaits the `resultTask`, invokes one of the specified asynchronous functions depending on whether the [Result&lt;T&gt;](../ResultT/ResultT.md) is successful, awaits it and returns the value that it returns. |
+| [MatchAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&gt;, Func&lt;Error, ValueTask&gt;, Nullable&lt;Boolean&gt;)](#matchasynctvaluetaskresultt-funct-valuetask-funcerror-valuetask-nullableboolean) | Awaits the `resultTask`, invokes one of the specified asynchronous functions depending on whether the [Result&lt;T&gt;](../ResultT/ResultT.md) is successful, and awaits it. |
+| [MatchAsync&lt;TOut&gt;(ValueTask&lt;Result&gt;, Func&lt;Task&lt;TOut&gt;&gt;, Func&lt;Error, Task&lt;TOut&gt;&gt;, Nullable&lt;Boolean&gt;)](#matchasynctoutvaluetaskresult-functasktout-funcerror-tasktout-nullableboolean) | Awaits the `resultTask`, invokes one of the specified asynchronous functions depending on whether the [Result](../Result/Result.md) is successful, awaits it and returns the value that it returns. |
+| [MatchAsync(ValueTask&lt;Result&gt;, Func&lt;Task&gt;, Func&lt;Error, Task&gt;, Nullable&lt;Boolean&gt;)](#matchasyncvaluetaskresult-functask-funcerror-task-nullableboolean) | Awaits the `resultTask`, invokes one of the specified asynchronous functions depending on whether the [Result](../Result/Result.md) is successful, and awaits it. |
+| [MatchAsync&lt;T, TOut&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;TOut&gt;&gt;, Func&lt;Error, Task&lt;TOut&gt;&gt;, Nullable&lt;Boolean&gt;)](#matchasynct-toutvaluetaskresultt-funct-tasktout-funcerror-tasktout-nullableboolean) | Awaits the `resultTask`, invokes one of the specified asynchronous functions depending on whether the [Result&lt;T&gt;](../ResultT/ResultT.md) is successful, awaits it and returns the value that it returns. |
+| [MatchAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&gt;, Func&lt;Error, Task&gt;, Nullable&lt;Boolean&gt;)](#matchasynctvaluetaskresultt-funct-task-funcerror-task-nullableboolean) | Awaits the `resultTask`, invokes one of the specified asynchronous functions depending on whether the [Result&lt;T&gt;](../ResultT/ResultT.md) is successful, and awaits it. |
 
 ## Remarks
 The overloads on a `Task` of a result return a `Task`, and those on a `ValueTask` of a result return a `ValueTask`.
@@ -48,7 +48,7 @@ On a task of a result, two functions that return the other kind of task (a `Valu
 > [!NOTE]
 > A [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask) can only be awaited once. Because of this, the overloads accepting `this ValueTask<Result> resultTask` / `this ValueTask<Result<T>> resultTask` consume the passed operation as part of evaluating its result, and they do not perform a `null` check on it (a `ValueTask<TResult>` is a non-nullable value type).
 
-## MatchAsync&lt;TOut&gt;(Task&lt;Result&gt;, Func&lt;TOut&gt;, Func&lt;Error, TOut&gt;, Boolean)
+## MatchAsync&lt;TOut&gt;(Task&lt;Result&gt;, Func&lt;TOut&gt;, Func&lt;Error, TOut&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.Task.cs#L65" target="_blank">MatchAsyncExtensions.Task.cs</a>
 
 Awaits the `resultTask` and invokes the provided synchronous `ifSuccessFunction` if the [Result](../Result/Result.md) represents a successful operation, or the provided `ifErrorFunction` otherwise, and returns the value that the invoked function returns.
@@ -96,12 +96,13 @@ var message = await _userService.DeleteUserAsync(id).MatchAsync(
 ```
 
 
-## MatchAsync&lt;TOut&gt;(Task&lt;Result&gt;, Func&lt;Task&lt;TOut&gt;&gt;, Func&lt;Error, Task&lt;TOut&gt;&gt;, Boolean)
+## MatchAsync&lt;TOut&gt;(Task&lt;Result&gt;, Func&lt;Task&lt;TOut&gt;&gt;, Func&lt;Error, Task&lt;TOut&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.Task.cs#L113" target="_blank">MatchAsyncExtensions.Task.cs</a>
 
 Awaits the `resultTask` and invokes the provided asynchronous `ifSuccessFunction` if the [Result](../Result/Result.md) represents a successful operation, or the provided asynchronous `ifErrorFunction` otherwise, awaits it and returns the value that it returns.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<TOut> MatchAsync<TOut>(this Task<Result> resultTask, Func<Task<TOut>> ifSuccessFunction,
     Func<Error, Task<TOut>> ifErrorFunction, bool? continueOnCapturedContext = null);
 ```
@@ -148,12 +149,13 @@ var remainingUsers = await _userService.DeleteUserAsync(id).MatchAsync(
 ```
 
 
-## MatchAsync(Task&lt;Result&gt;, Func&lt;Task&gt;, Func&lt;Error, Task&gt;, Boolean)
+## MatchAsync(Task&lt;Result&gt;, Func&lt;Task&gt;, Func&lt;Error, Task&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.Task.cs#L166" target="_blank">MatchAsyncExtensions.Task.cs</a>
 
 Awaits the `resultTask` and invokes the provided asynchronous `ifSuccessAction` if the [Result](../Result/Result.md) represents a successful operation, or the provided asynchronous `ifErrorAction` otherwise, and awaits it.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task MatchAsync(this Task<Result> resultTask, Func<Task> ifSuccessAction, Func<Error, Task> ifErrorAction,
     bool? continueOnCapturedContext = null);
 ```
@@ -192,7 +194,7 @@ await _userService.DeleteUserAsync(id).MatchAsync(
 ```
 
 
-## MatchAsync&lt;T, TOut&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, TOut&gt;, Func&lt;Error, TOut&gt;, Boolean)
+## MatchAsync&lt;T, TOut&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, TOut&gt;, Func&lt;Error, TOut&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.Task.cs#L227" target="_blank">MatchAsyncExtensions.Task.cs</a>
 
 Awaits the `resultTask` and invokes the provided synchronous `ifSuccessFunction` with the value if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, or the provided `ifErrorFunction` otherwise, and returns the value that the invoked function returns.
@@ -248,12 +250,13 @@ var addressResult = await _userService.GetUserAsync(id).MatchAsync(
 ```
 
 
-## MatchAsync&lt;T, TOut&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;TOut&gt;&gt;, Func&lt;Error, Task&lt;TOut&gt;&gt;, Boolean)
+## MatchAsync&lt;T, TOut&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;TOut&gt;&gt;, Func&lt;Error, Task&lt;TOut&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.Task.cs#L276" target="_blank">MatchAsyncExtensions.Task.cs</a>
 
 Awaits the `resultTask` and invokes the provided asynchronous `ifSuccessFunction` with the value if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, or the provided asynchronous `ifErrorFunction` otherwise, awaits it and returns the value that it returns.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<TOut> MatchAsync<T, TOut>(this Task<Result<T>> resultTask, Func<T, Task<TOut>> ifSuccessFunction,
     Func<Error, Task<TOut>> ifErrorFunction, bool? continueOnCapturedContext = null);
 ```
@@ -299,12 +302,13 @@ var orderCount = await _userService.GetUserAsync(id).MatchAsync(
 ```
 
 
-## MatchAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&gt;, Func&lt;Error, Task&gt;, Boolean)
+## MatchAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&gt;, Func&lt;Error, Task&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.Task.cs#L330" target="_blank">MatchAsyncExtensions.Task.cs</a>
 
 Awaits the `resultTask` and invokes the provided asynchronous `ifSuccessAction` with the value if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, or the provided asynchronous `ifErrorAction` otherwise, and awaits it.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task MatchAsync<T>(this Task<Result<T>> resultTask, Func<T, Task> ifSuccessAction, Func<Error, Task> ifErrorAction,
     bool? continueOnCapturedContext = null);
 ```
@@ -346,7 +350,7 @@ await _userService.GetUserAsync(id).MatchAsync(
     error => _auditService.LogErrorAsync(error));
 ```
 
-## MatchAsync&lt;TOut&gt;(Task&lt;Result&gt;, Func&lt;ValueTask&lt;TOut&gt;&gt;, Func&lt;Error, ValueTask&lt;TOut&gt;&gt;, Boolean)
+## MatchAsync&lt;TOut&gt;(Task&lt;Result&gt;, Func&lt;ValueTask&lt;TOut&gt;&gt;, Func&lt;Error, ValueTask&lt;TOut&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.Task.cs#L395" target="_blank">MatchAsyncExtensions.Task.cs</a>
 
 Awaits the `resultTask` and invokes the provided asynchronous `ifSuccessFunction` if the [Result](../Result/Result.md) represents a successful operation, or the provided asynchronous `ifErrorFunction` otherwise, awaits it and returns the value that it returns.
@@ -390,7 +394,7 @@ The asynchronous operation represented by `resultTask` returns `null`, or the `i
 ### Remarks
 The function returns a `ValueTask`, the other kind of task: it is awaited, and a `Task` is returned, as for a function that returns a `Task`.
 
-## MatchAsync(Task&lt;Result&gt;, Func&lt;ValueTask&gt;, Func&lt;Error, ValueTask&gt;, Boolean)
+## MatchAsync(Task&lt;Result&gt;, Func&lt;ValueTask&gt;, Func&lt;Error, ValueTask&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.Task.cs#L451" target="_blank">MatchAsyncExtensions.Task.cs</a>
 
 Awaits the `resultTask` and invokes the provided asynchronous `ifSuccessAction` if the [Result](../Result/Result.md) represents a successful operation, or the provided asynchronous `ifErrorAction` otherwise, and awaits it.
@@ -430,7 +434,7 @@ The asynchronous operation represented by `resultTask` returns `null`, or the `i
 ### Remarks
 The function returns a `ValueTask`, the other kind of task: it is awaited, and a `Task` is returned, as for a function that returns a `Task`.
 
-## MatchAsync&lt;T, TOut&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;TOut&gt;&gt;, Func&lt;Error, ValueTask&lt;TOut&gt;&gt;, Boolean)
+## MatchAsync&lt;T, TOut&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;TOut&gt;&gt;, Func&lt;Error, ValueTask&lt;TOut&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.Task.cs#L511" target="_blank">MatchAsyncExtensions.Task.cs</a>
 
 Awaits the `resultTask` and invokes the provided asynchronous `ifSuccessFunction` with the value if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, or the provided asynchronous `ifErrorFunction` otherwise, awaits it and returns the value that it returns.
@@ -477,7 +481,7 @@ The asynchronous operation represented by `resultTask` returns `null`, or the `i
 ### Remarks
 The function returns a `ValueTask`, the other kind of task: it is awaited, and a `Task` is returned, as for a function that returns a `Task`.
 
-## MatchAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&gt;, Func&lt;Error, ValueTask&gt;, Boolean)
+## MatchAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&gt;, Func&lt;Error, ValueTask&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.Task.cs#L568" target="_blank">MatchAsyncExtensions.Task.cs</a>
 
 Awaits the `resultTask` and invokes the provided asynchronous `ifSuccessAction` with the value if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, or the provided asynchronous `ifErrorAction` otherwise, and awaits it.
@@ -521,7 +525,7 @@ The asynchronous operation represented by `resultTask` returns `null`, or the `i
 ### Remarks
 The function returns a `ValueTask`, the other kind of task: it is awaited, and a `Task` is returned, as for a function that returns a `Task`.
 
-## MatchAsync&lt;TOut&gt;(ValueTask&lt;Result&gt;, Func&lt;TOut&gt;, Func&lt;Error, TOut&gt;, Boolean)
+## MatchAsync&lt;TOut&gt;(ValueTask&lt;Result&gt;, Func&lt;TOut&gt;, Func&lt;Error, TOut&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.ValueTask.cs#L51" target="_blank">MatchAsyncExtensions.ValueTask.cs</a>
 
 Awaits the `resultTask` and invokes the provided synchronous `ifSuccessFunction` if the [Result](../Result/Result.md) represents a successful operation, or the provided `ifErrorFunction` otherwise, and returns the value that the invoked function returns.
@@ -569,7 +573,7 @@ var message = await _userService.DeleteUserAsync(id).MatchAsync(
 ```
 
 
-## MatchAsync&lt;TOut&gt;(ValueTask&lt;Result&gt;, Func&lt;ValueTask&lt;TOut&gt;&gt;, Func&lt;Error, ValueTask&lt;TOut&gt;&gt;, Boolean)
+## MatchAsync&lt;TOut&gt;(ValueTask&lt;Result&gt;, Func&lt;ValueTask&lt;TOut&gt;&gt;, Func&lt;Error, ValueTask&lt;TOut&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.ValueTask.cs#L94" target="_blank">MatchAsyncExtensions.ValueTask.cs</a>
 
 Awaits the `resultTask` and invokes the provided asynchronous `ifSuccessFunction` if the [Result](../Result/Result.md) represents a successful operation, or the provided asynchronous `ifErrorFunction` otherwise, awaits it and returns the value that it returns.
@@ -621,7 +625,7 @@ var remainingUsers = await _userService.DeleteUserAsync(id).MatchAsync(
 ```
 
 
-## MatchAsync(ValueTask&lt;Result&gt;, Func&lt;ValueTask&gt;, Func&lt;Error, ValueTask&gt;, Boolean)
+## MatchAsync(ValueTask&lt;Result&gt;, Func&lt;ValueTask&gt;, Func&lt;Error, ValueTask&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.ValueTask.cs#L142" target="_blank">MatchAsyncExtensions.ValueTask.cs</a>
 
 Awaits the `resultTask` and invokes the provided asynchronous `ifSuccessAction` if the [Result](../Result/Result.md) represents a successful operation, or the provided asynchronous `ifErrorAction` otherwise, and awaits it.
@@ -665,7 +669,7 @@ await _userService.DeleteUserAsync(id).MatchAsync(
 ```
 
 
-## MatchAsync&lt;T, TOut&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, TOut&gt;, Func&lt;Error, TOut&gt;, Boolean)
+## MatchAsync&lt;T, TOut&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, TOut&gt;, Func&lt;Error, TOut&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.ValueTask.cs#L201" target="_blank">MatchAsyncExtensions.ValueTask.cs</a>
 
 Awaits the `resultTask` and invokes the provided synchronous `ifSuccessFunction` with the value if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, or the provided `ifErrorFunction` otherwise, and returns the value that the invoked function returns.
@@ -721,7 +725,7 @@ var addressResult = await _userService.GetUserAsync(id).MatchAsync(
 ```
 
 
-## MatchAsync&lt;T, TOut&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;TOut&gt;&gt;, Func&lt;Error, ValueTask&lt;TOut&gt;&gt;, Boolean)
+## MatchAsync&lt;T, TOut&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;TOut&gt;&gt;, Func&lt;Error, ValueTask&lt;TOut&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.ValueTask.cs#L245" target="_blank">MatchAsyncExtensions.ValueTask.cs</a>
 
 Awaits the `resultTask` and invokes the provided asynchronous `ifSuccessFunction` with the value if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, or the provided asynchronous `ifErrorFunction` otherwise, awaits it and returns the value that it returns.
@@ -772,7 +776,7 @@ var orderCount = await _userService.GetUserAsync(id).MatchAsync(
 ```
 
 
-## MatchAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&gt;, Func&lt;Error, ValueTask&gt;, Boolean)
+## MatchAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&gt;, Func&lt;Error, ValueTask&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.ValueTask.cs#L294" target="_blank">MatchAsyncExtensions.ValueTask.cs</a>
 
 Awaits the `resultTask` and invokes the provided asynchronous `ifSuccessAction` with the value if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, or the provided asynchronous `ifErrorAction` otherwise, and awaits it.
@@ -819,12 +823,13 @@ await _userService.GetUserAsync(id).MatchAsync(
     error => _auditService.LogErrorAsync(error));
 ```
 
-## MatchAsync&lt;TOut&gt;(ValueTask&lt;Result&gt;, Func&lt;Task&lt;TOut&gt;&gt;, Func&lt;Error, Task&lt;TOut&gt;&gt;, Boolean)
+## MatchAsync&lt;TOut&gt;(ValueTask&lt;Result&gt;, Func&lt;Task&lt;TOut&gt;&gt;, Func&lt;Error, Task&lt;TOut&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.ValueTask.cs#L359" target="_blank">MatchAsyncExtensions.ValueTask.cs</a>
 
 Awaits the `resultTask` and invokes the provided asynchronous `ifSuccessFunction` if the [Result](../Result/Result.md) represents a successful operation, or the provided asynchronous `ifErrorFunction` otherwise, awaits it and returns the value that it returns.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static ValueTask<TOut> MatchAsync<TOut>(this ValueTask<Result> resultTask, Func<Task<TOut>> ifSuccessFunction,
     Func<Error, Task<TOut>> ifErrorFunction, bool? continueOnCapturedContext = null);
 ```
@@ -863,12 +868,13 @@ The asynchronous operation represented by `resultTask` returns `null`.
 ### Remarks
 The function returns a `Task`, the other kind of task: it is awaited, and a `ValueTask` is returned, as for a function that returns a `ValueTask`.
 
-## MatchAsync(ValueTask&lt;Result&gt;, Func&lt;Task&gt;, Func&lt;Error, Task&gt;, Boolean)
+## MatchAsync(ValueTask&lt;Result&gt;, Func&lt;Task&gt;, Func&lt;Error, Task&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.ValueTask.cs#L415" target="_blank">MatchAsyncExtensions.ValueTask.cs</a>
 
 Awaits the `resultTask` and invokes the provided asynchronous `ifSuccessAction` if the [Result](../Result/Result.md) represents a successful operation, or the provided asynchronous `ifErrorAction` otherwise, and awaits it.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static ValueTask MatchAsync(this ValueTask<Result> resultTask, Func<Task> ifSuccessAction, Func<Error, Task> ifErrorAction,
     bool? continueOnCapturedContext = null);
 ```
@@ -903,12 +909,13 @@ The asynchronous operation represented by `resultTask` returns `null`.
 ### Remarks
 The function returns a `Task`, the other kind of task: it is awaited, and a `ValueTask` is returned, as for a function that returns a `ValueTask`.
 
-## MatchAsync&lt;T, TOut&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;TOut&gt;&gt;, Func&lt;Error, Task&lt;TOut&gt;&gt;, Boolean)
+## MatchAsync&lt;T, TOut&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;TOut&gt;&gt;, Func&lt;Error, Task&lt;TOut&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.ValueTask.cs#L475" target="_blank">MatchAsyncExtensions.ValueTask.cs</a>
 
 Awaits the `resultTask` and invokes the provided asynchronous `ifSuccessFunction` with the value if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, or the provided asynchronous `ifErrorFunction` otherwise, awaits it and returns the value that it returns.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static ValueTask<TOut> MatchAsync<T, TOut>(this ValueTask<Result<T>> resultTask, Func<T, Task<TOut>> ifSuccessFunction,
     Func<Error, Task<TOut>> ifErrorFunction, bool? continueOnCapturedContext = null);
 ```
@@ -950,12 +957,13 @@ The asynchronous operation represented by `resultTask` returns `null`.
 ### Remarks
 The function returns a `Task`, the other kind of task: it is awaited, and a `ValueTask` is returned, as for a function that returns a `ValueTask`.
 
-## MatchAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&gt;, Func&lt;Error, Task&gt;, Boolean)
+## MatchAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&gt;, Func&lt;Error, Task&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.ValueTask.cs#L532" target="_blank">MatchAsyncExtensions.ValueTask.cs</a>
 
 Awaits the `resultTask` and invokes the provided asynchronous `ifSuccessAction` with the value if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, or the provided asynchronous `ifErrorAction` otherwise, and awaits it.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static ValueTask MatchAsync<T>(this ValueTask<Result<T>> resultTask, Func<T, Task> ifSuccessAction, Func<Error, Task> ifErrorAction,
     bool? continueOnCapturedContext = null);
 ```

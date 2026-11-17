@@ -7,7 +7,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Provides extension methods for the [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task)&lt;[Result&lt;T&gt;](../ResultT/ResultT.md)&gt; and the [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask)&lt;[Result&lt;T&gt;](../ResultT/ResultT.md)&gt; to allow use it with asynchronous methods using LINQ query syntax.
 
 ```csharp
-public static partial class LinqAsyncExtensions
+public static class LinqAsyncExtensions
 ```
 
 Inheritance [Object](https://learn.microsoft.com/dotnet/api/system.object) → LinqAsyncExtensions
@@ -25,4 +25,4 @@ The query syntax cannot pass a `continueOnCapturedContext` argument, so these me
 
 ## See Also
 * [Result&lt;T&gt;](../ResultT/ResultT.md)
-* [Write C# Linq Queries](https://learn.microsoft.com/en-us/dotnet/csharp/linq/get-started/write-linq-queries)
+* [Write C# Linq Queries](https://learn.microsoft.com/dotnet/csharp/linq/get-started/write-linq-queries)

@@ -8,22 +8,22 @@ Runs a asynchronous side effect if the instance of [Result](../Result/Result.md)
 ## Overloads
 | Name | Description |
 | ---- | ----------- |
-| [IfSuccessAsync(Result, Func&lt;Task&gt;, Boolean)](#ifsuccessasyncresult-functask-boolean) | Executes the specified asynchronous action, if the [Result](../Result/Result.md) represents a successful operation, as an asynchronous operation. |
-| [IfSuccessAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, Task&gt;, Boolean)](#ifsuccessasynctresultt-funct-task-boolean) | Executes the specified asynchronous action, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
-| [IfSuccessAsync(Task&lt;Result&gt;, Func&lt;Task&gt;, Boolean)](#ifsuccessasynctaskresult-functask-boolean) | Executes the specified asynchronous action, if the provided asynchronous operation returns a successful [Result](../Result/Result.md), as an asynchronous operation. |
-| [IfSuccessAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&gt;, Boolean)](#ifsuccessasyncttaskresultt-funct-task-boolean) | Executes the specified asynchronous action, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
-| [IfSuccessAsync(Task&lt;Result&gt;, Action, Boolean)](#ifsuccessasynctaskresult-action-boolean) | Runs the synchronous action if the result that the `resultTask` returns is successful, and returns the result unchanged. |
-| [IfSuccessAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Action&lt;T&gt;, Boolean)](#ifsuccessasyncttaskresultt-actiont-boolean) | Runs the synchronous action on the value if the result that the `resultTask` returns is successful, and returns the result unchanged. |
-| [IfSuccessAsync(Task&lt;Result&gt;, Func&lt;ValueTask&gt;, Boolean)](#ifsuccessasynctaskresult-funcvaluetask-boolean) | Executes the specified asynchronous action, if the provided asynchronous operation returns a successful [Result](../Result/Result.md), as an asynchronous operation. |
-| [IfSuccessAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&gt;, Boolean)](#ifsuccessasyncttaskresultt-funct-valuetask-boolean) | Executes the specified asynchronous action, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
-| [IfSuccessAsync(Result, Func&lt;ValueTask&gt;, Boolean)](#ifsuccessasyncresult-funcvaluetask-boolean) | Executes the specified asynchronous action, if the [Result](../Result/Result.md) represents a successful operation, as an asynchronous operation. |
-| [IfSuccessAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&gt;, Boolean)](#ifsuccessasynctresultt-funct-valuetask-boolean) | Executes the specified asynchronous action, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
-| [IfSuccessAsync(ValueTask&lt;Result&gt;, Func&lt;ValueTask&gt;, Boolean)](#ifsuccessasyncvaluetaskresult-funcvaluetask-boolean) | Executes the specified asynchronous action, if the provided asynchronous operation returns a successful [Result](../Result/Result.md), as an asynchronous operation. |
-| [IfSuccessAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&gt;, Boolean)](#ifsuccessasynctvaluetaskresultt-funct-valuetask-boolean) | Executes the specified asynchronous action, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
-| [IfSuccessAsync(ValueTask&lt;Result&gt;, Action, Boolean)](#ifsuccessasyncvaluetaskresult-action-boolean) | Runs the synchronous action if the result that the `resultTask` returns is successful, and returns the result unchanged. |
-| [IfSuccessAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Action&lt;T&gt;, Boolean)](#ifsuccessasynctvaluetaskresultt-actiont-boolean) | Runs the synchronous action on the value if the result that the `resultTask` returns is successful, and returns the result unchanged. |
-| [IfSuccessAsync(ValueTask&lt;Result&gt;, Func&lt;Task&gt;, Boolean)](#ifsuccessasyncvaluetaskresult-functask-boolean) | Executes the specified asynchronous action, if the provided asynchronous operation returns a successful [Result](../Result/Result.md), as an asynchronous operation. |
-| [IfSuccessAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&gt;, Boolean)](#ifsuccessasynctvaluetaskresultt-funct-task-boolean) | Executes the specified asynchronous action, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
+| [IfSuccessAsync(Result, Func&lt;Task&gt;, Nullable&lt;Boolean&gt;)](#ifsuccessasyncresult-functask-nullableboolean) | Executes the specified asynchronous action, if the [Result](../Result/Result.md) represents a successful operation, as an asynchronous operation. |
+| [IfSuccessAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, Task&gt;, Nullable&lt;Boolean&gt;)](#ifsuccessasynctresultt-funct-task-nullableboolean) | Executes the specified asynchronous action, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
+| [IfSuccessAsync(Task&lt;Result&gt;, Func&lt;Task&gt;, Nullable&lt;Boolean&gt;)](#ifsuccessasynctaskresult-functask-nullableboolean) | Executes the specified asynchronous action, if the provided asynchronous operation returns a successful [Result](../Result/Result.md), as an asynchronous operation. |
+| [IfSuccessAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&gt;, Nullable&lt;Boolean&gt;)](#ifsuccessasyncttaskresultt-funct-task-nullableboolean) | Executes the specified asynchronous action, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
+| [IfSuccessAsync(Task&lt;Result&gt;, Action, Nullable&lt;Boolean&gt;)](#ifsuccessasynctaskresult-action-nullableboolean) | Runs the synchronous action if the result that the `resultTask` returns is successful, and returns the result unchanged. |
+| [IfSuccessAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Action&lt;T&gt;, Nullable&lt;Boolean&gt;)](#ifsuccessasyncttaskresultt-actiont-nullableboolean) | Runs the synchronous action on the value if the result that the `resultTask` returns is successful, and returns the result unchanged. |
+| [IfSuccessAsync(Task&lt;Result&gt;, Func&lt;ValueTask&gt;, Nullable&lt;Boolean&gt;)](#ifsuccessasynctaskresult-funcvaluetask-nullableboolean) | Executes the specified asynchronous action, if the provided asynchronous operation returns a successful [Result](../Result/Result.md), as an asynchronous operation. |
+| [IfSuccessAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&gt;, Nullable&lt;Boolean&gt;)](#ifsuccessasyncttaskresultt-funct-valuetask-nullableboolean) | Executes the specified asynchronous action, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
+| [IfSuccessAsync(Result, Func&lt;ValueTask&gt;, Nullable&lt;Boolean&gt;)](#ifsuccessasyncresult-funcvaluetask-nullableboolean) | Executes the specified asynchronous action, if the [Result](../Result/Result.md) represents a successful operation, as an asynchronous operation. |
+| [IfSuccessAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&gt;, Nullable&lt;Boolean&gt;)](#ifsuccessasynctresultt-funct-valuetask-nullableboolean) | Executes the specified asynchronous action, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
+| [IfSuccessAsync(ValueTask&lt;Result&gt;, Func&lt;ValueTask&gt;, Nullable&lt;Boolean&gt;)](#ifsuccessasyncvaluetaskresult-funcvaluetask-nullableboolean) | Executes the specified asynchronous action, if the provided asynchronous operation returns a successful [Result](../Result/Result.md), as an asynchronous operation. |
+| [IfSuccessAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&gt;, Nullable&lt;Boolean&gt;)](#ifsuccessasynctvaluetaskresultt-funct-valuetask-nullableboolean) | Executes the specified asynchronous action, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
+| [IfSuccessAsync(ValueTask&lt;Result&gt;, Action, Nullable&lt;Boolean&gt;)](#ifsuccessasyncvaluetaskresult-action-nullableboolean) | Runs the synchronous action if the result that the `resultTask` returns is successful, and returns the result unchanged. |
+| [IfSuccessAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Action&lt;T&gt;, Nullable&lt;Boolean&gt;)](#ifsuccessasynctvaluetaskresultt-actiont-nullableboolean) | Runs the synchronous action on the value if the result that the `resultTask` returns is successful, and returns the result unchanged. |
+| [IfSuccessAsync(ValueTask&lt;Result&gt;, Func&lt;Task&gt;, Nullable&lt;Boolean&gt;)](#ifsuccessasyncvaluetaskresult-functask-nullableboolean) | Executes the specified asynchronous action, if the provided asynchronous operation returns a successful [Result](../Result/Result.md), as an asynchronous operation. |
+| [IfSuccessAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&gt;, Nullable&lt;Boolean&gt;)](#ifsuccessasynctvaluetaskresultt-funct-task-nullableboolean) | Executes the specified asynchronous action, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, as an asynchronous operation. |
 
 ## Remarks
 On a `Result` or a `Result<T>`, the function decides the kind of task: a function that returns a `ValueTask` gives a `ValueTask`, and an `async` lambda gives a `Task` (with an explicit return type, e.g., `async ValueTask<int> (int x) => …`, it gives a `ValueTask`). On a `Task` or a `ValueTask` of a result, the kind of the receiver is kept.
@@ -40,12 +40,13 @@ To transform or chain the result with a function that returns a value, a `Result
 > [!NOTE]
 > A [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask) can only be awaited once. Because of this, the overloads accepting `this ValueTask<TResult> resultTask` consume the passed operation as part of evaluating its result, and they do not perform a `null` check on it (a `ValueTask<TResult>` is a non-nullable value type).
 
-## IfSuccessAsync(Result, Func&lt;Task&gt;, Boolean)
+## IfSuccessAsync(Result, Func&lt;Task&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/IfSuccessAsyncExtensions.Task.cs#L63" target="_blank">IfSuccessAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous action, only if the instance of [Result](../Result/Result.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), as an asynchronous operation.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result> IfSuccessAsync(this Result result, Func<Task> ifSuccessAction,
     bool? continueOnCapturedContext = null);
 ```
@@ -84,12 +85,13 @@ await createUserResult.IfSuccessAsync(async () =>
 ```
 
 
-## IfSuccessAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, Task&gt;, Boolean)
+## IfSuccessAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, Task&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/IfSuccessAsyncExtensions.Task.cs#L115" target="_blank">IfSuccessAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous action, only if the instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), as an asynchronous operation.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result<T>> IfSuccessAsync<T>(this Result<T> result, Func<T, Task> ifSuccessAction,
     bool? continueOnCapturedContext = null);
 ```
@@ -132,12 +134,13 @@ await userResult.IfSuccessAsync(async (user) =>
 ```
 
 
-## IfSuccessAsync(Task&lt;Result&gt;, Func&lt;Task&gt;, Boolean)
+## IfSuccessAsync(Task&lt;Result&gt;, Func&lt;Task&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/IfSuccessAsyncExtensions.Task.cs#L175" target="_blank">IfSuccessAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous action, only if the provided asynchronous operation `resultTask` returns a successful instance of [Result](../Result/Result.md).
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result> IfSuccessAsync(this Task<Result> resultTask, Func<Task> ifSuccessAction,
     bool? continueOnCapturedContext = null);
 ```
@@ -178,12 +181,13 @@ var createUserResult = await _userService.CreateUserAsync(userData)
 ```
 
 
-## IfSuccessAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&gt;, Boolean)
+## IfSuccessAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/IfSuccessAsyncExtensions.Task.cs#L242" target="_blank">IfSuccessAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result&lt;T&gt;](../ResultT/ResultT.md).
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result<T>> IfSuccessAsync<T>(this Task<Result<T>> resultTask,
     Func<T, Task> ifSuccessAction, bool? continueOnCapturedContext = null);
 ```
@@ -193,7 +197,7 @@ public static Task<Result<T>> IfSuccessAsync<T>(this Task<Result<T>> resultTask,
 The type of the value associated with successful `resultTask` and passed to the asynchronous `ifSuccessFunction`.
 
 ### Parameters
-#### `resultTask` [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result](../Result/Result.md)&gt;
+#### `resultTask` [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result&lt;T&gt;](../ResultT/ResultT.md)&gt;
 The asynchronous operation that represents an instance of [Result](../Result/Result.md) record to be evaluated.
 
 #### `ifSuccessAction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task)&gt;
@@ -228,7 +232,7 @@ var userResult = await _userService.CreateUserAsync(userData)
 ```
 
 
-## IfSuccessAsync(Task&lt;Result&gt;, Action, Boolean)
+## IfSuccessAsync(Task&lt;Result&gt;, Action, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/IfSuccessAsyncExtensions.Task.cs#L292" target="_blank">IfSuccessAsyncExtensions.Task.cs</a>
 
 Runs the synchronous action if the result that the `resultTask` returns is successful, and returns the result unchanged.
@@ -270,7 +274,7 @@ var result = await _service.DeleteAsync(id)
 ```
 
 
-## IfSuccessAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Action&lt;T&gt;, Boolean)
+## IfSuccessAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Action&lt;T&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/IfSuccessAsyncExtensions.Task.cs#L330" target="_blank">IfSuccessAsyncExtensions.Task.cs</a>
 
 Runs the synchronous action on the value if the result that the `resultTask` returns is successful, and returns the result unchanged.
@@ -315,7 +319,7 @@ var userResult = await _userService.GetUserAsync(id)
     .IfSuccessAsync(user => _logger.LogInformation("Loaded {Name}", user.Name));
 ```
 
-## IfSuccessAsync(Task&lt;Result&gt;, Func&lt;ValueTask&gt;, Boolean)
+## IfSuccessAsync(Task&lt;Result&gt;, Func&lt;ValueTask&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/IfSuccessAsyncExtensions.Task.cs#L390" target="_blank">IfSuccessAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous action, only if the provided asynchronous operation `resultTask` returns a successful instance of [Result](../Result/Result.md).
@@ -353,7 +357,7 @@ The function returns a `ValueTask`, the other kind of task: it is awaited, and a
 
 The `IfSuccessAsync` method executes the provided asynchronous operation represented by `resultTask` to evaluate its result. This enables chaining multiple asynchronous operations that return `Task<TResult>`.
 
-## IfSuccessAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&gt;, Boolean)
+## IfSuccessAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/IfSuccessAsyncExtensions.Task.cs#L455" target="_blank">IfSuccessAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result&lt;T&gt;](../ResultT/ResultT.md).
@@ -368,7 +372,7 @@ public static Task<Result<T>> IfSuccessAsync<T>(this Task<Result<T>> resultTask,
 The type of the value associated with successful `resultTask` and passed to the asynchronous `ifSuccessFunction`.
 
 ### Parameters
-#### `resultTask` [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result](../Result/Result.md)&gt;
+#### `resultTask` [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1)&lt;[Result&lt;T&gt;](../ResultT/ResultT.md)&gt;
 The asynchronous operation that represents an instance of [Result](../Result/Result.md) record to be evaluated.
 
 #### `ifSuccessAction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask)&gt;
@@ -395,7 +399,7 @@ The function returns a `ValueTask`, the other kind of task: it is awaited, and a
 
 The `IfSuccessAsync` method executes the provided asynchronous operation represented by `resultTask` to evaluate its result. This enables chaining multiple asynchronous operations that return `Task<TResult>`.
 
-## IfSuccessAsync(Result, Func&lt;ValueTask&gt;, Boolean)
+## IfSuccessAsync(Result, Func&lt;ValueTask&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/IfSuccessAsyncExtensions.ValueTask.cs#L27" target="_blank">IfSuccessAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous action, only if the instance of [Result](../Result/Result.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), as an asynchronous operation.
@@ -436,7 +440,7 @@ await createUserResult.IfSuccessAsync(async () =>
 ```
 
 
-## IfSuccessAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&gt;, Boolean)
+## IfSuccessAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/IfSuccessAsyncExtensions.ValueTask.cs#L51" target="_blank">IfSuccessAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous action, only if the instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), as an asynchronous operation.
@@ -481,7 +485,7 @@ await userResult.IfSuccessAsync(async (user) =>
 ```
 
 
-## IfSuccessAsync(ValueTask&lt;Result&gt;, Func&lt;ValueTask&gt;, Boolean)
+## IfSuccessAsync(ValueTask&lt;Result&gt;, Func&lt;ValueTask&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/IfSuccessAsyncExtensions.ValueTask.cs#L105" target="_blank">IfSuccessAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous action, only if the provided asynchronous operation `resultTask` returns a successful instance of [Result](../Result/Result.md).
@@ -527,7 +531,7 @@ var createUserResult = await _userService.CreateUserAsync(userData)
 ```
 
 
-## IfSuccessAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&gt;, Boolean)
+## IfSuccessAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/IfSuccessAsyncExtensions.ValueTask.cs#L165" target="_blank">IfSuccessAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result&lt;T&gt;](../ResultT/ResultT.md).
@@ -542,7 +546,7 @@ public static ValueTask<Result<T>> IfSuccessAsync<T>(this ValueTask<Result<T>> r
 The type of the value associated with successful `resultTask` and passed to the asynchronous `ifSuccessFunction`.
 
 ### Parameters
-#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../Result/Result.md)&gt;
+#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result&lt;T&gt;](../ResultT/ResultT.md)&gt;
 The asynchronous operation that represents an instance of [Result](../Result/Result.md) record to be evaluated.
 
 #### `ifSuccessAction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask)&gt;
@@ -577,7 +581,7 @@ var userResult = await _userService.CreateUserAsync(userData)
 ```
 
 
-## IfSuccessAsync(ValueTask&lt;Result&gt;, Action, Boolean)
+## IfSuccessAsync(ValueTask&lt;Result&gt;, Action, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/IfSuccessAsyncExtensions.ValueTask.cs#L209" target="_blank">IfSuccessAsyncExtensions.ValueTask.cs</a>
 
 Runs the synchronous action if the result that the `resultTask` returns is successful, and returns the result unchanged.
@@ -619,7 +623,7 @@ var result = await _service.DeleteAsync(id)
 ```
 
 
-## IfSuccessAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Action&lt;T&gt;, Boolean)
+## IfSuccessAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Action&lt;T&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/IfSuccessAsyncExtensions.ValueTask.cs#L244" target="_blank">IfSuccessAsyncExtensions.ValueTask.cs</a>
 
 Runs the synchronous action on the value if the result that the `resultTask` returns is successful, and returns the result unchanged.
@@ -664,12 +668,13 @@ var userResult = await _userService.GetUserAsync(id)
     .IfSuccessAsync(user => _logger.LogInformation("Loaded {Name}", user.Name));
 ```
 
-## IfSuccessAsync(ValueTask&lt;Result&gt;, Func&lt;Task&gt;, Boolean)
+## IfSuccessAsync(ValueTask&lt;Result&gt;, Func&lt;Task&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/IfSuccessAsyncExtensions.ValueTask.cs#L303" target="_blank">IfSuccessAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous action, only if the provided asynchronous operation `resultTask` returns a successful instance of [Result](../Result/Result.md).
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static ValueTask<Result> IfSuccessAsync(this ValueTask<Result> resultTask, Func<Task> ifSuccessAction,
     bool? continueOnCapturedContext = null);
 ```
@@ -702,12 +707,13 @@ The function returns a `Task`, the other kind of task: it is awaited, and a `Val
 
 The `IfSuccessAsync` method executes the provided asynchronous operation represented by `resultTask` to evaluate its result. This enables chaining multiple asynchronous operations that return `ValueTask<TResult>`.
 
-## IfSuccessAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&gt;, Boolean)
+## IfSuccessAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/IfSuccessAsyncExtensions.ValueTask.cs#L367" target="_blank">IfSuccessAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result&lt;T&gt;](../ResultT/ResultT.md).
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static ValueTask<Result<T>> IfSuccessAsync<T>(this ValueTask<Result<T>> resultTask,
     Func<T, Task> ifSuccessAction, bool? continueOnCapturedContext = null);
 ```
@@ -717,7 +723,7 @@ public static ValueTask<Result<T>> IfSuccessAsync<T>(this ValueTask<Result<T>> r
 The type of the value associated with successful `resultTask` and passed to the asynchronous `ifSuccessFunction`.
 
 ### Parameters
-#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result](../Result/Result.md)&gt;
+#### `resultTask` [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1)&lt;[Result&lt;T&gt;](../ResultT/ResultT.md)&gt;
 The asynchronous operation that represents an instance of [Result](../Result/Result.md) record to be evaluated.
 
 #### `ifSuccessAction` [Func](https://learn.microsoft.com/dotnet/api/system.func-2)&lt;T, [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task)&gt;

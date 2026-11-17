@@ -7,7 +7,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Gets the [Metadata](Error_Metadata.md) value of the specified key if it is of the type `T`.
 
 ```csharp
-public bool TryGetMetadata<T>(string key, [MaybeNullWhen(false)] out T value);
+public bool TryGetMetadata<T>(string key, out T value);
 ```
 
 ### Type Parameters

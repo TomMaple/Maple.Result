@@ -1,4 +1,4 @@
-# ErrorDetail record
+# ErrorDetail Record
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
@@ -38,7 +38,7 @@ var error = Error.Validation(ErrorUri.Tag("tag:test.com,2024:SignupErrors-Invali
 ## Methods
 | Name | Description |
 | ---- | ----------- |
-| [Pointer(Object[])](ErrorDetail_Pointer.md) | Builds a JSON Pointer from names and array indexes, escaping the names. |
+| [Pointer(ReadOnlySpan&lt;Object&gt;)](ErrorDetail_Pointer.md) | Builds a JSON Pointer from names and array indexes, escaping the names. |
 
 ## See Also
 * [Error](../Error/Error.md)

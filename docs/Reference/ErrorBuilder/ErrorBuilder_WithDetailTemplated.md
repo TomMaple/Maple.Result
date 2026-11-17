@@ -9,7 +9,7 @@ Sets the [DetailTemplated](../Error/Error_DetailTemplated.md) of the error to bu
 | Name | Description |
 | ---- | ----------- |
 | [WithDetailTemplated(TemplatedMessage)](#withdetailtemplatedtemplatedmessage) | Sets the templated explanation of the problem occurrence. |
-| [WithDetailTemplated(String, (String, Object)[])](#withdetailtemplatedstring-string-object) | Sets the templated explanation from a template identifier and named values. |
+| [WithDetailTemplated(String, ReadOnlySpan&lt;(String, Object)&gt;)](#withdetailtemplatedstring-readonlyspanstring-object) | Sets the templated explanation from a template identifier and named values. |
 
 ## Remarks
 `WithDetailTemplated(null)` binds to [WithDetailTemplated(TemplatedMessage)](#withdetailtemplatedtemplatedmessage) and clears the value.
@@ -42,7 +42,7 @@ var withoutTemplate = error.ToBuilder()
 ```
 
 
-## WithDetailTemplated(String, (String, Object)[])
+## WithDetailTemplated(String, ReadOnlySpan&lt;(String, Object)&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L317" target="_blank">ErrorBuilder.cs</a>
 
 Sets the [DetailTemplated](../Error/Error_DetailTemplated.md) of the error to build to a new [TemplatedMessage](../TemplatedMessage/TemplatedMessage.md).

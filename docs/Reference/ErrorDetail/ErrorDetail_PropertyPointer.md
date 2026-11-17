@@ -11,7 +11,7 @@ public string? PropertyPointer { get; }
 ```
 
 ### Property Value
-[string](https://learn.microsoft.com/dotnet/api/system.string)
+[String](https://learn.microsoft.com/dotnet/api/system.string)
 
 A *JSON Pointer* that identifies the field of the input value, or `null`.
 
@@ -27,7 +27,7 @@ The constructor throws an `ArgumentException` (with the parameter name `Property
 The pointer addresses the input that was validated, as the client sent it, whatever the transport: a JSON body (`/address/street`), the query string (`/page`, or `/ids/1` for the second `ids` parameter), a message (`/items/1/sku`) or a header (`/Idempotency-Key`); it is `null` for a rule across several values. See [What the pointer points to](../../problem-details.md#what-the-pointer-points-to).
 
 > [!NOTE]
-> A name taken from the input has to be escaped: `~` as `~0` first, then `/` as `~1` (e.g., the member `a/b` is `/a~1b`). Otherwise, a name with a `~` makes the constructor throw, and a name with a `/` gives a wrong pointer. [Pointer(Object[])](ErrorDetail_Pointer.md) does it: `ErrorDetail.Pointer("items", 0, name)`.
+> A name taken from the input has to be escaped: `~` as `~0` first, then `/` as `~1` (e.g., the member `a/b` is `/a~1b`). Otherwise, a name with a `~` makes the constructor throw, and a name with a `/` gives a wrong pointer. [Pointer(ReadOnlySpan&lt;Object&gt;)](ErrorDetail_Pointer.md) does it: `ErrorDetail.Pointer("items", 0, name)`.
 
 ## Examples
 ```csharp

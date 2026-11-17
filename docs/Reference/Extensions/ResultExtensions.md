@@ -15,7 +15,7 @@ Inheritance [Object](https://learn.microsoft.com/dotnet/api/system.object) → R
 ## Methods
 | Name | Description |
 | ---- | ----------- |
-| [ToResult(Result&lt;T&gt;)](ResultExtensions_ToResult.md) | Converts the generic [Result&lt;T&gt;](../ResultT/ResultT.md)  to the non-generic [Result](../Result/Result.md). |
+| [ToResult&lt;T&gt;(Result&lt;T&gt;)](ResultExtensions_ToResult.md) | Converts the generic [Result&lt;T&gt;](../ResultT/ResultT.md)  to the non-generic [Result](../Result/Result.md). |
 
 ## See Also
 * [Result](../Result/Result.md)

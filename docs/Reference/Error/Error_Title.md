@@ -11,7 +11,7 @@ public string Title { get; }
 ```
 
 ### Property Value
-[string](https://learn.microsoft.com/dotnet/api/system.string)
+[String](https://learn.microsoft.com/dotnet/api/system.string)
 
 A short, human-readable summary of the problem type.
 

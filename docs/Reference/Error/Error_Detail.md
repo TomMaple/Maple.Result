@@ -11,7 +11,7 @@ public string? Detail { get; }
 ```
 
 ### Property Value
-[string](https://learn.microsoft.com/dotnet/api/system.string)
+[String](https://learn.microsoft.com/dotnet/api/system.string)
 
 A human-readable explanation specific to this occurrence of the problem.
 

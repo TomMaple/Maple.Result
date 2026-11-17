@@ -11,7 +11,7 @@ public string TemplateId { get; }
 ```
 
 ### Property Value
-[string](https://learn.microsoft.com/dotnet/api/system.string)
+[String](https://learn.microsoft.com/dotnet/api/system.string)
 
 A template identifier to be used when rendering the templated message.
 

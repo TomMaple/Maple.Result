@@ -29,10 +29,12 @@ over it.
 	* `dotnet build -c Release`: no warnings (CI treats them as errors; this includes the code style, naming, trim and AOT
 	  rules),
 	* `dotnet test`,
-	* `dotnet format --verify-no-changes`.
+	* `dotnet format --verify-no-changes`,
+	* `python .github/scripts/check_reference_docs.py`: the reference pages agree with the code (see *Documentation*).
 
 	The required checks are `build`, `pr-title`, `Analyze (csharp)` and `Analyze (actions)`. On a pull request without
-	code changes (e.g., only `docs/`), `build` and `Analyze (csharp)` are skipped, which counts as passed.
+	code changes (e.g., only `docs/`), `build` and `Analyze (csharp)` are skipped, which counts as passed. The job
+	`reference` checks the reference pages on every pull request, also on one that changes only the documentation.
 1. Pull requests:
 	* The title follows the commit message rules: a squash merge turns the title into the subject of the commit on
 	  `main` and the description into its body, so the release notes and the version bump come from them.
@@ -88,8 +90,8 @@ are marked breaking. Preview the notes locally with `git cliff --unreleased --st
 
 ## C#
 1. Source code
-	* [Framework design guidelines](https://learn.microsoft.com/en-us/dotnet/standard/design-guidelines/) (public API) and
-	  [C# coding conventions](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/coding-style/coding-conventions)
+	* [Framework design guidelines](https://learn.microsoft.com/dotnet/standard/design-guidelines/) (public API) and
+	  [C# coding conventions](https://learn.microsoft.com/dotnet/csharp/fundamentals/coding-style/coding-conventions)
 	  (code style); where they differ from the rules below or from `.editorconfig`, the rules here win.
 	* Indent character: *space*.
 	* Constant naming style: *PascalCase*.
@@ -140,7 +142,7 @@ are marked breaking. Preview the notes locally with `git cliff --unreleased --st
 	* Test class: `<TestedType><TestType>Tests` (e.g., `ErrorBuilderUnitTests`). Tests of one concern across many types
 	  are named after the concern (e.g., `NullCheckUnitTests`, `SynchronizationContextUnitTests`).
 	* Test method: `<Member>_<Scenario>_<ExpectedBehavior>`
-	  ([naming convention](https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-best-practices#naming-your-tests)),
+	  ([naming convention](https://learn.microsoft.com/dotnet/core/testing/unit-testing-best-practices#naming-your-tests)),
 	  e.g., `WithMetadata_InvalidKey_ThrowsArgumentException`.
 	* Several test files for one type: a `<TestedType>Tests` folder holds `<TestedType><TestType>Tests.cs` for the
 	  general tests and `<TestedType><Aspect><TestType>Tests.cs` for each aspect (e.g., `ErrorTests/ErrorUnitTests.cs`,
@@ -175,9 +177,26 @@ are marked breaking. Preview the notes locally with `git cliff --unreleased --st
    `docs/guide`. The package README, `src/Maple.Result/README.md`, is shown on nuget.org, which renders CommonMark:
    it uses absolute links only, no GitHub alerts, and images only from the hosts that nuget.org allows. Keep the quick
    start of both in sync.
-1. The reference pages in `docs/Reference` are written by hand, one page per member.
-1. After a code change, update the pages of the changed members:
-	* the source line links (`…/blob/main/src/….cs#L<line>`) point at the declaration of the member,
-	* the signature in the `csharp` code block matches the code.
+1. The reference pages in `docs/Reference` are written by hand, in the layout of the
+   [.NET API reference](https://learn.microsoft.com/dotnet/api/) of Microsoft:
+	* Every public member has a page, or a section of the page of its overloads. The overload traps (compile errors)
+	  have none.
+	* A type page links to the file of its type, without a line (one link for each file of a `partial` type). Its
+	  declaration is the one of the code, without `partial` and without attributes.
+	* Every member has a `Source:` link that opens the line of its declaration (`…/blob/main/src/….cs#L<line>`) and is
+	  labelled with the file name.
+	* The `csharp` block under the link is that declaration. It shows `[OverloadResolutionPriority]` where the code
+	  has it, because the attribute decides what a call binds to. It shows no other attribute (e.g.,
+	  `[MemberNotNullWhen]`, `[DisallowNull]`, `[DebuggerDisplay]`), and neither `async` nor `partial`, which are not
+	  part of a signature.
+	* A heading names a member with its type parameters and the types of its parameters, e.g.,
+	  `Then<T, TNext>(Result<T>, Func<T, TNext>)`. Types are written with their .NET names (`String`, `Boolean`), a
+	  nullable value type as `Nullable<T>` (e.g., `Nullable<Boolean>` for `bool?`), and a nullable reference type
+	  without the `?`. The *Type Parameters*, *Parameters*, *Returns* and *Property Value* sections follow the same
+	  rules, and a link that names a member with its parameters is written as the heading that it opens.
+	* A link to learn.microsoft.com has no locale (`/dotnet/api/…`, not `/en-us/dotnet/api/…`).
+1. After a code change, update the pages of the changed members, and the line of every source link below the change.
+   `python .github/scripts/check_reference_docs.py` checks the rules above, and that every relative link and anchor
+   of `README.md` and `docs/` resolves.
 1. Every breaking change is documented in the migration guide of the major version it is released in, with what
    changed, why, and how to update the calling code.

@@ -9,7 +9,7 @@ Returns a copy of the [Error](Error.md) with an individual error occurrence appe
 | Name | Description |
 | ---- | ----------- |
 | [WithErrorDetail(ErrorDetail)](#witherrordetailerrordetail) | Returns a copy of the error with the specified error detail appended. |
-| [WithErrorDetail(String, String, String, (String, Object)[])](#witherrordetailstring-string-string-string-object) | Returns a copy of the error with a new error detail appended. |
+| [WithErrorDetail(String, String, String, ReadOnlySpan&lt;(String, Object)&gt;)](#witherrordetailstring-string-string-readonlyspanstring-object) | Returns a copy of the error with a new error detail appended. |
 
 ## Remarks
 These methods **do not modify** the current instance; they return a new [Error](Error.md). The other members, including the existing error details, are kept.
@@ -51,7 +51,7 @@ var error = Error.Validation(
 ```
 
 
-## WithErrorDetail(String, String, String, (String, Object)[])
+## WithErrorDetail(String, String, String, ReadOnlySpan&lt;(String, Object)&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L282" target="_blank">Error.cs</a>
 
 Returns a copy of the current error with a new individual error occurrence appended to the [ErrorDetails](Error_ErrorDetails.md).

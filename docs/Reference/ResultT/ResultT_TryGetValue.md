@@ -21,8 +21,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Gets the value of a successful result.
 
 ```csharp
-[MemberNotNullWhen(false, nameof(Error))]
-public bool TryGetValue([MaybeNullWhen(false)] out T value);
+public bool TryGetValue(out T value);
 ```
 
 ### Parameters
@@ -50,7 +49,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Gets the value of a successful result, or the error of a failed one.
 
 ```csharp
-public bool TryGetValue([MaybeNullWhen(false)] out T value, [NotNullWhen(false)] out Error? error);
+public bool TryGetValue(out T value, out Error? error);
 ```
 
 ### Parameters

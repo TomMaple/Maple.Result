@@ -7,7 +7,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Provides extension methods for the [Result&lt;T&gt;](../ResultT/ResultT.md) records to allow using them with LINQ query syntax.
 
 ```csharp
-public static class LinqAsyncExtensions
+public static class LinqExtensions
 ```
 
 Inheritance [Object](https://learn.microsoft.com/dotnet/api/system.object) → LinqExtensions
@@ -20,4 +20,4 @@ Inheritance [Object](https://learn.microsoft.com/dotnet/api/system.object) → L
 
 ## See Also
 * [Result&lt;T&gt;](../ResultT/ResultT.md)
-* [Write C# Linq Queries](https://learn.microsoft.com/en-us/dotnet/csharp/linq/get-started/write-linq-queries)
+* [Write C# Linq Queries](https://learn.microsoft.com/dotnet/csharp/linq/get-started/write-linq-queries)

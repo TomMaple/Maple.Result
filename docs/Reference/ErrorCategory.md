@@ -38,4 +38,4 @@ The members are ordered by the HTTP status code they relate to. The values are e
 
 ## See Also
 * [HTTP Status Codes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status)
-* [HttpStatusCode Enum](https://learn.microsoft.com/en-us/dotnet/api/system.net.httpstatuscode)
+* [HttpStatusCode Enum](https://learn.microsoft.com/dotnet/api/system.net.httpstatuscode)

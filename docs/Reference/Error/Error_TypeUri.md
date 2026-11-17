@@ -11,7 +11,7 @@ public string TypeUri { get; }
 ```
 
 ### Property Value
-[string](https://learn.microsoft.com/dotnet/api/system.string)
+[String](https://learn.microsoft.com/dotnet/api/system.string)
 
 A text value of a *URI* that identifies the type of the problem.
 

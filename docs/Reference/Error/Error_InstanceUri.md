@@ -11,7 +11,7 @@ public string? InstanceUri { get; }
 ```
 
 ### Property Value
-[string](https://learn.microsoft.com/dotnet/api/system.string)
+[String](https://learn.microsoft.com/dotnet/api/system.string)
 
 A text value of a *URI* that identifies the specific occurrence of the problem.
 

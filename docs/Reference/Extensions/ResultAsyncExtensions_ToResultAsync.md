@@ -8,13 +8,13 @@ Asynchronously converts the outcome of the asynchronous operation represented by
 ## Overloads
 | Name | Description |
 | ---- | ----------- |
-| [ToResultAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Boolean)](#toresultasyncttaskresultt-boolean) | Asynchronously converts the outcome of the asynchronous operation represented by the [Result&lt;T&gt;](../ResultT/ResultT.md) to the non-generic [Result](../Result/Result.md). |
-| [ToResultAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Boolean)](#toresultasynctvaluetaskresultt-boolean) | Asynchronously converts the outcome of the asynchronous operation represented by the [Result&lt;T&gt;](../ResultT/ResultT.md) to the non-generic [Result](../Result/Result.md). |
+| [ToResultAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)](#toresultasyncttaskresultt-nullableboolean) | Asynchronously converts the outcome of the asynchronous operation represented by the [Result&lt;T&gt;](../ResultT/ResultT.md) to the non-generic [Result](../Result/Result.md). |
+| [ToResultAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)](#toresultasynctvaluetaskresultt-nullableboolean) | Asynchronously converts the outcome of the asynchronous operation represented by the [Result&lt;T&gt;](../ResultT/ResultT.md) to the non-generic [Result](../Result/Result.md). |
 
 ## Remarks
 The overload on a `Task` of a result returns a `Task`, and the one on a `ValueTask` of a result returns a `ValueTask`.
 
-## ToResultAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Boolean)
+## ToResultAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ResultAsyncExtensions.Task.cs#L55" target="_blank">ResultAsyncExtensions.Task.cs</a>
 
 Asynchronously converts the outcome of the asynchronous operation represented by the [Result&lt;T&gt;](../ResultT/ResultT.md) to the non-generic [Result](../Result/Result.md).
@@ -57,13 +57,13 @@ var result = await _userService.CreateUserAsync(addUser)
     .ToResultAsync();
 ```
 
-## ToResultAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Boolean)
+## ToResultAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ResultAsyncExtensions.ValueTask.cs#L41" target="_blank">ResultAsyncExtensions.ValueTask.cs</a>
 
 Asynchronously converts the outcome of the asynchronous operation represented by the [Result&lt;T&gt;](../ResultT/ResultT.md) to the non-generic [Result](../Result/Result.md).
 
 ```csharp
-public static async ValueTask<Result> ToResultAsync<T>(this ValueTask<Result<T>> resultTask,
+public static ValueTask<Result> ToResultAsync<T>(this ValueTask<Result<T>> resultTask,
     bool? continueOnCapturedContext = null);
 ```
 

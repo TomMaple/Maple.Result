@@ -236,6 +236,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Applies the asynchronous `collectionSelector` and the `resultSelector` to the value of a successful `result`; otherwise, returns a failed result with the original [Error](../Error/Error.md).
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result<TNext>> SelectMany<T, TMiddle, TNext>(
     this Result<T> result,
     Func<T, Task<Result<TMiddle>>> collectionSelector,
@@ -395,6 +396,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Applies the asynchronous `collectionSelector` and the `resultSelector` to the value of a successful [Result&lt;T&gt;](../ResultT/ResultT.md) and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) returned by `resultSelector`; otherwise, returns a failed [Result](../Result/Result.md) with the first [Error](../Error/Error.md).
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result> SelectMany<T, TMiddle>(
     this Result<T> result,
     Func<T, Task<Result<TMiddle>>> collectionSelector,
@@ -1785,6 +1787,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result> SelectMany<T, TMiddle>(this Result<T> result, Func<T, Task<Result<TMiddle>>> collectionSelector, Func<T, TMiddle, Result> resultSelector);
 ```
 
@@ -1834,6 +1837,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result<TNext>> SelectMany<T, TMiddle, TNext>(this Result<T> result, Func<T, Task<Result<TMiddle>>> collectionSelector, Func<T, TMiddle, Result<TNext>> resultSelector);
 ```
 
@@ -1886,6 +1890,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result<TNext>> SelectMany<T, TNext>(this Result<T> result, Func<T, Task<Result>> collectionSelector, Func<T, Result, TNext> resultSelector);
 ```
 
@@ -1935,6 +1940,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result> SelectMany<T>(this Result<T> result, Func<T, Task<Result>> collectionSelector, Func<T, Result, Error> resultSelector);
 ```
 
@@ -1981,6 +1987,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result> SelectMany<T>(this Result<T> result, Func<T, Task<Result>> collectionSelector, Func<T, Result, Result> resultSelector);
 ```
 
@@ -2029,6 +2036,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result<TNext>> SelectMany<T, TNext>(this Result<T> result, Func<T, Task<Result>> collectionSelector, Func<T, Result, Result<TNext>> resultSelector);
 ```
 
@@ -2080,6 +2088,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result<TNext>> SelectMany<TMiddle, TNext>(this Result result, Func<Result, Task<Result<TMiddle>>> collectionSelector, Func<Result, TMiddle, TNext> resultSelector);
 ```
 
@@ -2129,6 +2138,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result> SelectMany<TMiddle>(this Result result, Func<Result, Task<Result<TMiddle>>> collectionSelector, Func<Result, TMiddle, Error> resultSelector);
 ```
 
@@ -2175,6 +2185,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result> SelectMany<TMiddle>(this Result result, Func<Result, Task<Result<TMiddle>>> collectionSelector, Func<Result, TMiddle, Result> resultSelector);
 ```
 
@@ -2223,6 +2234,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result<TNext>> SelectMany<TMiddle, TNext>(this Result result, Func<Result, Task<Result<TMiddle>>> collectionSelector, Func<Result, TMiddle, Result<TNext>> resultSelector);
 ```
 
@@ -2274,6 +2286,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result<TNext>> SelectMany<TNext>(this Result result, Func<Result, Task<Result>> collectionSelector, Func<Result, Result, TNext> resultSelector);
 ```
 
@@ -2320,6 +2333,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result> SelectMany(this Result result, Func<Result, Task<Result>> collectionSelector, Func<Result, Result, Error> resultSelector);
 ```
 
@@ -2362,6 +2376,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result> SelectMany(this Result result, Func<Result, Task<Result>> collectionSelector, Func<Result, Result, Result> resultSelector);
 ```
 
@@ -2406,6 +2421,7 @@ Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Re
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
 ```csharp
+[OverloadResolutionPriority(1)]
 public static Task<Result<TNext>> SelectMany<TNext>(this Result result, Func<Result, Task<Result>> collectionSelector, Func<Result, Result, Result<TNext>> resultSelector);
 ```
 
@@ -4779,4 +4795,4 @@ var result = await (
 
 ## See Also
 * [Result&lt;T&gt;](../ResultT/ResultT.md)
-* [Write C# Linq Queries](https://learn.microsoft.com/en-us/dotnet/csharp/linq/get-started/write-linq-queries)
+* [Write C# Linq Queries](https://learn.microsoft.com/dotnet/csharp/linq/get-started/write-linq-queries)
