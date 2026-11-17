@@ -315,6 +315,7 @@ public static class LinqExtensions
     {
         throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
     }
+
     #endregion
 
     #region Non-generic results and selected results
@@ -1418,5 +1419,6 @@ public static class LinqExtensions
     {
         throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
     }
+
     #endregion
 }

@@ -203,6 +203,7 @@ public static partial class IfErrorAsyncExtensions
     {
         throw new NotSupportedException(ValueDiscardedMessage);
     }
+
     #endregion
 
     #region Task results with synchronous delegates
@@ -247,6 +248,7 @@ public static partial class IfErrorAsyncExtensions
             return result.IfError(ifErrorAction);
         }
     }
+
     #endregion
 
     #region Task results with functions returning a ValueTask
@@ -320,6 +322,7 @@ public static partial class IfErrorAsyncExtensions
             return result;
         }
     }
+
     #endregion
 
     #region Not supported: synchronous functions returning a value
@@ -345,5 +348,6 @@ public static partial class IfErrorAsyncExtensions
     {
         throw new NotSupportedException(SyncValueDiscardedMessage);
     }
+
     #endregion
 }

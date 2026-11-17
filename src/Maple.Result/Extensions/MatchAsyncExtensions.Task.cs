@@ -190,6 +190,7 @@ public static partial class MatchAsyncExtensions
             }
         }
     }
+
     #endregion
 
     #region Task<Result<T>>
@@ -353,6 +354,7 @@ public static partial class MatchAsyncExtensions
             }
         }
     }
+
     #endregion
 
     #region Not supported: two actions
@@ -388,6 +390,7 @@ public static partial class MatchAsyncExtensions
     {
         throw new NotSupportedException(TwoActionsMessage);
     }
+
     #endregion
 
     #region Task results with functions returning a ValueTask
@@ -625,6 +628,7 @@ public static partial class MatchAsyncExtensions
             }
         }
     }
+
     #endregion
 
 }

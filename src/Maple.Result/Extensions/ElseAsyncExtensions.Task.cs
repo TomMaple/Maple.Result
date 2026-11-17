@@ -158,6 +158,7 @@ public static partial class ElseAsyncExtensions
             return await Guard.EnsureNotNullResult(errorTask, nameof(ifErrorFunction), continueOnCapturedContext);
         }
     }
+
     #endregion
 
     #region A value or an Error in a task
@@ -472,6 +473,7 @@ public static partial class ElseAsyncExtensions
             return Result.FromError(error);
         }
     }
+
     #endregion
 
     #region Not supported: functions returning a task without a value, on task results
@@ -508,6 +510,7 @@ public static partial class ElseAsyncExtensions
     {
         throw new NotSupportedException(ActionMessage);
     }
+
     #endregion
 
     #region Task results with synchronous delegates
@@ -555,6 +558,7 @@ public static partial class ElseAsyncExtensions
             return result.Else(ifErrorFunction);
         }
     }
+
     #endregion
 
     #region Task results with functions returning a ValueTask
@@ -798,6 +802,7 @@ public static partial class ElseAsyncExtensions
             return Result.FromError(error);
         }
     }
+
     #endregion
 
 }

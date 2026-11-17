@@ -729,6 +729,7 @@ public static partial class LinqAsyncExtensions
     {
         throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
     }
+
     #endregion
 
     #region Non-generic results and selected results
@@ -3452,6 +3453,7 @@ public static partial class LinqAsyncExtensions
             });
         }
     }
+
     #endregion
 
     #region Not supported: selectors returning a task, for the non-generic results
@@ -3986,5 +3988,6 @@ public static partial class LinqAsyncExtensions
     {
         throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
     }
+
     #endregion
 }

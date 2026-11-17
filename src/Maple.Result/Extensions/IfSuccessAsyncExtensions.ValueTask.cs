@@ -40,6 +40,7 @@ public static partial class IfSuccessAsyncExtensions
             return result;
         }
     }
+
     #endregion
 
     #region Result<T> extensions
@@ -64,6 +65,7 @@ public static partial class IfSuccessAsyncExtensions
             return result;
         }
     }
+
     #endregion
 
     #region ValueTask<Result> extensions
@@ -118,6 +120,7 @@ public static partial class IfSuccessAsyncExtensions
             return result;
         }
     }
+
     #endregion
 
     #region ValueTask<Result<T>> extensions
@@ -177,6 +180,7 @@ public static partial class IfSuccessAsyncExtensions
             return result;
         }
     }
+
     #endregion
 
     #region Not supported: functions returning a value
@@ -252,6 +256,7 @@ public static partial class IfSuccessAsyncExtensions
     {
         throw new NotSupportedException(ValueDiscardedMessage);
     }
+
     #endregion
 
     #region ValueTask results with synchronous delegates
@@ -326,6 +331,7 @@ public static partial class IfSuccessAsyncExtensions
             return result.IfSuccess(ifSuccessAction);
         }
     }
+
     #endregion
 
     #region ValueTask results with functions returning a Task
@@ -455,6 +461,7 @@ public static partial class IfSuccessAsyncExtensions
             return result;
         }
     }
+
     #endregion
 
     #region Not supported: synchronous functions returning a value
@@ -485,5 +492,6 @@ public static partial class IfSuccessAsyncExtensions
     {
         throw new NotSupportedException(SyncValueDiscardedMessage);
     }
+
     #endregion
 }

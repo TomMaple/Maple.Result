@@ -178,6 +178,7 @@ public static partial class ThenAsyncExtensions
             return result.Error;
         }
     }
+
     #endregion
 
     #region Result<T> extensions
@@ -371,6 +372,7 @@ public static partial class ThenAsyncExtensions
             return result.Error;
         }
     }
+
     #endregion
 
     #region ValueTask<Result> extensions
@@ -603,6 +605,7 @@ public static partial class ThenAsyncExtensions
             return result.Error;
         }
     }
+
     #endregion
 
     #region ValueTask<Result<T>> extensions
@@ -858,6 +861,7 @@ public static partial class ThenAsyncExtensions
             return result.Error;
         }
     }
+
     #endregion
 
     #region Not supported: functions returning a task without a value, on task results
@@ -909,6 +913,7 @@ public static partial class ThenAsyncExtensions
     {
         throw new NotSupportedException(ActionMessage);
     }
+
     #endregion
 
     #region ValueTask results with synchronous delegates
@@ -1211,6 +1216,7 @@ public static partial class ThenAsyncExtensions
             return result.Then(ifSuccessFunction);
         }
     }
+
     #endregion
 
     #region ValueTask results with functions returning a Task
@@ -1740,6 +1746,7 @@ public static partial class ThenAsyncExtensions
             return result.Error;
         }
     }
+
     #endregion
 
 }

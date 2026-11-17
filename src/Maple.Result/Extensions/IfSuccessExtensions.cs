@@ -175,6 +175,7 @@ public static class IfSuccessExtensions
     {
         throw new NotSupportedException(TaskNotAwaitedMessage);
     }
+
     #endregion
 
     #region Not supported: functions returning a value
