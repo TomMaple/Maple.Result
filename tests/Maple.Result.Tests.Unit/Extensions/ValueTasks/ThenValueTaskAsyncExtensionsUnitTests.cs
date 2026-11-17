@@ -1690,7 +1690,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
             .ToList();
 
         // Assert
-        traps.Count.ShouldBe(2);
+        traps.Count.ShouldBe(4);
         traps.ShouldAllBe(m => m.Name == "ThenAsync"
                                && m.GetParameters()[0].ParameterType.IsGenericType
                                && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(ValueTask<>)
@@ -1984,23 +1984,43 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         overloads.ShouldBeEmpty();
     }
 
+    // A function that returns a Task on a ValueTask of a result is awaited by an overload of its own, which returns a ValueTask (#226).
     [Fact]
-    public void ThenAsync_FunctionReturningTaskOverloads_AreHiddenCompileErrors()
+    public void ThenAsync_FunctionReturningTaskOnValueTaskResult_IsAnOverloadWithPriorityOne()
     {
         // Act
-        var traps = OverloadTrapHelper.ValueTaskPartMethods(typeof(ThenAsyncExtensions))
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a Task, which ThenAsync on a ValueTask of a result does not await"))
+        var overloads = OverloadTrapHelper.ValueTaskPartMethods(typeof(ThenAsyncExtensions))
+            .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is null
+                        && m.GetParameters()[0].ParameterType is { IsGenericType: true } receiver && receiver.GetGenericTypeDefinition() == typeof(ValueTask<>)
+                        && m.GetParameters().Where(p => p.ParameterType.Name.StartsWith("Func`", StringComparison.Ordinal))
+                            .All(p => OverloadTrapHelper.IsTaskFunction(p.ParameterType))
+                        && m.GetParameters().Any(p => OverloadTrapHelper.IsTaskFunction(p.ParameterType)))
             .ToList();
 
         // Assert
-        traps.Count.ShouldBe(4);
-        traps.ShouldAllBe(m => m.Name == "ThenAsync"
-                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
-                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
+        overloads.Count.ShouldBe(8);
+        overloads.ShouldAllBe(m => m.Name == "ThenAsync" && OverloadTrapHelper.Priority(m) == 1);
+    }
+
+    // An async lambda binds to the overloads whose delegates return a Task, on every receiver (#226): on a ValueTask of a
+    // result, they have priority 1, and those whose delegates return a ValueTask priority 0.
+    [Fact]
+    public void ThenAsync_OverloadsWithTaskDelegatesOnValueTaskResults_HavePriorityOne()
+    {
+        // Act
+        var priorities = OverloadTrapHelper.ValueTaskPartMethods(typeof(ThenAsyncExtensions))
+            .Where(m => m.GetParameters()[0].ParameterType is { IsGenericType: true } receiver && receiver.GetGenericTypeDefinition() == typeof(ValueTask<>)
+                        && OverloadTrapHelper.IsTaskFunction(m.GetParameters()[1].ParameterType))
+            .Select(OverloadTrapHelper.Priority)
+            .ToList();
+
+        // Assert
+        priorities.Count.ShouldBe(10);
+        priorities.ShouldAllBe(p => p == 1);
     }
 
     [Fact]
-    public void ThenAsync_OverloadsWithValueTaskDelegatesOnValueTaskResults_HavePriorityOne()
+    public void ThenAsync_OverloadsWithValueTaskDelegatesOnValueTaskResults_HavePriorityZero()
     {
         // Act
         var priorities = OverloadTrapHelper.ValueTaskPartMethods(typeof(ThenAsyncExtensions))
@@ -2011,7 +2031,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
 
         // Assert
         priorities.Count.ShouldBe(10);
-        priorities.ShouldAllBe(p => p == 1);
+        priorities.ShouldAllBe(p => p == 0);
     }
 
     [Fact]
@@ -2029,6 +2049,263 @@ public class ThenValueTaskAsyncExtensionsUnitTests
         // Assert
         priorities.Count.ShouldBe(8);
         priorities.ShouldAllBe(p => p == 0);
+    }
+
+    #endregion
+
+    #region ValueTask results with functions returning a Task
+
+    // A function that returns the other kind of task is awaited, and the receiver decides the kind (#226).
+
+    private static readonly Error OtherKindError = Error.Failure(ErrorUri.None, "Other kind of task test error");
+    private static readonly Error OtherKindReplacement = Error.Conflict(ErrorUri.None, "Other kind of task replacement error");
+
+    [Fact]
+    public async Task ThenAsync_SuccessfulResultValueTaskWithTaskValueFunction_ReturnsTheNextResult()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.Success());
+
+        // Act
+        var result = await sut.ThenAsync(() => Task.FromResult(7));
+
+        // Assert
+        result.Value.ShouldBe(7);
+    }
+
+    [Fact]
+    public async Task ThenAsync_FailedResultValueTaskWithTaskValueFunction_ReturnsOriginalErrorAndDoesNotCallFunction()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.FromError(OtherKindError));
+        var called = false;
+
+        // Act
+        var result = await sut.ThenAsync(() => { called = true; return Task.FromResult(7); });
+
+        // Assert
+        result.Error.ShouldBeSameAs(OtherKindError);
+        called.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task ThenAsync_SuccessfulResultValueTaskWithTaskResultFunction_ReturnsTheNextResult()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.Success());
+
+        // Act
+        var result = await sut.ThenAsync(() => Task.FromResult(Result.FromError(OtherKindReplacement)));
+
+        // Assert
+        result.Error.ShouldBeSameAs(OtherKindReplacement);
+    }
+
+    [Fact]
+    public async Task ThenAsync_FailedResultValueTaskWithTaskResultFunction_ReturnsOriginalErrorAndDoesNotCallFunction()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.FromError(OtherKindError));
+        var called = false;
+
+        // Act
+        var result = await sut.ThenAsync(() => { called = true; return Task.FromResult(Result.Success()); });
+
+        // Assert
+        result.Error.ShouldBeSameAs(OtherKindError);
+        called.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task ThenAsync_SuccessfulResultValueTaskWithTaskResultOfTValueTaskFunction_ReturnsTheNextResult()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.Success());
+
+        // Act
+        var result = await sut.ThenAsync(() => Task.FromResult(Result.FromValue("next")));
+
+        // Assert
+        result.Value.ShouldBe("next");
+    }
+
+    [Fact]
+    public async Task ThenAsync_FailedResultValueTaskWithTaskResultOfTValueTaskFunction_ReturnsOriginalErrorAndDoesNotCallFunction()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.FromError(OtherKindError));
+        var called = false;
+
+        // Act
+        var result = await sut.ThenAsync(() => { called = true; return Task.FromResult(Result.FromValue("next")); });
+
+        // Assert
+        result.Error.ShouldBeSameAs(OtherKindError);
+        called.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task ThenAsync_SuccessfulResultValueTaskWithTaskErrorFunction_ReturnsTheNextResult()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.Success());
+
+        // Act
+        var result = await sut.ThenAsync(() => Task.FromResult(OtherKindReplacement));
+
+        // Assert
+        result.Error.ShouldBeSameAs(OtherKindReplacement);
+    }
+
+    [Fact]
+    public async Task ThenAsync_FailedResultValueTaskWithTaskErrorFunction_ReturnsOriginalErrorAndDoesNotCallFunction()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.FromError(OtherKindError));
+        var called = false;
+
+        // Act
+        var result = await sut.ThenAsync(() => { called = true; return Task.FromResult(OtherKindReplacement); });
+
+        // Assert
+        result.Error.ShouldBeSameAs(OtherKindError);
+        called.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task ThenAsync_SuccessfulResultOfTValueTaskWithTaskValueFunction_ReturnsTheNextResult()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.FromValue(5));
+
+        // Act
+        var result = await sut.ThenAsync(x => Task.FromResult(x * 2));
+
+        // Assert
+        result.Value.ShouldBe(10);
+    }
+
+    [Fact]
+    public async Task ThenAsync_FailedResultOfTValueTaskWithTaskValueFunction_ReturnsOriginalErrorAndDoesNotCallFunction()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result<int>.FromError(OtherKindError));
+        var called = false;
+
+        // Act
+        var result = await sut.ThenAsync(x => { called = true; return Task.FromResult(x * 2); });
+
+        // Assert
+        result.Error.ShouldBeSameAs(OtherKindError);
+        called.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task ThenAsync_SuccessfulResultOfTValueTaskWithTaskResultFunction_ReturnsTheNextResult()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.FromValue(5));
+
+        // Act
+        var result = await sut.ThenAsync(x => Task.FromResult(Result.FromError(OtherKindReplacement)));
+
+        // Assert
+        result.Error.ShouldBeSameAs(OtherKindReplacement);
+    }
+
+    [Fact]
+    public async Task ThenAsync_FailedResultOfTValueTaskWithTaskResultFunction_ReturnsOriginalErrorAndDoesNotCallFunction()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result<int>.FromError(OtherKindError));
+        var called = false;
+
+        // Act
+        var result = await sut.ThenAsync(x => { called = true; return Task.FromResult(Result.Success()); });
+
+        // Assert
+        result.Error.ShouldBeSameAs(OtherKindError);
+        called.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task ThenAsync_SuccessfulResultOfTValueTaskWithTaskResultOfTValueTaskFunction_ReturnsTheNextResult()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.FromValue(5));
+
+        // Act
+        var result = await sut.ThenAsync(x => Task.FromResult(Result.FromValue(x.ToString())));
+
+        // Assert
+        result.Value.ShouldBe("5");
+    }
+
+    [Fact]
+    public async Task ThenAsync_FailedResultOfTValueTaskWithTaskResultOfTValueTaskFunction_ReturnsOriginalErrorAndDoesNotCallFunction()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result<int>.FromError(OtherKindError));
+        var called = false;
+
+        // Act
+        var result = await sut.ThenAsync(x => { called = true; return Task.FromResult(Result.FromValue(x.ToString())); });
+
+        // Assert
+        result.Error.ShouldBeSameAs(OtherKindError);
+        called.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task ThenAsync_SuccessfulResultOfTValueTaskWithTaskErrorFunction_ReturnsTheNextResult()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.FromValue(5));
+
+        // Act
+        var result = await sut.ThenAsync(x => Task.FromResult(OtherKindReplacement));
+
+        // Assert
+        result.Error.ShouldBeSameAs(OtherKindReplacement);
+    }
+
+    [Fact]
+    public async Task ThenAsync_FailedResultOfTValueTaskWithTaskErrorFunction_ReturnsOriginalErrorAndDoesNotCallFunction()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result<int>.FromError(OtherKindError));
+        var called = false;
+
+        // Act
+        var result = await sut.ThenAsync(x => { called = true; return Task.FromResult(OtherKindReplacement); });
+
+        // Assert
+        result.Error.ShouldBeSameAs(OtherKindError);
+        called.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task ThenAsync_TaskFunctionOnIncompleteValueTask_RunsAfterTheResultIsAvailable()
+    {
+        // Arrange
+        var source = new TaskCompletionSource<Result<int>>();
+        var called = false;
+
+        // Act
+        var task = Run();
+        var calledBeforeCompletion = called;
+        source.SetResult(Result.FromValue(5));
+        await task;
+
+        // Assert
+        calledBeforeCompletion.ShouldBeFalse();
+        called.ShouldBeTrue();
+
+        async Task Run()
+        {
+            var sut = new ValueTask<Result<int>>(source.Task);
+            _ = await sut.ThenAsync(x => { called = true; return Task.FromResult(x); });
+        }
     }
 
     #endregion

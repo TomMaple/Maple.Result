@@ -112,7 +112,7 @@ var result =
 
 
 ## Select&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, Result&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L343" target="_blank">LinqExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L344" target="_blank">LinqExtensions.cs</a>
 
 Projects a successful result (the `select` clause of a query); a failed result is returned unchanged.
 
@@ -154,7 +154,7 @@ var result =
 
 
 ## Select&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, Result&lt;TNext&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L376" target="_blank">LinqExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L377" target="_blank">LinqExtensions.cs</a>
 
 Projects a successful result (the `select` clause of a query); a failed result is returned unchanged.
 
@@ -199,7 +199,7 @@ var result =
 
 
 ## Select&lt;TNext&gt;(Result, Func&lt;Result, TNext&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L408" target="_blank">LinqExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L409" target="_blank">LinqExtensions.cs</a>
 
 Projects a successful result (the `select` clause of a query); a failed result is returned unchanged.
 
@@ -238,7 +238,7 @@ var result =
 
 
 ## Select(Result, Func&lt;Result, Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L437" target="_blank">LinqExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L438" target="_blank">LinqExtensions.cs</a>
 
 Projects a successful result (the `select` clause of a query); a failed result is returned unchanged.
 
@@ -276,7 +276,7 @@ var result =
 
 
 ## Select(Result, Func&lt;Result, Result&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L475" target="_blank">LinqExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L476" target="_blank">LinqExtensions.cs</a>
 
 Projects a successful result (the `select` clause of a query); a failed result is returned unchanged.
 
@@ -316,7 +316,7 @@ var result =
 
 
 ## Select&lt;TNext&gt;(Result, Func&lt;Result, Result&lt;TNext&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L514" target="_blank">LinqExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L515" target="_blank">LinqExtensions.cs</a>
 
 Projects a successful result (the `select` clause of a query); a failed result is returned unchanged.
 

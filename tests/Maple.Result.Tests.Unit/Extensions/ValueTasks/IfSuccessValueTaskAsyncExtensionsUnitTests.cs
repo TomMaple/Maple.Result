@@ -496,7 +496,7 @@ public class IfSuccessValueTaskAsyncExtensionsUnitTests
             .ToList();
 
         // Assert
-        traps.Count.ShouldBe(4);
+        traps.Count.ShouldBe(6);
         traps.ShouldAllBe(m => m.Name == "IfSuccessAsync"
                                && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
                                && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
@@ -605,23 +605,43 @@ public class IfSuccessValueTaskAsyncExtensionsUnitTests
                                && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
     }
 
+    // A function that returns a Task on a ValueTask of a result is awaited by an overload of its own, which returns a ValueTask (#226).
     [Fact]
-    public void IfSuccessAsync_FunctionReturningTaskOverloads_AreHiddenCompileErrors()
+    public void IfSuccessAsync_FunctionReturningTaskOnValueTaskResult_IsAnOverloadWithPriorityOne()
     {
         // Act
-        var traps = OverloadTrapHelper.ValueTaskPartMethods(typeof(IfSuccessAsyncExtensions))
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a Task, which IfSuccessAsync on a ValueTask of a result does not await"))
+        var overloads = OverloadTrapHelper.ValueTaskPartMethods(typeof(IfSuccessAsyncExtensions))
+            .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is null
+                        && m.GetParameters()[0].ParameterType is { IsGenericType: true } receiver && receiver.GetGenericTypeDefinition() == typeof(ValueTask<>)
+                        && m.GetParameters().Where(p => p.ParameterType.Name.StartsWith("Func`", StringComparison.Ordinal))
+                            .All(p => OverloadTrapHelper.IsTaskFunction(p.ParameterType))
+                        && m.GetParameters().Any(p => OverloadTrapHelper.IsTaskFunction(p.ParameterType)))
             .ToList();
 
         // Assert
-        traps.Count.ShouldBe(4);
-        traps.ShouldAllBe(m => m.Name == "IfSuccessAsync"
-                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
-                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
+        overloads.Count.ShouldBe(2);
+        overloads.ShouldAllBe(m => m.Name == "IfSuccessAsync" && OverloadTrapHelper.Priority(m) == 1);
+    }
+
+    // An async lambda binds to the overloads whose delegates return a Task, on every receiver (#226): on a ValueTask of a
+    // result, they have priority 1, and those whose delegates return a ValueTask priority 0.
+    [Fact]
+    public void IfSuccessAsync_OverloadsWithTaskDelegatesOnValueTaskResults_HavePriorityOne()
+    {
+        // Act
+        var priorities = OverloadTrapHelper.ValueTaskPartMethods(typeof(IfSuccessAsyncExtensions))
+            .Where(m => m.GetParameters()[0].ParameterType is { IsGenericType: true } receiver && receiver.GetGenericTypeDefinition() == typeof(ValueTask<>)
+                        && OverloadTrapHelper.IsTaskFunction(m.GetParameters()[1].ParameterType))
+            .Select(OverloadTrapHelper.Priority)
+            .ToList();
+
+        // Assert
+        priorities.Count.ShouldBe(4);
+        priorities.ShouldAllBe(p => p == 1);
     }
 
     [Fact]
-    public void IfSuccessAsync_OverloadsWithValueTaskDelegatesOnValueTaskResults_HavePriorityOne()
+    public void IfSuccessAsync_OverloadsWithValueTaskDelegatesOnValueTaskResults_HavePriorityZero()
     {
         // Act
         var priorities = OverloadTrapHelper.ValueTaskPartMethods(typeof(IfSuccessAsyncExtensions))
@@ -632,7 +652,7 @@ public class IfSuccessValueTaskAsyncExtensionsUnitTests
 
         // Assert
         priorities.Count.ShouldBe(4);
-        priorities.ShouldAllBe(p => p == 1);
+        priorities.ShouldAllBe(p => p == 0);
     }
 
     [Fact]
@@ -650,6 +670,98 @@ public class IfSuccessValueTaskAsyncExtensionsUnitTests
         // Assert
         priorities.Count.ShouldBe(2);
         priorities.ShouldAllBe(p => p == 0);
+    }
+
+    #endregion
+
+    #region ValueTask results with functions returning a Task
+
+    // A function that returns the other kind of task is awaited, and the receiver decides the kind (#226).
+
+    private static readonly Error OtherKindError = Error.Failure(ErrorUri.None, "Other kind of task test error");
+
+    [Fact]
+    public async Task IfSuccessAsync_SuccessfulResultValueTaskWithTaskAction_CallsActionAndReturnsResultUnchanged()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.Success());
+        var called = false;
+
+        // Act
+        var result = await sut.IfSuccessAsync(() => { called = true; return Task.CompletedTask; });
+
+        // Assert
+        result.IsSuccess.ShouldBeTrue();
+        called.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task IfSuccessAsync_FailedResultValueTaskWithTaskAction_DoesNotCallAction()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.FromError(OtherKindError));
+        var called = false;
+
+        // Act
+        var result = await sut.IfSuccessAsync(() => { called = true; return Task.CompletedTask; });
+
+        // Assert
+        result.Error.ShouldBeSameAs(OtherKindError);
+        called.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task IfSuccessAsync_SuccessfulResultOfTValueTaskWithTaskAction_CallsActionAndReturnsResultUnchanged()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.FromValue(5));
+        var passed = 0;
+
+        // Act
+        var result = await sut.IfSuccessAsync(x => { passed = x; return Task.CompletedTask; });
+
+        // Assert
+        result.Value.ShouldBe(5);
+        passed.ShouldBe(5);
+    }
+
+    [Fact]
+    public async Task IfSuccessAsync_FailedResultOfTValueTaskWithTaskAction_DoesNotCallAction()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result<int>.FromError(OtherKindError));
+        var passed = 0;
+
+        // Act
+        var result = await sut.IfSuccessAsync(x => { passed = x; return Task.CompletedTask; });
+
+        // Assert
+        result.Error.ShouldBeSameAs(OtherKindError);
+        passed.ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task IfSuccessAsync_TaskFunctionOnIncompleteValueTask_RunsAfterTheResultIsAvailable()
+    {
+        // Arrange
+        var source = new TaskCompletionSource<Result<int>>();
+        var called = false;
+
+        // Act
+        var task = Run();
+        var calledBeforeCompletion = called;
+        source.SetResult(Result.FromValue(5));
+        await task;
+
+        // Assert
+        calledBeforeCompletion.ShouldBeFalse();
+        called.ShouldBeTrue();
+
+        async Task Run()
+        {
+            var sut = new ValueTask<Result<int>>(source.Task);
+            _ = await sut.IfSuccessAsync(x => { called = true; return Task.CompletedTask; });
+        }
     }
 
     #endregion

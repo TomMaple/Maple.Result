@@ -423,5 +423,6 @@ public static class ThenExtensions
     {
         throw new NotSupportedException(ThenTaskNotAwaitedMessage);
     }
+
     #endregion
 }

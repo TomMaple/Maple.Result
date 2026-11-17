@@ -444,34 +444,52 @@ public class MatchValueTaskAsyncExtensionsUnitTests
                                && m.GetParameters().Skip(1).Take(2).All(p => p.ParameterType.Name.StartsWith("Action", StringComparison.Ordinal)));
     }
 
+    // A function that returns a Task on a ValueTask of a result is awaited by an overload of its own, which returns a ValueTask (#226).
     [Fact]
-    public void MatchAsync_TaskFunctionsOverloads_AreHiddenCompileErrors()
+    public void MatchAsync_FunctionReturningTaskOnValueTaskResult_IsAnOverloadWithPriorityOne()
     {
         // Act
-        var traps = OverloadTrapHelper.ValueTaskPartMethods(typeof(MatchAsyncExtensions))
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The delegates return a Task"))
+        var overloads = OverloadTrapHelper.ValueTaskPartMethods(typeof(MatchAsyncExtensions))
+            .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is null
+                        && m.GetParameters()[0].ParameterType is { IsGenericType: true } receiver && receiver.GetGenericTypeDefinition() == typeof(ValueTask<>)
+                        && m.GetParameters().Where(p => p.ParameterType.Name.StartsWith("Func`", StringComparison.Ordinal))
+                            .All(p => OverloadTrapHelper.IsTaskFunction(p.ParameterType))
+                        && m.GetParameters().Any(p => OverloadTrapHelper.IsTaskFunction(p.ParameterType)))
             .ToList();
 
         // Assert
-        traps.Count.ShouldBe(4);
-        traps.ShouldAllBe(m => m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
-                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never
-                               && m.GetParameters().Skip(1).Take(2).All(p => OverloadTrapHelper.IsTaskFunction(p.ParameterType)));
+        overloads.Count.ShouldBe(4);
+        overloads.ShouldAllBe(m => m.Name == "MatchAsync" && OverloadTrapHelper.Priority(m) == 1);
     }
 
     [Fact]
-    public void MatchAsync_AllMethods_AreOverloadsOnAValueTaskOrTheTwoKindsOfTraps()
+    public void MatchAsync_AllMethods_AreOverloadsOnAValueTaskOrTheTrapsForTwoActions()
     {
         // Act
         var methods = OverloadTrapHelper.ValueTaskPartMethods(typeof(MatchAsyncExtensions)).ToList();
 
         // Assert
-        methods.Count.ShouldBe(6 + 2 + 4);
+        methods.Count.ShouldBe(6 + 4 + 2); // the overloads, those for the other kind of task (#226), the traps for two actions
         methods.ShouldAllBe(m => m.Name == "MatchAsync" && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(ValueTask<>));
     }
 
+    // An async lambda binds to the overloads whose delegates return a Task, on every receiver (#226): on a ValueTask of a
+    // result, they have priority 1, and those whose delegates return a ValueTask priority 0.
     [Fact]
-    public void MatchAsync_OverloadsWithValueTaskFunctions_HavePriorityOne()
+    public void MatchAsync_OverloadsWithTaskFunctions_HavePriorityOne()
+    {
+        // Act
+        var overloads = OverloadTrapHelper.ValueTaskPartMethods(typeof(MatchAsyncExtensions))
+            .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is null && OverloadTrapHelper.IsTaskFunction(m.GetParameters()[1].ParameterType))
+            .ToList();
+
+        // Assert
+        overloads.Count.ShouldBe(4);
+        overloads.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 1);
+    }
+
+    [Fact]
+    public void MatchAsync_OverloadsWithValueTaskFunctions_HavePriorityZero()
     {
         // Act
         var overloads = OverloadTrapHelper.ValueTaskPartMethods(typeof(MatchAsyncExtensions))
@@ -480,7 +498,147 @@ public class MatchValueTaskAsyncExtensionsUnitTests
 
         // Assert
         overloads.Count.ShouldBe(4);
-        overloads.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 1);
+        overloads.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 0);
+    }
+
+    #endregion
+
+    #region ValueTask results with functions returning a Task
+
+    // A function that returns the other kind of task is awaited, and the receiver decides the kind (#226).
+
+    private static readonly Error OtherKindError = Error.Failure(ErrorUri.None, "Other kind of task test error");
+
+    [Fact]
+    public async Task MatchAsync_SuccessfulResultValueTaskWithTaskFunctions_RunsTheSuccessFunction()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.Success());
+
+        // Act
+        var result = await sut.MatchAsync(() => Task.FromResult(1), e => Task.FromResult(0));
+
+        // Assert
+        result.ShouldBe(1);
+    }
+
+    [Fact]
+    public async Task MatchAsync_FailedResultValueTaskWithTaskFunctions_RunsTheErrorFunction()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.FromError(OtherKindError));
+
+        // Act
+        var result = await sut.MatchAsync(() => Task.FromResult(1), e => Task.FromResult(0));
+
+        // Assert
+        result.ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task MatchAsync_SuccessfulResultValueTaskWithTaskActions_RunsTheSuccessFunction()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.Success());
+        var log = "";
+
+        // Act
+        await sut.MatchAsync(() => { log += "success"; return Task.CompletedTask; }, e => { log += "error"; return Task.CompletedTask; });
+
+        // Assert
+        log.ShouldBe("success");
+    }
+
+    [Fact]
+    public async Task MatchAsync_FailedResultValueTaskWithTaskActions_RunsTheErrorFunction()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.FromError(OtherKindError));
+        var log = "";
+
+        // Act
+        await sut.MatchAsync(() => { log += "success"; return Task.CompletedTask; }, e => { log += "error"; return Task.CompletedTask; });
+
+        // Assert
+        log.ShouldBe("error");
+    }
+
+    [Fact]
+    public async Task MatchAsync_SuccessfulResultOfTValueTaskWithTaskFunctions_RunsTheSuccessFunction()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.FromValue(5));
+
+        // Act
+        var result = await sut.MatchAsync(x => Task.FromResult(x * 2), e => Task.FromResult(0));
+
+        // Assert
+        result.ShouldBe(10);
+    }
+
+    [Fact]
+    public async Task MatchAsync_FailedResultOfTValueTaskWithTaskFunctions_RunsTheErrorFunction()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result<int>.FromError(OtherKindError));
+
+        // Act
+        var result = await sut.MatchAsync(x => Task.FromResult(x * 2), e => Task.FromResult(0));
+
+        // Assert
+        result.ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task MatchAsync_SuccessfulResultOfTValueTaskWithTaskActions_RunsTheSuccessFunction()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result.FromValue(5));
+        var log = "";
+
+        // Act
+        await sut.MatchAsync(x => { log += x; return Task.CompletedTask; }, e => { log += "error"; return Task.CompletedTask; });
+
+        // Assert
+        log.ShouldBe("5");
+    }
+
+    [Fact]
+    public async Task MatchAsync_FailedResultOfTValueTaskWithTaskActions_RunsTheErrorFunction()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result<int>.FromError(OtherKindError));
+        var log = "";
+
+        // Act
+        await sut.MatchAsync(x => { log += x; return Task.CompletedTask; }, e => { log += "error"; return Task.CompletedTask; });
+
+        // Assert
+        log.ShouldBe("error");
+    }
+
+    [Fact]
+    public async Task MatchAsync_TaskFunctionOnIncompleteValueTask_RunsAfterTheResultIsAvailable()
+    {
+        // Arrange
+        var source = new TaskCompletionSource<Result<int>>();
+        var called = false;
+
+        // Act
+        var task = Run();
+        var calledBeforeCompletion = called;
+        source.SetResult(Result.FromValue(5));
+        await task;
+
+        // Assert
+        calledBeforeCompletion.ShouldBeFalse();
+        called.ShouldBeTrue();
+
+        async Task Run()
+        {
+            var sut = new ValueTask<Result<int>>(source.Task);
+            _ = await sut.MatchAsync(x => { called = true; return Task.FromResult(x); }, e => Task.FromResult(0));
+        }
     }
 
     #endregion
