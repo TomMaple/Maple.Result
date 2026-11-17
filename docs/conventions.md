@@ -103,6 +103,7 @@ are marked breaking. Preview the notes locally with `git cliff --unreleased --st
 	  `ThenExtensions.Traps.cs`, `ThenAsyncExtensions.Task.Traps.cs`, `Result.Try.Traps.cs`), in a `Not supported: …` region
 	  with its message constant and a comment that says why it exists; the class is `partial`. The file of the class keeps the
 	  methods that run.
+	  `[Obsolete]` marks only overload traps: the code coverage leaves out every `[Obsolete]` member (see *Tests*).
 	* Chained calls go one per line, unless the whole statement fits on one line.
 	* Empty lines:
 		* before a `return`, unless the block has only two one-line statements;
@@ -162,6 +163,11 @@ are marked breaking. Preview the notes locally with `git cliff --unreleased --st
 	  then asserted.
 	* No loops in assertions: one case per test, or per `[InlineData]` / `[MemberData]` row of a `[Theory]`.
 	* Every bug fix comes with a test that fails without the fix.
+	* Code coverage: CI collects it with `tests/CodeCoverage.config`, which leaves out the overload traps (their bodies never
+	  run; the binding tests cover them), and shows the summary in the job summary. Every line of the code that runs is
+	  covered; a branch that cannot be reached is explained in the pull request that leaves it. To measure it locally, pass
+	  the settings file with an absolute path (a relative one is resolved against the output folder of the tests):
+	  `dotnet test -c Release --coverage --coverage-output-format cobertura --coverage-settings "$PWD/tests/CodeCoverage.config"`.
 	* Code written with an AI assistant is developed test-first
 	  ([TDD](https://martinfowler.com/bliki/TestDrivenDevelopment.html)): first the tests that describe the change are
 	  written and seen to fail, then the implementation makes them pass, then the code is refactored while they stay
