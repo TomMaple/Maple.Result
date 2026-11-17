@@ -311,7 +311,7 @@ public static partial class ThenExtensions
     /// <param name="result">The <see cref="Result{T}" /> to evaluate for success. Must not be <see langword="null" />.</param>
     /// <param name="ifSuccessFunction">
     ///     The function to execute if the <paramref name="result" /> is successful. The value of the successful <see cref="Result{T}" /> is passed as
-    ///     a parameter. The function’s must return <see cref="Result{TNext}" />. Must not be <see langword="null" />.
+    ///     a parameter. The function must return <see cref="Result{TNext}" />. Must not be <see langword="null" />.
     /// </param>
     /// <returns>
     ///     A successful <see cref="Result{TNext}" /> returned by <paramref name="ifSuccessFunction" /> if <paramref name="result" /> is successful;

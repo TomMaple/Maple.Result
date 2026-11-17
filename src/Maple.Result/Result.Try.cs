@@ -445,7 +445,10 @@ public sealed partial record Result
     ///     <c>await</c>, on the captured context; <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
     ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
     /// </param>
-    /// <returns>A task with a successful <see cref="Result" /> if the <paramref name="action" /> completes; otherwise, a failed one with the mapped error.</returns>
+    /// <returns>
+    ///     A <see cref="ValueTask{TResult}" /> that represents a successful <see cref="Result" /> if the <paramref name="action" /> completes; otherwise, a
+    ///     failed one with the mapped error.
+    /// </returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="action" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
     public static ValueTask<Result> TryAsync(Func<ValueTask> action, Func<Exception, Error?> mapException, bool? continueOnCapturedContext = null)
     {
@@ -472,7 +475,10 @@ public sealed partial record Result
     ///     <c>await</c>, on the captured context; <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
     ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
     /// </param>
-    /// <returns>A task with a successful <see cref="Result" /> if the <paramref name="action" /> completes; otherwise, a failed one with the mapped error.</returns>
+    /// <returns>
+    ///     A <see cref="ValueTask{TResult}" /> that represents a successful <see cref="Result" /> if the <paramref name="action" /> completes; otherwise, a
+    ///     failed one with the mapped error.
+    /// </returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="action" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
     public static ValueTask<Result> TryAsync<TException>(
         Func<ValueTask> action,
@@ -531,8 +537,8 @@ public sealed partial record Result
     ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
     /// </param>
     /// <returns>
-    ///     A task with a successful <see cref="Result{T}" /> with the value of the <paramref name="function" />; otherwise, a failed one with the
-    ///     mapped error.
+    ///     A <see cref="ValueTask{TResult}" /> that represents a successful <see cref="Result{T}" /> with the value of the <paramref name="function" />;
+    ///     otherwise, a failed one with the mapped error.
     /// </returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
     public static ValueTask<Result<T>> TryAsync<T>(Func<ValueTask<T>> function, Func<Exception, Error?> mapException, bool? continueOnCapturedContext = null)
@@ -564,8 +570,8 @@ public sealed partial record Result
     ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
     /// </param>
     /// <returns>
-    ///     A task with a successful <see cref="Result{T}" /> with the value of the <paramref name="function" />; otherwise, a failed one with the
-    ///     mapped error.
+    ///     A <see cref="ValueTask{TResult}" /> that represents a successful <see cref="Result{T}" /> with the value of the <paramref name="function" />;
+    ///     otherwise, a failed one with the mapped error.
     /// </returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
     public static ValueTask<Result<T>> TryAsync<T, TException>(
@@ -1255,7 +1261,10 @@ public sealed partial record Result
     ///     <c>await</c>, on the captured context; <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
     ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
     /// </param>
-    /// <returns>A task with the <see cref="Result" /> returned by the <paramref name="function" />, as it is; or a failed one with the mapped error.</returns>
+    /// <returns>
+    ///     A <see cref="ValueTask{TResult}" /> that represents the <see cref="Result" /> returned by the <paramref name="function" />, as it is; or a failed
+    ///     one with the mapped error.
+    /// </returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
     /// <exception cref="InvalidOperationException">If the <paramref name="function" /> returns a <see langword="null" /> result.</exception>
     public static ValueTask<Result> TryAsync(Func<ValueTask<Result>> function, Func<Exception, Error?> mapException, bool? continueOnCapturedContext = null)
@@ -1292,7 +1301,10 @@ public sealed partial record Result
     ///     <c>await</c>, on the captured context; <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
     ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
     /// </param>
-    /// <returns>A task with the <see cref="Result" /> returned by the <paramref name="function" />, as it is; or a failed one with the mapped error.</returns>
+    /// <returns>
+    ///     A <see cref="ValueTask{TResult}" /> that represents the <see cref="Result" /> returned by the <paramref name="function" />, as it is; or a failed
+    ///     one with the mapped error.
+    /// </returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
     /// <exception cref="InvalidOperationException">If the <paramref name="function" /> returns a <see langword="null" /> result.</exception>
     public static ValueTask<Result> TryAsync<TException>(
@@ -1358,7 +1370,10 @@ public sealed partial record Result
     ///     <c>await</c>, on the captured context; <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
     ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
     /// </param>
-    /// <returns>A task with the <see cref="Result{T}" /> returned by the <paramref name="function" />, as it is; or a failed one with the mapped error.</returns>
+    /// <returns>
+    ///     A <see cref="ValueTask{TResult}" /> that represents the <see cref="Result{T}" /> returned by the <paramref name="function" />, as it is; or a failed
+    ///     one with the mapped error.
+    /// </returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
     /// <exception cref="InvalidOperationException">If the <paramref name="function" /> returns a <see langword="null" /> result.</exception>
     public static ValueTask<Result<T>> TryAsync<T>(Func<ValueTask<Result<T>>> function, Func<Exception, Error?> mapException, bool? continueOnCapturedContext = null)
@@ -1396,7 +1411,10 @@ public sealed partial record Result
     ///     <c>await</c>, on the captured context; <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
     ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
     /// </param>
-    /// <returns>A task with the <see cref="Result{T}" /> returned by the <paramref name="function" />, as it is; or a failed one with the mapped error.</returns>
+    /// <returns>
+    ///     A <see cref="ValueTask{TResult}" /> that represents the <see cref="Result{T}" /> returned by the <paramref name="function" />, as it is; or a failed
+    ///     one with the mapped error.
+    /// </returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
     /// <exception cref="InvalidOperationException">If the <paramref name="function" /> returns a <see langword="null" /> result.</exception>
     public static ValueTask<Result<T>> TryAsync<T, TException>(
@@ -1461,7 +1479,10 @@ public sealed partial record Result
     ///     <c>await</c>, on the captured context; <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
     ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
     /// </param>
-    /// <returns>A task with a failed <see cref="Result" /> with the <see cref="Error" /> returned by the <paramref name="function" />, or with the mapped error.</returns>
+    /// <returns>
+    ///     A <see cref="ValueTask{TResult}" /> that represents a failed <see cref="Result" /> with the <see cref="Error" /> returned by the
+    ///     <paramref name="function" />, or with the mapped error.
+    /// </returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
     /// <exception cref="InvalidOperationException">If the <paramref name="function" /> returns a <see langword="null" /> error.</exception>
     public static ValueTask<Result> TryAsync(Func<ValueTask<Error>> function, Func<Exception, Error?> mapException, bool? continueOnCapturedContext = null)
@@ -1498,7 +1519,10 @@ public sealed partial record Result
     ///     <c>await</c>, on the captured context; <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
     ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
     /// </param>
-    /// <returns>A task with a failed <see cref="Result" /> with the <see cref="Error" /> returned by the <paramref name="function" />, or with the mapped error.</returns>
+    /// <returns>
+    ///     A <see cref="ValueTask{TResult}" /> that represents a failed <see cref="Result" /> with the <see cref="Error" /> returned by the
+    ///     <paramref name="function" />, or with the mapped error.
+    /// </returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="function" /> or the <paramref name="mapException" /> is <see langword="null" />.</exception>
     /// <exception cref="InvalidOperationException">If the <paramref name="function" /> returns a <see langword="null" /> error.</exception>
     public static ValueTask<Result> TryAsync<TException>(

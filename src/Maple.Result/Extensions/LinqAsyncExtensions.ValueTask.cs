@@ -203,8 +203,7 @@ public static partial class LinqAsyncExtensions
     ///     successful; otherwise, a failed result with the first <see cref="Error" />.
     /// </returns>
     /// <exception cref="ArgumentNullException">
-    ///     If any of the <paramref name="result" />,
-    ///     <paramref name="collectionSelector" /> or <paramref name="resultSelector" /> parameters are <see langword="null" />.
+    ///     If any of the <paramref name="collectionSelector" /> or <paramref name="resultSelector" /> parameters are <see langword="null" />.
     /// </exception>
     /// <exception cref="InvalidOperationException">
     ///     If the asynchronous operation represented by <paramref name="result" /> returns <see langword="null" />,
