@@ -25,13 +25,15 @@ public static partial class ThenAsyncExtensions
     // to the overload with a synchronous function and give a result that holds the task, which nobody awaits: these overloads turn
     // the call into a compile error (CS0619) that names the method to use, for both kinds of task. On a result, and for a synchronous
     // action, the compiler reports the call by itself (e.g., CS0029, CS0266 or CS1643), so there are no overloads for them (#256).
+    // The parameter has the name of the overload that the call would bind to (ifSuccessFunction), not the name of an asynchronous
+    // action: a trap applies only to a call that uses its names, so a call that names the argument reaches the trap too (#273).
 
     /// <summary>
     ///     Not supported: the function returns a task without a value; use <c>IfSuccessAsync</c> for a side effect.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ActionMessage, error: true)]
-    public static ValueTask<Result> ThenAsync(this ValueTask<Result> resultTask, Func<ValueTask> ifSuccessAction, bool? continueOnCapturedContext = null)
+    public static ValueTask<Result> ThenAsync(this ValueTask<Result> resultTask, Func<ValueTask> ifSuccessFunction, bool? continueOnCapturedContext = null)
     {
         throw new NotSupportedException(ActionMessage);
     }
@@ -41,7 +43,8 @@ public static partial class ThenAsyncExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ActionMessage, error: true)]
-    public static ValueTask<Result<T>> ThenAsync<T>(this ValueTask<Result<T>> resultTask, Func<T, ValueTask> ifSuccessAction, bool? continueOnCapturedContext = null)
+    public static ValueTask<Result<T>> ThenAsync<T>(this ValueTask<Result<T>> resultTask,
+        Func<T, ValueTask> ifSuccessFunction, bool? continueOnCapturedContext = null)
     {
         throw new NotSupportedException(ActionMessage);
     }
@@ -52,7 +55,7 @@ public static partial class ThenAsyncExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ActionMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static ValueTask<Result> ThenAsync(this ValueTask<Result> resultTask, Func<Task> ifSuccessAction, bool? continueOnCapturedContext = null)
+    public static ValueTask<Result> ThenAsync(this ValueTask<Result> resultTask, Func<Task> ifSuccessFunction, bool? continueOnCapturedContext = null)
     {
         throw new NotSupportedException(ActionMessage);
     }
@@ -64,7 +67,7 @@ public static partial class ThenAsyncExtensions
     [Obsolete(ActionMessage, error: true)]
     [OverloadResolutionPriority(1)]
     public static ValueTask<Result<T>> ThenAsync<T>(this ValueTask<Result<T>> resultTask,
-        Func<T, Task> ifSuccessAction, bool? continueOnCapturedContext = null)
+        Func<T, Task> ifSuccessFunction, bool? continueOnCapturedContext = null)
     {
         throw new NotSupportedException(ActionMessage);
     }

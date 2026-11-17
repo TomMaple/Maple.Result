@@ -29,7 +29,8 @@ public static partial class ElseExtensions
     // Task<T>; IEquatable<ValueTask> is implemented by ValueTask only, and a ValueTask<T> has an overload of its own, whose type argument
     // cannot be inferred from a lambda that only throws either. The unused optional parameter only makes the signatures differ. The
     // overloads constrained to a Task or a ValueTask have priority 1; an async lambda gives a Task, which fails the ValueTask
-    // constraint, so the two are never ambiguous.
+    // constraint, so the two are never ambiguous. The parameter has the name of the overload that runs (ifErrorFunction): a trap
+    // applies only to a call that uses its names, so a call that names the argument reaches the trap too (#273).
 
     private const string ElseTaskNotAwaitedMessage =
         "The function returns a task, which Else does not await. Use ElseAsync.";
@@ -40,7 +41,7 @@ public static partial class ElseExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ElseTaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static TResult Else<TResult, TTask>([DisallowNull] this TResult result, Func<Error, TTask> ifErrorAction, Task? unused = null)
+    public static TResult Else<TResult, TTask>([DisallowNull] this TResult result, Func<Error, TTask> ifErrorFunction, Task? unused = null)
         where TResult : IOperationResult
         where TTask : Task
     {
@@ -53,7 +54,7 @@ public static partial class ElseExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ElseTaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static TResult Else<TResult, TValueTask>([DisallowNull] this TResult result, Func<Error, TValueTask> ifErrorAction,
+    public static TResult Else<TResult, TValueTask>([DisallowNull] this TResult result, Func<Error, TValueTask> ifErrorFunction,
         ValueTask unused = default)
         where TResult : IOperationResult
         where TValueTask : struct, IEquatable<ValueTask>
