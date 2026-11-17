@@ -92,7 +92,7 @@ public class ErrorBuilderUnitTests
     {
         { Sut.Validation, ErrorCategory.Validation },
         { Sut.Unauthenticated, ErrorCategory.Unauthenticated },
-        { Sut.Unauthorized, ErrorCategory.Unauthorized },
+        { Sut.PermissionDenied, ErrorCategory.PermissionDenied },
         { Sut.NotFound, ErrorCategory.NotFound },
         { Sut.Timeout, ErrorCategory.Timeout },
         { Sut.Conflict, ErrorCategory.Conflict },
