@@ -66,9 +66,13 @@ public static class ElseExtensions
     #region Not supported: functions returning a task
 
     // These overloads turn a call with a function that returns a task into a compile error (CS0619): Else does not await it. Without
-    // them, the task would replace the result (the function returns the replacement) and nobody would await it. A Task<T> converts
-    // to Task, so the Task overload also covers functions returning Task<T>. It has a higher priority than the ValueTask ones: an
-    // async lambda converts to both, which would be ambiguous (CS0121).
+    // them, the task would replace the result (the function returns the replacement) and nobody would await it. They are generic and
+    // constrained to the task type (#251): a lambda that only throws has no return type to infer, so it does not reach them and binds
+    // to the overload that runs, and a lambda that returns another value fails the constraint. The constraint to a Task also covers a
+    // Task<T>; IEquatable<ValueTask> is implemented by ValueTask only, and a ValueTask<T> has an overload of its own, whose type argument
+    // cannot be inferred from a lambda that only throws either. The unused optional parameter only makes the signatures differ. The
+    // overloads constrained to a Task or a ValueTask have priority 1; an async lambda gives a Task, which fails the ValueTask
+    // constraint, so the two are never ambiguous.
 
     private const string ElseTaskNotAwaitedMessage =
         "The function returns a task, which Else does not await. Use ElseAsync.";
@@ -79,8 +83,9 @@ public static class ElseExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ElseTaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static TResult Else<TResult>([DisallowNull] this TResult result, Func<Error, Task> ifErrorAction)
+    public static TResult Else<TResult, TTask>([DisallowNull] this TResult result, Func<Error, TTask> ifErrorAction, Task? unused = null)
         where TResult : IOperationResult
+        where TTask : Task
     {
         throw new NotSupportedException(ElseTaskNotAwaitedMessage);
     }
@@ -90,8 +95,11 @@ public static class ElseExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ElseTaskNotAwaitedMessage, error: true)]
-    public static TResult Else<TResult>([DisallowNull] this TResult result, Func<Error, ValueTask> ifErrorAction)
+    [OverloadResolutionPriority(1)]
+    public static TResult Else<TResult, TValueTask>([DisallowNull] this TResult result, Func<Error, TValueTask> ifErrorAction,
+        ValueTask unused = default)
         where TResult : IOperationResult
+        where TValueTask : struct, IEquatable<ValueTask>
     {
         throw new NotSupportedException(ElseTaskNotAwaitedMessage);
     }
@@ -101,7 +109,7 @@ public static class ElseExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ElseTaskNotAwaitedMessage, error: true)]
-    public static TResult Else<TResult, TTaskResult>([DisallowNull] this TResult result, Func<Error, ValueTask<TTaskResult>> ifErrorFunction)
+    public static TResult Else<TResult, TIgnored>([DisallowNull] this TResult result, Func<Error, ValueTask<TIgnored>> ifErrorFunction)
         where TResult : IOperationResult
     {
         throw new NotSupportedException(ElseTaskNotAwaitedMessage);

@@ -96,9 +96,13 @@ public static class IfSuccessExtensions
     #region Not supported: functions returning a task
 
     // These overloads turn a call with a function that returns a task into a compile error (CS0619) that points to IfSuccessAsync.
-    // Without them, the value traps below would report the call as a discarded value. They are more specific than the value traps,
-    // so they are chosen first. The Task overloads have a higher priority than the ValueTask ones: an async lambda converts to both,
-    // which would be ambiguous (CS0121).
+    // Without them, the value traps below would report the call as a discarded value. They are generic and constrained to the task
+    // type (#251): a lambda that only throws has no return type to infer, so it does not reach them and binds to the action overload,
+    // and a lambda that returns another value fails the constraint and reaches the value trap. The constraint to a Task also covers a
+    // Task<T>; IEquatable<ValueTask> is implemented by ValueTask only, and a ValueTask<T> has an overload of its own, whose type argument
+    // cannot be inferred from a lambda that only throws either. The unused optional parameter only makes the signatures differ from
+    // the value traps. The overloads constrained to a Task or a ValueTask have priority 1, so that they win over the value traps; an
+    // async lambda gives a Task, which fails the ValueTask constraint, so the two are never ambiguous.
 
     private const string TaskNotAwaitedMessage =
         "The function returns a task, which IfSuccess does not await. Use IfSuccessAsync, or discard the task " +
@@ -110,7 +114,8 @@ public static class IfSuccessExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(TaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result IfSuccess(this Result result, Func<Task> ifSuccessAction)
+    public static Result IfSuccess<TTask>(this Result result, Func<TTask> ifSuccessAction, Task? unused = null)
+        where TTask : Task
     {
         throw new NotSupportedException(TaskNotAwaitedMessage);
     }
@@ -121,7 +126,8 @@ public static class IfSuccessExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(TaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result IfSuccess<TNext>(this Result result, Func<Task<TNext>> ifSuccessFunction)
+    public static Result IfSuccess<TValueTask>(this Result result, Func<TValueTask> ifSuccessAction, ValueTask unused = default)
+        where TValueTask : struct, IEquatable<ValueTask>
     {
         throw new NotSupportedException(TaskNotAwaitedMessage);
     }
@@ -131,17 +137,7 @@ public static class IfSuccessExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(TaskNotAwaitedMessage, error: true)]
-    public static Result IfSuccess(this Result result, Func<ValueTask> ifSuccessAction)
-    {
-        throw new NotSupportedException(TaskNotAwaitedMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the function returns a task, which <c>IfSuccess</c> does not await; use <c>IfSuccessAsync</c>.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(TaskNotAwaitedMessage, error: true)]
-    public static Result IfSuccess<TNext>(this Result result, Func<ValueTask<TNext>> ifSuccessFunction)
+    public static Result IfSuccess<TIgnored>(this Result result, Func<ValueTask<TIgnored>> ifSuccessAction)
     {
         throw new NotSupportedException(TaskNotAwaitedMessage);
     }
@@ -152,7 +148,8 @@ public static class IfSuccessExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(TaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result IfSuccess<T>(this Result<T> result, Func<T, Task> ifSuccessAction)
+    public static Result IfSuccess<T, TTask>(this Result<T> result, Func<T, TTask> ifSuccessAction, Task? unused = null)
+        where TTask : Task
     {
         throw new NotSupportedException(TaskNotAwaitedMessage);
     }
@@ -163,7 +160,8 @@ public static class IfSuccessExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(TaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result IfSuccess<T, TNext>(this Result<T> result, Func<T, Task<TNext>> ifSuccessFunction)
+    public static Result IfSuccess<T, TValueTask>(this Result<T> result, Func<T, TValueTask> ifSuccessAction, ValueTask unused = default)
+        where TValueTask : struct, IEquatable<ValueTask>
     {
         throw new NotSupportedException(TaskNotAwaitedMessage);
     }
@@ -173,21 +171,10 @@ public static class IfSuccessExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(TaskNotAwaitedMessage, error: true)]
-    public static Result IfSuccess<T>(this Result<T> result, Func<T, ValueTask> ifSuccessAction)
+    public static Result IfSuccess<T, TIgnored>(this Result<T> result, Func<T, ValueTask<TIgnored>> ifSuccessAction)
     {
         throw new NotSupportedException(TaskNotAwaitedMessage);
     }
-
-    /// <summary>
-    ///     Not supported: the function returns a task, which <c>IfSuccess</c> does not await; use <c>IfSuccessAsync</c>.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(TaskNotAwaitedMessage, error: true)]
-    public static Result IfSuccess<T, TNext>(this Result<T> result, Func<T, ValueTask<TNext>> ifSuccessFunction)
-    {
-        throw new NotSupportedException(TaskNotAwaitedMessage);
-    }
-
     #endregion
 
     #region Not supported: functions returning a value
