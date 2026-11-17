@@ -212,7 +212,7 @@ A successful result with the value of the `function`; otherwise, a failed one wi
 `function` returns a `null` task.
 
 ## TryAsync(Func&lt;ValueTask&gt;, Func&lt;Exception, Error&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L450" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L453" target="_blank">Result.Try.cs</a>
 
 ```csharp
 public static ValueTask<Result> TryAsync(Func<ValueTask> action, Func<Exception, Error?> mapException, bool? continueOnCapturedContext = null);
@@ -242,7 +242,7 @@ A successful result if the `action` completes; otherwise, a failed one with the 
 `action` or `mapException` is `null`.
 
 ## TryAsync&lt;TException&gt;(Func&lt;ValueTask&gt;, Func&lt;TException, Error&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L477" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L483" target="_blank">Result.Try.cs</a>
 
 ```csharp
 public static ValueTask<Result> TryAsync<TException>(Func<ValueTask> action, Func<TException, Error?> mapException, bool? continueOnCapturedContext = null)
@@ -277,7 +277,7 @@ A successful result if the `action` completes; otherwise, a failed one with the 
 `action` or `mapException` is `null`.
 
 ## TryAsync&lt;T&gt;(Func&lt;ValueTask&lt;T&gt;&gt;, Func&lt;Exception, Error&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L538" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L544" target="_blank">Result.Try.cs</a>
 
 ```csharp
 public static ValueTask<Result<T>> TryAsync<T>(Func<ValueTask<T>> function, Func<Exception, Error?> mapException, bool? continueOnCapturedContext = null);
@@ -311,7 +311,7 @@ A successful result with the value of the `function`; otherwise, a failed one wi
 `function` or `mapException` is `null`.
 
 ## TryAsync&lt;T, TException&gt;(Func&lt;ValueTask&lt;T&gt;&gt;, Func&lt;TException, Error&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L571" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L577" target="_blank">Result.Try.cs</a>
 
 ```csharp
 public static ValueTask<Result<T>> TryAsync<T, TException>(Func<ValueTask<T>> function, Func<TException, Error?> mapException, bool? continueOnCapturedContext = null)
@@ -349,7 +349,7 @@ A successful result with the value of the `function`; otherwise, a failed one wi
 `function` or `mapException` is `null`.
 
 ## TryAsync(Func&lt;Task&lt;Result&gt;&gt;, Func&lt;Exception, Error&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L890" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L896" target="_blank">Result.Try.cs</a>
 
 ```csharp
 [OverloadResolutionPriority(1)]
@@ -384,7 +384,7 @@ A task with the [Result](Result.md) returned by the `function`, as it is; or a f
 `function` returns a `null` task or a `null` result.
 
 ## TryAsync&lt;TException&gt;(Func&lt;Task&lt;Result&gt;&gt;, Func&lt;TException, Error&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L930" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L936" target="_blank">Result.Try.cs</a>
 
 ```csharp
 [OverloadResolutionPriority(1)]
@@ -424,7 +424,7 @@ A task with the [Result](Result.md) returned by the `function`, as it is; or a f
 `function` returns a `null` task or a `null` result.
 
 ## TryAsync&lt;T&gt;(Func&lt;Task&lt;Result&lt;T&gt;&gt;&gt;, Func&lt;Exception, Error&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1013" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1019" target="_blank">Result.Try.cs</a>
 
 ```csharp
 [OverloadResolutionPriority(1)]
@@ -463,7 +463,7 @@ A task with the [Result&lt;T&gt;](../ResultT/ResultT.md) returned by the `functi
 `function` returns a `null` task or a `null` result.
 
 ## TryAsync&lt;T, TException&gt;(Func&lt;Task&lt;Result&lt;T&gt;&gt;&gt;, Func&lt;TException, Error&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1054" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1060" target="_blank">Result.Try.cs</a>
 
 ```csharp
 [OverloadResolutionPriority(1)]
@@ -506,7 +506,7 @@ A task with the [Result&lt;T&gt;](../ResultT/ResultT.md) returned by the `functi
 `function` returns a `null` task or a `null` result.
 
 ## TryAsync(Func&lt;Task&lt;Error&gt;&gt;, Func&lt;Exception, Error&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1136" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1142" target="_blank">Result.Try.cs</a>
 
 ```csharp
 [OverloadResolutionPriority(1)]
@@ -541,7 +541,7 @@ A task with a failed [Result](Result.md) with the [Error](../Error/Error.md) ret
 `function` returns a `null` task or a `null` error.
 
 ## TryAsync&lt;TException&gt;(Func&lt;Task&lt;Error&gt;&gt;, Func&lt;TException, Error&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1176" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1182" target="_blank">Result.Try.cs</a>
 
 ```csharp
 [OverloadResolutionPriority(1)]
@@ -581,7 +581,7 @@ A task with a failed [Result](Result.md) with the [Error](../Error/Error.md) ret
 `function` returns a `null` task or a `null` error.
 
 ## TryAsync(Func&lt;ValueTask&lt;Result&gt;&gt;, Func&lt;Exception, Error&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1261" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1270" target="_blank">Result.Try.cs</a>
 
 ```csharp
 public static ValueTask<Result> TryAsync(Func<ValueTask<Result>> function, Func<Exception, Error?> mapException, bool? continueOnCapturedContext = null);
@@ -603,7 +603,7 @@ The function that creates the error from the exception, or returns `null` to dec
 ### Returns
 ValueTask&lt;[Result](Result.md)&gt;
 
-A task with the [Result](Result.md) returned by the `function`, as it is; or a failed one with the mapped error.
+A [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1) that represents the [Result](Result.md) returned by the `function`, as it is; or a failed one with the mapped error.
 
 ### Exceptions
 [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
@@ -615,7 +615,7 @@ A task with the [Result](Result.md) returned by the `function`, as it is; or a f
 `function` returns a `null` result.
 
 ## TryAsync&lt;TException&gt;(Func&lt;ValueTask&lt;Result&gt;&gt;, Func&lt;TException, Error&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1298" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1310" target="_blank">Result.Try.cs</a>
 
 ```csharp
 public static ValueTask<Result> TryAsync<TException>(Func<ValueTask<Result>> function, Func<TException, Error?> mapException, bool? continueOnCapturedContext = null)
@@ -642,7 +642,7 @@ The function that creates the error from the exception, or returns `null` to dec
 ### Returns
 ValueTask&lt;[Result](Result.md)&gt;
 
-A task with the [Result](Result.md) returned by the `function`, as it is; or a failed one with the mapped error.
+A [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1) that represents the [Result](Result.md) returned by the `function`, as it is; or a failed one with the mapped error.
 
 ### Exceptions
 [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
@@ -654,7 +654,7 @@ A task with the [Result](Result.md) returned by the `function`, as it is; or a f
 `function` returns a `null` result.
 
 ## TryAsync&lt;T&gt;(Func&lt;ValueTask&lt;Result&lt;T&gt;&gt;&gt;, Func&lt;Exception, Error&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1364" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1379" target="_blank">Result.Try.cs</a>
 
 ```csharp
 public static ValueTask<Result<T>> TryAsync<T>(Func<ValueTask<Result<T>>> function, Func<Exception, Error?> mapException, bool? continueOnCapturedContext = null);
@@ -680,7 +680,7 @@ The function that creates the error from the exception, or returns `null` to dec
 ### Returns
 ValueTask&lt;[Result&lt;T&gt;](../ResultT/ResultT.md)&gt;
 
-A task with the [Result&lt;T&gt;](../ResultT/ResultT.md) returned by the `function`, as it is; or a failed one with the mapped error.
+A [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1) that represents the [Result&lt;T&gt;](../ResultT/ResultT.md) returned by the `function`, as it is; or a failed one with the mapped error.
 
 ### Exceptions
 [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
@@ -692,7 +692,7 @@ A task with the [Result&lt;T&gt;](../ResultT/ResultT.md) returned by the `functi
 `function` returns a `null` result.
 
 ## TryAsync&lt;T, TException&gt;(Func&lt;ValueTask&lt;Result&lt;T&gt;&gt;&gt;, Func&lt;TException, Error&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1402" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1420" target="_blank">Result.Try.cs</a>
 
 ```csharp
 public static ValueTask<Result<T>> TryAsync<T, TException>(Func<ValueTask<Result<T>>> function, Func<TException, Error?> mapException, bool? continueOnCapturedContext = null)
@@ -722,7 +722,7 @@ The function that creates the error from the exception, or returns `null` to dec
 ### Returns
 ValueTask&lt;[Result&lt;T&gt;](../ResultT/ResultT.md)&gt;
 
-A task with the [Result&lt;T&gt;](../ResultT/ResultT.md) returned by the `function`, as it is; or a failed one with the mapped error.
+A [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1) that represents the [Result&lt;T&gt;](../ResultT/ResultT.md) returned by the `function`, as it is; or a failed one with the mapped error.
 
 ### Exceptions
 [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
@@ -734,7 +734,7 @@ A task with the [Result&lt;T&gt;](../ResultT/ResultT.md) returned by the `functi
 `function` returns a `null` result.
 
 ## TryAsync(Func&lt;ValueTask&lt;Error&gt;&gt;, Func&lt;Exception, Error&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1467" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1488" target="_blank">Result.Try.cs</a>
 
 ```csharp
 public static ValueTask<Result> TryAsync(Func<ValueTask<Error>> function, Func<Exception, Error?> mapException, bool? continueOnCapturedContext = null);
@@ -756,7 +756,7 @@ The function that creates the error from the exception, or returns `null` to dec
 ### Returns
 ValueTask&lt;[Result](Result.md)&gt;
 
-A task with a failed [Result](Result.md) with the [Error](../Error/Error.md) returned by the `function`, or with the mapped error.
+A [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1) that represents a failed [Result](Result.md) with the [Error](../Error/Error.md) returned by the `function`, or with the mapped error.
 
 ### Exceptions
 [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
@@ -768,7 +768,7 @@ A task with a failed [Result](Result.md) with the [Error](../Error/Error.md) ret
 `function` returns a `null` error.
 
 ## TryAsync&lt;TException&gt;(Func&lt;ValueTask&lt;Error&gt;&gt;, Func&lt;TException, Error&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1504" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L1528" target="_blank">Result.Try.cs</a>
 
 ```csharp
 public static ValueTask<Result> TryAsync<TException>(Func<ValueTask<Error>> function, Func<TException, Error?> mapException, bool? continueOnCapturedContext = null)
@@ -795,7 +795,7 @@ The function that creates the error from the exception, or returns `null` to dec
 ### Returns
 ValueTask&lt;[Result](Result.md)&gt;
 
-A task with a failed [Result](Result.md) with the [Error](../Error/Error.md) returned by the `function`, or with the mapped error.
+A [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1) that represents a failed [Result](Result.md) with the [Error](../Error/Error.md) returned by the `function`, or with the mapped error.
 
 ### Exceptions
 [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
