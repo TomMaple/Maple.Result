@@ -112,7 +112,7 @@ A non-generic [Result](../Result/Result.md) can be any `from` clause, e.g., a ch
 
 A result selector that returns an [Error](../Error/Error.md) makes the query fail: such a query returns a failed [Result](../Result/Result.md) instead of a **successful** `Result<Error>`.
 
-A result selector that returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>` is not supported: the query does not await it, so such a query is a compile error. Await the operation with [ThenAsync](ThenAsyncExtensions_ThenAsync.md) instead, or chain it in a `from` clause whose function returns a `Task<Result<T>>`. To keep the task in the result on purpose, call `SelectMany<T, TMiddle, Task>(…)` with explicit type arguments.
+A result selector that returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>` is not supported: the query does not await it, so such a query is a compile error. Await the operation with [ThenAsync](ThenAsyncExtensions_ThenAsync.md) instead, or chain it in a `from` clause whose function returns a `Task<Result<T>>`. To keep the task in the result on purpose, select it in a result (e.g., `select Result.FromValue(SaveAsync(x))`); explicit type arguments (e.g., `SelectMany<T, TMiddle, Task>(…)`) are a compile error too.
 
 The query syntax needs a value in every `from` clause, so it works with [Result&lt;T&gt;](../ResultT/ResultT.md) but not with the non-generic [Result](../Result/Result.md). A `Task` and a `ValueTask` cannot be mixed in one query.
 
