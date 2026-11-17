@@ -276,18 +276,29 @@ public class IfErrorExtensionsUnitTests
     }
 
     [Fact]
-    public void IfError_TaskTrapOverload_HasPriorityOne()
+    public void IfError_TrapsConstrainedToTheTaskType_HavePriorityOne()
     {
-        // Arrange
-        var overload = typeof(IfErrorExtensions).GetMethods()
-            .Single(m => OverloadTrapHelper.IsTrap(m, "The error action returns a task")
-                         && m.GetParameters()[1].ParameterType == typeof(Func<Error, Task>));
-
         // Act
-        var priority = overload.GetCustomAttribute<OverloadResolutionPriorityAttribute>()?.Priority;
+        var traps = typeof(IfErrorExtensions).GetMethods()
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The error action returns a task") && OverloadTrapHelper.IsConstrainedToATask(m))
+            .ToList();
 
         // Assert
-        priority.ShouldBe(1);
+        traps.Count.ShouldBe(2);
+        traps.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 1);
+    }
+
+    [Fact]
+    public void IfError_TrapsForValueTaskOfT_HaveDefaultPriority()
+    {
+        // Act
+        var traps = typeof(IfErrorExtensions).GetMethods()
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The error action returns a task") && !OverloadTrapHelper.IsConstrainedToATask(m))
+            .ToList();
+
+        // Assert
+        traps.Count.ShouldBe(1);
+        traps.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 0);
     }
 
     [Fact]

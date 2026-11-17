@@ -66,10 +66,12 @@ public class QuerySelectingTaskBindingUnitTests
         snippet.ErrorIds.ShouldAllBe(id => id == "CS0619", string.Join(Environment.NewLine, snippet.Errors));
     }
 
+    // On a Task of a result, explicit type arguments keep the task; on a result, the traps are constrained to the task type (#251), so
+    // explicit type arguments reach them, and a task is kept in a result instead.
     [Theory]
-    [InlineData("Result<Task> r = ok.Select<int, Task>(x => SaveAsync());")]
+    [InlineData("Result<Task> r = ok.Select(x => Result.FromValue(SaveAsync()));")]
     [InlineData("Task<Result<Task<int>>> r = GetOkAsync().Select<int, Task<int>>(x => GetIntAsync());")]
-    public void Select_ExplicitTypeArguments_KeepsTheTask(string statements)
+    public void Select_TaskKeptOnPurpose_KeepsTheTask(string statements)
     {
         // Act
         var snippet = SnippetCompiler.Compile(statements, SnippetImports.Both, Members);

@@ -179,7 +179,7 @@ public class ThenElseBindingUnitTests
     [InlineData("Result r = Ok().Then(x => Result.Success());")]
     [InlineData("Result<int> r = R().Then(() => 5);")]
     [InlineData("Result r = R().Then(() => GetError());")]
-    [InlineData("Result<Task<int>> r = Ok().Then<int, Task<int>>(x => Task.FromResult(x));")]
+    [InlineData("Result<Task<int>> r = Ok().Then(x => Result.FromValue(Task.FromResult(x)));")]
     [InlineData("Result<int> r = Failed().Else(e => 0);")]
     [InlineData("Result<int> r = Failed().Else(e => e.WithMetadata(\"k\", 1));")]
     [InlineData("Result r = FailedR().Else(e => Audit(e));")]

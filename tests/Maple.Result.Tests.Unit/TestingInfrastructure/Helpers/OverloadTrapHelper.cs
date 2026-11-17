@@ -9,6 +9,7 @@
  */
 
 using System;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -32,6 +33,16 @@ internal static class OverloadTrapHelper
     {
         return parameterType == typeof(Action)
                || (parameterType.IsGenericType && parameterType.GetGenericTypeDefinition() == typeof(Action<>));
+    }
+
+    /// <summary>
+    ///     Whether a type parameter of the method is constrained to <see cref="Task" /> or to <see cref="IEquatable{T}" /> of
+    ///     <see cref="ValueTask" />: a trap that only a function that returns a task reaches, not a lambda that only throws (#251).
+    /// </summary>
+    internal static bool IsConstrainedToATask(MethodInfo method)
+    {
+        return method.GetGenericArguments()
+            .Any(a => a.GetGenericParameterConstraints().Any(c => c == typeof(Task) || c == typeof(IEquatable<ValueTask>)));
     }
 
     /// <summary>Whether the parameter is a delegate that returns a <see cref="Task" /> or a <see cref="Task{TResult}" />.</summary>
