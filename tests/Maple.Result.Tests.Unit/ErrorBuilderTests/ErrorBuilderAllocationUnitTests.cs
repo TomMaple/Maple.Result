@@ -21,7 +21,9 @@ public class ErrorBuilderAllocationUnitTests
     private static readonly object Value = "value";
     private static readonly ErrorDetail Detail = new("#/email", "The email is required.");
 
-    #region Build (issue #142)
+    #region Build
+
+    // See issue #142.
 
     [Fact]
     public void Build_PendingMetadata_AllocatesTheSameForOneAndTenEntries()

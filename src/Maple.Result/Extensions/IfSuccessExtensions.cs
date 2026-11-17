@@ -110,7 +110,7 @@ public static class IfSuccessExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(TaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result IfSuccess(this Result result, Func<Task> ifSuccessFunction)
+    public static Result IfSuccess(this Result result, Func<Task> ifSuccessAction)
     {
         throw new NotSupportedException(TaskNotAwaitedMessage);
     }
@@ -131,7 +131,7 @@ public static class IfSuccessExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(TaskNotAwaitedMessage, error: true)]
-    public static Result IfSuccess(this Result result, Func<ValueTask> ifSuccessFunction)
+    public static Result IfSuccess(this Result result, Func<ValueTask> ifSuccessAction)
     {
         throw new NotSupportedException(TaskNotAwaitedMessage);
     }
@@ -152,7 +152,7 @@ public static class IfSuccessExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(TaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result IfSuccess<T>(this Result<T> result, Func<T, Task> ifSuccessFunction)
+    public static Result IfSuccess<T>(this Result<T> result, Func<T, Task> ifSuccessAction)
     {
         throw new NotSupportedException(TaskNotAwaitedMessage);
     }
@@ -173,7 +173,7 @@ public static class IfSuccessExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(TaskNotAwaitedMessage, error: true)]
-    public static Result IfSuccess<T>(this Result<T> result, Func<T, ValueTask> ifSuccessFunction)
+    public static Result IfSuccess<T>(this Result<T> result, Func<T, ValueTask> ifSuccessAction)
     {
         throw new NotSupportedException(TaskNotAwaitedMessage);
     }
@@ -190,7 +190,7 @@ public static class IfSuccessExtensions
 
     #endregion
 
-    #region Not supported: functions returning a value (#197)
+    #region Not supported: functions returning a value
 
     // A function that returns a value is a transformation, not a side effect (#197): these overloads turn the call into a compile
     // error (CS0619) that names the method to use, instead of discarding the value. A statement lambda (e.g., x => { list.Add(x); })

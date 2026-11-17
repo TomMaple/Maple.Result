@@ -9,9 +9,7 @@
  */
 
 using Maple.Results.Extensions;
-using Maple.Results.Tests.Unit.TestingInfrastructure.Fakes;
 using Maple.Results.Tests.Unit.TestingInfrastructure.Helpers;
-using Moq;
 using System;
 using System.ComponentModel;
 using System.Linq;
@@ -22,1035 +20,151 @@ namespace Maple.Results.Tests.Unit.Extensions;
 
 public class MatchTaskAsyncExtensionsUnitTests
 {
-    #region MatchAsync (Result, Func<Task>, Func<Error, Task>)
+    private static readonly Error SourceError = Error.Failure(ErrorUri.None, "50f1c1fb-560e-4bb3-84da-034072df7ca2", "Error title 6");
+
+    #region MatchAsync (Task<Result>, Func<TOut>, Func<Error, TOut>)
 
     [Fact]
-    public async Task MatchAsync_NoResultWithActions_ThrowsException()
+    public async Task MatchAsync_SuccessfulResultTaskWithFunctions_ReturnsValueOfSuccessFunction()
     {
         // Arrange
-        const Result? Sut = null;
+        var errorCalled = false;
+        var sut = Task.FromResult(Result.Success());
 
         // Act
-        var exception =
-            await Record.ExceptionAsync(() => Sut!.MatchAsync(() => Task.CompletedTask, _ => Task.CompletedTask));
+        var result = await sut.MatchAsync(() => "success", _ =>
+        {
+            errorCalled = true;
+
+            return "error";
+        });
 
         // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
+        result.ShouldBe("success");
+        errorCalled.ShouldBeFalse();
     }
 
     [Fact]
-    public async Task MatchAsync_SuccessfulResultWithNoSuccessActionAndErrorAction_ThrowsException()
+    public async Task MatchAsync_FailedResultTaskWithFunctions_ReturnsValueOfErrorFunctionCalledWithTheError()
     {
         // Arrange
-        const Func<Task>? SuccessAction = null;
-
-        var sut = Result.Success();
+        var successCalled = false;
+        Error? passedError = null;
+        var sut = Task.FromResult(Result.FromError(SourceError));
 
         // Act
-        var exception = await Record.ExceptionAsync(() => sut.MatchAsync(SuccessAction!, _ => Task.CompletedTask));
+        var result = await sut.MatchAsync(() =>
+        {
+            successCalled = true;
+
+            return "success";
+        }, e =>
+        {
+            passedError = e;
+
+            return "error";
+        });
 
         // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
+        result.ShouldBe("error");
+        passedError.ShouldBeSameAs(SourceError);
+        successCalled.ShouldBeFalse();
     }
 
     [Fact]
-    public async Task MatchAsync_SuccessfulResultWithSuccessActionAndNoErrorAction_ThrowsException()
+    public async Task MatchAsync_ResultTaskReturningNull_ThrowsInvalidOperationException()
     {
         // Arrange
-        const Func<Error, Task>? ErrorAction = null;
-
-        var sut = Result.Success();
+        var sut = Task.FromResult<Result>(null!);
 
         // Act
-        var exception = await Record.ExceptionAsync(() => sut.MatchAsync(() => Task.CompletedTask, ErrorAction!));
+        var exception = await Record.ExceptionAsync(() => sut.MatchAsync(() => 1, _ => 0));
 
         // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
+        exception.ShouldBeOfType<InvalidOperationException>();
     }
 
     [Fact]
-    public async Task MatchAsync_SuccessfulResultWithSuccessAndErrorActions_CallsSuccessAction()
+    public async Task MatchAsync_ResultTaskWithFunctionReturningNullResult_ReturnsNull()
     {
         // Arrange
-        var successActionMock = new Mock<Func<Task>>();
-
-        var sut = Result.Success();
+        var sut = Task.FromResult(Result.Success());
 
         // Act
-        await sut.MatchAsync(successActionMock.Object, _ => Task.CompletedTask);
+        var result = await sut.MatchAsync(() => (Result)null!, e => e);
 
         // Assert
-        successActionMock.Verify(x => x.Invoke(), Times.Once);
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulResultWithSuccessAndErrorActions_DoesNotCallErrorAction()
-    {
-        // Arrange
-        var errorActionMock = new Mock<Func<Error, Task>>();
-
-        var sut = Result.Success();
-
-        // Act
-        await sut.MatchAsync(() => Task.CompletedTask, errorActionMock.Object);
-
-        // Assert
-        errorActionMock.Verify(x => x.Invoke(It.IsAny<Error>()), Times.Never);
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulResultWithSuccessAndErrorActions_ReturnsOriginalResult()
-    {
-        // Arrange
-        var sut = Result.Success();
-
-        // Act
-        var result = await sut.MatchAsync(() => Task.CompletedTask, _ => Task.CompletedTask);
-
-        // Assert
-        result.ShouldNotBeNull();
-        result.ShouldBe(sut);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorResultWithSuccessAndErrorActions_DoesNotCallSuccessAction()
-    {
-        // Arrange
-        var successActionMock = new Mock<Func<Task>>();
-
-        var sut = GetErrorResult();
-
-        // Act
-        await sut.MatchAsync(successActionMock.Object, _ => Task.CompletedTask);
-
-        // Assert
-        successActionMock.Verify(x => x.Invoke(), Times.Never);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorResultWithSuccessAndErrorActions_CallsErrorAction()
-    {
-        // Arrange
-        var errorActionMock = new Mock<Func<Error, Task>>();
-
-        var sut = GetErrorResult();
-
-        // Act
-        await sut.MatchAsync(() => Task.CompletedTask, errorActionMock.Object);
-
-        // Assert
-        errorActionMock.Verify(x => x.Invoke(sut.Error!), Times.Once);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorResultWithSuccessAndErrorActions_ReturnsOriginalResult()
-    {
-        // Arrange
-        var sut = GetErrorResult();
-
-        // Act
-        var result = await sut.MatchAsync(() => Task.CompletedTask, _ => Task.CompletedTask);
-
-        // Assert
-        result.ShouldBe(sut);
+        result.ShouldBeNull();
     }
 
     #endregion
 
-    #region MatchAsync (Result, Func<Task<Result>>, Func<Error, Task<Result>>)
+    #region MatchAsync (Task<Result>, Func<Task<TOut>>, Func<Error, Task<TOut>>)
 
     [Fact]
-    public async Task MatchAsync_SuccessfulResultWithNoSuccessResultFunctionAndErrorResultFunction_ThrowsException2()
+    public async Task MatchAsync_SuccessfulResultTaskWithTaskFunctions_ReturnsValueOfSuccessFunction()
     {
         // Arrange
-        const Func<Task<Result>>? SuccessFunction = null;
-
-        var sut = Result.Success();
+        var errorCalled = false;
+        var sut = Task.FromResult(Result.Success());
 
         // Act
-        var exception =
-            await Record.ExceptionAsync(() => sut.MatchAsync(SuccessFunction!, _ => Task.FromResult(Result.Success())));
+        var result = await sut.MatchAsync(async () =>
+        {
+            await Task.Yield();
+
+            return "success";
+        }, _ =>
+        {
+            errorCalled = true;
+
+            return Task.FromResult("error");
+        });
 
         // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
+        result.ShouldBe("success");
+        errorCalled.ShouldBeFalse();
     }
 
     [Fact]
-    public async Task MatchAsync_SuccessfulResultWithSuccessResultFunctionAndNoErrorResultFunction_ThrowsException()
+    public async Task MatchAsync_FailedResultTaskWithTaskFunctions_ReturnsValueOfErrorFunctionCalledWithTheError()
     {
         // Arrange
-        const Func<Error, Task<Result>>? ErrorFunction = null;
-
-        var sut = Result.Success();
+        var successCalled = false;
+        Error? passedError = null;
+        var sut = Task.FromResult(Result.FromError(SourceError));
 
         // Act
-        var exception =
-            await Record.ExceptionAsync(() => sut.MatchAsync(() => Task.FromResult(Result.Success()), ErrorFunction!));
+        var result = await sut.MatchAsync(() =>
+        {
+            successCalled = true;
+
+            return Task.FromResult("success");
+        }, async e =>
+        {
+            await Task.Yield();
+            passedError = e;
+
+            return "error";
+        });
 
         // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
+        result.ShouldBe("error");
+        passedError.ShouldBeSameAs(SourceError);
+        successCalled.ShouldBeFalse();
     }
 
     [Fact]
-    public async Task MatchAsync_SuccessfulResultWithSuccessAndErrorResultFunctions_CallsSuccessFunction()
+    public async Task MatchAsync_ResultTaskWithTaskFunctionReturningNullResult_ReturnsNull()
     {
         // Arrange
-        var successFunctionMock = new Mock<Func<Task<Result>>> { DefaultValueProvider = ResultDefaultValueProvider.Instance };
-
-        var sut = Result.Success();
+        var sut = Task.FromResult(Result.Success());
 
         // Act
-        await sut.MatchAsync(successFunctionMock.Object, _ => Task.FromResult(Result.Success()));
+        var result = await sut.MatchAsync(() => Task.FromResult<Result>(null!), e => Task.FromResult<Result>(e));
 
         // Assert
-        successFunctionMock.Verify(x => x.Invoke(), Times.Once);
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulResultWithSuccessAndErrorResultFunctions_DoesNotCallErrorFunction()
-    {
-        // Arrange
-        var errorFunctionMock = new Mock<Func<Error, Task<Result>>>();
-
-        var sut = Result.Success();
-
-        // Act
-        await sut.MatchAsync(() => Task.FromResult(Result.Success()), errorFunctionMock.Object);
-
-        // Assert
-        errorFunctionMock.Verify(x => x.Invoke(It.IsAny<Error>()), Times.Never);
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulResultWithSuccessAndErrorResultFunctions_ReturnsSuccessFunctionResult()
-    {
-        // Arrange
-        var successFunctionResult = Result.Success();
-
-        var sut = Result.Success();
-
-        // Act
-        var result = await sut.MatchAsync(
-            () => Task.FromResult(successFunctionResult),
-            _ => Task.FromResult(Result.Success()));
-
-        // Assert
-        result.ShouldNotBeNull();
-        result.ShouldBeSameAs(successFunctionResult);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorResultWithSuccessAndErrorResultFunctions_DoesNotCallSuccessFunction()
-    {
-        // Arrange
-        var successFunctionMock = new Mock<Func<Task<Result>>>();
-
-        var sut = GetErrorResult();
-
-        // Act
-        await sut.MatchAsync(successFunctionMock.Object, _ => Task.FromResult(Result.Success()));
-
-        // Assert
-        successFunctionMock.Verify(x => x.Invoke(), Times.Never);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorResultWithSuccessAndErrorResultFunctions_CallsErrorFunction()
-    {
-        // Arrange
-        var errorFunctionMock = new Mock<Func<Error, Task<Result>>> { DefaultValueProvider = ResultDefaultValueProvider.Instance };
-
-        var sut = GetErrorResult();
-
-        // Act
-        await sut.MatchAsync(() => Task.FromResult(Result.Success()), errorFunctionMock.Object);
-
-        // Assert
-        errorFunctionMock.Verify(x => x.Invoke(sut.Error!), Times.Once);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorResultWithSuccessAndErrorResultFunctions_ReturnsErrorFunctionResult()
-    {
-        // Arrange
-        var errorFunctionResult = Result.Success();
-
-        var sut = GetErrorResult();
-
-        // Act
-        var result = await sut.MatchAsync(
-            () => Task.FromResult(Result.Success()),
-            _ => Task.FromResult(errorFunctionResult));
-
-        // Assert
-        result.ShouldNotBeNull();
-        result.ShouldBeSameAs(errorFunctionResult);
-    }
-
-    #endregion
-
-    #region MatchAsync (Result, Func<Task<T>>, Func<Error, Task<T>>)
-
-    [Fact]
-    public async Task MatchAsync_NoResultWithGenericSuccessAndErrorFunctions_ThrowsException()
-    {
-        // Arrange
-        const Result? Sut = null;
-
-        // Act
-        var exception =
-            await Record.ExceptionAsync(() => Sut!.MatchAsync(() => Task.FromResult(1), _ => Task.FromResult(2)));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulResultWithNoGenericSuccessFunctionAndGenericErrorFunction_ThrowsException()
-    {
-        // Arrange
-        const Func<Task<int>>? Function = null;
-
-        var sut = Result.Success();
-
-        // Act
-        var exception = await Record.ExceptionAsync(() => sut.MatchAsync(Function!, _ => Task.FromResult(2)));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulResultWithGenericSuccessFunctionAndNoGenericErrorFunction_ThrowsException()
-    {
-        // Arrange
-        const Func<Error, Task<int>>? ErrorFunction = null;
-
-        var sut = Result.Success();
-
-        // Act
-        var exception = await Record.ExceptionAsync(() => sut.MatchAsync(() => Task.FromResult(1), ErrorFunction!));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulResultWithGenericSuccessAndErrorFunctions_CallsSuccessFunction()
-    {
-        // Arrange
-        var successFunctionMock = new Mock<Func<Task<int>>>();
-
-        var sut = Result.Success();
-
-        // Act
-        await sut.MatchAsync(successFunctionMock.Object, _ => Task.FromResult(2));
-
-        // Assert
-        successFunctionMock.Verify(x => x.Invoke(), Times.Once);
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulResultWithGenericSuccessAndErrorFunctions_DoesNotCallErrorFunction()
-    {
-        // Arrange
-        var errorFunctionMock = new Mock<Func<Error, Task<int>>>();
-
-        var sut = Result.Success();
-
-        // Act
-        await sut.MatchAsync(() => Task.FromResult(1), errorFunctionMock.Object);
-
-        // Assert
-        errorFunctionMock.Verify(x => x.Invoke(It.IsAny<Error>()), Times.Never);
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulResultWithGenericSuccessAndErrorFunctions_ReturnsSuccessFunctionValue()
-    {
-        // Arrange
-        const int ExpectedValue = 58;
-
-        var sut = Result.Success();
-
-        // Act
-        var result = await sut.MatchAsync(() => Task.FromResult(ExpectedValue), _ => Task.FromResult(2));
-
-        // Assert
-        result.ShouldBe(ExpectedValue);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorResultWithGenericSuccessAndErrorFunctions_DoesNotCallSuccessFunction()
-    {
-        // Arrange
-        var successFunctionMock = new Mock<Func<Task<int>>>();
-
-        var sut = GetErrorResult();
-
-        // Act
-        await sut.MatchAsync(successFunctionMock.Object, _ => Task.FromResult(2));
-
-        // Assert
-        successFunctionMock.Verify(x => x.Invoke(), Times.Never);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorResultWithGenericSuccessAndErrorFunctions_CallsErrorFunction()
-    {
-        // Arrange
-        var errorFunctionMock = new Mock<Func<Error, Task<int>>>();
-
-        var sut = GetErrorResult();
-
-        // Act
-        await sut.MatchAsync(() => Task.FromResult(1), errorFunctionMock.Object);
-
-        // Assert
-        errorFunctionMock.Verify(x => x.Invoke(sut.Error!), Times.Once);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorResultWithGenericSuccessAndErrorFunctions_ReturnsErrorFunctionValue()
-    {
-        // Arrange
-        const int ExpectedValue = 73;
-
-        var sut = GetErrorResult();
-
-        // Act
-        var result = await sut.MatchAsync(() => Task.FromResult(1), _ => Task.FromResult(ExpectedValue));
-
-        // Assert
-        result.ShouldBe(ExpectedValue);
-    }
-
-    #endregion
-
-    #region MatchAsync (Result, Func<Task<Result<T>>>, Func<Error, Task<Result<T>>>)
-
-    [Fact]
-    public async Task MatchAsync_NoResultWithGenericResultSuccessAndErrorFunctions_ThrowsException()
-    {
-        // Arrange
-        const Result? Sut = null;
-
-        // Act
-        var exception = await Record.ExceptionAsync(
-            () => Sut!.MatchAsync(() => Task.FromResult(Result.FromValue(1)), _ => Task.FromResult(Result.FromValue(2))));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulResultWithNoGenericResultSuccessFunctionAndGenericResultErrorFunction_ThrowsException3()
-    {
-        // Arrange
-        const Func<Task<Result<int>>>? Function = null;
-
-        var sut = Result.Success();
-
-        // Act
-        var exception =
-            await Record.ExceptionAsync(() => sut.MatchAsync(Function!, _ => Task.FromResult(Result.FromValue(2))));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulResultWithGenericResultSuccessFunctionAndNoGenericResultErrorFunction_ThrowsException()
-    {
-        // Arrange
-        const Func<Error, Task<Result<int>>>? ErrorFunction = null;
-
-        var sut = Result.Success();
-
-        // Act
-        var exception = await Record.ExceptionAsync(
-            () => sut.MatchAsync(() => Task.FromResult(Result.FromValue(1)), ErrorFunction!));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulResultWithGenericResultSuccessAndErrorFunctions_CallsSuccessFunction()
-    {
-        // Arrange
-        var successFunctionMock = new Mock<Func<Task<Result<int>>>> { DefaultValueProvider = ResultDefaultValueProvider.Instance };
-
-        var sut = Result.Success();
-
-        // Act
-        await sut.MatchAsync(successFunctionMock.Object, _ => Task.FromResult(Result.FromValue(2)));
-
-        // Assert
-        successFunctionMock.Verify(x => x.Invoke(), Times.Once);
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulResultWithGenericResultSuccessAndErrorFunctions_DoesNotCallErrorFunction()
-    {
-        // Arrange
-        var errorFunctionMock = new Mock<Func<Error, Task<Result<int>>>>();
-
-        var sut = Result.Success();
-
-        // Act
-        await sut.MatchAsync(() => Task.FromResult(Result.FromValue(1)), errorFunctionMock.Object);
-
-        // Assert
-        errorFunctionMock.Verify(x => x.Invoke(It.IsAny<Error>()), Times.Never);
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulResultWithGenericResultSuccessAndErrorFunctions_ReturnsSuccessFunctionResult()
-    {
-        // Arrange
-        var expectedResult = Result.FromValue(9);
-
-        var sut = Result.Success();
-
-        // Act
-        var result = await sut.MatchAsync(
-            () => Task.FromResult(expectedResult),
-            _ => Task.FromResult(Result.FromValue(2)));
-
-        // Assert
-        result.ShouldNotBeNull();
-        result.IsSuccess.ShouldBeTrue();
-        result.ShouldBeSameAs(expectedResult);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorResultWithGenericResultSuccessAndErrorFunctions_DoesNotCallSuccessFunction()
-    {
-        // Arrange
-        var successFunctionMock = new Mock<Func<Task<Result<int>>>>();
-
-        var sut = GetErrorResult();
-
-        // Act
-        await sut.MatchAsync(successFunctionMock.Object, _ => Task.FromResult(Result.FromValue(2)));
-
-        // Assert
-        successFunctionMock.Verify(x => x.Invoke(), Times.Never);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorResultWithGenericResultSuccessAndErrorFunctions_CallsErrorFunction()
-    {
-        // Arrange
-        var errorFunctionMock = new Mock<Func<Error, Task<Result<int>>>> { DefaultValueProvider = ResultDefaultValueProvider.Instance };
-
-        var sut = GetErrorResult();
-
-        // Act
-        await sut.MatchAsync(() => Task.FromResult(Result.FromValue(1)), errorFunctionMock.Object);
-
-        // Assert
-        errorFunctionMock.Verify(x => x.Invoke(sut.Error!), Times.Once);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorResultWithGenericResultSuccessAndErrorFunctions_ReturnsErrorFunctionValueResult()
-    {
-        // Arrange
-        var expectedResult = Result.FromValue(15);
-
-        var sut = GetErrorResult();
-
-        // Act
-        var result = await sut.MatchAsync(
-            () => Task.FromResult(Result.FromValue(1)),
-            _ => Task.FromResult(expectedResult));
-
-        // Assert
-        result.ShouldNotBeNull();
-        result.ShouldBeSameAs(expectedResult);
-    }
-
-    #endregion
-
-    #region MatchAsync (Result<T>, Func<T, Task>, Func<Error, Task>)
-
-    [Fact]
-    public async Task MatchAsync_NoGenericResultWithSuccessAndErrorActions_ThrowsException()
-    {
-        // Arrange
-        const Result<int>? Sut = null;
-
-        // Act
-        var exception =
-            await Record.ExceptionAsync(() => Sut!.MatchAsync(_ => Task.CompletedTask, _ => Task.CompletedTask));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulGenericResultWithNoSuccessActionAndErrorAction_ThrowsException()
-    {
-        // Arrange
-        const Func<int, Task>? SuccessAction = null;
-
-        Result<int> sut = 1;
-
-        // Act
-        var exception = await Record.ExceptionAsync(() => sut.MatchAsync(SuccessAction!, _ => Task.CompletedTask));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulGenericResultWithSuccessActionAndNoErrorAction_ThrowsException()
-    {
-        // Arrange
-        const Func<Error, Task>? ErrorAction = null;
-
-        Result<int> sut = 1;
-
-        // Act
-        var exception = await Record.ExceptionAsync(() => sut.MatchAsync(_ => Task.CompletedTask, ErrorAction!));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulGenericResultWithSuccessAndErrorActions_CallsSuccessAction()
-    {
-        // Arrange
-        var successActionMock = new Mock<Func<int, Task>>();
-
-        const int Value = 25;
-        Result<int> sut = Value;
-
-        // Act
-        await sut.MatchAsync(successActionMock.Object, _ => Task.CompletedTask);
-
-        // Assert
-        successActionMock.Verify(x => x.Invoke(Value), Times.Once);
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulGenericResultWithSuccessAndErrorActions_DoesNotCallErrorAction()
-    {
-        // Arrange
-        var errorActionMock = new Mock<Func<Error, Task>>();
-
-        const int Value = 25;
-        Result<int> sut = Value;
-
-        // Act
-        await sut.MatchAsync(_ => Task.CompletedTask, errorActionMock.Object);
-
-        // Assert
-        errorActionMock.Verify(x => x.Invoke(It.IsAny<Error>()), Times.Never);
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulGenericResultWithSuccessAndErrorActions_ReturnsOriginalValueResult()
-    {
-        // Arrange
-        const int Value = 25;
-        Result<int> sut = Value;
-
-        // Act
-        var result = await sut.MatchAsync(_ => Task.CompletedTask, _ => Task.CompletedTask);
-
-        // Assert
-        result.ShouldNotBeNull();
-        result.IsSuccess.ShouldBeTrue();
-        result.ShouldBeSameAs(sut);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorGenericResultWithSuccessAndErrorActions_DoesNotCallSuccessAction()
-    {
-        // Arrange
-        var successActionMock = new Mock<Func<int, Task>>();
-
-        var sut = GetErrorResult<int>();
-
-        // Act
-        await sut.MatchAsync(successActionMock.Object, _ => Task.CompletedTask);
-
-        // Assert
-        successActionMock.Verify(x => x.Invoke(It.IsAny<int>()), Times.Never);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorGenericResultWithSuccessAndErrorActions_CallsErrorAction()
-    {
-        // Arrange
-        var errorActionMock = new Mock<Func<Error, Task>>();
-
-        var sut = GetErrorResult<int>();
-
-        // Act
-        await sut.MatchAsync(_ => Task.CompletedTask, errorActionMock.Object);
-
-        // Assert
-        errorActionMock.Verify(x => x.Invoke(sut.Error!), Times.Once);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorGenericResultWithSuccessAndErrorActions_ReturnsOriginalValueResultWithError()
-    {
-        // Arrange
-        var sut = GetErrorResult<int>();
-
-        // Act
-        var result = await sut.MatchAsync(_ => Task.CompletedTask, _ => Task.CompletedTask);
-
-        // Assert
-        result.ShouldNotBeNull();
-        result.IsSuccess.ShouldBeFalse();
-        result.ShouldBeSameAs(sut);
-    }
-
-    #endregion
-
-    #region MatchAsync (Result<T>, Func<T, Task<TNext>>, Func<Error, Task<TNext>>)
-
-    [Fact]
-    public async Task MatchAsync_NoGenericResultWithGenericSuccessAndErrorFunctions_ThrowsException()
-    {
-        // Arrange
-        const Result<int>? Sut = null;
-
-        // Act
-        var exception = await Record.ExceptionAsync(
-            () => Sut!.MatchAsync(x => Task.FromResult(x.ToString()), _ => Task.FromResult("error")));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulGenericResultWithNoGenericSuccessFunctionAndGenericErrorFunction_ThrowsException()
-    {
-        // Arrange
-        const Func<int, Task<string>>? SuccessFunction = null;
-
-        Result<int> sut = 1;
-
-        // Act
-        var exception =
-            await Record.ExceptionAsync(() => sut.MatchAsync(SuccessFunction!, _ => Task.FromResult("error")));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulGenericResultWithGenericSuccessFunctionAndNoGenericErrorFunction_ThrowsException()
-    {
-        // Arrange
-        const Func<Error, Task<string>>? ErrorFunction = null;
-
-        Result<int> sut = 1;
-
-        // Act
-        var exception =
-            await Record.ExceptionAsync(() => sut.MatchAsync(x => Task.FromResult(x.ToString()), ErrorFunction!));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulGenericResultWithGenericSuccessAndErrorFunctions_CallsSuccessFunction()
-    {
-        // Arrange
-        const int Value = 5;
-        var successFunctionMock = new Mock<Func<int, Task<string>>>();
-        successFunctionMock
-            .Setup(x => x.Invoke(It.IsAny<int>()))
-            .ReturnsAsync("success value");
-
-        Result<int> sut = Value;
-
-        // Act
-        await sut.MatchAsync(successFunctionMock.Object, _ => Task.FromResult("error"));
-
-        // Assert
-        successFunctionMock.Verify(x => x.Invoke(Value), Times.Once);
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulGenericResultWithGenericSuccessAndErrorFunctions_DoesNotCallErrorFunction()
-    {
-        // Arrange
-        var errorFunctionMock = new Mock<Func<Error, Task<string>>>();
-
-        Result<int> sut = 5;
-
-        // Act
-        await sut.MatchAsync(x => Task.FromResult(x.ToString()), errorFunctionMock.Object);
-
-        // Assert
-        errorFunctionMock.Verify(x => x.Invoke(It.IsAny<Error>()), Times.Never);
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulGenericResultWithGenericSuccessAndErrorFunctions_ReturnsSuccessFunctionValue()
-    {
-        // Arrange
-        const int Value = 5;
-        const string ExpectedValue = "6";
-
-        Result<int> sut = Value;
-
-        // Act
-        var result = await sut.MatchAsync(x => Task.FromResult((x + 1).ToString()), _ => Task.FromResult("error"));
-
-        // Assert
-        result.ShouldBe(ExpectedValue);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorGenericResultWithWithGenericSuccessAndErrorFunctions_DoesNotCallSuccessFunction()
-    {
-        // Arrange
-        var successFunctionMock = new Mock<Func<int, Task<string>>>();
-
-        var sut = GetErrorResult<int>();
-
-        // Act
-        await sut.MatchAsync(successFunctionMock.Object, _ => Task.FromResult("error"));
-
-        // Assert
-        successFunctionMock.Verify(x => x.Invoke(It.IsAny<int>()), Times.Never);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorGenericResultWithGenericSuccessAndErrorFunctions_CallsErrorFunction()
-    {
-        // Arrange
-        var errorFunctionMock = new Mock<Func<Error, Task<string>>>();
-        errorFunctionMock
-            .Setup(x => x.Invoke(It.IsAny<Error>()))
-            .ReturnsAsync("error value");
-
-        var sut = GetErrorResult<int>();
-
-        // Act
-        await sut.MatchAsync(x => Task.FromResult(x.ToString()), errorFunctionMock.Object);
-
-        // Assert
-        errorFunctionMock.Verify(x => x.Invoke(sut.Error!), Times.Once);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorGenericResultWithGenericSuccessAndErrorFunctions_ReturnsErrorFunctionValue()
-    {
-        // Arrange
-        const string ExpectedValue = "Error function value";
-
-        var sut = GetErrorResult<int>();
-
-        // Act
-        var result = await sut.MatchAsync(x => Task.FromResult(x.ToString()), _ => Task.FromResult(ExpectedValue));
-
-        // Assert
-        result.ShouldBe(ExpectedValue);
-    }
-
-    #endregion
-
-    #region MatchAsync (Result<T>, Func<T, Task<Result<TNext>>>, Func<Error, Task<Result<TNext>>>)
-
-    [Fact]
-    public async Task MatchAsync_NoGenericResultWithGenericResultSuccessAndErrorFunctions_ThrowsException()
-    {
-        // Arrange
-        const Result<int>? Sut = null;
-
-        // Act
-        var exception = await Record.ExceptionAsync(
-            () => Sut!.MatchAsync(
-                x => Task.FromResult(Result.FromValue(x.ToString())),
-                _ => Task.FromResult(Result.FromValue("error value"))));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulGenericResultWithNoGenericResultSuccessFunctionAndGenericResultErrorFunction_ThrowsException()
-    {
-        // Arrange
-        const Func<int, Task<Result<string>>>? SuccessFunction = null;
-
-        Result<int> sut = 1;
-
-        // Act
-        var exception = await Record.ExceptionAsync(
-            () => sut.MatchAsync(SuccessFunction!, _ => Task.FromResult(Result.FromValue("error value"))));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulGenericResultWithGenericResultSuccessFunctionAndNoGenericResultErrorFunction_ThrowsException()
-    {
-        // Arrange
-        const Func<Error, Task<Result<string>>>? ErrorFunction = null;
-
-        Result<int> sut = 1;
-
-        // Act
-        var exception = await Record.ExceptionAsync(
-            () => sut.MatchAsync(x => Task.FromResult(Result.FromValue(x.ToString())), ErrorFunction!));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulGenericResultWithGenericResultSuccessAndErrorFunctions_CallsSuccessFunction()
-    {
-        // Arrange
-        const int Value = 90;
-        var successFunctionMock = new Mock<Func<int, Task<Result<string>>>> { DefaultValueProvider = ResultDefaultValueProvider.Instance };
-
-        Result<int> sut = Value;
-
-        // Act
-        await sut.MatchAsync(successFunctionMock.Object, _ => Task.FromResult(Result.FromValue("error value")));
-
-        // Assert
-        successFunctionMock.Verify(x => x.Invoke(Value), Times.Once);
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulGenericResultWithGenericResultSuccessAndErrorFunctions_DoesNotCallErrorFunction()
-    {
-        // Arrange
-        var errorFunctionMock = new Mock<Func<Error, Task<Result<string>>>>();
-
-        Result<int> sut = 90;
-
-        // Act
-        await sut.MatchAsync(x => Task.FromResult(Result.FromValue(x.ToString())), errorFunctionMock.Object);
-
-        // Assert
-        errorFunctionMock.Verify(x => x.Invoke(It.IsAny<Error>()), Times.Never);
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulGenericResultWithGenericResultSuccessAndErrorFunctions_ReturnsSuccessFunctionValueResult()
-    {
-        // Arrange
-        const string ExpectedValue = "-90-";
-        const int Value = 90;
-
-        Result<int> sut = Value;
-
-        // Act
-        var result = await sut.MatchAsync(
-            x => Task.FromResult(Result.FromValue($"-{x}-")),
-            _ => Task.FromResult(Result.FromValue("error value")));
-
-        // Assert
-        result.ShouldNotBeNull();
-        result.IsSuccess.ShouldBeTrue();
-        result.Value.ShouldBe(ExpectedValue);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorGenericResultWithGenericResultSuccessAndErrorFunctions_DoesNotCallSuccessFunction()
-    {
-        // Arrange
-        var successFunctionMock = new Mock<Func<int, Task<Result<string>>>>();
-
-        var sut = GetErrorResult<int>();
-
-        // Act
-        await sut.MatchAsync(successFunctionMock.Object, _ => Task.FromResult(Result.FromValue("error value")));
-
-        // Assert
-        successFunctionMock.Verify(x => x.Invoke(It.IsAny<int>()), Times.Never);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorGenericResultWithGenericResultSuccessAndErrorFunctions_CallsErrorFunction()
-    {
-        // Arrange
-        var errorFunctionMock = new Mock<Func<Error, Task<Result<string>>>> { DefaultValueProvider = ResultDefaultValueProvider.Instance };
-
-        var sut = GetErrorResult<int>();
-
-        // Act
-        await sut.MatchAsync(x => Task.FromResult(Result.FromValue(x.ToString())), errorFunctionMock.Object);
-
-        // Assert
-        errorFunctionMock.Verify(x => x.Invoke(sut.Error!), Times.Once);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorGenericResultWithGenericResultSuccessAndErrorFunctions_ReturnsErrorFunctionValueResult()
-    {
-        // Arrange
-        const string ExpectedValue = "error value";
-
-        var sut = GetErrorResult<int>();
-
-        // Act
-        var result = await sut.MatchAsync(
-            x => Task.FromResult(Result.FromValue(x.ToString())),
-            _ => Task.FromResult(Result.FromValue(ExpectedValue)));
-
-        // Assert
-        result.ShouldNotBeNull();
-        result.IsSuccess.ShouldBeTrue();
-        result.Value.ShouldBe(ExpectedValue);
+        result.ShouldBeNull();
     }
 
     #endregion
@@ -1058,579 +172,201 @@ public class MatchTaskAsyncExtensionsUnitTests
     #region MatchAsync (Task<Result>, Func<Task>, Func<Error, Task>)
 
     [Fact]
-    public async Task MatchAsync_NoResultTaskWithActions_ThrowsException()
+    public async Task MatchAsync_SuccessfulResultTaskWithTaskActions_AwaitsOnlySuccessFunction()
     {
         // Arrange
-        const Task<Result>? Sut = null;
-
-        // Act
-        var exception =
-            await Record.ExceptionAsync(() => Sut!.MatchAsync(() => Task.CompletedTask, _ => Task.CompletedTask));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulResultTaskWithNoSuccessActionAndErrorAction_ThrowsException()
-    {
-        // Arrange
-        const Func<Task>? SuccessAction = null;
-
+        var successCompleted = false;
+        var errorCalled = false;
         var sut = Task.FromResult(Result.Success());
 
         // Act
-        var exception = await Record.ExceptionAsync(() => sut.MatchAsync(SuccessAction!, _ => Task.CompletedTask));
+        await sut.MatchAsync(async () =>
+        {
+            await Task.Yield();
+            successCompleted = true;
+        }, _ =>
+        {
+            errorCalled = true;
+
+            return Task.CompletedTask;
+        });
 
         // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
+        successCompleted.ShouldBeTrue();
+        errorCalled.ShouldBeFalse();
     }
 
     [Fact]
-    public async Task MatchAsync_SuccessfulResultTaskWithSuccessActionAndNoErrorAction_ThrowsException()
+    public async Task MatchAsync_FailedResultTaskWithTaskActions_AwaitsOnlyErrorFunctionWithTheError()
     {
         // Arrange
-        const Func<Error, Task>? ErrorAction = null;
-
-        var sut = Task.FromResult(Result.Success());
-
-        // Act
-        var exception = await Record.ExceptionAsync(() => sut.MatchAsync(() => Task.CompletedTask, ErrorAction!));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulResultTaskWithSuccessAndErrorActions_CallsSuccessAction()
-    {
-        // Arrange
-        var successActionMock = new Mock<Func<Task>>();
-
-        var sut = Task.FromResult(Result.Success());
+        var successCalled = false;
+        Error? passedError = null;
+        var sut = Task.FromResult(Result.FromError(SourceError));
 
         // Act
-        await sut.MatchAsync(successActionMock.Object, _ => Task.CompletedTask);
+        await sut.MatchAsync(() =>
+        {
+            successCalled = true;
+
+            return Task.CompletedTask;
+        }, async e =>
+        {
+            await Task.Yield();
+            passedError = e;
+        });
 
         // Assert
-        successActionMock.Verify(x => x.Invoke(), Times.Once);
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulResultTaskWithSuccessAndErrorActions_DoesNotCallErrorAction()
-    {
-        // Arrange
-        var errorActionMock = new Mock<Func<Error, Task>>();
-
-        var sut = Task.FromResult(Result.Success());
-
-        // Act
-        await sut.MatchAsync(() => Task.CompletedTask, errorActionMock.Object);
-
-        // Assert
-        errorActionMock.Verify(x => x.Invoke(It.IsAny<Error>()), Times.Never);
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulResultTaskWithSuccessAndErrorActions_ReturnsOriginalResult()
-    {
-        // Arrange
-        var initialResult = Result.Success();
-        var sut = Task.FromResult(initialResult);
-
-        // Act
-        var result = await sut.MatchAsync(() => Task.CompletedTask, _ => Task.CompletedTask);
-
-        // Assert
-        result.ShouldNotBeNull();
-        result.ShouldBe(initialResult);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorResultTaskWithSuccessAndErrorActions_DoesNotCallSuccessAction()
-    {
-        // Arrange
-        var successActionMock = new Mock<Func<Task>>();
-
-        var sut = Task.FromResult(GetErrorResult());
-
-        // Act
-        await sut.MatchAsync(successActionMock.Object, _ => Task.CompletedTask);
-
-        // Assert
-        successActionMock.Verify(x => x.Invoke(), Times.Never);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorResultTaskWithSuccessAndErrorActions_CallsErrorAction()
-    {
-        // Arrange
-        var errorActionMock = new Mock<Func<Error, Task>>();
-
-        var errorResult = GetErrorResult();
-        var sut = Task.FromResult(errorResult);
-
-        // Act
-        await sut.MatchAsync(() => Task.CompletedTask, errorActionMock.Object);
-
-        // Assert
-        errorActionMock.Verify(x => x.Invoke(errorResult.Error!), Times.Once);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorResultTaskWithSuccessAndErrorActions_ReturnsOriginalResult()
-    {
-        // Arrange
-        var errorResult = GetErrorResult();
-        var sut = Task.FromResult(errorResult);
-
-        // Act
-        var result = await sut.MatchAsync(() => Task.CompletedTask, _ => Task.CompletedTask);
-
-        // Assert
-        result.ShouldBe(errorResult);
+        passedError.ShouldBeSameAs(SourceError);
+        successCalled.ShouldBeFalse();
     }
 
     #endregion
 
-    #region MatchAsync (Task<Result>, Func<Task<Result>>, Func<Error, Task<Result>>)
+    #region MatchAsync (Task<Result<T>>, Func<T, TOut>, Func<Error, TOut>)
 
     [Fact]
-    public async Task MatchAsync_SuccessfulResultTaskWithNoSuccessResultFunctionAndErrorResultFunction_ThrowsException2()
+    public async Task MatchAsync_SuccessfulResultOfTTaskWithFunctions_ReturnsValueOfSuccessFunctionCalledWithTheValue()
     {
         // Arrange
-        const Func<Task<Result>>? SuccessFunction = null;
-
-        var sut = Task.FromResult(Result.Success());
+        var errorCalled = false;
+        var sut = Task.FromResult(Result.FromValue(5));
 
         // Act
-        var exception =
-            await Record.ExceptionAsync(() => sut.MatchAsync(SuccessFunction!, _ => Task.FromResult(Result.Success())));
+        var result = await sut.MatchAsync(x => $"value {x}", _ =>
+        {
+            errorCalled = true;
+
+            return "error";
+        });
 
         // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
+        result.ShouldBe("value 5");
+        errorCalled.ShouldBeFalse();
     }
 
     [Fact]
-    public async Task MatchAsync_SuccessfulResultTaskWithSuccessResultFunctionAndNoErrorResultFunction_ThrowsException()
+    public async Task MatchAsync_FailedResultOfTTaskWithFunctions_ReturnsValueOfErrorFunctionCalledWithTheError()
     {
         // Arrange
-        const Func<Error, Task<Result>>? ErrorFunction = null;
-
-        var sut = Task.FromResult(Result.Success());
+        var successCalled = false;
+        Error? passedError = null;
+        var sut = Task.FromResult(Result<int>.FromError(SourceError));
 
         // Act
-        var exception =
-            await Record.ExceptionAsync(() => sut.MatchAsync(() => Task.FromResult(Result.Success()), ErrorFunction!));
+        var result = await sut.MatchAsync(x =>
+        {
+            successCalled = true;
+
+            return $"value {x}";
+        }, e =>
+        {
+            passedError = e;
+
+            return "error";
+        });
 
         // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
+        result.ShouldBe("error");
+        passedError.ShouldBeSameAs(SourceError);
+        successCalled.ShouldBeFalse();
     }
 
     [Fact]
-    public async Task MatchAsync_SuccessfulResultTaskWithSuccessAndErrorResultFunctions_CallsSuccessFunction()
+    public async Task MatchAsync_FailedResultOfTTaskWithErrorFunctionReturningTheError_ReturnsFailedResult()
     {
         // Arrange
-        var successFunctionMock = new Mock<Func<Task<Result>>> { DefaultValueProvider = ResultDefaultValueProvider.Instance };
-
-        var sut = Task.FromResult(Result.Success());
+        var sut = Task.FromResult(Result<int>.FromError(SourceError));
 
         // Act
-        await sut.MatchAsync(successFunctionMock.Object, _ => Task.FromResult(Result.Success()));
+        var result = await sut.MatchAsync(x => Result.FromValue(x.ToString()), e => e);
 
         // Assert
-        successFunctionMock.Verify(x => x.Invoke(), Times.Once);
+        result.Error.ShouldBeSameAs(SourceError);
     }
 
     [Fact]
-    public async Task MatchAsync_SuccessfulResultTaskWithSuccessAndErrorResultFunctions_DoesNotCallErrorFunction()
+    public async Task MatchAsync_ResultOfTTaskReturningNull_ThrowsInvalidOperationException()
     {
         // Arrange
-        var errorFunctionMock = new Mock<Func<Error, Task<Result>>>();
-
-        var sut = Task.FromResult(Result.Success());
+        var sut = Task.FromResult<Result<int>>(null!);
 
         // Act
-        await sut.MatchAsync(() => Task.FromResult(Result.Success()), errorFunctionMock.Object);
+        var exception = await Record.ExceptionAsync(() => sut.MatchAsync(x => x, _ => 0));
 
         // Assert
-        errorFunctionMock.Verify(x => x.Invoke(It.IsAny<Error>()), Times.Never);
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulResultTaskWithSuccessAndErrorResultFunctions_ReturnsSuccessFunctionResult()
-    {
-        // Arrange
-        var successFunctionResult = Result.Success();
-
-        var sut = Task.FromResult(Result.Success());
-
-        // Act
-        var result = await sut.MatchAsync(
-            () => Task.FromResult(successFunctionResult),
-            _ => Task.FromResult(Result.Success()));
-
-        // Assert
-        result.ShouldNotBeNull();
-        result.ShouldBeSameAs(successFunctionResult);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorResultTaskWithSuccessAndErrorResultFunctions_DoesNotCallSuccessFunction()
-    {
-        // Arrange
-        var successFunctionMock = new Mock<Func<Task<Result>>>();
-
-        var sut = Task.FromResult(GetErrorResult());
-
-        // Act
-        await sut.MatchAsync(successFunctionMock.Object, _ => Task.FromResult(Result.Success()));
-
-        // Assert
-        successFunctionMock.Verify(x => x.Invoke(), Times.Never);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorResultTaskWithSuccessAndErrorResultFunctions_CallsErrorFunction()
-    {
-        // Arrange
-        var errorFunctionMock = new Mock<Func<Error, Task<Result>>> { DefaultValueProvider = ResultDefaultValueProvider.Instance };
-
-        var errorResult = GetErrorResult();
-        var sut = Task.FromResult(errorResult);
-
-        // Act
-        await sut.MatchAsync(() => Task.FromResult(Result.Success()), errorFunctionMock.Object);
-
-        // Assert
-        errorFunctionMock.Verify(x => x.Invoke(errorResult.Error!), Times.Once);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorResultTaskWithSuccessAndErrorResultFunctions_ReturnsErrorFunctionResult()
-    {
-        // Arrange
-        var errorFunctionResult = Result.Success();
-
-        var sut = Task.FromResult(GetErrorResult());
-
-        // Act
-        var result = await sut.MatchAsync(
-            () => Task.FromResult(Result.Success()),
-            _ => Task.FromResult(errorFunctionResult));
-
-        // Assert
-        result.ShouldNotBeNull();
-        result.ShouldBeSameAs(errorFunctionResult);
+        exception.ShouldBeOfType<InvalidOperationException>();
     }
 
     #endregion
 
-    #region MatchAsync (Task<Result>, Func<Task<T>>, Func<Error, Task<T>>)
+    #region MatchAsync (Task<Result<T>>, Func<T, Task<TOut>>, Func<Error, Task<TOut>>)
 
     [Fact]
-    public async Task MatchAsync_NoResultTaskWithGenericSuccessAndErrorFunctions_ThrowsException()
+    public async Task MatchAsync_SuccessfulResultOfTTaskWithTaskFunctions_ReturnsValueOfSuccessFunctionCalledWithTheValue()
     {
         // Arrange
-        const Task<Result>? Sut = null;
+        var errorCalled = false;
+        var sut = Task.FromResult(Result.FromValue(5));
 
         // Act
-        var exception =
-            await Record.ExceptionAsync(() => Sut!.MatchAsync(() => Task.FromResult(1), _ => Task.FromResult(2)));
+        var result = await sut.MatchAsync(async x =>
+        {
+            await Task.Yield();
+
+            return $"value {x}";
+        }, _ =>
+        {
+            errorCalled = true;
+
+            return Task.FromResult("error");
+        });
 
         // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
+        result.ShouldBe("value 5");
+        errorCalled.ShouldBeFalse();
     }
 
     [Fact]
-    public async Task MatchAsync_SuccessfulResultTaskWithNoGenericSuccessFunctionAndGenericErrorFunction_ThrowsException()
+    public async Task MatchAsync_FailedResultOfTTaskWithTaskFunctions_ReturnsValueOfErrorFunctionCalledWithTheError()
     {
         // Arrange
-        const Func<Task<int>>? Function = null;
-
-        var sut = Task.FromResult(Result.Success());
+        var successCalled = false;
+        Error? passedError = null;
+        var sut = Task.FromResult(Result<int>.FromError(SourceError));
 
         // Act
-        var exception = await Record.ExceptionAsync(() => sut.MatchAsync(Function!, _ => Task.FromResult(2)));
+        var result = await sut.MatchAsync(x =>
+        {
+            successCalled = true;
+
+            return Task.FromResult($"value {x}");
+        }, async e =>
+        {
+            await Task.Yield();
+            passedError = e;
+
+            return "error";
+        });
 
         // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
+        result.ShouldBe("error");
+        passedError.ShouldBeSameAs(SourceError);
+        successCalled.ShouldBeFalse();
     }
 
     [Fact]
-    public async Task MatchAsync_SuccessfulResultTaskWithGenericSuccessFunctionAndNoGenericErrorFunction_ThrowsException()
+    public async Task MatchAsync_ResultOfTTaskWithTaskFunctionThrowing_PropagatesTheException()
     {
         // Arrange
-        const Func<Error, Task<int>>? ErrorFunction = null;
-
-        var sut = Task.FromResult(Result.Success());
-
-        // Act
-        var exception = await Record.ExceptionAsync(() => sut.MatchAsync(() => Task.FromResult(1), ErrorFunction!));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulResultTaskWithGenericSuccessAndErrorFunctions_CallsSuccessFunction()
-    {
-        // Arrange
-        var successFunctionMock = new Mock<Func<Task<int>>>();
-
-        var sut = Task.FromResult(Result.Success());
+        var thrown = new InvalidOperationException("success function");
+        var sut = Task.FromResult(Result.FromValue(5));
 
         // Act
-        await sut.MatchAsync(successFunctionMock.Object, _ => Task.FromResult(2));
+        var exception = await Record.ExceptionAsync(() => sut.MatchAsync<int, int>(_ => throw thrown, _ => Task.FromResult(0)));
 
         // Assert
-        successFunctionMock.Verify(x => x.Invoke(), Times.Once);
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulResultTaskWithGenericSuccessAndErrorFunctions_DoesNotCallErrorFunction()
-    {
-        // Arrange
-        var errorFunctionMock = new Mock<Func<Error, Task<int>>>();
-
-        var sut = Task.FromResult(Result.Success());
-
-        // Act
-        await sut.MatchAsync(() => Task.FromResult(1), errorFunctionMock.Object);
-
-        // Assert
-        errorFunctionMock.Verify(x => x.Invoke(It.IsAny<Error>()), Times.Never);
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulResultTaskWithGenericSuccessAndErrorFunctions_ReturnsSuccessFunctionValue()
-    {
-        // Arrange
-        const int ExpectedValue = 58;
-
-        var sut = Task.FromResult(Result.Success());
-
-        // Act
-        var result = await sut.MatchAsync(() => Task.FromResult(ExpectedValue), _ => Task.FromResult(2));
-
-        // Assert
-        result.ShouldBe(ExpectedValue);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorResultTaskWithGenericSuccessAndErrorFunctions_DoesNotCallSuccessFunction()
-    {
-        // Arrange
-        var successFunctionMock = new Mock<Func<Task<int>>>();
-
-        var sut = Task.FromResult(GetErrorResult());
-
-        // Act
-        await sut.MatchAsync(successFunctionMock.Object, _ => Task.FromResult(2));
-
-        // Assert
-        successFunctionMock.Verify(x => x.Invoke(), Times.Never);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorResultTaskWithGenericSuccessAndErrorFunctions_CallsErrorFunction()
-    {
-        // Arrange
-        var errorFunctionMock = new Mock<Func<Error, Task<int>>>();
-
-        var errorResult = GetErrorResult();
-        var sut = Task.FromResult(errorResult);
-
-        // Act
-        await sut.MatchAsync(() => Task.FromResult(1), errorFunctionMock.Object);
-
-        // Assert
-        errorFunctionMock.Verify(x => x.Invoke(errorResult.Error!), Times.Once);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorResultTaskWithGenericSuccessAndErrorFunctions_ReturnsErrorFunctionValue()
-    {
-        // Arrange
-        const int ExpectedValue = 73;
-
-        var sut = Task.FromResult(GetErrorResult());
-
-        // Act
-        var result = await sut.MatchAsync(() => Task.FromResult(1), _ => Task.FromResult(ExpectedValue));
-
-        // Assert
-        result.ShouldBe(ExpectedValue);
-    }
-
-    #endregion
-
-    #region MatchAsync (Task<Result>, Func<Task<Result<T>>>, Func<Error, Task<Result<T>>>)
-
-    [Fact]
-    public async Task MatchAsync_NoResultTaskWithGenericResultSuccessAndErrorFunctions_ThrowsException()
-    {
-        // Arrange
-        const Task<Result>? Sut = null;
-
-        // Act
-        var exception = await Record.ExceptionAsync(
-            () => Sut!.MatchAsync(() => Task.FromResult(Result.FromValue(1)), _ => Task.FromResult(Result.FromValue(2))));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulResultTaskWithNoGenericResultSuccessFunctionAndGenericResultErrorFunction_ThrowsException3()
-    {
-        // Arrange
-        const Func<Task<Result<int>>>? Function = null;
-
-        var sut = Task.FromResult(Result.Success());
-
-        // Act
-        var exception =
-            await Record.ExceptionAsync(() => sut.MatchAsync(Function!, _ => Task.FromResult(Result.FromValue(2))));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulResultTaskWithGenericResultSuccessFunctionAndNoGenericResultErrorFunction_ThrowsException()
-    {
-        // Arrange
-        const Func<Error, Task<Result<int>>>? ErrorFunction = null;
-
-        var sut = Task.FromResult(Result.Success());
-
-        // Act
-        var exception = await Record.ExceptionAsync(
-            () => sut.MatchAsync(() => Task.FromResult(Result.FromValue(1)), ErrorFunction!));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulResultTaskWithGenericResultSuccessAndErrorFunctions_CallsSuccessFunction()
-    {
-        // Arrange
-        var successFunctionMock = new Mock<Func<Task<Result<int>>>> { DefaultValueProvider = ResultDefaultValueProvider.Instance };
-
-        var sut = Task.FromResult(Result.Success());
-
-        // Act
-        await sut.MatchAsync(successFunctionMock.Object, _ => Task.FromResult(Result.FromValue(2)));
-
-        // Assert
-        successFunctionMock.Verify(x => x.Invoke(), Times.Once);
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulResultTaskWithGenericResultSuccessAndErrorFunctions_DoesNotCallErrorFunction()
-    {
-        // Arrange
-        var errorFunctionMock = new Mock<Func<Error, Task<Result<int>>>>();
-
-        var sut = Task.FromResult(Result.Success());
-
-        // Act
-        await sut.MatchAsync(() => Task.FromResult(Result.FromValue(1)), errorFunctionMock.Object);
-
-        // Assert
-        errorFunctionMock.Verify(x => x.Invoke(It.IsAny<Error>()), Times.Never);
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulResultTaskWithGenericResultSuccessAndErrorFunctions_ReturnsSuccessFunctionResult()
-    {
-        // Arrange
-        var expectedResult = Result.FromValue(9);
-
-        var sut = Task.FromResult(Result.Success());
-
-        // Act
-        var result = await sut.MatchAsync(
-            () => Task.FromResult(expectedResult),
-            _ => Task.FromResult(Result.FromValue(2)));
-
-        // Assert
-        result.ShouldNotBeNull();
-        result.IsSuccess.ShouldBeTrue();
-        result.ShouldBeSameAs(expectedResult);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorResultTaskWithGenericResultSuccessAndErrorFunctions_DoesNotCallSuccessFunction()
-    {
-        // Arrange
-        var successFunctionMock = new Mock<Func<Task<Result<int>>>>();
-
-        var sut = Task.FromResult(GetErrorResult());
-
-        // Act
-        await sut.MatchAsync(successFunctionMock.Object, _ => Task.FromResult(Result.FromValue(2)));
-
-        // Assert
-        successFunctionMock.Verify(x => x.Invoke(), Times.Never);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorResultTaskWithGenericResultSuccessAndErrorFunctions_CallsErrorFunction()
-    {
-        // Arrange
-        var errorFunctionMock = new Mock<Func<Error, Task<Result<int>>>> { DefaultValueProvider = ResultDefaultValueProvider.Instance };
-
-        var errorResult = GetErrorResult();
-        var sut = Task.FromResult(errorResult);
-
-        // Act
-        await sut.MatchAsync(() => Task.FromResult(Result.FromValue(1)), errorFunctionMock.Object);
-
-        // Assert
-        errorFunctionMock.Verify(x => x.Invoke(errorResult.Error!), Times.Once);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorResultTaskWithGenericResultSuccessAndErrorFunctions_ReturnsErrorFunctionValueResult()
-    {
-        // Arrange
-        var expectedResult = Result.FromValue(15);
-
-        var sut = Task.FromResult(GetErrorResult());
-
-        // Act
-        var result = await sut.MatchAsync(
-            () => Task.FromResult(Result.FromValue(1)),
-            _ => Task.FromResult(expectedResult));
-
-        // Assert
-        result.ShouldNotBeNull();
-        result.ShouldBeSameAs(expectedResult);
+        exception.ShouldBeSameAs(thrown);
     }
 
     #endregion
@@ -1638,846 +374,113 @@ public class MatchTaskAsyncExtensionsUnitTests
     #region MatchAsync (Task<Result<T>>, Func<T, Task>, Func<Error, Task>)
 
     [Fact]
-    public async Task MatchAsync_NoGenericResultTaskWithSuccessAndErrorActions_ThrowsException()
+    public async Task MatchAsync_SuccessfulResultOfTTaskWithTaskActions_AwaitsOnlySuccessFunctionWithTheValue()
     {
         // Arrange
-        const Task<Result<int>>? Sut = null;
-
-        // Act
-        var exception =
-            await Record.ExceptionAsync(() => Sut!.MatchAsync(_ => Task.CompletedTask, _ => Task.CompletedTask));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulGenericResultTaskWithNoSuccessActionAndErrorAction_ThrowsException()
-    {
-        // Arrange
-        const Func<int, Task>? SuccessAction = null;
-
-        const int Value = 68;
-        var sut = Task.FromResult(Result.FromValue(Value));
-
-        // Act
-        var exception = await Record.ExceptionAsync(() => sut.MatchAsync(SuccessAction!, _ => Task.CompletedTask));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulGenericResultTaskWithSuccessActionAndNoErrorAction_ThrowsException()
-    {
-        // Arrange
-        const Func<Error, Task>? ErrorAction = null;
-
-        const int Value = 68;
-        var sut = Task.FromResult(Result.FromValue(Value));
-
-        // Act
-        var exception = await Record.ExceptionAsync(() => sut.MatchAsync(_ => Task.CompletedTask, ErrorAction!));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulGenericResultTaskWithSuccessAndErrorActions_CallsSuccessAction()
-    {
-        // Arrange
-        var successActionMock = new Mock<Func<int, Task>>();
-
-        const int Value = 25;
-        var sut = Task.FromResult(Result.FromValue(Value));
-
-        // Act
-        await sut.MatchAsync(successActionMock.Object, _ => Task.CompletedTask);
-
-        // Assert
-        successActionMock.Verify(x => x.Invoke(Value), Times.Once);
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulGenericResultTaskWithSuccessAndErrorActions_DoesNotCallErrorAction()
-    {
-        // Arrange
-        var errorActionMock = new Mock<Func<Error, Task>>();
-
-        const int Value = 25;
-        var sut = Task.FromResult(Result.FromValue(Value));
-
-        // Act
-        await sut.MatchAsync(_ => Task.CompletedTask, errorActionMock.Object);
-
-        // Assert
-        errorActionMock.Verify(x => x.Invoke(It.IsAny<Error>()), Times.Never);
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulGenericResultTaskWithSuccessAndErrorActions_ReturnsOriginalValueResult()
-    {
-        // Arrange
-        const int Value = 25;
-        var initialResult = Result.FromValue(Value);
-        var sut = Task.FromResult(initialResult);
-
-        // Act
-        var result = await sut.MatchAsync(_ => Task.CompletedTask, _ => Task.CompletedTask);
-
-        // Assert
-        result.ShouldNotBeNull();
-        result.IsSuccess.ShouldBeTrue();
-        result.ShouldBeSameAs(initialResult);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorGenericResultTaskWithSuccessAndErrorActions_DoesNotCallSuccessAction()
-    {
-        // Arrange
-        var successActionMock = new Mock<Func<int, Task>>();
-
-        var sut = Task.FromResult(GetErrorResult<int>());
-
-        // Act
-        await sut.MatchAsync(successActionMock.Object, _ => Task.CompletedTask);
-
-        // Assert
-        successActionMock.Verify(x => x.Invoke(It.IsAny<int>()), Times.Never);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorGenericResultTaskWithSuccessAndErrorActions_CallsErrorAction()
-    {
-        // Arrange
-        var errorActionMock = new Mock<Func<Error, Task>>();
-
-        var errorResult = GetErrorResult<int>();
-        var sut = Task.FromResult(errorResult);
-
-        // Act
-        await sut.MatchAsync(_ => Task.CompletedTask, errorActionMock.Object);
-
-        // Assert
-        errorActionMock.Verify(x => x.Invoke(errorResult.Error!), Times.Once);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorGenericResultTaskWithSuccessAndErrorActions_ReturnsOriginalValueResultWithError()
-    {
-        // Arrange
-        var errorResult = GetErrorResult<int>();
-        var sut = Task.FromResult(errorResult);
-
-        // Act
-        var result = await sut.MatchAsync(_ => Task.CompletedTask, _ => Task.CompletedTask);
-
-        // Assert
-        result.ShouldNotBeNull();
-        result.IsSuccess.ShouldBeFalse();
-        result.ShouldBeSameAs(errorResult);
-    }
-
-    #endregion
-
-    #region MatchAsync (Task<Result<T>>, Func<T, Task<TNext>>, Func<Error, Task<TNext>>)
-
-    [Fact]
-    public async Task MatchAsync_NoGenericResultTaskWithGenericSuccessAndErrorFunctions_ThrowsException()
-    {
-        // Arrange
-        const Task<Result<int>>? Sut = null;
-
-        // Act
-        var exception = await Record.ExceptionAsync(
-            () => Sut!.MatchAsync(x => Task.FromResult(x.ToString()), _ => Task.FromResult("error")));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulGenericResultTaskWithNoGenericSuccessFunctionAndGenericErrorFunction_ThrowsException()
-    {
-        // Arrange
-        const int Value = 17;
-        const Func<int, Task<string>>? SuccessFunction = null;
-
-        var sut = Task.FromResult(Result.FromValue(Value));
-
-        // Act
-        var exception =
-            await Record.ExceptionAsync(() => sut.MatchAsync(SuccessFunction!, _ => Task.FromResult("error")));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulGenericResultTaskWithGenericSuccessFunctionAndNoGenericErrorFunction_ThrowsException()
-    {
-        // Arrange
-        const int Value = 17;
-        const Func<Error, Task<string>>? ErrorFunction = null;
-
-        var sut = Task.FromResult(Result.FromValue(Value));
-
-        // Act
-        var exception =
-            await Record.ExceptionAsync(() => sut.MatchAsync(x => Task.FromResult(x.ToString()), ErrorFunction!));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulGenericResultTaskWithGenericSuccessAndErrorFunctions_CallsSuccessFunction()
-    {
-        // Arrange
-        const int Value = 17;
-        var successFunctionMock = new Mock<Func<int, Task<string>>>();
-        successFunctionMock
-            .Setup(x => x.Invoke(It.IsAny<int>()))
-            .ReturnsAsync("success value");
-
-        var sut = Task.FromResult(Result.FromValue(Value));
-
-        // Act
-        await sut.MatchAsync(successFunctionMock.Object, _ => Task.FromResult("error"));
-
-        // Assert
-        successFunctionMock.Verify(x => x.Invoke(Value), Times.Once);
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulGenericResultTaskWithGenericSuccessAndErrorFunctions_DoesNotCallErrorFunction()
-    {
-        // Arrange
-        const int Value = 17;
-        var errorFunctionMock = new Mock<Func<Error, Task<string>>>();
-
-        var sut = Task.FromResult(Result.FromValue(Value));
-
-        // Act
-        await sut.MatchAsync(x => Task.FromResult(x.ToString()), errorFunctionMock.Object);
-
-        // Assert
-        errorFunctionMock.Verify(x => x.Invoke(It.IsAny<Error>()), Times.Never);
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulGenericResultTaskWithGenericSuccessAndErrorFunctions_ReturnsSuccessFunctionValue()
-    {
-        // Arrange
-        const int Value = 17;
-        const string ExpectedValue = "18";
-
-        var sut = Task.FromResult(Result.FromValue(Value));
-
-        // Act
-        var result = await sut.MatchAsync(x => Task.FromResult((x + 1).ToString()), _ => Task.FromResult("error"));
-
-        // Assert
-        result.ShouldBe(ExpectedValue);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorGenericResultTaskWithWithGenericSuccessAndErrorFunctions_DoesNotCallSuccessFunction()
-    {
-        // Arrange
-        var successFunctionMock = new Mock<Func<int, Task<string>>>();
-
-        var sut = Task.FromResult(GetErrorResult<int>());
-
-        // Act
-        await sut.MatchAsync(successFunctionMock.Object, _ => Task.FromResult("error"));
-
-        // Assert
-        successFunctionMock.Verify(x => x.Invoke(It.IsAny<int>()), Times.Never);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorGenericResultTaskWithGenericSuccessAndErrorFunctions_CallsErrorFunction()
-    {
-        // Arrange
-        var errorFunctionMock = new Mock<Func<Error, Task<string>>>();
-        errorFunctionMock
-            .Setup(x => x.Invoke(It.IsAny<Error>()))
-            .ReturnsAsync("error value");
-
-        var errorResult = GetErrorResult<int>();
-        var sut = Task.FromResult(errorResult);
-
-        // Act
-        await sut.MatchAsync(x => Task.FromResult(x.ToString()), errorFunctionMock.Object);
-
-        // Assert
-        errorFunctionMock.Verify(x => x.Invoke(errorResult.Error!), Times.Once);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorGenericResultTaskWithGenericSuccessAndErrorFunctions_ReturnsErrorFunctionValue()
-    {
-        // Arrange
-        const string ExpectedValue = "Error function value";
-
-        var sut = Task.FromResult(GetErrorResult<int>());
-
-        // Act
-        var result = await sut.MatchAsync(x => Task.FromResult(x.ToString()), _ => Task.FromResult(ExpectedValue));
-
-        // Assert
-        result.ShouldBe(ExpectedValue);
-    }
-
-    #endregion
-
-    #region MatchAsync (Task<Result<T>>, Func<T, Task<Result<TNext>>>, Func<Error, Task<Result<TNext>>>)
-
-    [Fact]
-    public async Task MatchAsync_NoGenericResultTaskWithGenericResultSuccessAndErrorFunctions_ThrowsException()
-    {
-        // Arrange
-        const Task<Result<int>>? Sut = null;
-
-        // Act
-        var exception = await Record.ExceptionAsync(
-            () => Sut!.MatchAsync(
-                x => Task.FromResult(Result.FromValue(x.ToString())),
-                _ => Task.FromResult(Result.FromValue("error value"))));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulGenericResultTaskWithNoGenericResultSuccessFunctionAndGenericResultErrorFunction_ThrowsException()
-    {
-        // Arrange
-        const int Value = 90;
-        const Func<int, Task<Result<string>>>? SuccessFunction = null;
-
-        var sut = Task.FromResult(Result.FromValue(Value));
-
-        // Act
-        var exception = await Record.ExceptionAsync(
-            () => sut.MatchAsync(SuccessFunction!, _ => Task.FromResult(Result.FromValue("error value"))));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulGenericResultTaskWithGenericResultSuccessFunctionAndNoGenericResultErrorFunction_ThrowsException()
-    {
-        // Arrange
-        const int Value = 90;
-        const Func<Error, Task<Result<string>>>? ErrorFunction = null;
-
-        var sut = Task.FromResult(Result.FromValue(Value));
-
-        // Act
-        var exception = await Record.ExceptionAsync(
-            () => sut.MatchAsync(x => Task.FromResult(Result.FromValue(x.ToString())), ErrorFunction!));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        exception.Message.ShouldStartWith("Value cannot be null.");
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulGenericResultTaskWithGenericResultSuccessAndErrorFunctions_CallsSuccessFunction()
-    {
-        // Arrange
-        const int Value = 90;
-        var successFunctionMock = new Mock<Func<int, Task<Result<string>>>> { DefaultValueProvider = ResultDefaultValueProvider.Instance };
-
-        var sut = Task.FromResult(Result.FromValue(Value));
-
-        // Act
-        await sut.MatchAsync(successFunctionMock.Object, _ => Task.FromResult(Result.FromValue("error value")));
-
-        // Assert
-        successFunctionMock.Verify(x => x.Invoke(Value), Times.Once);
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulGenericResultTaskWithGenericResultSuccessAndErrorFunctions_DoesNotCallErrorFunction()
-    {
-        // Arrange
-        const int Value = 90;
-        var errorFunctionMock = new Mock<Func<Error, Task<Result<string>>>>();
-
-        var sut = Task.FromResult(Result.FromValue(Value));
-
-        // Act
-        await sut.MatchAsync(x => Task.FromResult(Result.FromValue(x.ToString())), errorFunctionMock.Object);
-
-        // Assert
-        errorFunctionMock.Verify(x => x.Invoke(It.IsAny<Error>()), Times.Never);
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulGenericResultTaskWithGenericResultSuccessAndErrorFunctions_ReturnsSuccessFunctionValueResult()
-    {
-        // Arrange
-        const string ExpectedValue = "-90-";
-        const int Value = 90;
-
-        var sut = Task.FromResult(Result.FromValue(Value));
-
-        // Act
-        var result = await sut.MatchAsync(
-            x => Task.FromResult(Result.FromValue($"-{x}-")),
-            _ => Task.FromResult(Result.FromValue("error value")));
-
-        // Assert
-        result.ShouldNotBeNull();
-        result.IsSuccess.ShouldBeTrue();
-        result.Value.ShouldBe(ExpectedValue);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorGenericResultTaskWithGenericResultSuccessAndErrorFunctions_DoesNotCallSuccessFunction()
-    {
-        // Arrange
-        var successFunctionMock = new Mock<Func<int, Task<Result<string>>>>();
-
-        var sut = Task.FromResult(GetErrorResult<int>());
-
-        // Act
-        await sut.MatchAsync(successFunctionMock.Object, _ => Task.FromResult(Result.FromValue("error value")));
-
-        // Assert
-        successFunctionMock.Verify(x => x.Invoke(It.IsAny<int>()), Times.Never);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorGenericResultTaskWithGenericResultSuccessAndErrorFunctions_CallsErrorFunction()
-    {
-        // Arrange
-        var errorFunctionMock = new Mock<Func<Error, Task<Result<string>>>> { DefaultValueProvider = ResultDefaultValueProvider.Instance };
-
-        var errorResult = GetErrorResult<int>();
-        var sut = Task.FromResult(errorResult);
-
-        // Act
-        await sut.MatchAsync(x => Task.FromResult(Result.FromValue(x.ToString())), errorFunctionMock.Object);
-
-        // Assert
-        errorFunctionMock.Verify(x => x.Invoke(errorResult.Error!), Times.Once);
-    }
-
-    [Fact]
-    public async Task MatchAsync_ErrorGenericResultTaskWithGenericResultSuccessAndErrorFunctions_ReturnsErrorFunctionValueResult()
-    {
-        // Arrange
-        const string ExpectedValue = "error value";
-
-        var sut = Task.FromResult(GetErrorResult<int>());
-
-        // Act
-        var result = await sut.MatchAsync(
-            x => Task.FromResult(Result.FromValue(x.ToString())),
-            _ => Task.FromResult(Result.FromValue(ExpectedValue)));
-
-        // Assert
-        result.ShouldNotBeNull();
-        result.IsSuccess.ShouldBeTrue();
-        result.Value.ShouldBe(ExpectedValue);
-    }
-
-    #endregion
-
-    #region helper methods
-
-    private static Result GetErrorResult()
-    {
-        return Error.Failure(ErrorUri.None, "50f1c1fb-560e-4bb3-84da-034072df7ca2", "Error title 6");
-    }
-
-    private static Result<T> GetErrorResult<T>()
-    {
-        return Error.Failure(ErrorUri.None, "3d7a81ec-801d-45f4-b4b0-8d58e93b1d89", "Error title 7");
-    }
-
-    #endregion
-
-    #region MatchAsync with a function returning an Error (overload trap, issue #119)
-
-    private static readonly Error TrapError = Error.Conflict(ErrorUri.Tag("tag:test.com,2024:Trap"), "Trap title");
-
-    #endregion
-
-    #region Task results with synchronous delegates (issue #214)
-
-    private static readonly Error SyncTestError = Error.Failure(ErrorUri.None, "Synchronous delegate test error");
-    private static readonly Error SyncOtherError = Error.Conflict(ErrorUri.None, "Synchronous delegate other error");
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulResultTaskWithActionAndErrorAction_RunsSuccessDelegate()
-    {
-        // Arrange
-        var sut = Task.FromResult(Result.Success());
-        var successCalled = false;
-        Error? received = null;
-
-        // Act
-        var result = await sut.MatchAsync(() => { successCalled = true; }, error => { received = error; });
-
-        // Assert
-        successCalled.ShouldBeTrue();
-        received.ShouldBeNull();
-        result.IsSuccess.ShouldBeTrue();
-    }
-
-    [Fact]
-    public async Task MatchAsync_FailedResultTaskWithActionAndErrorAction_RunsErrorDelegate()
-    {
-        // Arrange
-        var sut = Task.FromResult(Result.FromError(SyncTestError));
-        var successCalled = false;
-        Error? received = null;
-
-        // Act
-        var result = await sut.MatchAsync(() => { successCalled = true; }, error => { received = error; });
-
-        // Assert
-        successCalled.ShouldBeFalse();
-        received.ShouldBeSameAs(SyncTestError);
-        result.Error.ShouldBeSameAs(SyncTestError);
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulResultTaskWithResultFunctionAndErrorResultFunction_RunsSuccessDelegate()
-    {
-        // Arrange
-        var sut = Task.FromResult(Result.Success());
-        var successCalled = false;
-        Error? received = null;
-
-        // Act
-        var result = await sut.MatchAsync(() => { successCalled = true; return Result.FromError(SyncOtherError); }, error => { received = error; return Result.Success(); });
-
-        // Assert
-        successCalled.ShouldBeTrue();
-        received.ShouldBeNull();
-        result.Error.ShouldBeSameAs(SyncOtherError);
-    }
-
-    [Fact]
-    public async Task MatchAsync_FailedResultTaskWithResultFunctionAndErrorResultFunction_RunsErrorDelegate()
-    {
-        // Arrange
-        var sut = Task.FromResult(Result.FromError(SyncTestError));
-        var successCalled = false;
-        Error? received = null;
-
-        // Act
-        var result = await sut.MatchAsync(() => { successCalled = true; return Result.FromError(SyncOtherError); }, error => { received = error; return Result.Success(); });
-
-        // Assert
-        successCalled.ShouldBeFalse();
-        received.ShouldBeSameAs(SyncTestError);
-        result.IsSuccess.ShouldBeTrue();
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulResultTaskWithValueFunctionAndErrorValueFunction_RunsSuccessDelegate()
-    {
-        // Arrange
-        var sut = Task.FromResult(Result.Success());
-        var successCalled = false;
-        Error? received = null;
-
-        // Act
-        var result = await sut.MatchAsync(() => { successCalled = true; return 7; }, error => { received = error; return -1; });
-
-        // Assert
-        successCalled.ShouldBeTrue();
-        result.ShouldBe(7);
-    }
-
-    [Fact]
-    public async Task MatchAsync_FailedResultTaskWithValueFunctionAndErrorValueFunction_RunsErrorDelegate()
-    {
-        // Arrange
-        var sut = Task.FromResult(Result.FromError(SyncTestError));
-        var successCalled = false;
-        Error? received = null;
-
-        // Act
-        var result = await sut.MatchAsync(() => { successCalled = true; return 7; }, error => { received = error; return -1; });
-
-        // Assert
-        successCalled.ShouldBeFalse();
-        received.ShouldBeSameAs(SyncTestError);
-        result.ShouldBe(-1);
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulResultOfTTaskWithResultOfTFunctionAndErrorResultOfTFunction_RunsSuccessDelegate()
-    {
-        // Arrange
-        var sut = Task.FromResult(Result.Success());
-        var successCalled = false;
-        Error? received = null;
-
-        // Act
-        var result = await sut.MatchAsync(() => { successCalled = true; return Result.FromValue(7); }, error => { received = error; return Result.FromValue(-1); });
-
-        // Assert
-        successCalled.ShouldBeTrue();
-        result.Value.ShouldBe(7);
-    }
-
-    [Fact]
-    public async Task MatchAsync_FailedResultOfTTaskWithResultOfTFunctionAndErrorResultOfTFunction_RunsErrorDelegate()
-    {
-        // Arrange
-        var sut = Task.FromResult(Result.FromError(SyncTestError));
-        var successCalled = false;
-        Error? received = null;
-
-        // Act
-        var result = await sut.MatchAsync(() => { successCalled = true; return Result.FromValue(7); }, error => { received = error; return Result.FromValue(-1); });
-
-        // Assert
-        successCalled.ShouldBeFalse();
-        received.ShouldBeSameAs(SyncTestError);
-        result.Value.ShouldBe(-1);
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulResultOfTTaskWithActionAndErrorAction_RunsSuccessDelegate()
-    {
-        // Arrange
+        int? passedValue = null;
+        var errorCalled = false;
         var sut = Task.FromResult(Result.FromValue(5));
-        var successCalled = false;
-        Error? received = null;
 
         // Act
-        var result = await sut.MatchAsync(value => { successCalled = value == 5; }, error => { received = error; });
+        await sut.MatchAsync(async x =>
+        {
+            await Task.Yield();
+            passedValue = x;
+        }, _ =>
+        {
+            errorCalled = true;
+
+            return Task.CompletedTask;
+        });
 
         // Assert
-        successCalled.ShouldBeTrue();
-        result.Value.ShouldBe(5);
+        passedValue.ShouldBe(5);
+        errorCalled.ShouldBeFalse();
     }
 
     [Fact]
-    public async Task MatchAsync_FailedResultOfTTaskWithActionAndErrorAction_RunsErrorDelegate()
+    public async Task MatchAsync_FailedResultOfTTaskWithTaskActions_AwaitsOnlyErrorFunctionWithTheError()
     {
         // Arrange
-        var sut = Task.FromResult(Result<int>.FromError(SyncTestError));
         var successCalled = false;
-        Error? received = null;
+        Error? passedError = null;
+        var sut = Task.FromResult(Result<int>.FromError(SourceError));
 
         // Act
-        var result = await sut.MatchAsync(value => { successCalled = value == 5; }, error => { received = error; });
+        await sut.MatchAsync(_ =>
+        {
+            successCalled = true;
+
+            return Task.CompletedTask;
+        }, async e =>
+        {
+            await Task.Yield();
+            passedError = e;
+        });
 
         // Assert
+        passedError.ShouldBeSameAs(SourceError);
         successCalled.ShouldBeFalse();
-        received.ShouldBeSameAs(SyncTestError);
-        result.Error.ShouldBeSameAs(SyncTestError);
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulResultOfTTaskWithValueFunctionAndErrorValueFunction_RunsSuccessDelegate()
-    {
-        // Arrange
-        var sut = Task.FromResult(Result.FromValue(5));
-        var successCalled = false;
-        Error? received = null;
-
-        // Act
-        var result = await sut.MatchAsync(value => { successCalled = true; return value.ToString(); }, error => { received = error; return "none"; });
-
-        // Assert
-        successCalled.ShouldBeTrue();
-        result.ShouldBe("5");
-    }
-
-    [Fact]
-    public async Task MatchAsync_FailedResultOfTTaskWithValueFunctionAndErrorValueFunction_RunsErrorDelegate()
-    {
-        // Arrange
-        var sut = Task.FromResult(Result<int>.FromError(SyncTestError));
-        var successCalled = false;
-        Error? received = null;
-
-        // Act
-        var result = await sut.MatchAsync(value => { successCalled = true; return value.ToString(); }, error => { received = error; return "none"; });
-
-        // Assert
-        successCalled.ShouldBeFalse();
-        received.ShouldBeSameAs(SyncTestError);
-        result.ShouldBe("none");
-    }
-
-    [Fact]
-    public async Task MatchAsync_SuccessfulResultOfTTaskWithResultFunctionAndErrorResultFunction_RunsSuccessDelegate()
-    {
-        // Arrange
-        var sut = Task.FromResult(Result.FromValue(5));
-        var successCalled = false;
-        Error? received = null;
-
-        // Act
-        var result = await sut.MatchAsync(value => { successCalled = true; return Result.FromValue(value.ToString()); }, error => { received = error; return Result.FromValue("none"); });
-
-        // Assert
-        successCalled.ShouldBeTrue();
-        result.Value.ShouldBe("5");
-    }
-
-    [Fact]
-    public async Task MatchAsync_FailedResultOfTTaskWithResultFunctionAndErrorResultFunction_RunsErrorDelegate()
-    {
-        // Arrange
-        var sut = Task.FromResult(Result<int>.FromError(SyncTestError));
-        var successCalled = false;
-        Error? received = null;
-
-        // Act
-        var result = await sut.MatchAsync(value => { successCalled = true; return Result.FromValue(value.ToString()); }, error => { received = error; return Result.FromValue("none"); });
-
-        // Assert
-        successCalled.ShouldBeFalse();
-        received.ShouldBeSameAs(SyncTestError);
-        result.Value.ShouldBe("none");
-    }
-
-    [Fact]
-    public async Task MatchAsync_IncompleteTaskWithSynchronousDelegate_RunsDelegateAfterCompletion()
-    {
-        // Arrange
-        var source = new TaskCompletionSource<Result<int>>();
-        var called = false;
-        var sut = source.Task;
-
-        // Act
-        var task = sut.MatchAsync(_ => { called = true; }, _ => { });
-        var calledBeforeCompletion = called;
-        source.SetResult(Result.FromValue(5));
-        await task;
-
-        // Assert
-        calledBeforeCompletion.ShouldBeFalse();
-        called.ShouldBeTrue();
-    }
-
-    [Fact]
-    public void MatchAsync_AsyncSuccessAndSyncErrorDelegateOverloads_AreHiddenCompileErrors()
-    {
-        // Act
-        var traps = typeof(MatchTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The success delegate returns a task, but the error delegate is synchronous"))
-            .ToList();
-
-        // Assert
-        traps.Count.ShouldBe(8);
-        traps.ShouldAllBe(m => m.Name == "MatchAsync"
-                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
-                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
-    }
-
-    [Fact]
-    public void MatchAsync_SyncSuccessAndAsyncErrorDelegateOverloads_AreHiddenCompileErrors()
-    {
-        // Act
-        var traps = typeof(MatchTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The error delegate returns a task, but the success delegate is synchronous"))
-            .ToList();
-
-        // Assert
-        traps.Count.ShouldBe(27);
-        traps.ShouldAllBe(m => m.Name == "MatchAsync"
-                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
-                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
-    }
-
-    [Fact]
-    public void MatchAsync_DelegatesReturningValueTaskOverloads_AreHiddenCompileErrors()
-    {
-        // Act
-        var traps = typeof(MatchTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The delegates return a ValueTask, which the Task-based MatchAsync does not await"))
-            .ToList();
-
-        // Assert
-        traps.Count.ShouldBe(14);
-        traps.ShouldAllBe(m => m.Name == "MatchAsync"
-                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
-                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
-    }
-
-    [Fact]
-    public void MatchAsync_OverloadsWithTaskDelegatesOnTaskResults_HavePriorityOne()
-    {
-        // Act
-        var priorities = typeof(MatchTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Where(m => m.GetParameters()[0].ParameterType is { IsGenericType: true } receiver && receiver.GetGenericTypeDefinition() == typeof(Task<>)
-                        && OverloadTrapHelper.IsTaskFunction(m.GetParameters()[1].ParameterType))
-            .Select(OverloadTrapHelper.Priority)
-            .ToList();
-
-        // Assert
-        priorities.Count.ShouldBe(18);
-        priorities.ShouldAllBe(p => p == 1);
-    }
-
-    [Fact]
-    public void MatchAsync_SynchronousOverloadsOnTaskResults_HavePriorityZero()
-    {
-        // Act
-        var priorities = typeof(MatchTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is null
-                        && m.GetParameters()[0].ParameterType is { IsGenericType: true } receiver && receiver.GetGenericTypeDefinition() == typeof(Task<>)
-                        && !OverloadTrapHelper.IsTaskFunction(m.GetParameters()[1].ParameterType)
-                        && !OverloadTrapHelper.IsValueTaskFunction(m.GetParameters()[1].ParameterType))
-            .Select(OverloadTrapHelper.Priority)
-            .ToList();
-
-        // Assert
-        priorities.Count.ShouldBe(7);
-        priorities.ShouldAllBe(p => p == 0);
     }
 
     #endregion
 
-    #region MatchAsync with a success function and an error action (overload trap, issue #227)
+    #region overload traps
+
+    // See issue #255.
 
     [Fact]
-    public void MatchAsync_SuccessFunctionAndErrorActionOverloads_AreHiddenCompileErrors()
+    public void MatchAsync_TwoActionsOverloads_AreHiddenCompileErrorsThatNameSwitchAsync()
     {
         // Act
         var traps = typeof(MatchTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Where(m => OverloadTrapHelper.IsTrap(m, "MatchAsync with a success function and an error action"))
+            .Where(m => OverloadTrapHelper.IsTrap(m, "MatchAsync takes two functions that return a value. Use SwitchAsync"))
             .ToList();
 
         // Assert
-        traps.Count.ShouldBe(21);
-        traps.ShouldAllBe(m => m.Name == "MatchAsync"
-                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
-                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
+        traps.Count.ShouldBe(2);
+        traps.ShouldAllBe(m => m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
+                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never
+                               && m.GetParameters().Skip(1).Take(2).All(p => p.ParameterType.Name.StartsWith("Action", StringComparison.Ordinal)));
+    }
+
+    [Fact]
+    public void MatchAsync_ValueTaskFunctionsOverloads_AreHiddenCompileErrors()
+    {
+        // Act
+        var traps = typeof(MatchTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The delegates return a ValueTask"))
+            .ToList();
+
+        // Assert
+        traps.Count.ShouldBe(4);
+        traps.ShouldAllBe(m => m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
+                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never
+                               && m.GetParameters().Skip(1).Take(2).All(p => OverloadTrapHelper.IsValueTaskFunction(p.ParameterType)));
+    }
+
+    [Fact]
+    public void MatchAsync_AllMethods_AreOverloadsOnATaskOrTheTwoKindsOfTraps()
+    {
+        // Act
+        var methods = typeof(MatchTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly).ToList();
+
+        // Assert
+        methods.Count.ShouldBe(6 + 2 + 4);
+        methods.ShouldAllBe(m => m.Name == "MatchAsync" && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(Task<>));
+    }
+
+    [Fact]
+    public void MatchAsync_OverloadsWithTaskFunctions_HavePriorityOne()
+    {
+        // Act
+        var overloads = typeof(MatchTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is null && OverloadTrapHelper.IsTaskFunction(m.GetParameters()[1].ParameterType))
+            .ToList();
+
+        // Assert
+        overloads.Count.ShouldBe(4);
+        overloads.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 1);
     }
 
     #endregion

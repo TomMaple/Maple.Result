@@ -46,7 +46,7 @@ See [Errors](errors.md) for the categories, the properties and how to build an e
 ## Reading a result
 * The `IsSuccess` and `IsError` properties tell success from failure (e.g., the early return `if (result.IsError) return result.Error;`).
 * `TryGetValue` and `TryGetError` read the value or the error without an exception (e.g., `if (!GetUser(id).TryGetValue(out var user, out var error)) return error;`).
-* The extension methods (`Then()`, `Else()`, `IfSuccess()`, `IfError()`, `Match()` and their asynchronous versions) chain and handle results; see [Chaining operations](chaining.md).
+* The extension methods (`Then()`, `Else()`, `IfSuccess()`, `IfError()`, `Match()`, `Switch()` and their asynchronous versions) chain and handle results; see [Chaining operations](chaining.md).
 
 > [!NOTE]
 > A successful `Result<T>` normally carries a non-null value. When `T` is nullable—a nullable reference type or `Nullable<T>` (e.g., `Result<string?>` or `Result<int?>`)—a `null` is a valid successful value. Always use `IsSuccess` (or `IsError`) to distinguish success from failure rather than checking the value against `null`: reading the `Value` of a failed result throws an `InvalidOperationException`, and `TryGetValue(out var value)` reads it without an exception.

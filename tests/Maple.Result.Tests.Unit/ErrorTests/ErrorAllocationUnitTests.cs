@@ -15,7 +15,9 @@ namespace Maple.Results.Tests.Unit.ErrorTests;
 
 public class ErrorAllocationUnitTests
 {
-    #region metadata equality (issue #128)
+    #region metadata equality
+
+    // See issue #128.
 
     [Fact]
     public void Equals_ErrorsWithMetadata_AllocatesNoMoreThanWithoutMetadata()

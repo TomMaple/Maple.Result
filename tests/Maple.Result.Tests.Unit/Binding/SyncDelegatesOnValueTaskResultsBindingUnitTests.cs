@@ -14,8 +14,8 @@ namespace Maple.Results.Tests.Unit.Binding;
 
 /// <summary>
 ///     Synchronous delegates on <c>ValueTask</c> results (#214), with only the <c>ValueTask</c>-based namespace imported: the calls bind
-///     as intended (each is assigned to a variable of the expected type), and a delegate of the wrong kind, one synchronous and one
-///     asynchronous delegate of <c>MatchAsync</c>, or a delegate that returns the other kind of task is a compile error (CS0619).
+///     as intended (each is assigned to a variable of the expected type), and a delegate of the wrong kind, two actions of <c>MatchAsync</c>
+///     (<c>SwitchAsync</c> takes them, #255), or a delegate that returns the other kind of task is a compile error (CS0619).
 /// </summary>
 public class SyncDelegatesOnValueTaskResultsBindingUnitTests
 {
@@ -83,15 +83,15 @@ public class SyncDelegatesOnValueTaskResultsBindingUnitTests
     [InlineData("ValueTask<Result> r = GetOk().IfErrorAsync(e => { titles.Add(e.Title); });")]
     [InlineData("ValueTask<Result<int>> r = GetUser().ThenAsync(u => u.Name).ThenAsync(n => GetLengthAsync(n)).IfErrorAsync(e => LogError(e));")]
     [InlineData("ValueTask<string> r = GetUser().MatchAsync(u => u.Name, e => \"unknown\");")]
-    [InlineData("ValueTask<Result<User>> r = GetUser().MatchAsync(u => Log(u), e => LogError(e));")]
+    [InlineData("ValueTask r = GetUser().SwitchAsync(u => Log(u), e => LogError(e));")]
     [InlineData("ValueTask<Result<string>> r = GetUser().MatchAsync(u => Result<string>.FromValue(u.Name), e => Result<string>.FromValue(\"x\"));")]
-    [InlineData("ValueTask<Result<User>> r = GetUser().MatchAsync(Log, LogError);")]
-    [InlineData("ValueTask<Result> r = GetOk().MatchAsync(() => Log(null!), e => LogError(e));")]
+    [InlineData("ValueTask r = GetUser().SwitchAsync(Log, LogError);")]
+    [InlineData("ValueTask r = GetOk().SwitchAsync(() => Log(null!), e => LogError(e));")]
     [InlineData("ValueTask<int> r = GetOk().MatchAsync(() => 5, e => 0);")]
     [InlineData("ValueTask<Result> r = GetOk().MatchAsync(() => Result.Success(), e => Result.Success());")]
-    [InlineData("ValueTask<Result<User>> r = GetUser().MatchAsync(u => SaveAsync(u), e => LogAsync(e));")]
+    [InlineData("ValueTask r = GetUser().MatchAsync(u => SaveAsync(u), e => LogAsync(e));")]
     [InlineData("ValueTask<string> r = GetUser().MatchAsync(u => GetNameAsync(u), e => ValueTask.FromResult(\"x\"));")]
-    [InlineData("ValueTask<Result> r = GetOk().MatchAsync(() => SaveAsync(null!), e => LogAsync(e));")]
+    [InlineData("ValueTask r = GetOk().MatchAsync(() => SaveAsync(null!), e => LogAsync(e));")]
     [InlineData("ValueTask<Result<string>> r = from u in GetUser() select u.Name;")]
     public void Call_SupportedShape_CompilesToExpectedType(string statements)
     {
@@ -130,23 +130,12 @@ public class SyncDelegatesOnValueTaskResultsBindingUnitTests
     [InlineData("_ = GetUser().MatchAsync(async u => await SaveAsync(u), e => LogError(e));")]
     [InlineData("_ = GetOk().MatchAsync(() => SaveAsync(null!), e => LogError(e));")]
     [InlineData("_ = GetUser().MatchAsync(u => Log(u), e => LogAsync(e));")]
-    [InlineData("_ = GetUser().MatchAsync(u => u.Name, e => LogAsync(e));")]
-    [InlineData("_ = GetUser().MatchAsync(u => u.Name, async e => await LogAsync(e));")]
-    [InlineData("_ = GetOk().MatchAsync(() => 5, e => LogAsync(e));")]
     [InlineData("_ = GetUser().MatchAsync(u => SaveOtherAsync(u), e => LogOtherAsync(e));")]
     [InlineData("_ = GetUser().MatchAsync(u => GetNameOtherAsync(u), e => LogOtherAsync(e));")]
     [InlineData("_ = GetOk().MatchAsync(() => SaveOtherAsync(null!), e => LogOtherAsync(e));")]
     [InlineData("_ = GetUser().MatchAsync(u => SaveOtherAsync(u), e => LogError(e));")]
     [InlineData("_ = GetUser().MatchAsync(u => Log(u), e => LogOtherAsync(e));")]
     [InlineData("_ = GetUser().MatchAsync(u => GetNameOtherAsync(u), e => Task.FromResult(\"x\"));")]
-    // A success function with an error action (#227).
-    [InlineData("ValueTask<Result<string>> r = GetUser().MatchAsync(u => u.Name, e => LogError(e));")]
-    [InlineData("ValueTask<Result> r = GetUser().MatchAsync(u => Error.Conflict(ErrorUri.None, \"x\"), e => LogError(e));")]
-    [InlineData("ValueTask<Result<string>> r = GetUser().MatchAsync(u => Result<string>.FromValue(u.Name), e => LogError(e));")]
-    [InlineData("ValueTask<Result<int>> r = GetOk().MatchAsync(() => 5, e => LogError(e));")]
-    [InlineData("ValueTask<Result> r = GetOk().MatchAsync(() => Error.Conflict(ErrorUri.None, \"x\"), e => LogError(e));")]
-    [InlineData("ValueTask<Result<string>> r = GetUser().MatchAsync(u => GetNameAsync(u), e => LogAsync(e));")]
-    [InlineData("ValueTask<Result<string>> r = GetUser().MatchAsync(async u => await GetNameAsync(u), async e => await LogAsync(e));")]
     public void Call_UnsupportedShape_ReportsOnlyCS0619(string statements)
     {
         // Act

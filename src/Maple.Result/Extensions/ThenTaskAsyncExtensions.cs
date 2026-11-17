@@ -974,7 +974,7 @@ public static class ThenTaskAsyncExtensions
 
     #endregion
 
-    #region Not supported: actions (#197)
+    #region Not supported: actions
 
     // A function that returns nothing is a side effect, not a transformation (#197): these overloads turn the call into a compile
     // error (CS0619) that names the method to use, instead of the conversion errors CS0029 and CS1662.
@@ -988,7 +988,7 @@ public static class ThenTaskAsyncExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ActionMessage, error: true)]
-    public static Task<Result> ThenAsync(this Result result, Func<Task> ifSuccessFunction, bool? continueOnCapturedContext = null)
+    public static Task<Result> ThenAsync(this Result result, Func<Task> ifSuccessAction, bool? continueOnCapturedContext = null)
     {
         throw new NotSupportedException(ActionMessage);
     }
@@ -998,18 +998,7 @@ public static class ThenTaskAsyncExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ActionMessage, error: true)]
-    public static Task<Result<T>> ThenAsync<T>(this Result<T> result, Func<T, Task> ifSuccessFunction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(ActionMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the function returns a task without a value; use <c>IfSuccessAsync</c> for a side effect.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(ActionMessage, error: true)]
-    [OverloadResolutionPriority(1)]
-    public static Task<Result> ThenAsync(this Task<Result> resultTask, Func<Task> ifSuccessFunction, bool? continueOnCapturedContext = null)
+    public static Task<Result<T>> ThenAsync<T>(this Result<T> result, Func<T, Task> ifSuccessAction, bool? continueOnCapturedContext = null)
     {
         throw new NotSupportedException(ActionMessage);
     }
@@ -1020,14 +1009,27 @@ public static class ThenTaskAsyncExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ActionMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Task<Result<T>> ThenAsync<T>(this Task<Result<T>> resultTask, Func<T, Task> ifSuccessFunction, bool? continueOnCapturedContext = null)
+    public static Task<Result> ThenAsync(this Task<Result> resultTask, Func<Task> ifSuccessAction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(ActionMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the function returns a task without a value; use <c>IfSuccessAsync</c> for a side effect.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(ActionMessage, error: true)]
+    [OverloadResolutionPriority(1)]
+    public static Task<Result<T>> ThenAsync<T>(this Task<Result<T>> resultTask, Func<T, Task> ifSuccessAction, bool? continueOnCapturedContext = null)
     {
         throw new NotSupportedException(ActionMessage);
     }
 
     #endregion
 
-    #region Task results with synchronous delegates (#214)
+    #region Task results with synchronous delegates
+
+    // See issue #214.
 
     /// <summary>
     ///     Runs the synchronous function if the result that the <paramref name="resultTask" /> returns is successful, and returns a result with its value.
@@ -1352,7 +1354,7 @@ public static class ThenTaskAsyncExtensions
 
     #endregion
 
-    #region Not supported: synchronous delegates of the wrong kind, and functions returning a ValueTask (#214)
+    #region Not supported: synchronous delegates of the wrong kind, and functions returning a ValueTask
 
     // A synchronous action passed to ThenAsync or ElseAsync, or a synchronous function that returns a value passed to
     // IfSuccessAsync or IfErrorAsync, is a compile error (CS0619) that names the method to use, as in #197.
@@ -1394,7 +1396,7 @@ public static class ThenTaskAsyncExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(OtherTaskMessage, error: true)]
-    public static Task<Result> ThenAsync(this Task<Result> resultTask, Func<ValueTask> ifSuccessFunction, bool? continueOnCapturedContext = null)
+    public static Task<Result> ThenAsync(this Task<Result> resultTask, Func<ValueTask> ifSuccessAction, bool? continueOnCapturedContext = null)
     {
         throw new NotSupportedException(OtherTaskMessage);
     }
@@ -1415,7 +1417,7 @@ public static class ThenTaskAsyncExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(OtherTaskMessage, error: true)]
-    public static Task<Result<T>> ThenAsync<T>(this Task<Result<T>> resultTask, Func<T, ValueTask> ifSuccessFunction, bool? continueOnCapturedContext = null)
+    public static Task<Result<T>> ThenAsync<T>(this Task<Result<T>> resultTask, Func<T, ValueTask> ifSuccessAction, bool? continueOnCapturedContext = null)
     {
         throw new NotSupportedException(OtherTaskMessage);
     }

@@ -24,7 +24,7 @@ Version 3.0 makes `Result`, `Result<T>` and `Error` **immutable** and **always v
   * [`ErrorUri.None()` is a property](#errorurinone-is-a-property)
   * [`Result<T>.Value` throws on a failed result](#resulttvalue-throws-on-a-failed-result)
   * [Transforming `IfSuccess` and `IfError` renamed to `Then` and `Else`](#transforming-ifsuccess-and-iferror-renamed-to-then-and-else)
-  * [`Match` with a success function and an error action](#match-with-a-success-function-and-an-error-action)
+  * [`Match` is a fold; `Switch` runs two actions](#match-is-a-fold-switch-runs-two-actions)
   * [`Then` and `Match` with an `Error` or a task](#then-and-match-with-an-error-or-a-task)
   * [`IfError` and `Match` with an error action that returns a task](#iferror-and-match-with-an-error-action-that-returns-a-task)
   * [LINQ queries that select a task](#linq-queries-that-select-a-task)
@@ -43,7 +43,7 @@ Version 3.0 makes `Result`, `Result<T>` and `Error` **immutable** and **always v
 6. If you **read** `Result`, `Result<T>` or `Error` from JSON (e.g., Azure Durable Functions, message queues, caches, HTTP clients), see [No JSON deserialization without converters](#no-json-deserialization-without-converters).
 7. If you compare or snapshot the **written** JSON, see [Changed JSON output](#changed-json-output).
 8. Make sure error titles are never `null` or blank, detail texts are `null` or not blank, metadata keys, template ids and template parameter names do not start or end with white space, two parameter names of one message do not differ only in case, and the pointers of error details are JSON Pointers (`/email`, not `Email`), and pass `null` instead of `ErrorUri.None()` as an instance *URI* (see [Stricter validation](#stricter-validation)).
-9. Rename the calls of `IfSuccess`, `IfSuccessAsync`, `IfError` and `IfErrorAsync` that transform or replace the result to `Then`, `ThenAsync`, `Else` and `ElseAsync`; the compiler reports each of them (see [Transforming `IfSuccess` and `IfError` renamed to `Then` and `Else`](#transforming-ifsuccess-and-iferror-renamed-to-then-and-else)); the same for `Match` and `MatchAsync` with a success function and an error action (see [`Match` with a success function and an error action](#match-with-a-success-function-and-an-error-action)).
+9. Rename the calls of `IfSuccess`, `IfSuccessAsync`, `IfError` and `IfErrorAsync` that transform or replace the result to `Then`, `ThenAsync`, `Else` and `ElseAsync`; the compiler reports each of them (see [Transforming `IfSuccess` and `IfError` renamed to `Then` and `Else`](#transforming-ifsuccess-and-iferror-renamed-to-then-and-else)); replace `Match` and `MatchAsync` with two actions by `Switch` and `SwitchAsync`, `MatchAsync` on a result by `Match`, and `Match` with a success function and an error action by `Then(…).IfError(…)` (see [`Match` is a fold; `Switch` runs two actions](#match-is-a-fold-switch-runs-two-actions)).
 10. Fix the calls of `Then`, `Match` and the LINQ queries that no longer compile or that now return a failed result (see [`Then` and `Match` with an `Error` or a task](#then-and-match-with-an-error-or-a-task)).
 11. Replace the error actions of `IfError` and `Match` that return a task with the asynchronous methods (see [`IfError` and `Match` with an error action that returns a task](#iferror-and-match-with-an-error-action-that-returns-a-task)).
 12. Replace the LINQ queries whose `select` returns a task with an asynchronous `from` clause or `ThenAsync` (see [LINQ queries that select a task](#linq-queries-that-select-a-task)), and check the queries whose `select` returns a result (see [LINQ queries that select a result](#linq-queries-that-select-a-result)).
@@ -381,7 +381,7 @@ var guestResult = userResult.Else(error => Result<User>.FromValue(User.Guest));
 userResult.IfSuccess(user => { seenIds.Add(user.Id); });
 ```
 
-An assignment or an increment has a value too, so `IfSuccess(user => lastUser = user)`, `IfSuccess(user => count++)` and `IfError(error => lastError = error)` are compile errors as well, and so is `Match(user => lastUser = user, error => lastError = error)` (see the next section). In 2.x the first one transformed the result into a `Result<User>` of the assigned value; it is the same side effect in a statement lambda:
+An assignment or an increment has a value too, so `IfSuccess(user => lastUser = user)`, `IfSuccess(user => count++)` and `IfError(error => lastError = error)` are compile errors as well, and so is `Match(user => lastUser = user, error => lastError = error)`, as two actions (see the next section). In 2.x the first one transformed the result into a `Result<User>` of the assigned value; it is the same side effect in a statement lambda:
 
 ```csharp
 // 3.0: CS0619, the assignment has a value
@@ -392,27 +392,60 @@ userResult.IfSuccess(user => { lastUser = user; });
 userResult.IfSuccess(user => { count++; });
 ```
 
-### `Match` with a success function and an error action
-`Match` and `MatchAsync` with a **success function** and an **error action** (e.g., `Match(user => CreateOrder(user), error => Log(error))`) transformed the result, as `Then(…).IfError(…)` does, and the same call with a statement lambda tapped it: which one ran depended on the return type of the lambda, as for `IfSuccess` above (`Match(x => set.Add(x), e => { })` was a `Result<bool>`). In 3.0 such a call is a compile error (CS0619) whose message names the replacement, in every form (`Match`, `MatchAsync` on a `Result`, a `Task` or a `ValueTask`, with synchronous or asynchronous delegates). `Match` keeps two meanings: two **functions** that return a value of the same type, and two **actions** for a side effect.
+### `Match` is a fold; `Switch` runs two actions
+In 2.x `Match` and `MatchAsync` had three meanings on one name: two **functions** that return a value, two functions that return a **result**, and two **actions** for a side effect, which returned the result; a **success function** with an **error action** (e.g., `Match(user => CreateOrder(user), error => Log(error))`) transformed the result, as `Then(…).IfError(…)` does, and the same call with a statement lambda tapped it, by the return type of the lambda. Each delegate could also return a `Task` or a `ValueTask`, so most combinations needed a compile error of their own.
+
+In 3.0 `Match` and `MatchAsync` are a **fold**: two functions that return one type, which the call returns as the function returned it (a value, a result or a task). Two actions move to the new **`Switch`** and **`SwitchAsync`**, which return nothing:
+
+* **Two actions** are a compile error (CS0619) whose message names `Switch` (`SwitchAsync` on a task of a result). To keep chaining after a side effect, use `IfSuccess(…).IfError(…)`, which return the result.
+* **A success function with an error action** is a compile error too: use `Then(…).IfError(…)` to transform the value and handle the error.
+* **There is no `MatchAsync` on a `Result` or a `Result<T>`**: `Match` returns the task of the function that ran, which you await. `MatchAsync` takes a `Task` or a `ValueTask` of a result, with two synchronous functions or two functions that return a task.
+* **Two functions that return a result** need no overload of their own: `Match(x => Validate(x), e => e)` is a `Result<T>`, because an `Error` converts to it. With explicit type arguments, the second one is the whole return type: `Match<int, Result<int>>(…)` instead of `Match<int, int>(…)`.
+* **A function that returns `null`** gives `null`, also a `null` result: the fold does not know that its type is a result (see [Null results and null arguments of the extension methods](#null-results-and-null-arguments-of-the-extension-methods)).
+* **In `Switch`**, an action that returns a value is a side effect (e.g., `Switch(x => set.Add(x), e => count++)`), and a lambda that only throws is fine. An action that returns a `Task`, a `Task<T>`, a `ValueTask` or a `ValueTask<T>` is a compile error (CS0619) whose message names `Match` with two functions that return a task; two actions that return a `ValueTask`, or one a `Task` and the other a `ValueTask`, are reported as an ambiguous call (CS0121).
+
+| Call in 2.x | In 3.0 |
+| --- | --- |
+| `result.Match(x => Log(x), e => Log(e))` (returned the result) | `result.Switch(x => Log(x), e => Log(e))` (returns nothing), or `result.IfSuccess(x => Log(x)).IfError(e => Log(e))` to keep the result |
+| `await task.MatchAsync(x => Log(x), e => Log(e))` | `await task.SwitchAsync(x => Log(x), e => Log(e))` |
+| `await result.MatchAsync(x => CountAsync(x), e => CountAsync(0))` | `await result.Match(x => CountAsync(x), e => CountAsync(0))` |
+| `await result.MatchAsync(x => SaveAsync(x), e => LogAsync(e))` (returned the result) | `await result.Match(x => SaveAsync(x), e => LogAsync(e))` (returns nothing) |
+| `await task.MatchAsync(x => SaveAsync(x), e => LogAsync(e))` (returned the result) | the same call; it returns nothing |
+| `result.Match(x => CreateOrder(x), e => Log(e))` (a success function and an error action) | `result.Then(x => CreateOrder(x)).IfError(e => Log(e))` |
+| `result.Match(x => Validate(x), e => e)` | unchanged: a `Result<T>` |
+| `result.Match(x => x.Name, e => "unknown")`, `result.Match(x => x, e => throw …)` | unchanged |
+| `result.Match<T, TNext>(…)` with explicit type arguments for functions that return a `Result<TNext>` | `result.Match<T, Result<TNext>>(…)` |
 
 ```csharp
+// 2.x: two actions, returned the result; 3.0: a compile error that names Switch
+userResult.Match(user => Log(user), error => Log(error));
+
+// 3.0: two actions, nothing returned…
+userResult.Switch(user => Log(user), error => Log(error));
+await GetUserAsync(id).SwitchAsync(user => Log(user), error => Log(error));
+
+// …or a side effect that keeps the result for chaining
+var orderResult = userResult.IfSuccess(user => Log(user)).IfError(error => Log(error)).Then(user => CreateOrder(user));
+
 // 2.x: a Result<Order>; 3.0: a compile error
 var orderResult = userResult.Match(user => CreateOrder(user), error => Log(error));
 
 // 3.0: transform, then run the side effect
 var orderResult = userResult.Then(user => CreateOrder(user)).IfError(error => Log(error));
-var tokenResult = await userResult.ThenAsync(user => GetTokenAsync(user)).IfErrorAsync(error => LogAsync(error));
 
-// unchanged: two functions (a value) and two actions (a side effect)
+// 2.x: MatchAsync on a result; 3.0: Match returns the task of the function that ran
+int orderCount = await userResult.Match(user => CountOrdersAsync(user), error => Task.FromResult(0));
+
+// unchanged: two functions that return one type
 string name = userResult.Match(user => user.Name, error => "unknown");
-userResult.Match(user => Log(user), error => Log(error));
+Result<Address> addressResult = userResult.Match(user => FindAddress(user), error => error);
 ```
 
 ### `Then` and `Match` with an `Error` or a task
 Two kinds of calls compiled in 2.x but did not do what they looked like:
 
-* **A function that returns an `Error`** bound to the generic overload and returned a **successful** `Result<Error>`. In 3.0, `Then` and `ThenAsync` have overloads for such functions that return a **failed** `Result` with that error (in `Match`, a success function with an error action is a compile error; see [`Match` with a success function and an error action](#match-with-a-success-function-and-an-error-action)). The same applies to a LINQ query that selects an `Error` (`from user in GetUser(id) select Error…`). Code that read `.Value` of the `Result<Error>` no longer compiles; if you need it, specify the type arguments.
-* **A function that returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>`** passed to `IfSuccess` (now `Then`), or to the `Match` overloads with an `Action<Error>`, was wrapped in a `Result<Task>` and **never awaited**. In 3.0 such a call is a compile error (CS0619); use the asynchronous method, or specify the type argument to keep the task on purpose.
+* **A function that returns an `Error`** bound to the generic overload and returned a **successful** `Result<Error>`. In 3.0, `Then` and `ThenAsync` have overloads for such functions that return a **failed** `Result` with that error (`Match` returns what its functions return: `Match(x => Validate(x), e => e)` is a `Result<T>`; see [`Match` is a fold; `Switch` runs two actions](#match-is-a-fold-switch-runs-two-actions)). The same applies to a LINQ query that selects an `Error` (`from user in GetUser(id) select Error…`). Code that read `.Value` of the `Result<Error>` no longer compiles; if you need it, specify the type arguments.
+* **A function that returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>`** passed to `IfSuccess` (now `Then`), or to `Match` with an error action, was wrapped in a `Result<Task>` and **never awaited**. In 3.0 such a call is a compile error (CS0619); use the asynchronous method, or specify the type argument to keep the task on purpose.
 
 ```csharp
 // 2.x (IfSuccess): a successful Result<Error>; 3.0: a failed Result with the error
@@ -431,9 +464,9 @@ Result<Task> result = Result.Success().Then<Task>(() => SaveAsync());
 ```
 
 ### `IfError` and `Match` with an error action that returns a task
-In 2.x, an error action that returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>` (e.g., `e => LogAsync(e)`) was accepted as an `Action<Error>` by `IfError` and by the `Match` overloads with an error action, and its task was **never awaited**. An `async` lambda became `async void`, so an exception thrown in it ended the process. In 3.0 such a call is a compile error (CS0619): use `IfErrorAsync` or `MatchAsync`, or, to start the task without awaiting it on purpose, discard it explicitly in a statement lambda.
+In 2.x, an error action that returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>` (e.g., `e => LogAsync(e)`) was accepted as an `Action<Error>` by `IfError` and by the `Match` overloads with an error action, and its task was **never awaited**. An `async` lambda became `async void`, so an exception thrown in it ended the process. In 3.0 such a call is a compile error (CS0619): use `IfErrorAsync`, or `Match` with two functions that return a task, or, to start the task without awaiting it on purpose, discard it explicitly in a statement lambda.
 
-The `Match` overloads in which both functions return a value are not affected: `await result.Match(() => SaveAsync(), e => LogAsync(e))` still returns the task of the function that ran. An `async` success function in the synchronous `Match` (e.g., `Match(async () => await SaveAsync(), e => { })`) was already a compile error; it now reports the same message as the other unsupported calls instead of an ambiguity (CS0121).
+`Match` with two functions that return a task returns the task of the function that ran: `await result.Match(() => SaveAsync(), e => LogAsync(e))`. An `async` success lambda with a synchronous error action (e.g., `Match(async () => await SaveAsync(), e => { })`) was already a compile error; it now reports the message for two actions, which names `Switch`, and in `Switch` an action that returns a task is a compile error that names `Match`.
 
 ```csharp
 // 2.x: the task was never awaited (async void for an async lambda); 3.0: a compile error
@@ -478,6 +511,7 @@ In 2.x, a `null` returned by a function passed to `IfSuccess`, `IfError` (now `T
 * **A `null` argument** throws an `ArgumentNullException`. The asynchronous methods now throw it **from the call**, not from `await`: `var task = result.ThenAsync((Func<Task<Result>>)null!)` throws immediately. This only changes code that stored such a task and awaited it inside a `try`.
 * **A function that returns `null`** where a `Result`, `Result<T>`, `Error` or a task is required — a `null` result, a `null` task, or a task with a `null` result — throws an `InvalidOperationException` that names the function, e.g., "The function ‘ifSuccessFunction’ returned null." A `null` **value** returned for a `Result<T>` is still a successful result.
 * **An awaited source** (`Task<Result>`, `ValueTask<Result<T>>`, …) that returns `null` throws an `InvalidOperationException` as before; the message now names the parameter: "The asynchronous operation represented by ‘resultTask’ returned null."
+* **`Match` and `MatchAsync`** are the exception: they are a fold and return what the function returns, a `null` result included (see [`Match` is a fold; `Switch` runs two actions](#match-is-a-fold-switch-runs-two-actions)). A function of `MatchAsync` that returns a `null` task still throws.
 
 ```csharp
 // 2.x: returned null; 3.0: InvalidOperationException
@@ -502,8 +536,9 @@ The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an
 * **`ErrorUri.Other()`** — an absolute *URI* whose scheme has no factory method of its own (e.g., `mailto:`), for type and instance URIs read from other services; `Parse` and `TryParse` fall back to it. See [Other](Reference/ErrorUri/ErrorUri_Other.md).
 * **`ErrorUri.Parse()`**, **`ErrorUri.TryParse()`** and **`IParsable<ErrorUri>`** — create an `ErrorUri` when the kind is not known in advance: the kind is detected from the value (`about:blank`, `/…`, `tag:`, `urn:`, `http:`/`https:`) and validated as by its factory method. See [Parse](Reference/ErrorUri/ErrorUri_Parse.md).
 * **`ErrorUri.Urn()`** and **`ErrorUri.Relative()`** — `urn:` types and instances (*RFC 8141*), and relative references with the full path (e.g., the *RFC 9457* example `/account/12345/msgs/abc`). See [ErrorUri](Reference/ErrorUri/ErrorUri.md).
-* **Synchronous delegates after an asynchronous call** — `ThenAsync`, `ElseAsync`, `IfSuccessAsync`, `IfErrorAsync` and `MatchAsync` on a `Task` or `ValueTask` of a result also take synchronous delegates, e.g., `await GetUserAsync(id).ThenAsync(user => user.Name)`. A delegate that returns the other kind of task (a `ValueTask` with `Maple.Results.Extensions`, a `Task` with `Maple.Results.Extensions.ValueTasks`), and one synchronous and one asynchronous delegate of `MatchAsync`, are compile errors (CS0619). See [ThenAsync](Reference/Extensions/ThenTaskAsyncExtensions_ThenAsync.md).
+* **Synchronous delegates after an asynchronous call** — `ThenAsync`, `ElseAsync`, `IfSuccessAsync`, `IfErrorAsync` and `MatchAsync` on a `Task` or `ValueTask` of a result also take synchronous delegates, e.g., `await GetUserAsync(id).ThenAsync(user => user.Name)`. A delegate that returns the other kind of task (a `ValueTask` with `Maple.Results.Extensions`, a `Task` with `Maple.Results.Extensions.ValueTasks`) is a compile error (CS0619), and one synchronous and one asynchronous function of `MatchAsync` have no common return type, so the compiler rejects them. See [ThenAsync](Reference/Extensions/ThenTaskAsyncExtensions_ThenAsync.md).
 * **`ElseAsync` with a value or an `Error`** — as `Else` takes a function that returns a value or an `Error` through the implicit conversions, `ElseAsync` takes one that returns it in a task (e.g., `await GetCountAsync(id).ElseAsync(async error => 0)` or `ElseAsync(async error => error.WithMetadata("retried", true))`), on a result and on a task of a result, in both namespaces; these calls were compile errors. See [ElseAsync](Reference/Extensions/ElseTaskAsyncExtensions_ElseAsync.md).
+* **`Switch` and `SwitchAsync`** — run one of two actions depending on whether a result is successful and return nothing (e.g., `result.Switch(user => Log(user), error => Log(error))`, or `await GetUserAsync(id).SwitchAsync(…)`); an action that returns a task is a compile error that names `Match`. See [Switch](Reference/Extensions/SwitchExtensions_Switch.md) and [`Match` is a fold; `Switch` runs two actions](#match-is-a-fold-switch-runs-two-actions).
 * **The non-generic `Result` in LINQ queries** — a step that returns a `Result` (e.g., a check) can be any `from` clause, first or in the middle (`from _ in EnsureActive(user)`), synchronous or asynchronous; its range variable is the successful `Result`. See [SelectMany](Reference/Extensions/LinqExtensions_SelectMany.md).
 * **Mixed LINQ queries** — synchronous and asynchronous `from` clauses can be mixed in one query (e.g., `from user in GetUserAsync(id) from address in GetAddress(user) select …`); the query is then asynchronous and has to be awaited. See [SelectMany](Reference/Extensions/LinqTaskAsyncExtensions_SelectMany.md).
 * **`ResultConfiguration.ContinueOnCapturedContext`** — a global default for the `continueOnCapturedContext` argument of the asynchronous extension methods and for the LINQ query operators; see above.
@@ -532,12 +567,16 @@ The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an
 | `result.IfSuccess(x => last = x)`, `result.IfError(e => count++)` (an assignment or an increment, which has a value) | `result.IfSuccess(x => { last = x; })`, `result.IfError(e => { count++; })` |
 | `result.IfSuccess(() => SaveAsync())` (a function returning a task) | `await result.IfSuccessAsync(() => SaveAsync())` |
 | `result.IfError(e => LogAsync(e))` (an error action returning a task) | `await result.IfErrorAsync(e => LogAsync(e))` |
-| `result.Match(x => Log(x), e => LogAsync(e))` (an error action returning a task) | `await result.MatchAsync(x => LogAsync(x), e => LogAsync(e))` |
+| `result.Match(x => Log(x), e => LogAsync(e))` (an error action returning a task) | `await result.Match(x => LogAsync(x), e => LogAsync(e))` |
 | `from x in result select SaveAsync(x)` (a selector returning a task) | `await result.ThenAsync(x => SaveAsync(x))` |
 | `result.IfSuccess(x => Error…)` relied on as a `Result<Error>` | `result.Then<T, Error>(x => Error…)` |
 | `from x in result select Save(x)` relied on as a `Result<Result<T>>` | `result.Select<T, Result<TNext>>(x => Save(x))` |
 | `result.Match(x => …, e => Log(e))` (a success function and an error action) | `result.Then(x => …).IfError(e => Log(e))` |
 | `await result.MatchAsync(x => …, e => LogAsync(e))` (a success function and an error action) | `await result.ThenAsync(x => …).IfErrorAsync(e => LogAsync(e))` |
+| `result.Match(x => Log(x), e => Log(e))` (two actions) | `result.Switch(x => Log(x), e => Log(e))`, or `result.IfSuccess(x => Log(x)).IfError(e => Log(e))` to keep the result |
+| `await task.MatchAsync(x => Log(x), e => Log(e))` (two actions) | `await task.SwitchAsync(x => Log(x), e => Log(e))` |
+| `await result.MatchAsync(x => …Async(x), e => …Async(e))` (`MatchAsync` on a result) | `await result.Match(x => …Async(x), e => …Async(e))` |
+| `result.Match<T, TNext>(…)` (functions returning a `Result<TNext>`) | `result.Match<T, Result<TNext>>(…)` |
 | `WithErrorDetail("Email", …)` / `AddErrorDetail(nameof(request.Email), …)` (a pointer that is not a JSON Pointer) | `WithErrorDetail("/email", …)` / `AddErrorDetail("/email", …)` |
 | `Dictionary<string, object>` passed as named values | `Dictionary<string, object?>` |
 | `using Maple.Result;` | `using Maple.Results;` |
@@ -567,3 +606,4 @@ The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an
 * [Issue #217: The non-generic `Result` in LINQ `from` clauses, and a selected result](https://github.com/TomMaple/Maple.Result/issues/217)
 * [Issue #227: `Match` with a success function and an error action](https://github.com/TomMaple/Maple.Result/issues/227)
 * [Issue #235: Reject template parameter names that differ only in case](https://github.com/TomMaple/Maple.Result/issues/235)
+* [Issue #255: `Match` as a fold of two functions, and `Switch` and `SwitchAsync` for two actions](https://github.com/TomMaple/Maple.Result/issues/255)

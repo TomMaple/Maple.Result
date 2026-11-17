@@ -140,7 +140,9 @@ public class ErrorDetailUnitTests
 
     #endregion
 
-    #region empty texts (issue #203)
+    #region empty texts
+
+    // See issue #203.
 
     [Theory]
     [InlineData("")]
@@ -169,7 +171,9 @@ public class ErrorDetailUnitTests
 
     #endregion
 
-    #region Pointer (issue #230)
+    #region Pointer
+
+    // See issue #230.
 
     [Fact]
     public void Pointer_NamesAndIndex_JoinsThemWithSlashes()
@@ -259,7 +263,9 @@ public class ErrorDetailUnitTests
 
     #endregion
 
-    #region Pointer with an index of any integer type (issue #236)
+    #region Pointer with an index of any integer type
+
+    // See issue #236.
 
     [Fact]
     public void Pointer_SByteIndex_IsWrittenInDecimal()

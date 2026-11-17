@@ -1595,7 +1595,9 @@ public class ThenTaskAsyncExtensionsUnitTests
 
     #endregion
 
-    #region IfSuccessAsync with a function returning an Error (overload trap, issue #119)
+    #region IfSuccessAsync with a function returning an Error (overload trap)
+
+    // See issue #119.
 
     private static readonly Error TrapError = Error.Conflict(ErrorUri.Tag("tag:test.com,2024:Trap"), "Trap title");
 
@@ -1764,7 +1766,7 @@ public class ThenTaskAsyncExtensionsUnitTests
 
     #endregion
 
-    #region ThenAsync with a function returning a task without a value (overload trap, issue #197)
+    #region ThenAsync with a function returning a task without a value (overload trap)
 
     // A function that returns nothing is a side effect: the transforming method reports it as a compile error (CS0619) that
     // names the side-effect method (#197). The bindings are checked with a consumer project.
@@ -1786,7 +1788,9 @@ public class ThenTaskAsyncExtensionsUnitTests
 
     #endregion
 
-    #region Task results with synchronous delegates (issue #214)
+    #region Task results with synchronous delegates
+
+    // See issue #214.
 
     private static readonly Error SyncTestError = Error.Failure(ErrorUri.None, "Synchronous delegate test error");
     private static readonly Error SyncOtherError = Error.Conflict(ErrorUri.None, "Synchronous delegate other error");

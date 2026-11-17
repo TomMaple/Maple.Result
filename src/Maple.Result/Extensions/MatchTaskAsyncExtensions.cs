@@ -17,548 +17,50 @@ using System.Threading.Tasks;
 namespace Maple.Results.Extensions;
 
 /// <summary>
-///     The collection of extension methods for executing asynchronous actions or functions based on the state of a <see cref="Result" /> instance.
+///     The collection of extension methods that await a task of a <see cref="Result" /> or <see cref="Result{T}" /> and fold it into one value:
+///     a function for the success and a function for the error, which return the same type.
 /// </summary>
 /// <remarks>
-///     These methods enable fluent chaining of operations by specifying operations that will be executed depending on the status of the <see cref="Result" />
-///     instance. These helpers centralize success/error handling logic by accepting delegates for each branch,
-///     enabling concise match-like patterns across synchronous result workflows.
+///     The functions are both synchronous, or both return a <see cref="Task" /> or a <see cref="Task{TResult}" />, which is awaited.
+///     <c>MatchAsync</c> returns what the function that ran returns, and does not look at it. There is no <c>MatchAsync</c> on a result:
+///     <c>Match</c> returns the task of the function that ran. For two side effects, use <c>SwitchAsync</c>; two actions are a compile error
+///     here (CS0619).
 /// </remarks>
 public static class MatchTaskAsyncExtensions
 {
-    #region Result
-
-    /// <summary>
-    ///     Invokes one of the provided asynchronous actions depending on whether the <paramref name="result" /> is successful.
-    /// </summary>
-    /// <remarks>
-    ///     Use this overload when the desired outcome is a side effect, and you want to keep the existing <see cref="Result" /> instance for further chaining.
-    /// </remarks>
-    /// <param name="result">
-    ///     The <see cref="Result" /> whose state determines which action is invoked. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="ifSuccessAction">
-    ///     The asynchronous action to execute if the <paramref name="result" /> indicates success. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="ifErrorAction">
-    ///     The asynchronous action to execute if the <paramref name="result" /> indicates failure.
-    ///     The <see cref="Error" /> associated with the <paramref name="result" /> is passed to this action. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="continueOnCapturedContext">
-    ///     <see langword="true" /> to run the continuations, including the passed delegates when they run after an <c>await</c>,
-    ///     on the captured context (e.g., the UI thread); <see langword="false" /> to run them on any thread;
-    ///     <see langword="null" /> (the default) to use <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
-    /// </param>
-    /// <returns>
-    ///     A <see cref="Task{Result}" /> that represents the original <paramref name="result" />, enabling fluent chaining.
-    /// </returns>
-    /// <exception cref="ArgumentNullException">
-    ///     If any of the <paramref name="result" />, <paramref name="ifSuccessAction" />,
-    ///     or <paramref name="ifErrorAction" /> parameters are <see langword="null" />.
-    /// </exception>
-    /// <exception cref="InvalidOperationException">
-    ///     If <paramref name="ifSuccessAction" /> returns a <see langword="null" /> task,
-    ///     or <paramref name="ifErrorAction" /> returns a <see langword="null" /> task.
-    /// </exception>
-    public static Task<Result> MatchAsync(this Result result, Func<Task> ifSuccessAction,
-        Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        ArgumentNullException.ThrowIfNull(result);
-        ArgumentNullException.ThrowIfNull(ifSuccessAction);
-        ArgumentNullException.ThrowIfNull(ifErrorAction);
-
-        return Core(result, ifSuccessAction, ifErrorAction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
-
-        static async Task<Result> Core(Result result, Func<Task> ifSuccessAction, Func<Error, Task> ifErrorAction, bool continueOnCapturedContext)
-        {
-            if (result.IsSuccess)
-            {
-                var successTask = ifSuccessAction();
-                await Guard.EnsureNotNullTask(successTask, nameof(ifSuccessAction)).ConfigureAwait(continueOnCapturedContext);
-            }
-            else
-            {
-                var errorTask = ifErrorAction(result.Error);
-                await Guard.EnsureNotNullTask(errorTask, nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
-            }
-
-            return result;
-        }
-    }
-
-    /// <summary>
-    ///     Invokes one of the provided asynchronous functions depending on whether the <paramref name="result" /> is successful and
-    ///     returns the produced <see cref="Result" />.
-    /// </summary>
-    /// <param name="result">The <see cref="Result" /> whose outcome is inspected. Must not be <see langword="null" />.</param>
-    /// <param name="ifSuccessFunction">
-    ///     The asynchronous function invoked when the <paramref name="result" /> represents success. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="ifErrorFunction">
-    ///     The asynchronous function invoked when the <paramref name="result" /> represents failure.
-    ///     The <see cref="Error" /> associated with the <paramref name="result" /> is passed to this function. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="continueOnCapturedContext">
-    ///     <see langword="true" /> to run the continuations, including the passed delegates when they run after an <c>await</c>,
-    ///     on the captured context (e.g., the UI thread); <see langword="false" /> to run them on any thread;
-    ///     <see langword="null" /> (the default) to use <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
-    /// </param>
-    /// <returns>
-    ///     The <see cref="Task{Result}" /> which represents the <see cref="Result" /> returned by either <paramref name="ifSuccessFunction" /> or
-    ///     <paramref name="ifErrorFunction" />.
-    /// </returns>
-    /// <exception cref="ArgumentNullException">
-    ///     If any of the <paramref name="result" />, <paramref name="ifSuccessFunction" />,
-    ///     or <paramref name="ifErrorFunction" /> parameters are <see langword="null" />.
-    /// </exception>
-    /// <exception cref="InvalidOperationException">
-    ///     If <paramref name="ifSuccessFunction" /> returns a <see langword="null" /> task or a task with a <see langword="null" /> result,
-    ///     or <paramref name="ifErrorFunction" /> returns a <see langword="null" /> task or a task with a <see langword="null" /> result.
-    /// </exception>
-    public static Task<Result> MatchAsync(this Result result, Func<Task<Result>> ifSuccessFunction,
-        Func<Error, Task<Result>> ifErrorFunction, bool? continueOnCapturedContext = null)
-    {
-        ArgumentNullException.ThrowIfNull(result);
-        ArgumentNullException.ThrowIfNull(ifSuccessFunction);
-        ArgumentNullException.ThrowIfNull(ifErrorFunction);
-
-        return Core(result, ifSuccessFunction, ifErrorFunction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
-
-        static async Task<Result> Core(
-            Result result,
-            Func<Task<Result>> ifSuccessFunction,
-            Func<Error, Task<Result>> ifErrorFunction,
-            bool continueOnCapturedContext)
-        {
-            if (result.IsSuccess)
-            {
-                var successTask = ifSuccessFunction();
-                return await Guard.EnsureNotNullResult(successTask, nameof(ifSuccessFunction), continueOnCapturedContext);
-            }
-
-            var errorTask = ifErrorFunction(result.Error);
-
-            return await Guard.EnsureNotNullResult(errorTask, nameof(ifErrorFunction), continueOnCapturedContext);
-        }
-    }
-
-    /// <summary>
-    ///     Invokes one of the provided asynchronous functions depending on whether the <paramref name="result" /> is successful and returns the value
-    ///     that the invoked function returns, as an asynchronous operation.
-    /// </summary>
-    /// <typeparam name="T">The return type produced by either branch.</typeparam>
-    /// <param name="result">
-    ///     The <see cref="Result" /> whose outcome dictates which function is invoked. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="ifSuccessFunction">
-    ///     The asynchronous function invoked when the <paramref name="result" /> represents success. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="ifErrorFunction">
-    ///     The asynchronous function invoked when the <paramref name="result" /> represents failure.
-    ///     The <see cref="Error" /> associated with the <paramref name="result" /> is passed to this function. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="continueOnCapturedContext">
-    ///     <see langword="true" /> to run the continuations, including the passed delegates when they run after an <c>await</c>,
-    ///     on the captured context (e.g., the UI thread); <see langword="false" /> to run them on any thread;
-    ///     <see langword="null" /> (the default) to use <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
-    /// </param>
-    /// <returns>
-    ///     The <see cref="Task{T}" /> that represents the value of type<typeparamref name="T" /> produced by either <paramref name="ifSuccessFunction" /> or
-    ///     <paramref name="ifErrorFunction" />.
-    /// </returns>
-    /// <exception cref="ArgumentNullException">
-    ///     If any of the <paramref name="result" />, <paramref name="ifSuccessFunction" />,
-    ///     or <paramref name="ifErrorFunction" /> parameters are <see langword="null" />.
-    /// </exception>
-    /// <exception cref="InvalidOperationException">
-    ///     If <paramref name="ifSuccessFunction" /> returns a <see langword="null" /> task,
-    ///     or <paramref name="ifErrorFunction" /> returns a <see langword="null" /> task.
-    /// </exception>
-    public static Task<T> MatchAsync<T>(this Result result, Func<Task<T>> ifSuccessFunction,
-        Func<Error, Task<T>> ifErrorFunction, bool? continueOnCapturedContext = null)
-    {
-        ArgumentNullException.ThrowIfNull(result);
-        ArgumentNullException.ThrowIfNull(ifSuccessFunction);
-        ArgumentNullException.ThrowIfNull(ifErrorFunction);
-
-        return Core(result, ifSuccessFunction, ifErrorFunction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
-
-        static async Task<T> Core(Result result, Func<Task<T>> ifSuccessFunction, Func<Error, Task<T>> ifErrorFunction, bool continueOnCapturedContext)
-        {
-            if (result.IsSuccess)
-            {
-                var successTask = ifSuccessFunction();
-                return await Guard.EnsureNotNullTask(successTask, nameof(ifSuccessFunction)).ConfigureAwait(continueOnCapturedContext);
-            }
-
-            var errorTask = ifErrorFunction(result.Error);
-
-            return await Guard.EnsureNotNullTask(errorTask, nameof(ifErrorFunction)).ConfigureAwait(continueOnCapturedContext);
-        }
-    }
-
-    /// <summary>
-    ///     Invokes one of the provided asynchronous functions depending on whether the <paramref name="result" /> is successful and returns their output as
-    ///     a <see cref="Result{T}" /> instance.
-    /// </summary>
-    /// <typeparam name="T">The type of the <see cref="Result{T}" /> returned by the matching branch.</typeparam>
-    /// <param name="result">
-    ///     The <see cref="Result" /> whose state determines which function is invoked. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="ifSuccessFunction">
-    ///     The asynchronous function invoked when the <paramref name="result" /> represents success. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="ifErrorFunction">
-    ///     The asynchronous function invoked when the <paramref name="result" /> represents failure.
-    ///     The <see cref="Error" /> associated with the <paramref name="result" /> is passed to this function. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="continueOnCapturedContext">
-    ///     <see langword="true" /> to run the continuations, including the passed delegates when they run after an <c>await</c>,
-    ///     on the captured context (e.g., the UI thread); <see langword="false" /> to run them on any thread;
-    ///     <see langword="null" /> (the default) to use <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
-    /// </param>
-    /// <returns>
-    ///     The <see cref="Task{TResult}" /> that represents the <see cref="Result{T}" /> produced by either <paramref name="ifSuccessFunction" /> or
-    ///     <paramref name="ifErrorFunction" />.
-    /// </returns>
-    /// <exception cref="ArgumentNullException">
-    ///     If any of the <paramref name="result" />, <paramref name="ifSuccessFunction" />,
-    ///     or <paramref name="ifErrorFunction" /> parameters are <see langword="null" />.
-    /// </exception>
-    /// <exception cref="InvalidOperationException">
-    ///     If <paramref name="ifSuccessFunction" /> returns a <see langword="null" /> task or a task with a <see langword="null" /> result,
-    ///     or <paramref name="ifErrorFunction" /> returns a <see langword="null" /> task or a task with a <see langword="null" /> result.
-    /// </exception>
-    public static Task<Result<T>> MatchAsync<T>(this Result result, Func<Task<Result<T>>> ifSuccessFunction,
-        Func<Error, Task<Result<T>>> ifErrorFunction, bool? continueOnCapturedContext = null)
-    {
-        ArgumentNullException.ThrowIfNull(result);
-        ArgumentNullException.ThrowIfNull(ifSuccessFunction);
-        ArgumentNullException.ThrowIfNull(ifErrorFunction);
-
-        return Core(result, ifSuccessFunction, ifErrorFunction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
-
-        static async Task<Result<T>> Core(
-            Result result,
-            Func<Task<Result<T>>> ifSuccessFunction,
-            Func<Error, Task<Result<T>>> ifErrorFunction,
-            bool continueOnCapturedContext)
-        {
-            if (result.IsSuccess)
-            {
-                var successTask = ifSuccessFunction();
-                return await Guard.EnsureNotNullResult(successTask, nameof(ifSuccessFunction), continueOnCapturedContext);
-            }
-
-            var errorTask = ifErrorFunction(result.Error);
-
-            return await Guard.EnsureNotNullResult(errorTask, nameof(ifErrorFunction), continueOnCapturedContext);
-        }
-    }
-
-    #endregion
-
-    #region Result<T>
-
-    /// <summary>
-    ///     Invokes one of the provided asynchronous actions depending on whether the <paramref name="result" /> is successful.
-    /// </summary>
-    /// <remarks>
-    ///     Use this overload when the desired outcome is a side effect,
-    ///     and you want to keep the existing <see cref="Result{T}" /> instance for further chaining.
-    /// </remarks>
-    /// <typeparam name="T">The type wrapped by the <see cref="Result{T}" />.</typeparam>
-    /// <param name="result">
-    ///     The <see cref="Result{T}" /> whose outcome determines which asynchronous action is invoked. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="ifSuccessAction">
-    ///     The asynchronous action to execute when the <paramref name="result" /> represents success.
-    ///     The value of the successful <see cref="Result{T}" /> is passed as a parameter. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="ifErrorAction">
-    ///     The asynchronous action to execute when the <paramref name="result" /> represents failure.
-    ///     The <see cref="Error" /> associated with the <paramref name="result" /> is passed to this action. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="continueOnCapturedContext">
-    ///     <see langword="true" /> to run the continuations, including the passed delegates when they run after an <c>await</c>,
-    ///     on the captured context (e.g., the UI thread); <see langword="false" /> to run them on any thread;
-    ///     <see langword="null" /> (the default) to use <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
-    /// </param>
-    /// <returns>
-    ///     The <see cref="Task{TResult}" /> that represents the original <paramref name="result" /> for fluent chaining.
-    /// </returns>
-    /// <exception cref="ArgumentNullException">
-    ///     If any of the <paramref name="result" />, <paramref name="ifSuccessAction" />,
-    ///     or <paramref name="ifErrorAction" /> parameters are <see langword="null" />.
-    /// </exception>
-    /// <exception cref="InvalidOperationException">
-    ///     If <paramref name="ifSuccessAction" /> returns a <see langword="null" /> task,
-    ///     or <paramref name="ifErrorAction" /> returns a <see langword="null" /> task.
-    /// </exception>
-    public static Task<Result<T>> MatchAsync<T>(this Result<T> result, Func<T, Task> ifSuccessAction,
-        Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        ArgumentNullException.ThrowIfNull(result);
-        ArgumentNullException.ThrowIfNull(ifSuccessAction);
-        ArgumentNullException.ThrowIfNull(ifErrorAction);
-
-        return Core(result, ifSuccessAction, ifErrorAction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
-
-        static async Task<Result<T>> Core(Result<T> result, Func<T, Task> ifSuccessAction, Func<Error, Task> ifErrorAction, bool continueOnCapturedContext)
-        {
-            if (result.IsSuccess)
-            {
-                var successTask = ifSuccessAction(result.Value);
-                await Guard.EnsureNotNullTask(successTask, nameof(ifSuccessAction)).ConfigureAwait(continueOnCapturedContext);
-            }
-            else
-            {
-                var errorTask = ifErrorAction(result.Error);
-                await Guard.EnsureNotNullTask(errorTask, nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
-            }
-
-            return result;
-        }
-    }
-
-    /// <summary>
-    ///     Invokes one of the provided asynchronous functions depending on whether the <paramref name="result" /> is successful and returns the value
-    ///     that the invoked function returns, as an asynchronous operation.
-    /// </summary>
-    /// <typeparam name="T">The type wrapped by the source <see cref="Result{T}" />.</typeparam>
-    /// <typeparam name="TNext">The type produced by either branch.</typeparam>
-    /// <param name="result">
-    ///     The <see cref="Result{T}" /> whose outcome selects the function to invoke. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="ifSuccessFunction">
-    ///     The asynchronous function executed when the <paramref name="result" /> represents success.
-    ///     The value of the successful <see cref="Result{T}" /> is passed as a parameter. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="ifErrorFunction">
-    ///     The asynchronous function executed when the <paramref name="result" /> represents failure.
-    ///     The <see cref="Error" /> associated with the <paramref name="result" /> is passed to this function. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="continueOnCapturedContext">
-    ///     <see langword="true" /> to run the continuations, including the passed delegates when they run after an <c>await</c>,
-    ///     on the captured context (e.g., the UI thread); <see langword="false" /> to run them on any thread;
-    ///     <see langword="null" /> (the default) to use <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
-    /// </param>
-    /// <returns>
-    ///     The <see cref="Task{TNext}" /> that represents the value of the <typeparamref name="TNext" /> type returned by either
-    ///     <paramref name="ifSuccessFunction" /> or <paramref name="ifErrorFunction" />.
-    /// </returns>
-    /// <exception cref="ArgumentNullException">
-    ///     If any of the <paramref name="result" />, <paramref name="ifSuccessFunction" />,
-    ///     or <paramref name="ifErrorFunction" /> parameters are <see langword="null" />.
-    /// </exception>
-    /// <exception cref="InvalidOperationException">
-    ///     If <paramref name="ifSuccessFunction" /> returns a <see langword="null" /> task,
-    ///     or <paramref name="ifErrorFunction" /> returns a <see langword="null" /> task.
-    /// </exception>
-    public static Task<TNext> MatchAsync<T, TNext>(
-        this Result<T> result,
-        Func<T, Task<TNext>> ifSuccessFunction,
-        Func<Error, Task<TNext>> ifErrorFunction,
-        bool? continueOnCapturedContext = null)
-    {
-        ArgumentNullException.ThrowIfNull(result);
-        ArgumentNullException.ThrowIfNull(ifSuccessFunction);
-        ArgumentNullException.ThrowIfNull(ifErrorFunction);
-
-        return Core(result, ifSuccessFunction, ifErrorFunction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
-
-        static async Task<TNext> Core(
-            Result<T> result,
-            Func<T, Task<TNext>> ifSuccessFunction,
-            Func<Error, Task<TNext>> ifErrorFunction,
-            bool continueOnCapturedContext)
-        {
-            if (result.IsSuccess)
-            {
-                var successTask = ifSuccessFunction(result.Value);
-                return await Guard.EnsureNotNullTask(successTask, nameof(ifSuccessFunction)).ConfigureAwait(continueOnCapturedContext);
-            }
-
-            var errorTask = ifErrorFunction(result.Error);
-
-            return await Guard.EnsureNotNullTask(errorTask, nameof(ifErrorFunction)).ConfigureAwait(continueOnCapturedContext);
-        }
-    }
-
-    /// <summary>
-    ///     Executes one of the provided asynchronous functions depending on whether the <paramref name="result" /> is successful and returns their output as
-    ///     a <see cref="Result{TNext}" /> instance.
-    /// </summary>
-    /// <typeparam name="T">The type wrapped by the source <see cref="Result{T}" />.</typeparam>
-    /// <typeparam name="TNext">The type of the <see cref="Result{TNext}" /> returned by the invoked function.</typeparam>
-    /// <param name="result">
-    ///     The <see cref="Result{T}" /> whose outcome selects the function to invoke. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="ifSuccessFunction">
-    ///     The asynchronous function executed when the <paramref name="result" /> represents success.
-    ///     The value of the successful <see cref="Result{T}" /> is passed as a parameter. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="ifErrorFunction">
-    ///     The asynchronous function executed when the <paramref name="result" /> represents failure.
-    ///     The <see cref="Error" /> associated with the <paramref name="result" /> is passed to this function. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="continueOnCapturedContext">
-    ///     <see langword="true" /> to run the continuations, including the passed delegates when they run after an <c>await</c>,
-    ///     on the captured context (e.g., the UI thread); <see langword="false" /> to run them on any thread;
-    ///     <see langword="null" /> (the default) to use <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
-    /// </param>
-    /// <returns>
-    ///     The <see cref="Task{TResult}" /> that represents the <see cref="Result{TNext}" /> returned by either <paramref name="ifSuccessFunction" /> or
-    ///     <paramref name="ifErrorFunction" />.
-    /// </returns>
-    /// <exception cref="ArgumentNullException">
-    ///     If any of the <paramref name="result" />, <paramref name="ifSuccessFunction" />,
-    ///     or <paramref name="ifErrorFunction" /> parameters are <see langword="null" />.
-    /// </exception>
-    /// <exception cref="InvalidOperationException">
-    ///     If <paramref name="ifSuccessFunction" /> returns a <see langword="null" /> task or a task with a <see langword="null" /> result,
-    ///     or <paramref name="ifErrorFunction" /> returns a <see langword="null" /> task or a task with a <see langword="null" /> result.
-    /// </exception>
-    public static Task<Result<TNext>> MatchAsync<T, TNext>(
-        this Result<T> result,
-        Func<T, Task<Result<TNext>>> ifSuccessFunction,
-        Func<Error, Task<Result<TNext>>> ifErrorFunction,
-        bool? continueOnCapturedContext = null)
-    {
-        ArgumentNullException.ThrowIfNull(result);
-        ArgumentNullException.ThrowIfNull(ifSuccessFunction);
-        ArgumentNullException.ThrowIfNull(ifErrorFunction);
-
-        return Core(result, ifSuccessFunction, ifErrorFunction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
-
-        static async Task<Result<TNext>> Core(
-            Result<T> result,
-            Func<T, Task<Result<TNext>>> ifSuccessFunction,
-            Func<Error, Task<Result<TNext>>> ifErrorFunction,
-            bool continueOnCapturedContext)
-        {
-            if (result.IsSuccess)
-            {
-                var successTask = ifSuccessFunction(result.Value);
-                return await Guard.EnsureNotNullResult(successTask, nameof(ifSuccessFunction), continueOnCapturedContext);
-            }
-
-            var errorTask = ifErrorFunction(result.Error);
-
-            return await Guard.EnsureNotNullResult(errorTask, nameof(ifErrorFunction), continueOnCapturedContext);
-        }
-    }
-
-    #endregion
-
     #region Task<Result>
 
     /// <summary>
-    ///     Invokes one of the provided asynchronous actions depending on whether the <paramref name="resultTask" /> represents a successful operation.
+    ///     Awaits the <paramref name="resultTask" />, invokes one of the provided functions depending on whether the result is successful and
+    ///     returns the value that the invoked function returns.
     /// </summary>
     /// <remarks>
-    ///     <para>
-    ///         Use this overload when the desired outcome is a side effect,
-    ///         and you want to keep the existing <see cref="Result" /> instance for further chaining.
-    ///     </para>
-    ///     <para>
-    ///         The method executes passed <paramref name="resultTask" /> asynchronous operation, does not modify its result.
-    ///     </para>
+    ///     The functions are synchronous: they run after the <paramref name="resultTask" /> completes. The value is returned as the function
+    ///     returns it, <see langword="null" /> included.
     /// </remarks>
-    /// <param name="resultTask">
-    ///     The asynchronous operation to be executed and which result is to be inspected. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="ifSuccessAction">
-    ///     The asynchronous action to execute if the <paramref name="resultTask" /> indicates a successful operation. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="ifErrorAction">
-    ///     The asynchronous action to execute if the <paramref name="resultTask" /> indicates a failed operation.
-    ///     The <see cref="Error" /> associated with the <paramref name="resultTask" /> outcome is passed to this action. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="continueOnCapturedContext">
-    ///     <see langword="true" /> to run the continuations, including the passed delegates when they run after an <c>await</c>,
-    ///     on the captured context (e.g., the UI thread); <see langword="false" /> to run them on any thread;
-    ///     <see langword="null" /> (the default) to use <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
-    /// </param>
-    /// <returns>
-    ///     A <see cref="Task{Result}" /> that represents the original <paramref name="resultTask" />, enabling fluent chaining.
-    /// </returns>
-    /// <exception cref="ArgumentNullException">
-    ///     If any of the <paramref name="resultTask" />, <paramref name="ifSuccessAction" />,
-    ///     or <paramref name="ifErrorAction" /> parameters are <see langword="null" />.
-    /// </exception>
-    /// <exception cref="InvalidOperationException">
-    ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />,
-    ///     <paramref name="ifSuccessAction" /> returns a <see langword="null" /> task,
-    ///     or <paramref name="ifErrorAction" /> returns a <see langword="null" /> task.
-    /// </exception>
-    [OverloadResolutionPriority(1)]
-    public static Task<Result> MatchAsync(this Task<Result> resultTask, Func<Task> ifSuccessAction,
-        Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        ArgumentNullException.ThrowIfNull(resultTask);
-        ArgumentNullException.ThrowIfNull(ifSuccessAction);
-        ArgumentNullException.ThrowIfNull(ifErrorAction);
-
-        return Core(resultTask, ifSuccessAction, ifErrorAction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
-
-        static async Task<Result> Core(Task<Result> resultTask, Func<Task> ifSuccessAction, Func<Error, Task> ifErrorAction, bool continueOnCapturedContext)
-        {
-            var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
-
-            if (result.IsSuccess)
-            {
-                var successTask = ifSuccessAction();
-                await Guard.EnsureNotNullTask(successTask, nameof(ifSuccessAction)).ConfigureAwait(continueOnCapturedContext);
-            }
-            else
-            {
-                var errorTask = ifErrorAction(result.Error);
-                await Guard.EnsureNotNullTask(errorTask, nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
-            }
-
-            return result;
-        }
-    }
-
-    /// <summary>
-    ///     Invokes one of the provided asynchronous functions depending on whether the <paramref name="resultTask" /> is a successful operation and
-    ///     returns the produced <see cref="Result" />.
-    /// </summary>
-    /// <remarks>
-    ///     The method executes passed <paramref name="resultTask" /> asynchronous operation.
-    /// </remarks>
-    /// <param name="resultTask">
-    ///     The asynchronous operation to be executed and which result is to be inspected. Must not be <see langword="null" />.
-    /// </param>
+    /// <typeparam name="TOut">The type that both functions return.</typeparam>
+    /// <param name="resultTask">The asynchronous operation that returns the result to fold. Must not be <see langword="null" />.</param>
     /// <param name="ifSuccessFunction">
-    ///     The asynchronous function invoked if the <paramref name="resultTask" /> represents a successful operation. Must not be <see langword="null" />.
+    ///     The function invoked if the result is successful. Must not be <see langword="null" />.
     /// </param>
     /// <param name="ifErrorFunction">
-    ///     The asynchronous function invoked if the <paramref name="resultTask" /> represents a failed operation. The <see cref="Error" /> associated with
-    ///     the <paramref name="resultTask" /> operation outcome is passed to this function. Must not be <see langword="null" />.
+    ///     The function invoked if the result is failed, with its <see cref="Error" />. Must not be <see langword="null" />.
     /// </param>
     /// <param name="continueOnCapturedContext">
-    ///     <see langword="true" /> to run the continuations, including the passed delegates when they run after an <c>await</c>,
-    ///     on the captured context (e.g., the UI thread); <see langword="false" /> to run them on any thread;
-    ///     <see langword="null" /> (the default) to use <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
+    ///     <see langword="true" /> to run the continuation, including the passed functions, on the captured context (e.g., the UI thread);
+    ///     <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
+    ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
     /// </param>
-    /// <returns>
-    ///     The <see cref="Task{Result}" /> which represents the <see cref="Result" /> returned by either <paramref name="ifSuccessFunction" /> or
-    ///     <paramref name="ifErrorFunction" />.
-    /// </returns>
+    /// <returns>The task of the value that <paramref name="ifSuccessFunction" /> or <paramref name="ifErrorFunction" /> returns.</returns>
     /// <exception cref="ArgumentNullException">
     ///     If any of the <paramref name="resultTask" />, <paramref name="ifSuccessFunction" />,
     ///     or <paramref name="ifErrorFunction" /> parameters are <see langword="null" />.
     /// </exception>
     /// <exception cref="InvalidOperationException">
-    ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />,
-    ///     <paramref name="ifSuccessFunction" /> returns a <see langword="null" /> task or a task with a <see langword="null" /> result,
-    ///     or <paramref name="ifErrorFunction" /> returns a <see langword="null" /> task or a task with a <see langword="null" /> result.
+    ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />.
     /// </exception>
-    [OverloadResolutionPriority(1)]
-    public static Task<Result> MatchAsync(this Task<Result> resultTask, Func<Task<Result>> ifSuccessFunction,
-        Func<Error, Task<Result>> ifErrorFunction, bool? continueOnCapturedContext = null)
+    public static Task<TOut> MatchAsync<TOut>(this Task<Result> resultTask, Func<TOut> ifSuccessFunction, Func<Error, TOut> ifErrorFunction,
+        bool? continueOnCapturedContext = null)
     {
         ArgumentNullException.ThrowIfNull(resultTask);
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
@@ -566,53 +68,35 @@ public static class MatchTaskAsyncExtensions
 
         return Core(resultTask, ifSuccessFunction, ifErrorFunction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
 
-        static async Task<Result> Core(
-            Task<Result> resultTask,
-            Func<Task<Result>> ifSuccessFunction,
-            Func<Error, Task<Result>> ifErrorFunction,
+        static async Task<TOut> Core(Task<Result> resultTask, Func<TOut> ifSuccessFunction, Func<Error, TOut> ifErrorFunction,
             bool continueOnCapturedContext)
         {
             var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
-
-            if (result.IsSuccess)
-            {
-                var successTask = ifSuccessFunction();
-                return await Guard.EnsureNotNullResult(successTask, nameof(ifSuccessFunction), continueOnCapturedContext);
-            }
-
-            var errorTask = ifErrorFunction(result.Error);
-
-            return await Guard.EnsureNotNullResult(errorTask, nameof(ifErrorFunction), continueOnCapturedContext);
+            return result.Match(ifSuccessFunction, ifErrorFunction);
         }
     }
 
     /// <summary>
-    ///     Invokes one of the provided asynchronous functions depending on whether the <paramref name="resultTask" /> is a successful operation and
-    ///     returns the value that the invoked function returns, as an asynchronous operation.
+    ///     Awaits the <paramref name="resultTask" />, invokes one of the provided asynchronous functions depending on whether the result is
+    ///     successful, awaits it and returns the value that it returns.
     /// </summary>
     /// <remarks>
-    ///     The method executes passed <paramref name="resultTask" /> asynchronous operation.
+    ///     The value is returned as the function returns it, <see langword="null" /> included.
     /// </remarks>
-    /// <typeparam name="T">The return type produced by either branch.</typeparam>
-    /// <param name="resultTask">
-    ///     The asynchronous operation to be executed and which result is to be inspected. Must not be <see langword="null" />.
-    /// </param>
+    /// <typeparam name="TOut">The type of the value of the tasks that both functions return.</typeparam>
+    /// <param name="resultTask">The asynchronous operation that returns the result to fold. Must not be <see langword="null" />.</param>
     /// <param name="ifSuccessFunction">
-    ///     The asynchronous function invoked when the <paramref name="resultTask" /> represents a successful operation. Must not be <see langword="null" />.
+    ///     The asynchronous function invoked if the result is successful. Must not be <see langword="null" />.
     /// </param>
     /// <param name="ifErrorFunction">
-    ///     The asynchronous function invoked if the <paramref name="resultTask" /> represents a failed operation. The <see cref="Error" /> associated with
-    ///     the <paramref name="resultTask" /> operation outcome is passed to this function. Must not be <see langword="null" />.
+    ///     The asynchronous function invoked if the result is failed, with its <see cref="Error" />. Must not be <see langword="null" />.
     /// </param>
     /// <param name="continueOnCapturedContext">
-    ///     <see langword="true" /> to run the continuations, including the passed delegates when they run after an <c>await</c>,
+    ///     <see langword="true" /> to run the continuations, including the passed functions when they run after an <c>await</c>,
     ///     on the captured context (e.g., the UI thread); <see langword="false" /> to run them on any thread;
     ///     <see langword="null" /> (the default) to use <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
     /// </param>
-    /// <returns>
-    ///     The <see cref="Task{T}" /> that represents the value of type<typeparamref name="T" /> produced by either <paramref name="ifSuccessFunction" /> or
-    ///     <paramref name="ifErrorFunction" />.
-    /// </returns>
+    /// <returns>The task of the value that <paramref name="ifSuccessFunction" /> or <paramref name="ifErrorFunction" /> returns.</returns>
     /// <exception cref="ArgumentNullException">
     ///     If any of the <paramref name="resultTask" />, <paramref name="ifSuccessFunction" />,
     ///     or <paramref name="ifErrorFunction" /> parameters are <see langword="null" />.
@@ -623,8 +107,8 @@ public static class MatchTaskAsyncExtensions
     ///     or <paramref name="ifErrorFunction" /> returns a <see langword="null" /> task.
     /// </exception>
     [OverloadResolutionPriority(1)]
-    public static Task<T> MatchAsync<T>(this Task<Result> resultTask, Func<Task<T>> ifSuccessFunction,
-        Func<Error, Task<T>> ifErrorFunction, bool? continueOnCapturedContext = null)
+    public static Task<TOut> MatchAsync<TOut>(this Task<Result> resultTask, Func<Task<TOut>> ifSuccessFunction,
+        Func<Error, Task<TOut>> ifErrorFunction, bool? continueOnCapturedContext = null)
     {
         ArgumentNullException.ThrowIfNull(resultTask);
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
@@ -632,10 +116,7 @@ public static class MatchTaskAsyncExtensions
 
         return Core(resultTask, ifSuccessFunction, ifErrorFunction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
 
-        static async Task<T> Core(
-            Task<Result> resultTask,
-            Func<Task<T>> ifSuccessFunction,
-            Func<Error, Task<T>> ifErrorFunction,
+        static async Task<TOut> Core(Task<Result> resultTask, Func<Task<TOut>> ifSuccessFunction, Func<Error, Task<TOut>> ifErrorFunction,
             bool continueOnCapturedContext)
         {
             var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
@@ -653,69 +134,56 @@ public static class MatchTaskAsyncExtensions
     }
 
     /// <summary>
-    ///     Invokes one of the provided asynchronous functions depending on whether the <paramref name="resultTask" /> is a successful operation and
-    ///     returns their output as a <see cref="Result{T}" /> instance.
+    ///     Awaits the <paramref name="resultTask" />, invokes one of the provided asynchronous actions depending on whether the result is
+    ///     successful, and awaits it.
     /// </summary>
-    /// <remarks>
-    ///     The method executes passed <paramref name="resultTask" /> asynchronous operation.
-    /// </remarks>
-    /// <typeparam name="T">The type of the <see cref="Result{T}" /> returned by the matching branch.</typeparam>
-    /// <param name="resultTask">
-    ///     The asynchronous operation to be executed and which result is to be inspected. Must not be <see langword="null" />.
+    /// <param name="resultTask">The asynchronous operation that returns the result to fold. Must not be <see langword="null" />.</param>
+    /// <param name="ifSuccessAction">
+    ///     The asynchronous action invoked if the result is successful. Must not be <see langword="null" />.
     /// </param>
-    /// <param name="ifSuccessFunction">
-    ///     The asynchronous function invoked when the <paramref name="resultTask" /> represents a successful operation. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="ifErrorFunction">
-    ///     The asynchronous function invoked if the <paramref name="resultTask" /> represents a failed operation. The <see cref="Error" /> associated with
-    ///     the <paramref name="resultTask" /> operation outcome is passed to this function. Must not be <see langword="null" />.
+    /// <param name="ifErrorAction">
+    ///     The asynchronous action invoked if the result is failed, with its <see cref="Error" />. Must not be <see langword="null" />.
     /// </param>
     /// <param name="continueOnCapturedContext">
-    ///     <see langword="true" /> to run the continuations, including the passed delegates when they run after an <c>await</c>,
+    ///     <see langword="true" /> to run the continuations, including the passed actions when they run after an <c>await</c>,
     ///     on the captured context (e.g., the UI thread); <see langword="false" /> to run them on any thread;
     ///     <see langword="null" /> (the default) to use <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
     /// </param>
-    /// <returns>
-    ///     The <see cref="Task{TResult}" /> that represents the <see cref="Result{T}" /> produced by either <paramref name="ifSuccessFunction" /> or
-    ///     <paramref name="ifErrorFunction" />.
-    /// </returns>
+    /// <returns>The task that completes when the invoked action completes.</returns>
     /// <exception cref="ArgumentNullException">
-    ///     If any of the <paramref name="resultTask" />, <paramref name="ifSuccessFunction" />,
-    ///     or <paramref name="ifErrorFunction" /> parameters are <see langword="null" />.
+    ///     If any of the <paramref name="resultTask" />, <paramref name="ifSuccessAction" />,
+    ///     or <paramref name="ifErrorAction" /> parameters are <see langword="null" />.
     /// </exception>
     /// <exception cref="InvalidOperationException">
     ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />,
-    ///     <paramref name="ifSuccessFunction" /> returns a <see langword="null" /> task or a task with a <see langword="null" /> result,
-    ///     or <paramref name="ifErrorFunction" /> returns a <see langword="null" /> task or a task with a <see langword="null" /> result.
+    ///     <paramref name="ifSuccessAction" /> returns a <see langword="null" /> task,
+    ///     or <paramref name="ifErrorAction" /> returns a <see langword="null" /> task.
     /// </exception>
     [OverloadResolutionPriority(1)]
-    public static Task<Result<T>> MatchAsync<T>(
-        this Task<Result> resultTask, Func<Task<Result<T>>> ifSuccessFunction,
-        Func<Error, Task<Result<T>>> ifErrorFunction, bool? continueOnCapturedContext = null)
+    public static Task MatchAsync(this Task<Result> resultTask, Func<Task> ifSuccessAction, Func<Error, Task> ifErrorAction,
+        bool? continueOnCapturedContext = null)
     {
         ArgumentNullException.ThrowIfNull(resultTask);
-        ArgumentNullException.ThrowIfNull(ifSuccessFunction);
-        ArgumentNullException.ThrowIfNull(ifErrorFunction);
+        ArgumentNullException.ThrowIfNull(ifSuccessAction);
+        ArgumentNullException.ThrowIfNull(ifErrorAction);
 
-        return Core(resultTask, ifSuccessFunction, ifErrorFunction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+        return Core(resultTask, ifSuccessAction, ifErrorAction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
 
-        static async Task<Result<T>> Core(
-            Task<Result> resultTask,
-            Func<Task<Result<T>>> ifSuccessFunction,
-            Func<Error, Task<Result<T>>> ifErrorFunction,
+        static async Task Core(Task<Result> resultTask, Func<Task> ifSuccessAction, Func<Error, Task> ifErrorAction,
             bool continueOnCapturedContext)
         {
             var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
 
             if (result.IsSuccess)
             {
-                var successTask = ifSuccessFunction();
-                return await Guard.EnsureNotNullResult(successTask, nameof(ifSuccessFunction), continueOnCapturedContext);
+                var successTask = ifSuccessAction();
+                await Guard.EnsureNotNullTask(successTask, nameof(ifSuccessAction)).ConfigureAwait(continueOnCapturedContext);
             }
-
-            var errorTask = ifErrorFunction(result.Error);
-
-            return await Guard.EnsureNotNullResult(errorTask, nameof(ifErrorFunction), continueOnCapturedContext);
+            else
+            {
+                var errorTask = ifErrorAction(result.Error);
+                await Guard.EnsureNotNullTask(errorTask, nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+            }
         }
     }
 
@@ -724,110 +192,74 @@ public static class MatchTaskAsyncExtensions
     #region Task<Result<T>>
 
     /// <summary>
-    ///     Invokes one of the provided asynchronous actions depending on whether the <paramref name="resultTask" /> is a successful operation.
+    ///     Awaits the <paramref name="resultTask" />, invokes one of the provided functions depending on whether the result is successful and
+    ///     returns the value that the invoked function returns.
     /// </summary>
     /// <remarks>
-    ///     <para>
-    ///         Use this overload when the desired outcome is a side effect,
-    ///         and you want to keep the existing <see cref="Result{T}" /> instance for further chaining.
-    ///     </para>
-    ///     <para>
-    ///         The method executes passed <paramref name="resultTask" /> asynchronous operation, does not modify its result.
-    ///     </para>
+    ///     The functions are synchronous: they run after the <paramref name="resultTask" /> completes. The value is returned as the function
+    ///     returns it, <see langword="null" /> included.
     /// </remarks>
-    /// <typeparam name="T">The type wrapped by the <see cref="Result{T}" />.</typeparam>
-    /// <param name="resultTask">
-    ///     The asynchronous operation, which returns <see cref="Result{T}" />,
-    ///     to be executed and which result is to be inspected to select which function to invoke. Must not be <see langword="null" />.
+    /// <typeparam name="T">The type of the value of the result.</typeparam>
+    /// <typeparam name="TOut">The type that both functions return.</typeparam>
+    /// <param name="resultTask">The asynchronous operation that returns the result to fold. Must not be <see langword="null" />.</param>
+    /// <param name="ifSuccessFunction">
+    ///     The function invoked if the result is successful, with its value. Must not be <see langword="null" />.
     /// </param>
-    /// <param name="ifSuccessAction">
-    ///     The asynchronous action to execute if the <paramref name="resultTask" /> indicates a successful operation.
-    ///     The value of the successful <see cref="Result{T}" /> is passed as a parameter. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="ifErrorAction">
-    ///     The asynchronous action to execute if the <paramref name="resultTask" /> indicates a failed operation.
-    ///     The <see cref="Error" /> associated with the <paramref name="resultTask" /> outcome is passed to this action. Must not be <see langword="null" />.
+    /// <param name="ifErrorFunction">
+    ///     The function invoked if the result is failed, with its <see cref="Error" />. Must not be <see langword="null" />.
     /// </param>
     /// <param name="continueOnCapturedContext">
-    ///     <see langword="true" /> to run the continuations, including the passed delegates when they run after an <c>await</c>,
-    ///     on the captured context (e.g., the UI thread); <see langword="false" /> to run them on any thread;
-    ///     <see langword="null" /> (the default) to use <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
+    ///     <see langword="true" /> to run the continuation, including the passed functions, on the captured context (e.g., the UI thread);
+    ///     <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
+    ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
     /// </param>
-    /// <returns>
-    ///     The <see cref="Task{TResult}" /> that represents the outcome of the <paramref name="resultTask" /> for fluent chaining.
-    /// </returns>
+    /// <returns>The task of the value that <paramref name="ifSuccessFunction" /> or <paramref name="ifErrorFunction" /> returns.</returns>
     /// <exception cref="ArgumentNullException">
-    ///     If any of the <paramref name="resultTask" />, <paramref name="ifSuccessAction" />,
-    ///     or <paramref name="ifErrorAction" /> parameters are <see langword="null" />.
+    ///     If any of the <paramref name="resultTask" />, <paramref name="ifSuccessFunction" />,
+    ///     or <paramref name="ifErrorFunction" /> parameters are <see langword="null" />.
     /// </exception>
     /// <exception cref="InvalidOperationException">
-    ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />,
-    ///     <paramref name="ifSuccessAction" /> returns a <see langword="null" /> task,
-    ///     or <paramref name="ifErrorAction" /> returns a <see langword="null" /> task.
+    ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />.
     /// </exception>
-    [OverloadResolutionPriority(1)]
-    public static Task<Result<T>> MatchAsync<T>(this Task<Result<T>> resultTask, Func<T, Task> ifSuccessAction,
-        Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
+    public static Task<TOut> MatchAsync<T, TOut>(this Task<Result<T>> resultTask, Func<T, TOut> ifSuccessFunction,
+        Func<Error, TOut> ifErrorFunction, bool? continueOnCapturedContext = null)
     {
         ArgumentNullException.ThrowIfNull(resultTask);
-        ArgumentNullException.ThrowIfNull(ifSuccessAction);
-        ArgumentNullException.ThrowIfNull(ifErrorAction);
+        ArgumentNullException.ThrowIfNull(ifSuccessFunction);
+        ArgumentNullException.ThrowIfNull(ifErrorFunction);
 
-        return Core(resultTask, ifSuccessAction, ifErrorAction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+        return Core(resultTask, ifSuccessFunction, ifErrorFunction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
 
-        static async Task<Result<T>> Core(
-            Task<Result<T>> resultTask,
-            Func<T, Task> ifSuccessAction,
-            Func<Error, Task> ifErrorAction,
+        static async Task<TOut> Core(Task<Result<T>> resultTask, Func<T, TOut> ifSuccessFunction, Func<Error, TOut> ifErrorFunction,
             bool continueOnCapturedContext)
         {
             var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
-
-            if (result.IsSuccess)
-            {
-                var successTask = ifSuccessAction(result.Value);
-                await Guard.EnsureNotNullTask(successTask, nameof(ifSuccessAction)).ConfigureAwait(continueOnCapturedContext);
-            }
-            else
-            {
-                var errorTask = ifErrorAction(result.Error);
-                await Guard.EnsureNotNullTask(errorTask, nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
-            }
-
-            return result;
+            return result.Match(ifSuccessFunction, ifErrorFunction);
         }
     }
 
     /// <summary>
-    ///     Invokes one of the provided asynchronous functions depending on whether the <paramref name="resultTask" /> is a successful operation and
-    ///     returns the value that the invoked function returns, as an asynchronous operation.
+    ///     Awaits the <paramref name="resultTask" />, invokes one of the provided asynchronous functions depending on whether the result is
+    ///     successful, awaits it and returns the value that it returns.
     /// </summary>
     /// <remarks>
-    ///     The method executes passed <paramref name="resultTask" /> asynchronous operation.
+    ///     The value is returned as the function returns it, <see langword="null" /> included.
     /// </remarks>
-    /// <typeparam name="T">The type wrapped by the source <see cref="Result{T}" />.</typeparam>
-    /// <typeparam name="TNext">The type produced by either branch.</typeparam>
-    /// <param name="resultTask">
-    ///     The asynchronous operation, which returns <see cref="Result{T}" />,
-    ///     to be executed and which result is to be inspected to select which function to invoke. Must not be <see langword="null" />.
-    /// </param>
+    /// <typeparam name="T">The type of the value of the result.</typeparam>
+    /// <typeparam name="TOut">The type of the value of the tasks that both functions return.</typeparam>
+    /// <param name="resultTask">The asynchronous operation that returns the result to fold. Must not be <see langword="null" />.</param>
     /// <param name="ifSuccessFunction">
-    ///     The asynchronous function invoked if the <paramref name="resultTask" /> represents a successful operation.
-    ///     The value of the successful <see cref="Result{T}" /> is passed as a parameter. Must not be <see langword="null" />.
+    ///     The asynchronous function invoked if the result is successful, with its value. Must not be <see langword="null" />.
     /// </param>
     /// <param name="ifErrorFunction">
-    ///     The asynchronous function invoked if the <paramref name="resultTask" /> represents a failed operation. The <see cref="Error" /> associated with
-    ///     the <paramref name="resultTask" /> operation outcome is passed to this function. Must not be <see langword="null" />.
+    ///     The asynchronous function invoked if the result is failed, with its <see cref="Error" />. Must not be <see langword="null" />.
     /// </param>
     /// <param name="continueOnCapturedContext">
-    ///     <see langword="true" /> to run the continuations, including the passed delegates when they run after an <c>await</c>,
+    ///     <see langword="true" /> to run the continuations, including the passed functions when they run after an <c>await</c>,
     ///     on the captured context (e.g., the UI thread); <see langword="false" /> to run them on any thread;
     ///     <see langword="null" /> (the default) to use <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
     /// </param>
-    /// <returns>
-    ///     The <see cref="Task{TNext}" /> that represents the value of the <typeparamref name="TNext" /> type returned by either
-    ///     <paramref name="ifSuccessFunction" /> or <paramref name="ifErrorFunction" />.
-    /// </returns>
+    /// <returns>The task of the value that <paramref name="ifSuccessFunction" /> or <paramref name="ifErrorFunction" /> returns.</returns>
     /// <exception cref="ArgumentNullException">
     ///     If any of the <paramref name="resultTask" />, <paramref name="ifSuccessFunction" />,
     ///     or <paramref name="ifErrorFunction" /> parameters are <see langword="null" />.
@@ -838,11 +270,8 @@ public static class MatchTaskAsyncExtensions
     ///     or <paramref name="ifErrorFunction" /> returns a <see langword="null" /> task.
     /// </exception>
     [OverloadResolutionPriority(1)]
-    public static Task<TNext> MatchAsync<T, TNext>(
-        this Task<Result<T>> resultTask,
-        Func<T, Task<TNext>> ifSuccessFunction,
-        Func<Error, Task<TNext>> ifErrorFunction,
-        bool? continueOnCapturedContext = null)
+    public static Task<TOut> MatchAsync<T, TOut>(this Task<Result<T>> resultTask, Func<T, Task<TOut>> ifSuccessFunction,
+        Func<Error, Task<TOut>> ifErrorFunction, bool? continueOnCapturedContext = null)
     {
         ArgumentNullException.ThrowIfNull(resultTask);
         ArgumentNullException.ThrowIfNull(ifSuccessFunction);
@@ -850,10 +279,7 @@ public static class MatchTaskAsyncExtensions
 
         return Core(resultTask, ifSuccessFunction, ifErrorFunction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
 
-        static async Task<TNext> Core(
-            Task<Result<T>> resultTask,
-            Func<T, Task<TNext>> ifSuccessFunction,
-            Func<Error, Task<TNext>> ifErrorFunction,
+        static async Task<TOut> Core(Task<Result<T>> resultTask, Func<T, Task<TOut>> ifSuccessFunction, Func<Error, Task<TOut>> ifErrorFunction,
             bool continueOnCapturedContext)
         {
             var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
@@ -871,1283 +297,151 @@ public static class MatchTaskAsyncExtensions
     }
 
     /// <summary>
-    ///     Executes one of the provided asynchronous functions depending on whether the <paramref name="resultTask" /> is a successful operation and
-    ///     returns their output as a <see cref="Result{TNext}" /> instance.
+    ///     Awaits the <paramref name="resultTask" />, invokes one of the provided asynchronous actions depending on whether the result is
+    ///     successful, and awaits it.
     /// </summary>
-    /// <remarks>
-    ///     The method executes passed <paramref name="resultTask" /> asynchronous operation.
-    /// </remarks>
-    /// <typeparam name="T">The type wrapped by the source <see cref="Result{T}" />.</typeparam>
-    /// <typeparam name="TNext">The type of the <see cref="Result{TNext}" /> returned by the invoked function.</typeparam>
-    /// <param name="resultTask">
-    ///     The asynchronous operation to be executed and which result is to be inspected. Must not be <see langword="null" />.
+    /// <typeparam name="T">The type of the value of the result.</typeparam>
+    /// <param name="resultTask">The asynchronous operation that returns the result to fold. Must not be <see langword="null" />.</param>
+    /// <param name="ifSuccessAction">
+    ///     The asynchronous action invoked if the result is successful, with its value. Must not be <see langword="null" />.
     /// </param>
-    /// <param name="ifSuccessFunction">
-    ///     The asynchronous function invoked when the <paramref name="resultTask" /> represents a successful operation.
-    ///     The value of the successful <see cref="Result{T}" /> is passed as a parameter. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="ifErrorFunction">
-    ///     The asynchronous action invoked when the <paramref name="resultTask" /> represents a failed operation.
-    ///     The <see cref="Error" /> associated with the <paramref name="resultTask" /> outcome is passed to this action. Must not be <see langword="null" />.
+    /// <param name="ifErrorAction">
+    ///     The asynchronous action invoked if the result is failed, with its <see cref="Error" />. Must not be <see langword="null" />.
     /// </param>
     /// <param name="continueOnCapturedContext">
-    ///     <see langword="true" /> to run the continuations, including the passed delegates when they run after an <c>await</c>,
+    ///     <see langword="true" /> to run the continuations, including the passed actions when they run after an <c>await</c>,
     ///     on the captured context (e.g., the UI thread); <see langword="false" /> to run them on any thread;
     ///     <see langword="null" /> (the default) to use <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
     /// </param>
-    /// <returns>
-    ///     The <see cref="Task{TResult}" /> that represents the <see cref="Result{TNext}" /> returned by either <paramref name="ifSuccessFunction" /> or
-    ///     <paramref name="ifErrorFunction" />.
-    /// </returns>
+    /// <returns>The task that completes when the invoked action completes.</returns>
     /// <exception cref="ArgumentNullException">
-    ///     If any of the <paramref name="resultTask" />, <paramref name="ifSuccessFunction" />,
-    ///     or <paramref name="ifErrorFunction" /> parameters are <see langword="null" />.
+    ///     If any of the <paramref name="resultTask" />, <paramref name="ifSuccessAction" />,
+    ///     or <paramref name="ifErrorAction" /> parameters are <see langword="null" />.
     /// </exception>
     /// <exception cref="InvalidOperationException">
     ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />,
-    ///     <paramref name="ifSuccessFunction" /> returns a <see langword="null" /> task or a task with a <see langword="null" /> result,
-    ///     or <paramref name="ifErrorFunction" /> returns a <see langword="null" /> task or a task with a <see langword="null" /> result.
+    ///     <paramref name="ifSuccessAction" /> returns a <see langword="null" /> task,
+    ///     or <paramref name="ifErrorAction" /> returns a <see langword="null" /> task.
     /// </exception>
     [OverloadResolutionPriority(1)]
-    public static Task<Result<TNext>> MatchAsync<T, TNext>(
-        this Task<Result<T>> resultTask,
-        Func<T, Task<Result<TNext>>> ifSuccessFunction,
-        Func<Error, Task<Result<TNext>>> ifErrorFunction,
+    public static Task MatchAsync<T>(this Task<Result<T>> resultTask, Func<T, Task> ifSuccessAction, Func<Error, Task> ifErrorAction,
         bool? continueOnCapturedContext = null)
     {
         ArgumentNullException.ThrowIfNull(resultTask);
-        ArgumentNullException.ThrowIfNull(ifSuccessFunction);
-        ArgumentNullException.ThrowIfNull(ifErrorFunction);
+        ArgumentNullException.ThrowIfNull(ifSuccessAction);
+        ArgumentNullException.ThrowIfNull(ifErrorAction);
 
-        return Core(resultTask, ifSuccessFunction, ifErrorFunction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
+        return Core(resultTask, ifSuccessAction, ifErrorAction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
 
-        static async Task<Result<TNext>> Core(
-            Task<Result<T>> resultTask,
-            Func<T, Task<Result<TNext>>> ifSuccessFunction,
-            Func<Error, Task<Result<TNext>>> ifErrorFunction,
+        static async Task Core(Task<Result<T>> resultTask, Func<T, Task> ifSuccessAction, Func<Error, Task> ifErrorAction,
             bool continueOnCapturedContext)
         {
             var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
 
             if (result.IsSuccess)
             {
-                var successTask = ifSuccessFunction(result.Value);
-                return await Guard.EnsureNotNullResult(successTask, nameof(ifSuccessFunction), continueOnCapturedContext);
+                var successTask = ifSuccessAction(result.Value);
+                await Guard.EnsureNotNullTask(successTask, nameof(ifSuccessAction)).ConfigureAwait(continueOnCapturedContext);
             }
-
-            var errorTask = ifErrorFunction(result.Error);
-
-            return await Guard.EnsureNotNullResult(errorTask, nameof(ifErrorFunction), continueOnCapturedContext);
+            else
+            {
+                var errorTask = ifErrorAction(result.Error);
+                await Guard.EnsureNotNullTask(errorTask, nameof(ifErrorAction)).ConfigureAwait(continueOnCapturedContext);
+            }
         }
     }
 
     #endregion
 
-    #region Task results with synchronous delegates (#214)
+    #region Not supported: two actions
+
+    // MatchAsync is a fold: two functions that return one type. These overloads turn a call with two actions into a compile error (CS0619)
+    // that names SwitchAsync. They return what the MatchAsync with two actions of 2.x returned, so that its call reports this error only.
+    // A call that the fold accepts binds to the fold: a lambda with a value converts better to a function than to an action, and the
+    // overloads with functions that return a task have priority 1.
+    // See issue #255.
+
+    private const string TwoActionsMessage =
+        "MatchAsync takes two functions that return a value. Use SwitchAsync for two side effects, or ThenAsync(…).IfErrorAsync(…) to " +
+        "transform the value and handle the error.";
 
     /// <summary>
-    ///     Awaits the <paramref name="resultTask" /> and runs one of the synchronous delegates: the first one if the result is
-    ///     successful, the second one with the <see cref="Error" /> if it is failed.
+    ///     Not supported: <c>MatchAsync</c> takes two functions that return a value; use <c>SwitchAsync</c> for two actions.
     /// </summary>
-    /// <remarks>
-    ///     The delegates are synchronous: they run after the <paramref name="resultTask" /> completes. Pass two asynchronous delegates
-    ///     for asynchronous work; one synchronous and one asynchronous delegate are not supported.
-    /// </remarks>
-    /// <param name="resultTask">The asynchronous operation that returns the result to match. Must not be <see langword="null" />.</param>
-    /// <param name="ifSuccessAction">The synchronous action to run on a successful result. Must not be <see langword="null" />.</param>
-    /// <param name="ifErrorAction">The synchronous action to run on a failed result, with its error. Must not be <see langword="null" />.</param>
-    /// <param name="continueOnCapturedContext">
-    ///     <see langword="true" /> to run the continuation, including the passed delegates, on the captured context (e.g., the UI thread);
-    ///     <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
-    ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
-    /// </param>
-    /// <returns>The result of the match, as the synchronous <c>Match</c> returns it.</returns>
-    /// <exception cref="ArgumentNullException">
-    ///     If the <paramref name="resultTask" />, the <paramref name="ifSuccessAction" /> or the <paramref name="ifErrorAction" /> is
-    ///     <see langword="null" />.
-    /// </exception>
-    /// <exception cref="InvalidOperationException">
-    ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />, or a function
-    ///     returns <see langword="null" /> where a result or an error is required.
-    /// </exception>
-    public static Task<Result> MatchAsync(this Task<Result> resultTask,
-        Action ifSuccessAction, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null)
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(TwoActionsMessage, error: true)]
+    public static Task<Result> MatchAsync(this Task<Result> resultTask, Action ifSuccessAction, Action<Error> ifErrorAction,
+        bool? continueOnCapturedContext = null)
     {
-        ArgumentNullException.ThrowIfNull(resultTask);
-        ArgumentNullException.ThrowIfNull(ifSuccessAction);
-        ArgumentNullException.ThrowIfNull(ifErrorAction);
-
-        return Core(resultTask, ifSuccessAction, ifErrorAction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
-
-        static async Task<Result> Core(Task<Result> resultTask, Action ifSuccessAction, Action<Error> ifErrorAction, bool continueOnCapturedContext)
-        {
-            var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
-            return result.Match(ifSuccessAction, ifErrorAction);
-        }
+        throw new NotSupportedException(TwoActionsMessage);
     }
 
     /// <summary>
-    ///     Awaits the <paramref name="resultTask" /> and runs one of the synchronous delegates: the first one if the result is
-    ///     successful, the second one with the <see cref="Error" /> if it is failed.
+    ///     Not supported: <c>MatchAsync</c> takes two functions that return a value; use <c>SwitchAsync</c> for two actions.
     /// </summary>
-    /// <remarks>
-    ///     The delegates are synchronous: they run after the <paramref name="resultTask" /> completes. Pass two asynchronous delegates
-    ///     for asynchronous work; one synchronous and one asynchronous delegate are not supported.
-    /// </remarks>
-    /// <param name="resultTask">The asynchronous operation that returns the result to match. Must not be <see langword="null" />.</param>
-    /// <param name="ifSuccessFunction">
-    ///     The synchronous function to run on a successful result; it returns the next result. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="ifErrorFunction">
-    ///     The synchronous function to run on a failed result, with its error; it returns the value of the match. Must not be
-    ///     <see langword="null" />.
-    /// </param>
-    /// <param name="continueOnCapturedContext">
-    ///     <see langword="true" /> to run the continuation, including the passed delegates, on the captured context (e.g., the UI thread);
-    ///     <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
-    ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
-    /// </param>
-    /// <returns>The result of the match, as the synchronous <c>Match</c> returns it.</returns>
-    /// <exception cref="ArgumentNullException">
-    ///     If the <paramref name="resultTask" />, the <paramref name="ifSuccessFunction" /> or the <paramref name="ifErrorFunction" /> is
-    ///     <see langword="null" />.
-    /// </exception>
-    /// <exception cref="InvalidOperationException">
-    ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />, or a function
-    ///     returns <see langword="null" /> where a result or an error is required.
-    /// </exception>
-    public static Task<Result> MatchAsync(this Task<Result> resultTask,
-        Func<Result> ifSuccessFunction, Func<Error, Result> ifErrorFunction, bool? continueOnCapturedContext = null)
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(TwoActionsMessage, error: true)]
+    public static Task<Result<T>> MatchAsync<T>(this Task<Result<T>> resultTask, Action<T> ifSuccessAction, Action<Error> ifErrorAction,
+        bool? continueOnCapturedContext = null)
     {
-        ArgumentNullException.ThrowIfNull(resultTask);
-        ArgumentNullException.ThrowIfNull(ifSuccessFunction);
-        ArgumentNullException.ThrowIfNull(ifErrorFunction);
-
-        return Core(resultTask, ifSuccessFunction, ifErrorFunction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
-
-        static async Task<Result> Core(
-            Task<Result> resultTask,
-            Func<Result> ifSuccessFunction,
-            Func<Error, Result> ifErrorFunction,
-            bool continueOnCapturedContext)
-        {
-            var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
-            return result.Match(ifSuccessFunction, ifErrorFunction);
-        }
-    }
-
-    /// <summary>
-    ///     Awaits the <paramref name="resultTask" /> and runs one of the synchronous delegates: the first one if the result is
-    ///     successful, the second one with the <see cref="Error" /> if it is failed.
-    /// </summary>
-    /// <remarks>
-    ///     The delegates are synchronous: they run after the <paramref name="resultTask" /> completes. Pass two asynchronous delegates
-    ///     for asynchronous work; one synchronous and one asynchronous delegate are not supported.
-    /// </remarks>
-    /// <typeparam name="T">The type of the value of the result, or of the value that the delegates return.</typeparam>
-    /// <param name="resultTask">The asynchronous operation that returns the result to match. Must not be <see langword="null" />.</param>
-    /// <param name="ifSuccessFunction">
-    ///     The synchronous function to run on a successful result; it returns the value. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="ifErrorFunction">
-    ///     The synchronous function to run on a failed result, with its error; it returns the value of the match. Must not be
-    ///     <see langword="null" />.
-    /// </param>
-    /// <param name="continueOnCapturedContext">
-    ///     <see langword="true" /> to run the continuation, including the passed delegates, on the captured context (e.g., the UI thread);
-    ///     <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
-    ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
-    /// </param>
-    /// <returns>The value that the delegate returns.</returns>
-    /// <exception cref="ArgumentNullException">
-    ///     If the <paramref name="resultTask" />, the <paramref name="ifSuccessFunction" /> or the <paramref name="ifErrorFunction" /> is
-    ///     <see langword="null" />.
-    /// </exception>
-    /// <exception cref="InvalidOperationException">
-    ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />, or a function
-    ///     returns <see langword="null" /> where a result or an error is required.
-    /// </exception>
-    public static Task<T> MatchAsync<T>(this Task<Result> resultTask,
-        Func<T> ifSuccessFunction, Func<Error, T> ifErrorFunction, bool? continueOnCapturedContext = null)
-    {
-        ArgumentNullException.ThrowIfNull(resultTask);
-        ArgumentNullException.ThrowIfNull(ifSuccessFunction);
-        ArgumentNullException.ThrowIfNull(ifErrorFunction);
-
-        return Core(resultTask, ifSuccessFunction, ifErrorFunction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
-
-        static async Task<T> Core(Task<Result> resultTask, Func<T> ifSuccessFunction, Func<Error, T> ifErrorFunction, bool continueOnCapturedContext)
-        {
-            var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
-            return result.Match(ifSuccessFunction, ifErrorFunction);
-        }
-    }
-
-    /// <summary>
-    ///     Awaits the <paramref name="resultTask" /> and runs one of the synchronous delegates: the first one if the result is
-    ///     successful, the second one with the <see cref="Error" /> if it is failed.
-    /// </summary>
-    /// <remarks>
-    ///     The delegates are synchronous: they run after the <paramref name="resultTask" /> completes. Pass two asynchronous delegates
-    ///     for asynchronous work; one synchronous and one asynchronous delegate are not supported.
-    /// </remarks>
-    /// <typeparam name="T">The type of the value of the result, or of the value that the delegates return.</typeparam>
-    /// <param name="resultTask">The asynchronous operation that returns the result to match. Must not be <see langword="null" />.</param>
-    /// <param name="ifSuccessFunction">
-    ///     The synchronous function to run on a successful result; it returns the next result. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="ifErrorFunction">
-    ///     The synchronous function to run on a failed result, with its error; it returns the value of the match. Must not be
-    ///     <see langword="null" />.
-    /// </param>
-    /// <param name="continueOnCapturedContext">
-    ///     <see langword="true" /> to run the continuation, including the passed delegates, on the captured context (e.g., the UI thread);
-    ///     <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
-    ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
-    /// </param>
-    /// <returns>The result of the match, as the synchronous <c>Match</c> returns it.</returns>
-    /// <exception cref="ArgumentNullException">
-    ///     If the <paramref name="resultTask" />, the <paramref name="ifSuccessFunction" /> or the <paramref name="ifErrorFunction" /> is
-    ///     <see langword="null" />.
-    /// </exception>
-    /// <exception cref="InvalidOperationException">
-    ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />, or a function
-    ///     returns <see langword="null" /> where a result or an error is required.
-    /// </exception>
-    public static Task<Result<T>> MatchAsync<T>(this Task<Result> resultTask,
-        Func<Result<T>> ifSuccessFunction, Func<Error, Result<T>> ifErrorFunction, bool? continueOnCapturedContext = null)
-    {
-        ArgumentNullException.ThrowIfNull(resultTask);
-        ArgumentNullException.ThrowIfNull(ifSuccessFunction);
-        ArgumentNullException.ThrowIfNull(ifErrorFunction);
-
-        return Core(resultTask, ifSuccessFunction, ifErrorFunction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
-
-        static async Task<Result<T>> Core(
-            Task<Result> resultTask,
-            Func<Result<T>> ifSuccessFunction,
-            Func<Error, Result<T>> ifErrorFunction,
-            bool continueOnCapturedContext)
-        {
-            var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
-            return result.Match(ifSuccessFunction, ifErrorFunction);
-        }
-    }
-
-    /// <summary>
-    ///     Awaits the <paramref name="resultTask" /> and runs one of the synchronous delegates: the first one if the result is
-    ///     successful, the second one with the <see cref="Error" /> if it is failed.
-    /// </summary>
-    /// <remarks>
-    ///     The delegates are synchronous: they run after the <paramref name="resultTask" /> completes. Pass two asynchronous delegates
-    ///     for asynchronous work; one synchronous and one asynchronous delegate are not supported.
-    /// </remarks>
-    /// <typeparam name="T">The type of the value of the result.</typeparam>
-    /// <param name="resultTask">The asynchronous operation that returns the result to match. Must not be <see langword="null" />.</param>
-    /// <param name="ifSuccessAction">The synchronous action to run on a successful result, with its value. Must not be <see langword="null" />.</param>
-    /// <param name="ifErrorAction">The synchronous action to run on a failed result, with its error. Must not be <see langword="null" />.</param>
-    /// <param name="continueOnCapturedContext">
-    ///     <see langword="true" /> to run the continuation, including the passed delegates, on the captured context (e.g., the UI thread);
-    ///     <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
-    ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
-    /// </param>
-    /// <returns>The result of the match, as the synchronous <c>Match</c> returns it.</returns>
-    /// <exception cref="ArgumentNullException">
-    ///     If the <paramref name="resultTask" />, the <paramref name="ifSuccessAction" /> or the <paramref name="ifErrorAction" /> is
-    ///     <see langword="null" />.
-    /// </exception>
-    /// <exception cref="InvalidOperationException">
-    ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />, or a function
-    ///     returns <see langword="null" /> where a result or an error is required.
-    /// </exception>
-    public static Task<Result<T>> MatchAsync<T>(this Task<Result<T>> resultTask,
-        Action<T> ifSuccessAction, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        ArgumentNullException.ThrowIfNull(resultTask);
-        ArgumentNullException.ThrowIfNull(ifSuccessAction);
-        ArgumentNullException.ThrowIfNull(ifErrorAction);
-
-        return Core(resultTask, ifSuccessAction, ifErrorAction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
-
-        static async Task<Result<T>> Core(Task<Result<T>> resultTask, Action<T> ifSuccessAction, Action<Error> ifErrorAction, bool continueOnCapturedContext)
-        {
-            var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
-            return result.Match(ifSuccessAction, ifErrorAction);
-        }
-    }
-
-    /// <summary>
-    ///     Awaits the <paramref name="resultTask" /> and runs one of the synchronous delegates: the first one if the result is
-    ///     successful, the second one with the <see cref="Error" /> if it is failed.
-    /// </summary>
-    /// <remarks>
-    ///     The delegates are synchronous: they run after the <paramref name="resultTask" /> completes. Pass two asynchronous delegates
-    ///     for asynchronous work; one synchronous and one asynchronous delegate are not supported.
-    /// </remarks>
-    /// <typeparam name="T">The type of the value of the result.</typeparam>
-    /// <typeparam name="TNext">The type of the value that the delegates return.</typeparam>
-    /// <param name="resultTask">The asynchronous operation that returns the result to match. Must not be <see langword="null" />.</param>
-    /// <param name="ifSuccessFunction">
-    ///     The synchronous function to run on a successful result, with its value; it returns the value. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="ifErrorFunction">
-    ///     The synchronous function to run on a failed result, with its error; it returns the value of the match. Must not be
-    ///     <see langword="null" />.
-    /// </param>
-    /// <param name="continueOnCapturedContext">
-    ///     <see langword="true" /> to run the continuation, including the passed delegates, on the captured context (e.g., the UI thread);
-    ///     <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
-    ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
-    /// </param>
-    /// <returns>The value that the delegate returns.</returns>
-    /// <exception cref="ArgumentNullException">
-    ///     If the <paramref name="resultTask" />, the <paramref name="ifSuccessFunction" /> or the <paramref name="ifErrorFunction" /> is
-    ///     <see langword="null" />.
-    /// </exception>
-    /// <exception cref="InvalidOperationException">
-    ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />, or a function
-    ///     returns <see langword="null" /> where a result or an error is required.
-    /// </exception>
-    public static Task<TNext> MatchAsync<T, TNext>(this Task<Result<T>> resultTask,
-        Func<T, TNext> ifSuccessFunction, Func<Error, TNext> ifErrorFunction, bool? continueOnCapturedContext = null)
-    {
-        ArgumentNullException.ThrowIfNull(resultTask);
-        ArgumentNullException.ThrowIfNull(ifSuccessFunction);
-        ArgumentNullException.ThrowIfNull(ifErrorFunction);
-
-        return Core(resultTask, ifSuccessFunction, ifErrorFunction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
-
-        static async Task<TNext> Core(
-            Task<Result<T>> resultTask,
-            Func<T, TNext> ifSuccessFunction,
-            Func<Error, TNext> ifErrorFunction,
-            bool continueOnCapturedContext)
-        {
-            var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
-            return result.Match(ifSuccessFunction, ifErrorFunction);
-        }
-    }
-
-    /// <summary>
-    ///     Awaits the <paramref name="resultTask" /> and runs one of the synchronous delegates: the first one if the result is
-    ///     successful, the second one with the <see cref="Error" /> if it is failed.
-    /// </summary>
-    /// <remarks>
-    ///     The delegates are synchronous: they run after the <paramref name="resultTask" /> completes. Pass two asynchronous delegates
-    ///     for asynchronous work; one synchronous and one asynchronous delegate are not supported.
-    /// </remarks>
-    /// <typeparam name="T">The type of the value of the result.</typeparam>
-    /// <typeparam name="TNext">The type of the value that the delegates return.</typeparam>
-    /// <param name="resultTask">The asynchronous operation that returns the result to match. Must not be <see langword="null" />.</param>
-    /// <param name="ifSuccessFunction">
-    ///     The synchronous function to run on a successful result, with its value; it returns the next result. Must not be <see langword="null" />.
-    /// </param>
-    /// <param name="ifErrorFunction">
-    ///     The synchronous function to run on a failed result, with its error; it returns the value of the match. Must not be
-    ///     <see langword="null" />.
-    /// </param>
-    /// <param name="continueOnCapturedContext">
-    ///     <see langword="true" /> to run the continuation, including the passed delegates, on the captured context (e.g., the UI thread);
-    ///     <see langword="false" /> to run them on any thread; <see langword="null" /> (the default) to use
-    ///     <see cref="ResultConfiguration.ContinueOnCapturedContext" />.
-    /// </param>
-    /// <returns>The result of the match, as the synchronous <c>Match</c> returns it.</returns>
-    /// <exception cref="ArgumentNullException">
-    ///     If the <paramref name="resultTask" />, the <paramref name="ifSuccessFunction" /> or the <paramref name="ifErrorFunction" /> is
-    ///     <see langword="null" />.
-    /// </exception>
-    /// <exception cref="InvalidOperationException">
-    ///     If the asynchronous operation represented by <paramref name="resultTask" /> returns <see langword="null" />, or a function
-    ///     returns <see langword="null" /> where a result or an error is required.
-    /// </exception>
-    public static Task<Result<TNext>> MatchAsync<T, TNext>(this Task<Result<T>> resultTask,
-        Func<T, Result<TNext>> ifSuccessFunction, Func<Error, Result<TNext>> ifErrorFunction, bool? continueOnCapturedContext = null)
-    {
-        ArgumentNullException.ThrowIfNull(resultTask);
-        ArgumentNullException.ThrowIfNull(ifSuccessFunction);
-        ArgumentNullException.ThrowIfNull(ifErrorFunction);
-
-        return Core(resultTask, ifSuccessFunction, ifErrorFunction, continueOnCapturedContext ?? ResultConfiguration.ContinueOnCapturedContext);
-
-        static async Task<Result<TNext>> Core(
-            Task<Result<T>> resultTask,
-            Func<T, Result<TNext>> ifSuccessFunction,
-            Func<Error, Result<TNext>> ifErrorFunction,
-            bool continueOnCapturedContext)
-        {
-            var result = await Guard.EnsureNotNullAwaited(resultTask, nameof(resultTask), continueOnCapturedContext);
-            return result.Match(ifSuccessFunction, ifErrorFunction);
-        }
+        throw new NotSupportedException(TwoActionsMessage);
     }
 
     #endregion
 
-    #region Not supported: one synchronous and one asynchronous delegate, and delegates returning a ValueTask (#214)
+    #region Not supported: functions returning a ValueTask
 
-    // One synchronous and one asynchronous delegate would bind to the overloads with synchronous delegates, which would drop the task
-    // (an async lambda as an action becomes async void) or wrap it in the result (#214). These overloads, the traps of the synchronous
-    // Match moved to the task receivers, turn such a call into a compile error (CS0619). The second group covers two delegates that
-    // return a ValueTask, which would otherwise be ambiguous (CS0121) between the first group. The overloads whose delegates return a
-    // Task have priority 1: an async lambda converts to a Task and to a ValueTask.
-
-    private const string MixedSuccessTaskMessage =
-        "The success delegate returns a task, but the error delegate is synchronous. MatchAsync takes two synchronous " +
-        "or two asynchronous delegates: make the error delegate asynchronous too, or await the result first and call " +
-        "Match.";
-
-    private const string MixedErrorTaskMessage =
-        "The error delegate returns a task, but the success delegate is synchronous. MatchAsync takes two synchronous " +
-        "or two asynchronous delegates: make the success delegate asynchronous too, or await the result first and call " +
-        "Match.";
+    // Two functions that return a ValueTask would bind to the overload with synchronous functions, which would return the ValueTask in a
+    // Task without awaiting it (e.g., a Task<ValueTask<int>>). These overloads turn such a call into a compile error (CS0619) until the
+    // Task-based and the ValueTask-based methods share one namespace (#248).
+    // See issue #214.
 
     private const string OtherTaskMessage =
         "The delegates return a ValueTask, which the Task-based MatchAsync does not await. Import " +
         "Maple.Results.Extensions.ValueTasks instead of Maple.Results.Extensions, or convert them with AsTask().";
 
     /// <summary>
-    ///     Not supported: the success delegate returns a task and the error delegate is synchronous.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(MixedSuccessTaskMessage, error: true)]
-    [OverloadResolutionPriority(1)]
-    public static Task<Result> MatchAsync(this Task<Result> resultTask,
-        Func<Task> ifSuccessFunction, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(MixedSuccessTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the success delegate returns a task and the error delegate is synchronous.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(MixedSuccessTaskMessage, error: true)]
-    [OverloadResolutionPriority(1)]
-    public static Task<Result> MatchAsync<TNext>(this Task<Result> resultTask,
-        Func<Task<TNext>> ifSuccessFunction, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(MixedSuccessTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the success delegate returns a task and the error delegate is synchronous.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(MixedSuccessTaskMessage, error: true)]
-    public static Task<Result> MatchAsync(this Task<Result> resultTask,
-        Func<ValueTask> ifSuccessFunction, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(MixedSuccessTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the success delegate returns a task and the error delegate is synchronous.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(MixedSuccessTaskMessage, error: true)]
-    public static Task<Result> MatchAsync<TNext>(this Task<Result> resultTask,
-        Func<ValueTask<TNext>> ifSuccessFunction, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(MixedSuccessTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the success delegate returns a task and the error delegate is synchronous.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(MixedSuccessTaskMessage, error: true)]
-    [OverloadResolutionPriority(1)]
-    public static Task<Result> MatchAsync<T>(this Task<Result<T>> resultTask,
-        Func<T, Task> ifSuccessFunction, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(MixedSuccessTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the success delegate returns a task and the error delegate is synchronous.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(MixedSuccessTaskMessage, error: true)]
-    [OverloadResolutionPriority(1)]
-    public static Task<Result> MatchAsync<T, TNext>(this Task<Result<T>> resultTask,
-        Func<T, Task<TNext>> ifSuccessFunction, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(MixedSuccessTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the success delegate returns a task and the error delegate is synchronous.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(MixedSuccessTaskMessage, error: true)]
-    public static Task<Result> MatchAsync<T>(this Task<Result<T>> resultTask,
-        Func<T, ValueTask> ifSuccessFunction, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(MixedSuccessTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the success delegate returns a task and the error delegate is synchronous.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(MixedSuccessTaskMessage, error: true)]
-    public static Task<Result> MatchAsync<T, TNext>(this Task<Result<T>> resultTask,
-        Func<T, ValueTask<TNext>> ifSuccessFunction, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(MixedSuccessTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(MixedErrorTaskMessage, error: true)]
-    [OverloadResolutionPriority(1)]
-    public static Task<Result> MatchAsync(this Task<Result> resultTask,
-        Action ifSuccessAction, Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(MixedErrorTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(MixedErrorTaskMessage, error: true)]
-    public static Task<Result> MatchAsync(this Task<Result> resultTask,
-        Action ifSuccessAction, Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(MixedErrorTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(MixedErrorTaskMessage, error: true)]
-    public static Task<Result> MatchAsync<TTaskResult>(this Task<Result> resultTask,
-        Action ifSuccessAction, Func<Error, ValueTask<TTaskResult>> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(MixedErrorTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(MixedErrorTaskMessage, error: true)]
-    [OverloadResolutionPriority(1)]
-    public static Task<Result> MatchAsync(this Task<Result> resultTask,
-        Func<Result> ifSuccessFunction, Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(MixedErrorTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(MixedErrorTaskMessage, error: true)]
-    public static Task<Result> MatchAsync(this Task<Result> resultTask,
-        Func<Result> ifSuccessFunction, Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(MixedErrorTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(MixedErrorTaskMessage, error: true)]
-    public static Task<Result> MatchAsync<TTaskResult>(this Task<Result> resultTask,
-        Func<Result> ifSuccessFunction, Func<Error, ValueTask<TTaskResult>> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(MixedErrorTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(MixedErrorTaskMessage, error: true)]
-    [OverloadResolutionPriority(1)]
-    public static Task<Result<T>> MatchAsync<T>(this Task<Result> resultTask,
-        Func<T> ifSuccessFunction, Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(MixedErrorTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(MixedErrorTaskMessage, error: true)]
-    public static Task<Result<T>> MatchAsync<T>(this Task<Result> resultTask,
-        Func<T> ifSuccessFunction, Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(MixedErrorTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(MixedErrorTaskMessage, error: true)]
-    public static Task<Result<T>> MatchAsync<T, TTaskResult>(this Task<Result> resultTask,
-        Func<T> ifSuccessFunction, Func<Error, ValueTask<TTaskResult>> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(MixedErrorTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(MixedErrorTaskMessage, error: true)]
-    [OverloadResolutionPriority(1)]
-    public static Task<Result> MatchAsync(this Task<Result> resultTask,
-        Func<Error> ifSuccessFunction, Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(MixedErrorTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(MixedErrorTaskMessage, error: true)]
-    public static Task<Result> MatchAsync(this Task<Result> resultTask,
-        Func<Error> ifSuccessFunction, Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(MixedErrorTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(MixedErrorTaskMessage, error: true)]
-    public static Task<Result> MatchAsync<TTaskResult>(this Task<Result> resultTask,
-        Func<Error> ifSuccessFunction, Func<Error, ValueTask<TTaskResult>> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(MixedErrorTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(MixedErrorTaskMessage, error: true)]
-    [OverloadResolutionPriority(1)]
-    public static Task<Result<T>> MatchAsync<T>(this Task<Result> resultTask,
-        Func<Result<T>> ifSuccessFunction, Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(MixedErrorTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(MixedErrorTaskMessage, error: true)]
-    public static Task<Result<T>> MatchAsync<T>(this Task<Result> resultTask,
-        Func<Result<T>> ifSuccessFunction, Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(MixedErrorTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(MixedErrorTaskMessage, error: true)]
-    public static Task<Result<T>> MatchAsync<T, TTaskResult>(this Task<Result> resultTask,
-        Func<Result<T>> ifSuccessFunction, Func<Error, ValueTask<TTaskResult>> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(MixedErrorTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(MixedErrorTaskMessage, error: true)]
-    [OverloadResolutionPriority(1)]
-    public static Task<Result<T>> MatchAsync<T>(this Task<Result<T>> resultTask,
-        Action<T> ifSuccessAction, Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(MixedErrorTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(MixedErrorTaskMessage, error: true)]
-    public static Task<Result<T>> MatchAsync<T>(this Task<Result<T>> resultTask,
-        Action<T> ifSuccessAction, Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(MixedErrorTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(MixedErrorTaskMessage, error: true)]
-    public static Task<Result<T>> MatchAsync<T, TTaskResult>(this Task<Result<T>> resultTask,
-        Action<T> ifSuccessAction, Func<Error, ValueTask<TTaskResult>> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(MixedErrorTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(MixedErrorTaskMessage, error: true)]
-    [OverloadResolutionPriority(1)]
-    public static Task<Result<TNext>> MatchAsync<T, TNext>(this Task<Result<T>> resultTask,
-        Func<T, TNext> ifSuccessFunction, Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(MixedErrorTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(MixedErrorTaskMessage, error: true)]
-    public static Task<Result<TNext>> MatchAsync<T, TNext>(this Task<Result<T>> resultTask,
-        Func<T, TNext> ifSuccessFunction, Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(MixedErrorTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(MixedErrorTaskMessage, error: true)]
-    public static Task<Result<TNext>> MatchAsync<T, TNext, TTaskResult>(this Task<Result<T>> resultTask,
-        Func<T, TNext> ifSuccessFunction, Func<Error, ValueTask<TTaskResult>> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(MixedErrorTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(MixedErrorTaskMessage, error: true)]
-    [OverloadResolutionPriority(1)]
-    public static Task<Result> MatchAsync<T>(this Task<Result<T>> resultTask,
-        Func<T, Error> ifSuccessFunction, Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(MixedErrorTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(MixedErrorTaskMessage, error: true)]
-    public static Task<Result> MatchAsync<T>(this Task<Result<T>> resultTask,
-        Func<T, Error> ifSuccessFunction, Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(MixedErrorTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(MixedErrorTaskMessage, error: true)]
-    public static Task<Result> MatchAsync<T, TTaskResult>(this Task<Result<T>> resultTask,
-        Func<T, Error> ifSuccessFunction, Func<Error, ValueTask<TTaskResult>> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(MixedErrorTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(MixedErrorTaskMessage, error: true)]
-    [OverloadResolutionPriority(1)]
-    public static Task<Result<TNext>> MatchAsync<T, TNext>(this Task<Result<T>> resultTask,
-        Func<T, Result<TNext>> ifSuccessFunction, Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(MixedErrorTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(MixedErrorTaskMessage, error: true)]
-    public static Task<Result<TNext>> MatchAsync<T, TNext>(this Task<Result<T>> resultTask,
-        Func<T, Result<TNext>> ifSuccessFunction, Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(MixedErrorTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the error delegate returns a task and the success delegate is synchronous.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(MixedErrorTaskMessage, error: true)]
-    public static Task<Result<TNext>> MatchAsync<T, TNext, TTaskResult>(this Task<Result<T>> resultTask,
-        Func<T, Result<TNext>> ifSuccessFunction, Func<Error, ValueTask<TTaskResult>> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(MixedErrorTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the delegates return a <c>ValueTask</c>, which this method does not await.
+    ///     Not supported: the functions return a <c>ValueTask</c>, which this method does not await.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(OtherTaskMessage, error: true)]
-    public static Task<Result> MatchAsync(this Task<Result> resultTask,
-        Func<ValueTask> ifSuccessAction, Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
+    public static Task<TOut> MatchAsync<TOut>(this Task<Result> resultTask, Func<ValueTask<TOut>> ifSuccessFunction,
+        Func<Error, ValueTask<TOut>> ifErrorFunction, bool? continueOnCapturedContext = null)
     {
         throw new NotSupportedException(OtherTaskMessage);
     }
 
     /// <summary>
-    ///     Not supported: the delegates return a <c>ValueTask</c>, which this method does not await.
+    ///     Not supported: the functions return a <c>ValueTask</c>, which this method does not await.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(OtherTaskMessage, error: true)]
-    public static Task<Result> MatchAsync(this Task<Result> resultTask,
-        Func<ValueTask<Result>> ifSuccessFunction, Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(OtherTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the delegates return a <c>ValueTask</c>, which this method does not await.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(OtherTaskMessage, error: true)]
-    public static Task<Result> MatchAsync(this Task<Result> resultTask,
-        Func<ValueTask<Result>> ifSuccessFunction, Func<Error, ValueTask<Result>> ifErrorFunction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(OtherTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the delegates return a <c>ValueTask</c>, which this method does not await.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(OtherTaskMessage, error: true)]
-    public static Task<Result<T>> MatchAsync<T>(this Task<Result> resultTask,
-        Func<ValueTask<T>> ifSuccessFunction, Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(OtherTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the delegates return a <c>ValueTask</c>, which this method does not await.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(OtherTaskMessage, error: true)]
-    public static Task<Result> MatchAsync(this Task<Result> resultTask,
-        Func<ValueTask<Error>> ifSuccessFunction, Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(OtherTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the delegates return a <c>ValueTask</c>, which this method does not await.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(OtherTaskMessage, error: true)]
-    public static Task<T> MatchAsync<T>(this Task<Result> resultTask,
-        Func<ValueTask<T>> ifSuccessFunction, Func<Error, ValueTask<T>> ifErrorFunction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(OtherTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the delegates return a <c>ValueTask</c>, which this method does not await.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(OtherTaskMessage, error: true)]
-    public static Task<Result<T>> MatchAsync<T>(this Task<Result> resultTask,
-        Func<ValueTask<Result<T>>> ifSuccessFunction, Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(OtherTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the delegates return a <c>ValueTask</c>, which this method does not await.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(OtherTaskMessage, error: true)]
-    public static Task<Result<T>> MatchAsync<T>(this Task<Result> resultTask,
-        Func<ValueTask<Result<T>>> ifSuccessFunction, Func<Error, ValueTask<Result<T>>> ifErrorFunction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(OtherTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the delegates return a <c>ValueTask</c>, which this method does not await.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(OtherTaskMessage, error: true)]
-    public static Task<Result<T>> MatchAsync<T>(this Task<Result<T>> resultTask,
-        Func<T, ValueTask> ifSuccessAction, Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(OtherTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the delegates return a <c>ValueTask</c>, which this method does not await.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(OtherTaskMessage, error: true)]
-    public static Task<Result<TNext>> MatchAsync<T, TNext>(this Task<Result<T>> resultTask,
-        Func<T, ValueTask<TNext>> ifSuccessFunction, Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(OtherTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the delegates return a <c>ValueTask</c>, which this method does not await.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(OtherTaskMessage, error: true)]
-    public static Task<Result> MatchAsync<T>(this Task<Result<T>> resultTask,
-        Func<T, ValueTask<Error>> ifSuccessFunction, Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(OtherTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the delegates return a <c>ValueTask</c>, which this method does not await.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(OtherTaskMessage, error: true)]
-    public static Task<TNext> MatchAsync<T, TNext>(this Task<Result<T>> resultTask,
-        Func<T, ValueTask<TNext>> ifSuccessFunction, Func<Error, ValueTask<TNext>> ifErrorFunction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(OtherTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the delegates return a <c>ValueTask</c>, which this method does not await.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(OtherTaskMessage, error: true)]
-    public static Task<Result<TNext>> MatchAsync<T, TNext>(this Task<Result<T>> resultTask,
-        Func<T, ValueTask<Result<TNext>>> ifSuccessFunction, Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(OtherTaskMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the delegates return a <c>ValueTask</c>, which this method does not await.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(OtherTaskMessage, error: true)]
-    public static Task<Result<TNext>> MatchAsync<T, TNext>(this Task<Result<T>> resultTask,
-        Func<T, ValueTask<Result<TNext>>> ifSuccessFunction, Func<Error, ValueTask<Result<TNext>>> ifErrorFunction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(OtherTaskMessage);
-    }
-
-    #endregion
-
-    #region Not supported: a success function and an error action (#227)
-
-    // A success function with an error action transforms the result, as ThenAsync(…).IfErrorAsync(…) does, and the same call with a
-    // success action taps it: which one runs depended on the return type of the lambda (e.g., x => set.Add(x) mapped to a
-    // Result<bool>), as for IfSuccess before #197. These overloads keep the signatures and the priorities of the overloads
-    // they replace, so no other call changes its binding, and turn such a call into a compile error (CS0619) that names
-    // ThenAsync(…).IfErrorAsync(…). MatchAsync keeps two meanings: two functions (a value) and two actions (a side effect).
-
-    private const string SuccessFunctionAndErrorActionMessage =
-        "MatchAsync with a success function and an error action transforms the result, as ThenAsync does; an assignment or an increment " +
-        "(e.g., x => last = x) is a function too. " +
-        "Use ThenAsync(…).IfErrorAsync(…) to transform it, a success delegate without a value (e.g., x => { last = x; }) for a side effect, or " +
-        "two functions that return the same type for a value.";
-
-    /// <summary>
-    ///     Not supported: a success function with an error action transforms the result; use
-    ///     <c>ThenAsync(…).IfErrorAsync(…)</c>.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(SuccessFunctionAndErrorActionMessage, error: true)]
-    public static Task<Result> MatchAsync(this Result result, Func<Task<Result>> ifSuccessFunction,
-        Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(SuccessFunctionAndErrorActionMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: a success function with an error action transforms the result; use
-    ///     <c>ThenAsync(…).IfErrorAsync(…)</c>.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(SuccessFunctionAndErrorActionMessage, error: true)]
-    public static Task<Result<T>> MatchAsync<T>(this Result result, Func<Task<T>> ifSuccessFunction,
-        Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(SuccessFunctionAndErrorActionMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: a success function with an error action transforms the result; use
-    ///     <c>ThenAsync(…).IfErrorAsync(…)</c>.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(SuccessFunctionAndErrorActionMessage, error: true)]
-    public static Task<Result> MatchAsync(this Result result, Func<Task<Error>> ifSuccessFunction,
-        Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(SuccessFunctionAndErrorActionMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: a success function with an error action transforms the result; use
-    ///     <c>ThenAsync(…).IfErrorAsync(…)</c>.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(SuccessFunctionAndErrorActionMessage, error: true)]
-    public static Task<Result<T>> MatchAsync<T>(this Result result, Func<Task<Result<T>>> ifSuccessFunction,
-        Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(SuccessFunctionAndErrorActionMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: a success function with an error action transforms the result; use
-    ///     <c>ThenAsync(…).IfErrorAsync(…)</c>.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(SuccessFunctionAndErrorActionMessage, error: true)]
-    public static Task<Result<TNext>> MatchAsync<T, TNext>(
-        this Result<T> result,
-        Func<T, Task<TNext>> ifSuccessFunction,
-        Func<Error, Task> ifErrorAction,
+    public static Task MatchAsync(this Task<Result> resultTask, Func<ValueTask> ifSuccessAction, Func<Error, ValueTask> ifErrorAction,
         bool? continueOnCapturedContext = null)
     {
-        throw new NotSupportedException(SuccessFunctionAndErrorActionMessage);
+        throw new NotSupportedException(OtherTaskMessage);
     }
 
     /// <summary>
-    ///     Not supported: a success function with an error action transforms the result; use
-    ///     <c>ThenAsync(…).IfErrorAsync(…)</c>.
+    ///     Not supported: the functions return a <c>ValueTask</c>, which this method does not await.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(SuccessFunctionAndErrorActionMessage, error: true)]
-    public static Task<Result> MatchAsync<T>(
-        this Result<T> result,
-        Func<T, Task<Error>> ifSuccessFunction,
-        Func<Error, Task> ifErrorAction,
+    [Obsolete(OtherTaskMessage, error: true)]
+    public static Task<TOut> MatchAsync<T, TOut>(this Task<Result<T>> resultTask, Func<T, ValueTask<TOut>> ifSuccessFunction,
+        Func<Error, ValueTask<TOut>> ifErrorFunction, bool? continueOnCapturedContext = null)
+    {
+        throw new NotSupportedException(OtherTaskMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the functions return a <c>ValueTask</c>, which this method does not await.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(OtherTaskMessage, error: true)]
+    public static Task MatchAsync<T>(this Task<Result<T>> resultTask, Func<T, ValueTask> ifSuccessAction, Func<Error, ValueTask> ifErrorAction,
         bool? continueOnCapturedContext = null)
     {
-        throw new NotSupportedException(SuccessFunctionAndErrorActionMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: a success function with an error action transforms the result; use
-    ///     <c>ThenAsync(…).IfErrorAsync(…)</c>.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(SuccessFunctionAndErrorActionMessage, error: true)]
-    public static Task<Result<TNext>> MatchAsync<T, TNext>(
-        this Result<T> result,
-        Func<T, Task<Result<TNext>>> ifSuccessFunction,
-        Func<Error, Task> ifErrorAction,
-        bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(SuccessFunctionAndErrorActionMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: a success function with an error action transforms the result; use
-    ///     <c>ThenAsync(…).IfErrorAsync(…)</c>.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(SuccessFunctionAndErrorActionMessage, error: true)]
-    [OverloadResolutionPriority(1)]
-    public static Task<Result> MatchAsync(this Task<Result> resultTask, Func<Task<Result>> ifSuccessFunction,
-        Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(SuccessFunctionAndErrorActionMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: a success function with an error action transforms the result; use
-    ///     <c>ThenAsync(…).IfErrorAsync(…)</c>.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(SuccessFunctionAndErrorActionMessage, error: true)]
-    [OverloadResolutionPriority(1)]
-    public static Task<Result<T>> MatchAsync<T>(this Task<Result> resultTask, Func<Task<T>> ifSuccessFunction,
-        Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(SuccessFunctionAndErrorActionMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: a success function with an error action transforms the result; use
-    ///     <c>ThenAsync(…).IfErrorAsync(…)</c>.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(SuccessFunctionAndErrorActionMessage, error: true)]
-    [OverloadResolutionPriority(1)]
-    public static Task<Result> MatchAsync(this Task<Result> resultTask, Func<Task<Error>> ifSuccessFunction,
-        Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(SuccessFunctionAndErrorActionMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: a success function with an error action transforms the result; use
-    ///     <c>ThenAsync(…).IfErrorAsync(…)</c>.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(SuccessFunctionAndErrorActionMessage, error: true)]
-    [OverloadResolutionPriority(1)]
-    public static Task<Result<T>> MatchAsync<T>(
-        this Task<Result> resultTask, Func<Task<Result<T>>> ifSuccessFunction,
-        Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(SuccessFunctionAndErrorActionMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: a success function with an error action transforms the result; use
-    ///     <c>ThenAsync(…).IfErrorAsync(…)</c>.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(SuccessFunctionAndErrorActionMessage, error: true)]
-    [OverloadResolutionPriority(1)]
-    public static Task<Result<TNext>> MatchAsync<T, TNext>(
-        this Task<Result<T>> resultTask,
-        Func<T, Task<TNext>> ifSuccessFunction,
-        Func<Error, Task> ifErrorAction,
-        bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(SuccessFunctionAndErrorActionMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: a success function with an error action transforms the result; use
-    ///     <c>ThenAsync(…).IfErrorAsync(…)</c>.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(SuccessFunctionAndErrorActionMessage, error: true)]
-    [OverloadResolutionPriority(1)]
-    public static Task<Result> MatchAsync<T>(
-        this Task<Result<T>> resultTask,
-        Func<T, Task<Error>> ifSuccessFunction,
-        Func<Error, Task> ifErrorAction,
-        bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(SuccessFunctionAndErrorActionMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: a success function with an error action transforms the result; use
-    ///     <c>ThenAsync(…).IfErrorAsync(…)</c>.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(SuccessFunctionAndErrorActionMessage, error: true)]
-    [OverloadResolutionPriority(1)]
-    public static Task<Result<TNext>> MatchAsync<T, TNext>(
-        this Task<Result<T>> resultTask,
-        Func<T, Task<Result<TNext>>> ifSuccessFunction,
-        Func<Error, Task> ifErrorAction,
-        bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(SuccessFunctionAndErrorActionMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: a success function with an error action transforms the result; use
-    ///     <c>ThenAsync(…).IfErrorAsync(…)</c>.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(SuccessFunctionAndErrorActionMessage, error: true)]
-    public static Task<Result> MatchAsync(this Task<Result> resultTask,
-        Func<Result> ifSuccessFunction, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(SuccessFunctionAndErrorActionMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: a success function with an error action transforms the result; use
-    ///     <c>ThenAsync(…).IfErrorAsync(…)</c>.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(SuccessFunctionAndErrorActionMessage, error: true)]
-    public static Task<Result<T>> MatchAsync<T>(this Task<Result> resultTask,
-        Func<T> ifSuccessFunction, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(SuccessFunctionAndErrorActionMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: a success function with an error action transforms the result; use
-    ///     <c>ThenAsync(…).IfErrorAsync(…)</c>.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(SuccessFunctionAndErrorActionMessage, error: true)]
-    public static Task<Result> MatchAsync(this Task<Result> resultTask,
-        Func<Error> ifSuccessFunction, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(SuccessFunctionAndErrorActionMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: a success function with an error action transforms the result; use
-    ///     <c>ThenAsync(…).IfErrorAsync(…)</c>.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(SuccessFunctionAndErrorActionMessage, error: true)]
-    public static Task<Result<T>> MatchAsync<T>(this Task<Result> resultTask,
-        Func<Result<T>> ifSuccessFunction, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(SuccessFunctionAndErrorActionMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: a success function with an error action transforms the result; use
-    ///     <c>ThenAsync(…).IfErrorAsync(…)</c>.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(SuccessFunctionAndErrorActionMessage, error: true)]
-    public static Task<Result<TNext>> MatchAsync<T, TNext>(this Task<Result<T>> resultTask,
-        Func<T, TNext> ifSuccessFunction, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(SuccessFunctionAndErrorActionMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: a success function with an error action transforms the result; use
-    ///     <c>ThenAsync(…).IfErrorAsync(…)</c>.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(SuccessFunctionAndErrorActionMessage, error: true)]
-    public static Task<Result> MatchAsync<T>(this Task<Result<T>> resultTask,
-        Func<T, Error> ifSuccessFunction, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(SuccessFunctionAndErrorActionMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: a success function with an error action transforms the result; use
-    ///     <c>ThenAsync(…).IfErrorAsync(…)</c>.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(SuccessFunctionAndErrorActionMessage, error: true)]
-    public static Task<Result<TNext>> MatchAsync<T, TNext>(this Task<Result<T>> resultTask,
-        Func<T, Result<TNext>> ifSuccessFunction, Action<Error> ifErrorAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(SuccessFunctionAndErrorActionMessage);
+        throw new NotSupportedException(OtherTaskMessage);
     }
 
     #endregion

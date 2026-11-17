@@ -40,8 +40,6 @@ public class ValueLambdaTrapBindingUnitTests
     [InlineData("_ = Ok().IfSuccess(x => Count += x);")]
     [InlineData("_ = Failed().IfError(e => LastError = e);")]
     [InlineData("_ = Failed().IfError(e => Count++);")]
-    [InlineData("_ = Ok().Match(x => Last = x, e => LastError = e);")]
-    [InlineData("_ = Ok().Match(x => Count++, e => { });")]
     public void Sync_AssignmentOrIncrement_ReportsCS0619ThatNamesIt(string statements)
     {
         // Act
@@ -60,7 +58,6 @@ public class ValueLambdaTrapBindingUnitTests
     [InlineData("_ = Task.FromResult(Failed()).IfErrorAsync(e => LastError = e);")]
     [InlineData("_ = Ok().IfSuccessAsync(async x => Last = await GetIntAsync());")]
     [InlineData("_ = Failed().IfErrorAsync(async e => LastError = await GetErrorAsync());")]
-    [InlineData("_ = Task.FromResult(Ok()).MatchAsync(x => Last = x, e => LastError = e);")]
     public void TaskBased_AssignmentOrIncrement_ReportsCS0619ThatNamesIt(string statements)
     {
         // Act
@@ -78,7 +75,6 @@ public class ValueLambdaTrapBindingUnitTests
     [InlineData("_ = new ValueTask<Result<int>>(Failed()).IfErrorAsync(e => Count++);")]
     [InlineData("_ = Ok().IfSuccessAsync(async x => Last = await GetIntVt());")]
     [InlineData("_ = Failed().IfErrorAsync(async e => LastError = await GetErrorVt());")]
-    [InlineData("_ = new ValueTask<Result<int>>(Ok()).MatchAsync(x => Last = x, e => LastError = e);")]
     public void ValueTaskBased_AssignmentOrIncrement_ReportsCS0619ThatNamesIt(string statements)
     {
         // Act
@@ -95,7 +91,7 @@ public class ValueLambdaTrapBindingUnitTests
     [InlineData("_ = Ok().IfSuccess(x => { Last = x; });")]
     [InlineData("_ = Ok().IfSuccess(x => { Count++; });")]
     [InlineData("_ = Failed().IfError(e => { LastError = e; });")]
-    [InlineData("_ = Ok().Match(x => { Last = x; }, e => { LastError = e; });")]
+    [InlineData("Ok().Switch(x => { Last = x; }, e => { LastError = e; });")]
     public void Sync_StatementLambdaWithAnAssignmentOrAnIncrement_Compiles(string statements)
     {
         // Act
@@ -108,7 +104,7 @@ public class ValueLambdaTrapBindingUnitTests
     [Theory]
     [InlineData("_ = Task.FromResult(Ok()).IfSuccessAsync(x => { Last = x; });")]
     [InlineData("_ = Ok().IfSuccessAsync(async x => { Last = await GetIntAsync(); });")]
-    [InlineData("_ = Task.FromResult(Ok()).MatchAsync(x => { Last = x; }, e => { LastError = e; });")]
+    [InlineData("_ = Task.FromResult(Ok()).SwitchAsync(x => { Last = x; }, e => { LastError = e; });")]
     public void TaskBased_StatementLambdaWithAnAssignmentOrAnIncrement_Compiles(string statements)
     {
         // Act

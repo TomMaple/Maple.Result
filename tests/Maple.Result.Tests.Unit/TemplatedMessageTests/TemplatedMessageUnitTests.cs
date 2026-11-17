@@ -400,7 +400,9 @@ public class TemplatedMessageUnitTests
 
     #endregion
 
-    #region empty and padded names (issue #203)
+    #region empty and padded names
+
+    // See issue #203.
 
     [Theory]
     [InlineData("")]

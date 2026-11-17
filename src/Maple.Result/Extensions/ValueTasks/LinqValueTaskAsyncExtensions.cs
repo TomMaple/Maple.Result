@@ -731,7 +731,9 @@ public static class LinqValueTaskAsyncExtensions
 
     #endregion
 
-    #region Non-generic results and selected results (#217)
+    #region Non-generic results and selected results
+
+    // See issue #217.
 
     /// <summary>
     ///     Awaits the result and projects it if it is successful (the <c>select</c> clause of a query); a failed result is
@@ -3425,7 +3427,7 @@ public static class LinqValueTaskAsyncExtensions
 
     #endregion
 
-    #region Not supported: selectors returning a task, for the non-generic results (#217)
+    #region Not supported: selectors returning a task, for the non-generic results
 
     // The traps of the region above, for the new source and collection shapes (#217): a result selector that returns a task
     // would bind to the overload with a TNext and wrap the task in the result.

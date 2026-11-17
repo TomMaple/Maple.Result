@@ -153,7 +153,7 @@ public static class ElseTaskAsyncExtensions
 
     #endregion
 
-    #region A value or an Error in a task (#237)
+    #region A value or an Error in a task
 
     // Else takes a function that returns a value or an Error through the implicit conversions to the result type. A task blocks
     // them: Task<int> does not convert to Task<Result<int>>, and the type argument of the task contradicts the receiver in the type
@@ -465,7 +465,7 @@ public static class ElseTaskAsyncExtensions
 
     #endregion
 
-    #region Not supported: actions (#197)
+    #region Not supported: actions
 
     // A function that returns nothing is a side effect, not a transformation (#197): these overloads turn the call into a compile
     // error (CS0619) that names the method to use, instead of the conversion errors CS0029 and CS1662.
@@ -479,7 +479,7 @@ public static class ElseTaskAsyncExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ActionMessage, error: true)]
-    public static Task<TResult> ElseAsync<TResult>([DisallowNull] this TResult result, Func<Error, Task> ifErrorFunction, bool? continueOnCapturedContext = null)
+    public static Task<TResult> ElseAsync<TResult>([DisallowNull] this TResult result, Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
         where TResult : IOperationResult
     {
         throw new NotSupportedException(ActionMessage);
@@ -491,7 +491,7 @@ public static class ElseTaskAsyncExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ActionMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Task<TResult> ElseAsync<TResult>(this Task<TResult> resultTask, Func<Error, Task> ifErrorFunction, bool? continueOnCapturedContext = null)
+    public static Task<TResult> ElseAsync<TResult>(this Task<TResult> resultTask, Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
         where TResult : IOperationResult
     {
         throw new NotSupportedException(ActionMessage);
@@ -499,7 +499,9 @@ public static class ElseTaskAsyncExtensions
 
     #endregion
 
-    #region Task results with synchronous delegates (#214)
+    #region Task results with synchronous delegates
+
+    // See issue #214.
 
     /// <summary>
     ///     Runs the synchronous function if the result that the <paramref name="resultTask" /> returns is failed, and returns
@@ -545,7 +547,7 @@ public static class ElseTaskAsyncExtensions
 
     #endregion
 
-    #region Not supported: synchronous delegates of the wrong kind, and functions returning a ValueTask (#214)
+    #region Not supported: synchronous delegates of the wrong kind, and functions returning a ValueTask
 
     // A synchronous action passed to ThenAsync or ElseAsync, or a synchronous function that returns a value passed to
     // IfSuccessAsync or IfErrorAsync, is a compile error (CS0619) that names the method to use, as in #197.
@@ -579,7 +581,7 @@ public static class ElseTaskAsyncExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(OtherTaskMessage, error: true)]
     public static Task<TResult> ElseAsync<TResult>(this Task<TResult> resultTask,
-        Func<Error, ValueTask> ifErrorFunction, bool? continueOnCapturedContext = null)
+        Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
         where TResult : IOperationResult
     {
         throw new NotSupportedException(OtherTaskMessage);

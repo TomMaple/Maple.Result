@@ -357,7 +357,7 @@ public static class ThenExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ThenTaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result Then(this Result result, Func<Task> ifSuccessFunction)
+    public static Result Then(this Result result, Func<Task> ifSuccessAction)
     {
         throw new NotSupportedException(ThenTaskNotAwaitedMessage);
     }
@@ -378,7 +378,7 @@ public static class ThenExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ThenTaskNotAwaitedMessage, error: true)]
-    public static Result Then(this Result result, Func<ValueTask> ifSuccessFunction)
+    public static Result Then(this Result result, Func<ValueTask> ifSuccessAction)
     {
         throw new NotSupportedException(ThenTaskNotAwaitedMessage);
     }
@@ -399,7 +399,7 @@ public static class ThenExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ThenTaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result Then<T>(this Result<T> result, Func<T, Task> ifSuccessFunction)
+    public static Result Then<T>(this Result<T> result, Func<T, Task> ifSuccessAction)
     {
         throw new NotSupportedException(ThenTaskNotAwaitedMessage);
     }
@@ -420,7 +420,7 @@ public static class ThenExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ThenTaskNotAwaitedMessage, error: true)]
-    public static Result Then<T>(this Result<T> result, Func<T, ValueTask> ifSuccessFunction)
+    public static Result Then<T>(this Result<T> result, Func<T, ValueTask> ifSuccessAction)
     {
         throw new NotSupportedException(ThenTaskNotAwaitedMessage);
     }
@@ -437,7 +437,7 @@ public static class ThenExtensions
 
     #endregion
 
-    #region Not supported: actions (#197)
+    #region Not supported: actions
 
     // A function that returns nothing is a side effect, not a transformation (#197): these overloads turn the call into a compile
     // error (CS0619) that names the method to use, instead of the conversion errors CS0029 and CS1662.

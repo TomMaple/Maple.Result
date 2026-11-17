@@ -60,7 +60,7 @@ The types are in the `Maple.Results` namespace, and the extension methods in `Ma
 
 ```csharp
 using Maple.Results;
-using Maple.Results.Extensions;  // extension methods: Then, Else, IfSuccess, Match, LINQ, …
+using Maple.Results.Extensions;  // extension methods: Then, Else, IfSuccess, Match, Switch, LINQ, …
 ```
 
 ## Quick start
@@ -114,7 +114,7 @@ Result sendResult = await GetContactAsync(id)
 ## Features
 * **[Results](docs/guide/results.md)** — `Result` and `Result<T>`, the implicit conversions, `TryGetValue` and `TryGetError`, and nullable values.
 * **[Errors](docs/guide/errors.md)** — eleven [categories](docs/guide/errors.md#error-categories) (with their default HTTP status codes), type and instance *URI*s, [error details](docs/guide/errors.md#error-details-validation-errors) for validation errors (with JSON Pointers), [metadata](docs/guide/errors.md#metadata), the [ErrorBuilder](docs/guide/errors.md#errorbuilder) and [localization](docs/guide/errors.md#localization).
-* **[Chaining operations](docs/guide/chaining.md)** — `Then`, `Else`, `IfSuccess`, `IfError`, `Match`, their asynchronous versions for `Task` and `ValueTask`, and the LINQ query syntax. A call that would discard a value or a task by mistake is a compile error that names the right method.
+* **[Chaining operations](docs/guide/chaining.md)** — `Then`, `Else`, `IfSuccess`, `IfError`, `Match`, `Switch`, their asynchronous versions for `Task` and `ValueTask`, and the LINQ query syntax. A call that would discard a value or a task by mistake is a compile error that names the right method.
 * **[Turning exceptions into results](docs/guide/chaining.md#turning-exceptions-into-results)** — `Result.Try()` and `Result.TryAsync()` with a mapper from the exception to the `Error`.
 * **[Problem details format](docs/problem-details.md)** — how an `Error` is written as an RFC 9457 problem details object and read back by the [related packages](#related-packages).
 * **[UI applications](docs/guide/chaining.md#asynchronous-methods-in-ui-applications)** — `continueOnCapturedContext` and a global default for WPF, Windows Forms, .NET MAUI and Blazor Server.
@@ -162,12 +162,12 @@ By the *HTTP* reference from *Mozilla* [[link](https://developer.mozilla.org/en-
 
 > A 401 Unauthorized is similar to the 403 Forbidden response, except that a 403 is returned when a request contains valid credentials, but the client does not have permissions to perform a certain action.
 
-### Why are methods like `Bind()`, `Map()` and `Switch()` not available?
+### Why are methods like `Bind()`, `Map()` and `Tap()` not available?
 This library minimizes the amount of extension methods:
 * `Bind()` and `Map()` are both `Then()`: a function that returns a value maps it (e.g., `Then<T, TNext>(Result<T>, Func<T, TNext>)`), and a function that returns a `Result<TNext>` binds it (e.g., `Then<T, TNext>(Result<T>, Func<T, Result<TNext>>)`),
 * `Tap()` is `IfSuccess()`, and `TapError()` is `IfError()`,
 * `Recover()` is `Else()` (e.g., `Else<TResult>(TResult, Func<Error, TResult>)`),
-* `Switch()` is `Match()` with actions (e.g., `Match<T>(Result<T>, Action<T>, Action<Error>)`).
+* `Fold()` is `Match()`: two functions that return one type (e.g., `Match<T, TOut>(Result<T>, Func<T, TOut>, Func<Error, TOut>)`); `Switch()` runs two actions instead.
 
 ## Documentation
 ### Guides
