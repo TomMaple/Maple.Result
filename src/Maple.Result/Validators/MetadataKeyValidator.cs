@@ -61,20 +61,25 @@ internal static class MetadataKeyValidator
     /// <summary>
     ///     Throws if the key is null, empty, whitespace-only, starts or ends with white space, or is reserved.
     /// </summary>
+    /// <param name="key">The metadata key to validate.</param>
+    /// <param name="paramName">
+    ///     The name of the parameter of the called method that holds the key: <c>key</c> for a single entry, <c>metadata</c> for a batch
+    ///     (#250).
+    /// </param>
     /// <exception cref="ArgumentNullException">If the <paramref name="key" /> is <see langword="null" />.</exception>
     /// <exception cref="ArgumentException">
     ///     If the <paramref name="key" /> is empty, whitespace-only, starts or ends with white space, or matches a standard problem details member
     ///     name.
     /// </exception>
-    internal static void Validate(string key)
+    internal static void Validate(string key, string paramName)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(key);
+        ArgumentException.ThrowIfNullOrWhiteSpace(key, paramName);
 
         if (!NameValidator.IsValid(key))
         {
             throw new ArgumentException(
                 $"The metadata key ‘{key}’ starts or ends with white space. A key is not trimmed; remove the white space.",
-                nameof(key));
+                paramName);
         }
 
         if (IsReserved(key))
@@ -82,7 +87,7 @@ internal static class MetadataKeyValidator
             throw new ArgumentException(
                 $"The metadata key ‘{key}’ is reserved. Keys must not match (case-insensitively) the standard " +
                 "problem details members: ‘type’, ‘title’, ‘status’, ‘detail’, ‘instance’, ‘errors’, ‘detailTemplated’.",
-                nameof(key));
+                paramName);
         }
     }
 

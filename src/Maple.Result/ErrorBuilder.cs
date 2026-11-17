@@ -418,7 +418,7 @@ public sealed class ErrorBuilder
     /// </exception>
     public ErrorBuilder WithMetadata(string key, object? value)
     {
-        MetadataKeyValidator.Validate(key);
+        MetadataKeyValidator.Validate(key, nameof(key));
         ValidateCase(key, nameof(key));
 
         GetPendingMetadata()[key] = value;
@@ -450,7 +450,7 @@ public sealed class ErrorBuilder
 
         var entries = metadata.ToArray();
         foreach (var pair in entries)
-            MetadataKeyValidator.Validate(pair.Key);
+            MetadataKeyValidator.Validate(pair.Key, nameof(metadata));
 
         ReadOnlySpan<KeyValuePair<string, object?>> entriesSpan = entries;
         ValidateCase(entriesSpan, static pair => pair.Key, nameof(metadata));
@@ -489,7 +489,7 @@ public sealed class ErrorBuilder
     public ErrorBuilder WithMetadata(params ReadOnlySpan<(string Key, object? Value)> metadata)
     {
         foreach (var (key, _) in metadata)
-            MetadataKeyValidator.Validate(key);
+            MetadataKeyValidator.Validate(key, nameof(metadata));
 
         ValidateCase(metadata, static entry => entry.Key, nameof(metadata));
 
