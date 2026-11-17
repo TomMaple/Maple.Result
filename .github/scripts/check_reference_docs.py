@@ -8,16 +8,17 @@ Prints one line per problem (`path:line: message`) and exits with 1 when there i
 docs/conventions.md, "Documentation":
 - Every public member of a public type has a page; the overload traps (`[Obsolete]`) have none.
 - A type page links to the file (or files) of its type, with no line; its declaration is the one in the source,
-  without `partial` and without attributes.
+  without `partial`.
 - Every other `Source:` link opens the line of the declaration that the page documents, and is labelled with the
   file name.
-- The signature block under a link is that declaration: with `[OverloadResolutionPriority]` when the code has it,
-  with no other attribute, and without `async` and `partial`.
+- The signature block under a link is that declaration, without `async` and `partial`. It shows the attributes of
+  the code (e.g., `[OverloadResolutionPriority]`), except those that the .NET API reference leaves out: the ones of
+  the nullable analysis (e.g., `[MemberNotNullWhen]`, `[NotNullWhen]`) and the ones for the debugger.
 - A heading with a parameter list, and the "Type Parameters", "Parameters", "Returns" and "Property Value" sections
   where a page has them, agree with the signature. Types are written with their .NET names (`String`, `Boolean`),
   a nullable value type as `Nullable<T>`, and a nullable reference type without the `?`.
-- The "Overloads" table of a page has a row for each overload, and a link that names a member with its parameters
-  is written as the heading that it opens.
+- The "Overloads" table of a page has a row for each overload, the member tables of a type page are in alphabetical
+  order, and a link that names a member with its parameters is written as the heading that it opens.
 - Every relative link and anchor in README.md and docs/ resolves, and no link to learn.microsoft.com has a locale.
 
 A line added above a documented member moves its declaration, so the links below it fail until they are updated.
@@ -50,8 +51,17 @@ MODIFIERS = {
     "public", "static", "sealed", "partial", "override", "virtual", "abstract", "readonly", "new", "async", "const",
 }
 PARAMETER_MODIFIERS = ("this", "params", "out", "in", "ref", "scoped")
-# The only attribute that a signature block shows: it decides what a call binds to.
-SHOWN_ATTRIBUTE = "OverloadResolutionPriority"
+# The attributes that a declaration leaves out, as the .NET API reference does: those of the nullable analysis and
+# those for the debugger. Every other attribute of the code is shown (e.g., [OverloadResolutionPriority]).
+HIDDEN_ATTRIBUTES = {
+    "AllowNull", "DisallowNull", "MaybeNull", "MaybeNullWhen", "NotNull", "NotNullWhen", "NotNullIfNotNull",
+    "MemberNotNull", "MemberNotNullWhen", "DoesNotReturn", "DoesNotReturnIf",
+    "DebuggerDisplay", "DebuggerTypeProxy", "DebuggerBrowsable", "DebuggerStepThrough", "DebuggerHidden",
+    "DebuggerNonUserCode",
+}
+# The order of the member tables of a type page: punctuation first, in this order, then digits and letters.
+SORT_PUNCTUATION = " ,()<>[]."
+MEMBER_TABLES = ("Constructors", "Fields", "Properties", "Methods", "Operators", "Events")
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -60,6 +70,21 @@ SHOWN_ATTRIBUTE = "OverloadResolutionPriority"
 
 def squeeze(text):
     return re.sub(r"\s+", "", text)
+
+
+def attribute_name(attribute):
+    """`OverloadResolutionPriority` for `System.Runtime.CompilerServices.OverloadResolutionPriority(1)`."""
+    name = re.match(r"[A-Za-z_.]+", attribute).group(0).split(".")[-1]
+    return name[:-len("Attribute")] if name.endswith("Attribute") and name != "Attribute" else name
+
+
+def shown_attributes(attributes):
+    return sorted(a for a in attributes if attribute_name(a) not in HIDDEN_ATTRIBUTES)
+
+
+def table_order(label):
+    """The sort key of a row of a member table: the .NET API reference lists `Send(…)` before `SendAsync(…)`."""
+    return [(0, SORT_PUNCTUATION.index(char)) if char in SORT_PUNCTUATION else (1, char.lower()) for char in label]
 
 
 def plain(markdown):
@@ -158,7 +183,7 @@ def take_attributes(text):
 
 
 def parse_parameter(text):
-    _, text = take_attributes(text)
+    attributes, text = take_attributes(text)
     default = None
     pieces = split_top(text, "=")
     if len(pieces) > 1:
@@ -169,9 +194,11 @@ def parse_parameter(text):
         modifiers.append(modifier)
         text = text.strip()
     match = re.match(r"^(.*\S)\s+(@?[A-Za-z_][A-Za-z0-9_]*)$", text.strip(), re.S)
-    if not match:
-        return {"modifiers": modifiers, "type": text.strip(), "name": "", "default": default}
-    return {"modifiers": modifiers, "type": match.group(1), "name": match.group(2), "default": default}
+    parameter = {"modifiers": modifiers, "type": text.strip(), "name": "", "default": default,
+                 "attributes": attributes}
+    if match:
+        parameter.update(type=match.group(1), name=match.group(2))
+    return parameter
 
 
 def parse_declaration(text):
@@ -384,6 +411,24 @@ class Checker:
             self.check_member(path, lines, index, end, source, source_path, int(line_number))
 
         self.check_overloads_table(path, lines)
+        if type_page:
+            self.check_member_tables(path, lines)
+
+    def check_member_tables(self, path, lines):
+        """The member tables of a type page are in alphabetical order, as in the .NET API reference."""
+        heading, rows = None, []
+        for index, line in enumerate(lines + ["## End"]):
+            if line.startswith("## "):
+                labels = [label for label, _ in rows]
+                ordered = sorted(labels, key=table_order)
+                if heading in MEMBER_TABLES and labels != ordered:
+                    first = next(i for i, (a, b) in enumerate(zip(labels, ordered)) if a != b)
+                    self.problem(path, rows[first][1], f"the table '{heading}' is not in alphabetical order: "
+                                                       f"'{ordered[first]}' comes here")
+                heading, rows = line[3:].strip(), []
+            elif line.startswith("| ["):
+                link = MARKDOWN_LINK.match(line[2:])
+                rows.append((plain(link.group(1)) if link else plain(line), index + 1))
 
     def check_overloads_table(self, path, lines):
         """The "Overloads" table of a page has one row for each overload that the page documents."""
@@ -404,20 +449,24 @@ class Checker:
         name = plain(name)
         short_name = name.split("<")[0]
         pattern = re.compile(rf"^public .*\b(class|record|struct|interface|enum)\b.*\b{re.escape(short_name)}\b")
-        declared = next((line for line in source if pattern.match(line) and self.same_arity(line, name)), None)
-        if declared is None:
+        number = next((n for n, line in enumerate(source) if pattern.match(line) and self.same_arity(line, name)),
+                      None)
+        if number is None:
             self.problem(path, index + 1, f"{os.path.basename(source_path)} does not declare the type '{name}'")
             return
+        declared, attributes = source[number], []
+        while number > 0 and source[number - 1].strip().startswith("["):
+            number -= 1
+            attributes += take_attributes(source[number])[0]
 
         block = self.code_block(lines, index + 1, len(lines)) if check_block else None
         if block is None:
             return
         block_line, block_text = block
-        page_declaration = re.sub(r"\s+", " ", block_text).strip()
+        page_attributes, page_declaration = take_attributes(re.sub(r"\s+", " ", block_text))
         if re.search(r"\bpartial\b", page_declaration):
             self.problem(path, block_line, "the declaration shows 'partial', which is not part of the API")
-        if page_declaration.startswith("["):
-            self.problem(path, block_line, "the declaration of a type shows no attributes")
+        self.check_attributes(path, block_line, page_attributes, attributes, "the declaration")
 
         # A record may declare its properties in a parameter list, and a part of a type may leave out the base types:
         # neither changes what the page declares.
@@ -466,19 +515,10 @@ class Checker:
             if word in page["modifiers"]:
                 self.problem(path, block_line, f"the signature shows '{word}', which is not part of the signature")
 
-        shown = [a for a in code["attributes"] if a.startswith(SHOWN_ATTRIBUTE)]
-        if sorted(page["attributes"]) != sorted(shown):
-            missing = [a for a in shown if a not in page["attributes"]]
-            extra = [a for a in page["attributes"] if a not in shown]
-            if missing:
-                self.problem(path, block_line, f"the signature does not show [{missing[0]}], which the code has")
-            if extra:
-                self.problem(path, block_line, f"the signature shows [{extra[0]}]: only [{SHOWN_ATTRIBUTE}] is shown")
-
-        for parameter_text in re.findall(r"\[\s*(?:DisallowNull|NotNull|MaybeNull|AllowNull|NotNullWhen|MaybeNullWhen)"
-                                         r"[^\]]*\]", block_text):
-            self.problem(path, block_line, f"the signature shows the parameter attribute {parameter_text}, "
-                                           f"which the pages leave out")
+        self.check_attributes(path, block_line, page["attributes"], code["attributes"], "the signature")
+        for page_parameter, code_parameter in zip(page.get("parameters", []), code.get("parameters", [])):
+            self.check_attributes(path, block_line, page_parameter["attributes"], code_parameter["attributes"],
+                                  f"the parameter `{code_parameter['name']}`")
 
         if canonical(page) != canonical(code):
             self.problem(path, block_line, f"the signature is not the declaration at "
@@ -489,6 +529,18 @@ class Checker:
 
         self.check_heading(path, lines, index, code)
         self.check_sections(path, lines, index, end, code)
+
+    def check_attributes(self, path, line, on_page, in_code, where):
+        """A declaration shows the attributes of the code, except those that the .NET API reference leaves out."""
+        expected = shown_attributes(in_code)
+        for attribute in sorted(on_page):
+            if attribute_name(attribute) in HIDDEN_ATTRIBUTES:
+                self.problem(path, line, f"{where} shows [{attribute}], which the pages leave out")
+            elif attribute not in expected:
+                self.problem(path, line, f"{where} shows [{attribute}], which the code does not have")
+        for attribute in expected:
+            if attribute not in on_page:
+                self.problem(path, line, f"{where} does not show [{attribute}], which the code has")
 
     def check_heading(self, path, lines, index, code):
         if code["kind"] == "property":

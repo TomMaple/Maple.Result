@@ -182,13 +182,15 @@ are marked breaking. Preview the notes locally with `git cliff --unreleased --st
 	* Every public member has a page, or a section of the page of its overloads. The overload traps (compile errors)
 	  have none.
 	* A type page links to the file of its type, without a line (one link for each file of a `partial` type). Its
-	  declaration is the one of the code, without `partial` and without attributes.
+	  declaration is the one of the code, without `partial`. Its member tables (*Constructors*, *Properties*,
+	  *Methods*, *Operators*) are in alphabetical order, static and instance members together.
 	* Every member has a `Source:` link that opens the line of its declaration (`…/blob/main/src/….cs#L<line>`) and is
 	  labelled with the file name.
-	* The `csharp` block under the link is that declaration. It shows `[OverloadResolutionPriority]` where the code
-	  has it, because the attribute decides what a call binds to. It shows no other attribute (e.g.,
-	  `[MemberNotNullWhen]`, `[DisallowNull]`, `[DebuggerDisplay]`), and neither `async` nor `partial`, which are not
-	  part of a signature.
+	* The `csharp` block under the link is that declaration, with neither `async` nor `partial`, which are not part of
+	  a signature. It shows the attributes of the code (e.g., `[OverloadResolutionPriority]`, which decides what a
+	  call binds to), except those that the .NET API reference leaves out: the attributes of the nullable analysis
+	  (e.g., `[MemberNotNullWhen]`, `[NotNullWhen]`, `[MaybeNullWhen]`, `[DisallowNull]`) and those for the debugger
+	  (e.g., `[DebuggerDisplay]`). The prose of the page says when a value is `null`.
 	* A heading names a member with its type parameters and the types of its parameters, e.g.,
 	  `Then<T, TNext>(Result<T>, Func<T, TNext>)`. Types are written with their .NET names (`String`, `Boolean`), a
 	  nullable value type as `Nullable<T>` (e.g., `Nullable<Boolean>` for `bool?`), and a nullable reference type

@@ -103,8 +103,8 @@ Reading a [Result&lt;T&gt;](ResultT.md) back requires a dedicated converter, bec
 | [FromError(Error)](ResultT_FromError.md) | Creates a new failure [Result&lt;T&gt;](ResultT.md) from the specified [Error](../Error/Error.md). |
 | [FromValue(T)](ResultT_FromValue.md) | Creates a new successful [Result&lt;T&gt;](ResultT.md) containing the specified value. |
 | [TryGetError(Error)](ResultT_TryGetError.md) | Gets the error of a failed result. |
-| [TryGetValue(T)](ResultT_TryGetValue.md#trygetvaluet) | Gets the value of a successful result. |
 | [TryGetValue(T, Error)](ResultT_TryGetValue.md#trygetvaluet-error) | Gets the value of a successful result, or the error of a failed one. |
+| [TryGetValue(T)](ResultT_TryGetValue.md#trygetvaluet) | Gets the value of a successful result. |
 
 ## Operators
 | Name | Description |

@@ -16,8 +16,8 @@ Inheritance [Object](https://learn.microsoft.com/dotnet/api/system.object) → S
 | Name | Description |
 | ---- | ----------- |
 | [SwitchAsync(Task&lt;Result&gt;, Action, Action&lt;Error&gt;, Nullable&lt;Boolean&gt;)](SwitchAsyncExtensions_SwitchAsync.md#switchasynctaskresult-action-actionerror-nullableboolean) | Awaits the `resultTask` and invokes one of the specified actions depending on whether the [Result](../Result/Result.md) is successful. |
-| [SwitchAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Action&lt;T&gt;, Action&lt;Error&gt;, Nullable&lt;Boolean&gt;)](SwitchAsyncExtensions_SwitchAsync.md#switchasyncttaskresultt-actiont-actionerror-nullableboolean) | Awaits the `resultTask` and invokes one of the specified actions depending on whether the [Result&lt;T&gt;](../ResultT/ResultT.md) is successful. |
 | [SwitchAsync(ValueTask&lt;Result&gt;, Action, Action&lt;Error&gt;, Nullable&lt;Boolean&gt;)](SwitchAsyncExtensions_SwitchAsync.md#switchasyncvaluetaskresult-action-actionerror-nullableboolean) | Awaits the `resultTask` and invokes one of the specified actions depending on whether the [Result](../Result/Result.md) is successful. |
+| [SwitchAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Action&lt;T&gt;, Action&lt;Error&gt;, Nullable&lt;Boolean&gt;)](SwitchAsyncExtensions_SwitchAsync.md#switchasyncttaskresultt-actiont-actionerror-nullableboolean) | Awaits the `resultTask` and invokes one of the specified actions depending on whether the [Result&lt;T&gt;](../ResultT/ResultT.md) is successful. |
 | [SwitchAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Action&lt;T&gt;, Action&lt;Error&gt;, Nullable&lt;Boolean&gt;)](SwitchAsyncExtensions_SwitchAsync.md#switchasynctvaluetaskresultt-actiont-actionerror-nullableboolean) | Awaits the `resultTask` and invokes one of the specified actions depending on whether the [Result&lt;T&gt;](../ResultT/ResultT.md) is successful. |
 
 ## See Also

@@ -16,11 +16,11 @@ Inheritance [Object](https://learn.microsoft.com/dotnet/api/system.object) → T
 | Name | Description |
 | ---- | ----------- |
 | [Then(Result, Func&lt;Result&gt;)](ThenExtensions_Then.md#thenresult-funcresult) | Executes the specified function, if the [Result](../Result/Result.md) represents a successful operation. |
-| [Then&lt;T&gt;(Result, Func&lt;T&gt;)](ThenExtensions_Then.md#thentresult-funct) | Executes the specified function, if the [Result](../Result/Result.md) represents a successful operation. |
-| [Then&lt;T&gt;(Result, Func&lt;Result&lt;T&gt;&gt;)](ThenExtensions_Then.md#thentresult-funcresultt) | Executes the specified function, if the [Result](../Result/Result.md) represents a successful operation. |
-| [Then&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, Result&gt;)](ThenExtensions_Then.md#thentresultt-funct-result) | Executes the specified function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation. |
-| [Then&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, TNext&gt;)](ThenExtensions_Then.md#thent-tnextresultt-funct-tnext) | Executes the specified function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation. |
 | [Then&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, Result&lt;TNext&gt;&gt;)](ThenExtensions_Then.md#thent-tnextresultt-funct-resulttnext) | Executes the specified function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation. |
+| [Then&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, TNext&gt;)](ThenExtensions_Then.md#thent-tnextresultt-funct-tnext) | Executes the specified function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation. |
+| [Then&lt;T&gt;(Result, Func&lt;Result&lt;T&gt;&gt;)](ThenExtensions_Then.md#thentresult-funcresultt) | Executes the specified function, if the [Result](../Result/Result.md) represents a successful operation. |
+| [Then&lt;T&gt;(Result, Func&lt;T&gt;)](ThenExtensions_Then.md#thentresult-funct) | Executes the specified function, if the [Result](../Result/Result.md) represents a successful operation. |
+| [Then&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, Result&gt;)](ThenExtensions_Then.md#thentresultt-funct-result) | Executes the specified function, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation. |
 
 ## See Also
 * [IfSuccessExtensions](IfSuccessExtensions.md)
