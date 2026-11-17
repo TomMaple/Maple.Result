@@ -1030,24 +1030,21 @@ public class ThenExtensionsUnitTests
 
     #endregion
 
-    #region Then with an action (overload trap)
+    #region Then with an action
 
-    // A function that returns nothing is a side effect: the transforming method reports it as a compile error (CS0619) that
-    // names the side-effect method (#197). The bindings are checked with a consumer project.
+    // A function that returns nothing is a side effect, not a transformation (#197). The compiler reports it by itself, so there is
+    // no overload trap for it (#256). The bindings are checked in Binding/ThenElseBindingUnitTests.
 
     [Fact]
-    public void Then_ActionOverloads_AreHiddenCompileErrors()
+    public void Then_NoOverloadTakesAnAction()
     {
         // Act
-        var traps = typeof(ThenExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The action returns nothing. Then needs"))
+        var overloads = typeof(ThenExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(m => m.Name == "Then" && m.GetParameters().Any(p => OverloadTrapHelper.IsAction(p.ParameterType)))
             .ToList();
 
         // Assert
-        traps.Count.ShouldBe(2);
-        traps.ShouldAllBe(m => m.Name == "Then"
-                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
-                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
+        overloads.ShouldBeEmpty();
     }
 
     #endregion

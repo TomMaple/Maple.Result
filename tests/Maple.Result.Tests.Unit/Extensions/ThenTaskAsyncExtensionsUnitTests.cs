@@ -1768,11 +1768,12 @@ public class ThenTaskAsyncExtensionsUnitTests
 
     #region ThenAsync with a function returning a task without a value (overload trap)
 
-    // A function that returns nothing is a side effect: the transforming method reports it as a compile error (CS0619) that
-    // names the side-effect method (#197). The bindings are checked with a consumer project.
+    // A function that returns a task without a value is a side effect: on a task result, the transforming method reports it as a
+    // compile error (CS0619) that names the side-effect method (#197). On a result, the compiler reports it by itself, so there is no
+    // overload trap for it (#256). The bindings are checked in Binding/ThenElseBindingUnitTests.
 
     [Fact]
-    public void ThenAsync_FunctionReturningTaskWithoutValueOverloads_AreHiddenCompileErrors()
+    public void ThenAsync_FunctionReturningTaskWithoutValueOverloads_AreHiddenCompileErrorsOnTaskResults()
     {
         // Act
         var traps = typeof(ThenTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
@@ -1780,8 +1781,10 @@ public class ThenTaskAsyncExtensionsUnitTests
             .ToList();
 
         // Assert
-        traps.Count.ShouldBe(4);
+        traps.Count.ShouldBe(2);
         traps.ShouldAllBe(m => m.Name == "ThenAsync"
+                               && m.GetParameters()[0].ParameterType.IsGenericType
+                               && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(Task<>)
                                && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
                                && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
     }
@@ -2061,18 +2064,15 @@ public class ThenTaskAsyncExtensionsUnitTests
     }
 
     [Fact]
-    public void ThenAsync_SyncActionOverloads_AreHiddenCompileErrors()
+    public void ThenAsync_NoOverloadTakesASynchronousAction()
     {
         // Act
-        var traps = typeof(ThenTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The action returns nothing. ThenAsync needs"))
+        var overloads = typeof(ThenTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(m => m.Name == "ThenAsync" && m.GetParameters().Any(p => OverloadTrapHelper.IsAction(p.ParameterType)))
             .ToList();
 
         // Assert
-        traps.Count.ShouldBe(2);
-        traps.ShouldAllBe(m => m.Name == "ThenAsync"
-                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
-                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
+        overloads.ShouldBeEmpty();
     }
 
     [Fact]

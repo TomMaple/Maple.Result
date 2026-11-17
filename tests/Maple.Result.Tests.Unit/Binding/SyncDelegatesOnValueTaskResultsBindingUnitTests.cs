@@ -9,13 +9,15 @@
  */
 
 using System;
+using System.Linq;
 
 namespace Maple.Results.Tests.Unit.Binding;
 
 /// <summary>
 ///     Synchronous delegates on <c>ValueTask</c> results (#214), with only the <c>ValueTask</c>-based namespace imported: the calls bind
-///     as intended (each is assigned to a variable of the expected type), and a delegate of the wrong kind, two actions of <c>MatchAsync</c>
-///     (<c>SwitchAsync</c> takes them, #255), or a delegate that returns the other kind of task is a compile error (CS0619).
+///     as intended (each is assigned to a variable of the expected type); a delegate of the wrong kind, two actions of <c>MatchAsync</c>
+///     (<c>SwitchAsync</c> takes them, #255), or a delegate that returns the other kind of task is a compile error (CS0619); and a
+///     synchronous action passed to <c>ThenAsync</c> or <c>ElseAsync</c> is a compile error that the compiler reports by itself (#256).
 /// </summary>
 public class SyncDelegatesOnValueTaskResultsBindingUnitTests
 {
@@ -103,16 +105,16 @@ public class SyncDelegatesOnValueTaskResultsBindingUnitTests
     }
 
     [Theory]
-    [InlineData("_ = GetUser().ThenAsync(u => Log(u));")]
-    [InlineData("_ = GetOk().ThenAsync(() => Log(null!));")]
     [InlineData("_ = GetUser().ThenAsync(u => SaveAsync(u));")]
     [InlineData("_ = GetUser().ThenAsync(async u => await SaveAsync(u));")]
+    [InlineData("_ = GetOk().ThenAsync(() => SaveAsync(null!));")]
+    [InlineData("_ = GetUser().ElseAsync(e => LogAsync(e));")]
+    [InlineData("_ = GetUser().ElseAsync(async e => { await LogAsync(e); });")]
     [InlineData("_ = GetUser().ThenAsync(u => GetNameOtherAsync(u));")]
     [InlineData("_ = GetUser().ThenAsync(u => SaveOtherAsync(u));")]
     [InlineData("_ = GetOk().ThenAsync(() => SaveOtherAsync(null!));")]
     [InlineData("_ = GetOk().ThenAsync(() => Task.FromResult(5));")]
     [InlineData("_ = GetUser().ThenAsync(GetNameOtherAsync);")]
-    [InlineData("_ = GetUser().ElseAsync(e => LogError(e));")]
     [InlineData("_ = GetUser().ElseAsync(e => LogOtherAsync(e));")]
     [InlineData("_ = GetUser().ElseAsync(e => Task.FromResult(Result<User>.FromValue(Guest)));")]
     [InlineData("_ = GetUser().IfSuccessAsync(u => set.Add(u.Id));")]
@@ -144,5 +146,24 @@ public class SyncDelegatesOnValueTaskResultsBindingUnitTests
         // Assert
         snippet.ErrorIds.ShouldNotBeEmpty();
         snippet.ErrorIds.ShouldAllBe(id => id == "CS0619", string.Join(Environment.NewLine, snippet.Errors));
+    }
+
+    // A synchronous action passed to ThenAsync or ElseAsync: the compiler reports it by itself, so there is no overload trap for it (#256).
+    [Theory]
+    [InlineData("GetUser().ThenAsync(u => Log(u));", "CS0029,CS1662")]
+    [InlineData("GetUser().ThenAsync(Log);", "CS1929")]
+    [InlineData("GetUser().ThenAsync(u => { });", "CS1643")]
+    [InlineData("GetOk().ThenAsync(() => Log(null!));", "CS0029,CS1662")]
+    [InlineData("GetUser().ElseAsync(e => LogError(e));", "CS0029,CS1662")]
+    [InlineData("GetUser().ElseAsync(LogError);", "CS0407")]
+    [InlineData("GetOk().ElseAsync(e => { });", "CS1643")]
+    public void Call_SynchronousActionInATransformation_ReportsTheCompilerErrors(string statements, string errorIds)
+    {
+        // Act
+        var snippet = SnippetCompiler.Compile(statements, SnippetImports.ValueTask, Members);
+
+        // Assert
+        var reported = string.Join(",", snippet.ErrorIds.Distinct().Order(StringComparer.Ordinal));
+        reported.ShouldBe(errorIds, string.Join(Environment.NewLine, snippet.Errors));
     }
 }

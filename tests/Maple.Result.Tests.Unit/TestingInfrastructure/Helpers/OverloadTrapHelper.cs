@@ -27,6 +27,13 @@ internal static class OverloadTrapHelper
         return obsolete?.Message is not null && obsolete.Message.StartsWith(messagePrefix, StringComparison.Ordinal);
     }
 
+    /// <summary>Whether the parameter is an <see cref="Action" /> or an <see cref="Action{T}" />.</summary>
+    internal static bool IsAction(Type parameterType)
+    {
+        return parameterType == typeof(Action)
+               || (parameterType.IsGenericType && parameterType.GetGenericTypeDefinition() == typeof(Action<>));
+    }
+
     /// <summary>Whether the parameter is a delegate that returns a <see cref="Task" /> or a <see cref="Task{TResult}" />.</summary>
     internal static bool IsTaskFunction(Type parameterType)
     {

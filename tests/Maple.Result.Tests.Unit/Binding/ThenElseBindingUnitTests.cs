@@ -9,12 +9,15 @@
  */
 
 using System;
+using System.Linq;
 
 namespace Maple.Results.Tests.Unit.Binding;
 
 /// <summary>
 ///     The side effects (<c>IfSuccess</c>, <c>IfError</c>) and the transformations (<c>Then</c>, <c>Else</c>) and their asynchronous forms
-///     (#197): a function of the wrong kind is a compile error (CS0619) that names the other method; the rest binds as intended.
+///     (#197): a function that returns a value passed to a side effect, or a task that would not be awaited, is a compile error (CS0619)
+///     that names the method to use; an action passed to a transformation is a compile error that the compiler reports by itself (#256);
+///     the rest binds as intended.
 /// </summary>
 public class ThenElseBindingUnitTests
 {
@@ -41,6 +44,9 @@ public class ThenElseBindingUnitTests
         static ValueTask<Result<int>> ValidateVt(int x) => new((Result<int>)x);
         static ValueTask LogVt(Error e) => default;
         static ValueTask<Result<int>> FallbackVt() => new((Result<int>)0);
+        static Result<object> FailedObject() => Result<object>.FromError(Err);
+        static Task<Result<object>> FailedObjectTask() => Task.FromResult(FailedObject());
+        static ValueTask<Result<object>> FailedObjectVt() => new(FailedObject());
         """;
 
     [Theory]
@@ -52,8 +58,6 @@ public class ThenElseBindingUnitTests
     [InlineData("_ = Ok().IfSuccess(x => SaveAsync());")]
     [InlineData("_ = Ok().IfSuccess(async x => await SaveAsync());")]
     [InlineData("_ = Ok().IfSuccess(x => GetIntVt());")]
-    [InlineData("_ = Ok().Then(x => Console.WriteLine(x));")]
-    [InlineData("_ = R().Then(() => Console.WriteLine());")]
     [InlineData("_ = Ok().Then(x => SaveAsync());")]
     [InlineData("_ = Ok().Then(async x => await GetIntAsync());")]
     [InlineData("_ = Failed().IfError(e => Interlocked.Increment(ref Failures));")]
@@ -62,17 +66,14 @@ public class ThenElseBindingUnitTests
     [InlineData("_ = Failed().IfError(e => 0);")]
     [InlineData("_ = Failed().IfError(e => e.WithMetadata(\"k\", 1));")]
     [InlineData("_ = Failed().IfError(e => LogAsync(e));")]
-    [InlineData("_ = Failed().Else(e => Console.WriteLine(e));")]
     [InlineData("_ = Failed().Else(e => LogAsync(e));")]
     [InlineData("_ = Ok().IfSuccessAsync(x => SaveChangesAsync());")]
     [InlineData("_ = Ok().IfSuccessAsync(async x => await GetIntAsync());")]
     [InlineData("_ = Task.FromResult(Ok()).IfSuccessAsync(x => ValidateAsync(x));")]
-    [InlineData("_ = Ok().ThenAsync(async x => { await SaveAsync(); });")]
-    [InlineData("_ = Ok().ThenAsync(x => SaveAsync());")]
-    [InlineData("_ = R().ThenAsync(() => SaveAsync());")]
     [InlineData("_ = Failed().IfErrorAsync(async e => await FallbackAsync());")]
-    [InlineData("_ = Failed().ElseAsync(e => LogAsync(e));")]
     [InlineData("_ = Task.FromResult(Failed()).ElseAsync(e => LogAsync(e));")]
+    [InlineData("_ = FailedObjectTask().ElseAsync(e => LogAsync(e));")]
+    [InlineData("_ = FailedObjectTask().ElseAsync(async e => { await LogAsync(e); });")]
     public void TaskBased_DelegateOfTheWrongKind_ReportsOnlyCS0619(string statements)
     {
         // Act
@@ -85,10 +86,10 @@ public class ThenElseBindingUnitTests
 
     [Theory]
     [InlineData("_ = Ok().IfSuccessAsync(x => GetIntVt());")]
-    [InlineData("_ = Ok().ThenAsync(x => SaveVt());")]
     [InlineData("_ = Failed().IfErrorAsync(e => FallbackVt());")]
-    [InlineData("_ = Failed().ElseAsync(e => LogVt(e));")]
     [InlineData("_ = R().IfSuccessAsync(() => GetIntVt());")]
+    [InlineData("_ = FailedObjectVt().ElseAsync(e => LogVt(e));")]
+    [InlineData("_ = FailedObjectVt().ElseAsync(async e => { await LogVt(e); });")]
     public void ValueTaskBased_DelegateOfTheWrongKind_ReportsOnlyCS0619(string statements)
     {
         // Act
@@ -97,6 +98,68 @@ public class ThenElseBindingUnitTests
         // Assert
         snippet.ErrorIds.ShouldNotBeEmpty();
         snippet.ErrorIds.ShouldAllBe(id => id == "CS0619", string.Join(Environment.NewLine, snippet.Errors));
+    }
+
+    // An action, or a function that returns a task without a value, passed to Then, Else, ThenAsync or ElseAsync on a result: the
+    // compiler reports it by itself, so there is no overload trap for it (#256).
+    [Theory]
+    [InlineData("Ok().Then(x => Console.WriteLine(x));", "CS0029,CS1662")]
+    [InlineData("Ok().Then(x => Print(x));", "CS0029,CS1662")]
+    [InlineData("Ok().Then(Print);", "CS1929")]
+    [InlineData("Ok().Then(x => { });", "CS1643")]
+    [InlineData("R().Then(() => Console.WriteLine());", "CS0029,CS1662")]
+    [InlineData("Failed().Else(e => Console.WriteLine(e));", "CS0029,CS1662")]
+    [InlineData("Failed().Else(Log);", "CS0407")]
+    [InlineData("Failed().Else(e => { });", "CS1643")]
+    [InlineData("FailedObject().Else(e => Log(e));", "CS0029,CS1662")]
+    [InlineData("Ok().ThenAsync(x => SaveAsync());", "CS0266,CS1662")]
+    [InlineData("Ok().ThenAsync(async x => { await SaveAsync(); });", "CS1643")]
+    [InlineData("R().ThenAsync(() => SaveAsync());", "CS0266,CS1662")]
+    [InlineData("Failed().ElseAsync(e => LogAsync(e));", "CS0266,CS1662")]
+    [InlineData("Failed().ElseAsync(async e => { await LogAsync(e); });", "CS1643")]
+    [InlineData("FailedObject().ElseAsync(e => LogAsync(e));", "CS0266,CS1662")]
+    public void TaskBased_ActionInATransformation_ReportsTheCompilerErrors(string statements, string errorIds)
+    {
+        // Act
+        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Task, Members);
+
+        // Assert
+        var reported = string.Join(",", snippet.ErrorIds.Distinct().Order(StringComparer.Ordinal));
+        reported.ShouldBe(errorIds, string.Join(Environment.NewLine, snippet.Errors));
+    }
+
+    [Theory]
+    [InlineData("Ok().ThenAsync(x => SaveVt());", "CS0029,CS1662")]
+    [InlineData("Ok().ThenAsync(async x => { await SaveVt(); });", "CS1643")]
+    [InlineData("R().ThenAsync(() => SaveVt());", "CS0029,CS1662")]
+    [InlineData("Failed().ElseAsync(e => LogVt(e));", "CS0029,CS1662")]
+    [InlineData("Failed().ElseAsync(async e => { await LogVt(e); });", "CS1643")]
+    [InlineData("FailedObject().ElseAsync(e => LogVt(e));", "CS0029,CS1662")]
+    public void ValueTaskBased_ActionInATransformation_ReportsTheCompilerErrors(string statements, string errorIds)
+    {
+        // Act
+        var snippet = SnippetCompiler.Compile(statements, SnippetImports.ValueTask, Members);
+
+        // Assert
+        var reported = string.Join(",", snippet.ErrorIds.Distinct().Order(StringComparer.Ordinal));
+        reported.ShouldBe(errorIds, string.Join(Environment.NewLine, snippet.Errors));
+    }
+
+    [Theory]
+    [InlineData("Ok().Then(x => Print(x));", "CS0029,CS1662")]
+    [InlineData("Failed().Else(e => Log(e));", "CS0029,CS1662")]
+    [InlineData("Ok().ThenAsync(x => SaveAsync());", "CS0029,CS0266,CS1662")]
+    [InlineData("Ok().ThenAsync(x => SaveVt());", "CS0029,CS1662")]
+    [InlineData("Failed().ElseAsync(e => LogAsync(e));", "CS0029,CS0266,CS1662")]
+    [InlineData("Failed().ElseAsync(e => LogVt(e));", "CS0029,CS1662")]
+    public void BothNamespaces_ActionInATransformation_ReportsTheCompilerErrors(string statements, string errorIds)
+    {
+        // Act
+        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Both, Members);
+
+        // Assert
+        var reported = string.Join(",", snippet.ErrorIds.Distinct().Order(StringComparer.Ordinal));
+        reported.ShouldBe(errorIds, string.Join(Environment.NewLine, snippet.Errors));
     }
 
     [Theory]
