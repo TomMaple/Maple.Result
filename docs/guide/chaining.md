@@ -1,6 +1,6 @@
 # Chaining operations
 
-How to chain operations that return results with the extension methods and the LINQ query syntax, synchronously and asynchronously, and how to turn exceptions into results. The extension methods are in the `Maple.Results.Extensions` namespace (with `Task`) and `Maple.Results.Extensions.ValueTasks` (with `ValueTask`).
+How to chain operations that return results with the extension methods and the LINQ query syntax, synchronously and asynchronously, and how to turn exceptions into results. The extension methods are in the `Maple.Results.Extensions` namespace, for `Task` and `ValueTask` alike.
 
 ## Contents
 * [Extension methods](#extension-methods)
@@ -62,9 +62,8 @@ var userResult = await _userService.GetUserAsync(id)
 
 > [!NOTE]
 > The asynchronous extension methods (`ThenAsync()`, `ElseAsync()`, `IfSuccessAsync()`, `IfErrorAsync()`, `MatchAsync()`, `SwitchAsync()`, `ToResultAsync()` and the LINQ `Select()` and `SelectMany()`) support both `Task` and `ValueTask`, so you can chain and `await` results regardless of which one your methods return.
-
-> [!IMPORTANT]
-> The `Task`-based methods live in the `Maple.Results.Extensions` namespace and the `ValueTask`-based ones in `Maple.Results.Extensions.ValueTasks`—import the one matching the style you use, as having both in scope makes a call with an `async` lambda ambiguous.
+>
+> On a `Task` or a `ValueTask` of a result, the kind of the task is kept. On a `Result` or a `Result<T>`, the function decides it: `result.ThenAsync(x => FindAsync(x))` gives a `ValueTask` when `FindAsync()` returns one, and an `async` lambda gives a `Task`. For a `ValueTask` from an `async` lambda, write its return type: `result.ThenAsync(async ValueTask<int> (int x) => …)`.
 
 ## Query syntax
 The query syntax chains synchronous and asynchronous operations that return a `Result<T>`:
@@ -147,4 +146,4 @@ In WPF, Windows Forms, .NET MAUI or Blazor Server, when the delegates access UI 
 ResultConfiguration.ContinueOnCapturedContext = true;
 ```
 
-See more: [ResultConfiguration.ContinueOnCapturedContext](../Reference/ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md), [Maple.Results.Extensions](../Reference/Extensions/namespace.md), [Maple.Results.Extensions.ValueTasks](../Reference/Extensions/ValueTasks/namespace.md)
+See more: [ResultConfiguration.ContinueOnCapturedContext](../Reference/ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md), [Maple.Results.Extensions](../Reference/Extensions/namespace.md)

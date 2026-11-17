@@ -8,6 +8,7 @@ Version 3.0 makes `Result`, `Result<T>` and `Error` **immutable** and **always v
 * [Quick checklist](#quick-checklist)
 * [Breaking changes](#breaking-changes)
   * [Namespace renamed to `Maple.Results`](#namespace-renamed-to-mapleresults)
+  * [One namespace for the `Task` and `ValueTask` methods](#one-namespace-for-the-task-and-valuetask-methods)
   * [New `LimitExceeded` error category](#new-limitexceeded-error-category)
   * [Public constructors removed](#public-constructors-removed)
   * [`AddDetail()` removed](#adddetail-removed)
@@ -35,7 +36,7 @@ Version 3.0 makes `Result`, `Result<T>` and `Error` **immutable** and **always v
 * [Search-and-replace reference](#search-and-replace-reference)
 
 ## Quick checklist
-1. Replace `using Maple.Result…;` with `using Maple.Results…;` (see [Namespace renamed to `Maple.Results`](#namespace-renamed-to-mapleresults)).
+1. Replace `using Maple.Result…;` with `using Maple.Results…;`, and remove `using Maple.Result.Extensions.ValueTasks;` (see [Namespace renamed to `Maple.Results`](#namespace-renamed-to-mapleresults) and [One namespace for the `Task` and `ValueTask` methods](#one-namespace-for-the-task-and-valuetask-methods)).
 2. Handle `ErrorCategory.LimitExceeded` in every exhaustive `switch` over `ErrorCategory`.
 3. Replace `error.AddDetail(...)` with `error = error.WithErrorDetail(...)` or an `ErrorBuilder`.
 4. Replace `error with { … }` with `error.ToBuilder()…Build()`.
@@ -55,12 +56,13 @@ Version 3.0 makes `Result`, `Result<T>` and `Error` **immutable** and **always v
 
 ## Breaking changes
 ### Namespace renamed to `Maple.Results`
-The namespaces are now `Maple.Results`, `Maple.Results.Extensions` and `Maple.Results.Extensions.ValueTasks`. The package ID (`Maple.Result`) and the assembly name (`Maple.Result.dll`) did not change.
+The namespaces are now `Maple.Results` and `Maple.Results.Extensions`; the `ValueTask`-based extension methods are in `Maple.Results.Extensions` too (see [One namespace for the `Task` and `ValueTask` methods](#one-namespace-for-the-task-and-valuetask-methods)). The package ID (`Maple.Result`) and the assembly name (`Maple.Result.dll`) did not change.
 
 ```csharp
 // before
 using Maple.Result;
 using Maple.Result.Extensions;
+using Maple.Result.Extensions.ValueTasks;
 
 // after
 using Maple.Results;
@@ -73,6 +75,19 @@ The old namespace hid the type: inside any `Maple.*` namespace other than `Maple
 > Inside any `Maple.*` namespace, the name `Results` now resolves to the namespace `Maple.Results`, so `Results.Ok()` of ASP.NET Core (Minimal APIs) does not compile there (CS0234). Use `TypedResults.Ok()` or the fully qualified `Microsoft.AspNetCore.Http.Results.Ok()`. Code in other namespaces is not affected.
 
 If you referenced a type by its full name (e.g., `Maple.Result.Error` in a `using` alias, in reflection or in a serialized type name such as `$type`), update it to `Maple.Results.…`.
+
+### One namespace for the `Task` and `ValueTask` methods
+In 2.x, the `ValueTask`-based extension methods were in their own namespace, `Maple.Result.Extensions.ValueTasks`, and a file imported it or `Maple.Result.Extensions` (with both, a call with an `async` lambda was ambiguous). In 3.0, the `Task`-based and the `ValueTask`-based methods of each verb are one class in `Maple.Results.Extensions`: `ThenAsyncExtensions`, `ElseAsyncExtensions`, `IfSuccessAsyncExtensions`, `IfErrorAsyncExtensions`, `MatchAsyncExtensions`, `SwitchAsyncExtensions`, `LinqAsyncExtensions` and `ResultAsyncExtensions` (they were `…TaskAsyncExtensions` and `…ValueTaskAsyncExtensions`). Remove `using Maple.Result.Extensions.ValueTasks;`, and replace the old class names where they are written (e.g., a static call such as `ThenValueTaskAsyncExtensions.ThenAsync(result, …)`).
+
+On a `Task` or a `ValueTask` of a result, the kind of the task is kept, as before. On a `Result` or a `Result<T>`, the function decides it: a function that returns a `ValueTask` gives a `ValueTask`, and an `async` lambda gives a `Task`. In a file that imported only the `ValueTask` namespace, an `async` lambda on a result gave a `ValueTask`; it gives a `Task` now. When the call is awaited or assigned to `var`, nothing changes but the allocation of a `Task`. Assigned to a `ValueTask` type, it is a compile error (CS0029); write the return type of the lambda:
+
+```csharp
+// 2.x, with using Maple.Result.Extensions.ValueTasks: a ValueTask<Result<int>>
+ValueTask<Result<int>> next = result.ThenAsync(async x => await GetCountAsync(x));
+
+// 3.0: an async lambda gives a Task; its return type selects a ValueTask
+ValueTask<Result<int>> next = result.ThenAsync(async ValueTask<int> (int x) => await GetCountAsync(x));
+```
 
 ### New `LimitExceeded` error category
 `ErrorCategory.LimitExceeded` (numeric value `10`) and the `Error.LimitExceeded(...)` factory methods have been added. Use the category when the request is valid and permitted, but a usage limit, quota or rate has been exhausted (HTTP `429`). `Unavailable` (HTTP `503`) now means only that a service is unavailable.
@@ -536,11 +551,11 @@ The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an
 * **`ErrorUri.Other()`** — an absolute *URI* whose scheme has no factory method of its own (e.g., `mailto:`), for type and instance URIs read from other services; `Parse` and `TryParse` fall back to it. See [Other](Reference/ErrorUri/ErrorUri_Other.md).
 * **`ErrorUri.Parse()`**, **`ErrorUri.TryParse()`** and **`IParsable<ErrorUri>`** — create an `ErrorUri` when the kind is not known in advance: the kind is detected from the value (`about:blank`, `/…`, `tag:`, `urn:`, `http:`/`https:`) and validated as by its factory method. See [Parse](Reference/ErrorUri/ErrorUri_Parse.md).
 * **`ErrorUri.Urn()`** and **`ErrorUri.Relative()`** — `urn:` types and instances (*RFC 8141*), and relative references with the full path (e.g., the *RFC 9457* example `/account/12345/msgs/abc`). See [ErrorUri](Reference/ErrorUri/ErrorUri.md).
-* **Synchronous delegates after an asynchronous call** — `ThenAsync`, `ElseAsync`, `IfSuccessAsync`, `IfErrorAsync` and `MatchAsync` on a `Task` or `ValueTask` of a result also take synchronous delegates, e.g., `await GetUserAsync(id).ThenAsync(user => user.Name)`. A delegate that returns the other kind of task (a `ValueTask` with `Maple.Results.Extensions`, a `Task` with `Maple.Results.Extensions.ValueTasks`) is a compile error (CS0619), and one synchronous and one asynchronous function of `MatchAsync` have no common return type, so the compiler rejects them. See [ThenAsync](Reference/Extensions/ThenTaskAsyncExtensions_ThenAsync.md).
-* **`ElseAsync` with a value or an `Error`** — as `Else` takes a function that returns a value or an `Error` through the implicit conversions, `ElseAsync` takes one that returns it in a task (e.g., `await GetCountAsync(id).ElseAsync(async error => 0)` or `ElseAsync(async error => error.WithMetadata("retried", true))`), on a result and on a task of a result, in both namespaces; these calls were compile errors. See [ElseAsync](Reference/Extensions/ElseTaskAsyncExtensions_ElseAsync.md).
+* **Synchronous delegates after an asynchronous call** — `ThenAsync`, `ElseAsync`, `IfSuccessAsync`, `IfErrorAsync` and `MatchAsync` on a `Task` or `ValueTask` of a result also take synchronous delegates, e.g., `await GetUserAsync(id).ThenAsync(user => user.Name)`. A delegate that returns the other kind of task (a `ValueTask` on a `Task` of a result, a `Task` on a `ValueTask` of a result) is a compile error (CS0619), and one synchronous and one asynchronous function of `MatchAsync` have no common return type, so the compiler rejects them. See [ThenAsync](Reference/Extensions/ThenAsyncExtensions_ThenAsync.md).
+* **`ElseAsync` with a value or an `Error`** — as `Else` takes a function that returns a value or an `Error` through the implicit conversions, `ElseAsync` takes one that returns it in a task (e.g., `await GetCountAsync(id).ElseAsync(async error => 0)` or `ElseAsync(async error => error.WithMetadata("retried", true))`), on a result and on a task of a result, for both kinds of task; these calls were compile errors. See [ElseAsync](Reference/Extensions/ElseAsyncExtensions_ElseAsync.md).
 * **`Switch` and `SwitchAsync`** — run one of two actions depending on whether a result is successful and return nothing (e.g., `result.Switch(user => Log(user), error => Log(error))`, or `await GetUserAsync(id).SwitchAsync(…)`); an action that returns a task is a compile error that names `Match`. See [Switch](Reference/Extensions/SwitchExtensions_Switch.md) and [`Match` is a fold; `Switch` runs two actions](#match-is-a-fold-switch-runs-two-actions).
 * **The non-generic `Result` in LINQ queries** — a step that returns a `Result` (e.g., a check) can be any `from` clause, first or in the middle (`from _ in EnsureActive(user)`), synchronous or asynchronous; its range variable is the successful `Result`. See [SelectMany](Reference/Extensions/LinqExtensions_SelectMany.md).
-* **Mixed LINQ queries** — synchronous and asynchronous `from` clauses can be mixed in one query (e.g., `from user in GetUserAsync(id) from address in GetAddress(user) select …`); the query is then asynchronous and has to be awaited. See [SelectMany](Reference/Extensions/LinqTaskAsyncExtensions_SelectMany.md).
+* **Mixed LINQ queries** — synchronous and asynchronous `from` clauses can be mixed in one query (e.g., `from user in GetUserAsync(id) from address in GetAddress(user) select …`); the query is then asynchronous and has to be awaited. See [SelectMany](Reference/Extensions/LinqAsyncExtensions_SelectMany.md).
 * **`ResultConfiguration.ContinueOnCapturedContext`** — a global default for the `continueOnCapturedContext` argument of the asynchronous extension methods and for the LINQ query operators; see above.
 * **Short debugger display** — the debugger shows an `Error` as its category and title (e.g., `Validation "Invalid request" (3 details)`) and a failed result as `Error: NotFound "Missing"`; `ToString()` stays complete for the logs.
 * **Native AOT and trimming** — the core package no longer contains JSON code and produces no trimming or AOT warnings.
@@ -581,7 +596,9 @@ The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an
 | `Dictionary<string, object>` passed as named values | `Dictionary<string, object?>` |
 | `using Maple.Result;` | `using Maple.Results;` |
 | `using Maple.Result.Extensions;` | `using Maple.Results.Extensions;` |
-| `using Maple.Result.Extensions.ValueTasks;` | `using Maple.Results.Extensions.ValueTasks;` |
+| `using Maple.Result.Extensions.ValueTasks;` | `using Maple.Results.Extensions;` (one namespace for both kinds of task) |
+| `ThenTaskAsyncExtensions`, `ThenValueTaskAsyncExtensions` (and the other verbs) | `ThenAsyncExtensions` |
+| `ValueTask<Result<int>> r = result.ThenAsync(async x => …);` | `ValueTask<Result<int>> r = result.ThenAsync(async ValueTask<int> (int x) => …);` |
 | `IResult` (`Maple.Result`) | `IOperationResult` (`Maple.Results`) |
 | `result.IsSuccess()` | `result.IsSuccess` |
 | `!result.IsSuccess()` | `result.IsError` |
