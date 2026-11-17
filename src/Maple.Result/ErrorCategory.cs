@@ -50,13 +50,13 @@ public enum ErrorCategory
     Unauthenticated = 1,
 
     /// <summary>
-    ///     The action is not authorized.
+    ///     The permission for the action is denied.
     /// </summary>
     /// <remarks>
     ///     The authentication might be valid, but the identity does not have the required permissions.<br />
     ///     Can be mapped to the 403 HTTP status code (Forbidden).
     /// </remarks>
-    Unauthorized = 2,
+    PermissionDenied = 2,
 
     /// <summary>
     ///     The resource was not found error.

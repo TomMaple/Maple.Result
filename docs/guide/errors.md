@@ -57,7 +57,7 @@ The error categories are based on the HTTP status codes—that’s why those hav
 | **Limit Exceeded** | The request is valid and permitted, but a usage limit, quota or rate has been exhausted. Applies to business limits as well as throttling. Not for input-size checks (use **Validation**). | Wait and try again later, or raise the limit (e.g. upgrade the plan). | Too many requests—please try again in 30 seconds.&#xA;The monthly limit of 100 reports has been reached. | `429` (Too Many Requests) |
 | **Not Found** | The resource was not found. | Invalid identifier. Try a different one. | Company with that name has not been found. | `404` (Not Found) |
 | **Not Implemented** | The operation, feature or case is not implemented yet. | To be implemented in the future. | We don’t support debit cards yet. | `501` (Not Implemented) |
-| **Unauthorized** | The authentication might be valid, but the identity does not have the required permissions. | Ask for permissions, or, a different user is required. | Action is not allowed for that user. | `403` (Forbidden) |
+| **Permission Denied** | The authentication might be valid, but the identity does not have the required permissions. | Ask for permissions, or, a different user is required. | Action is not allowed for that user. | `403` (Forbidden) |
 | **Timeout** | The operation timed out. | Heavy load. Try again later. | Server did not respond within 30 seconds. Try again later. | `504` (Gateway Timeout) when an upstream server or a dependency did not respond in time;&#xA;`408` (Request Timeout) when the client did not send the complete request in time |
 | **Unavailable** | The service is not available (e.g. it is down or overloaded), but please try again later. Not for exhausted usage limits (use **Limit Exceeded**). | Some service is down. Please try again later. | Report is not available—please try again later. | `503` (Service Unavailable) |
 | **Unauthenticated** | The authentication is either missing or invalid. | Log in. | User is not logged in. | `401` (Unauthorized) |
@@ -194,7 +194,7 @@ See more: [ErrorBuilder](../Reference/ErrorBuilder/ErrorBuilder.md)
 ## Localization
 An error carries a message template ID and named values next to the message, so a client can generate the message in its own language:
 ```csharp
-var error = Error.Unauthorized(
+var error = Error.PermissionDenied(
     ErrorUri.Tag("tag:exampleapp.com,2026:errors:contact:delete:authorization:missing"),
     "User is not authorized to delete a contact.",
     "The ‘contact_delete’ permission is required to delete a contact.",

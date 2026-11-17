@@ -132,19 +132,19 @@ Members added by the host are not reserved either: e.g., ASP.NET Core adds `trac
 > [!NOTE]
 > The table shows the **default** mapping. It can be customized in both directions: the packages that write problem details let you choose the `status` written for each category, and the packages that read them let you choose the category read for each status code (including the codes not listed below). The two directions are configured separately, so a custom mapping should keep them consistent when the same services write and read the errors.
 
-| `ErrorCategory`   | `status` written (default) | `status` read (default) |
-| ----------------- | -------------------------- | ----------------------- |
-| `Validation`      | 400                        | 400, 413, 414, 431      |
-| `Unauthenticated` | 401                        | 401                     |
-| `Unauthorized`    | 403                        | 403                     |
-| `NotFound`        | 404                        | 404, 410                |
-| `Timeout`         | 408                        | 408, 504                |
-| `Conflict`        | 409                        | 409, 412, 423           |
-| `Failure`         | 422                        | 422, any other 4xx code, any other code outside 4xx and 5xx |
-| `LimitExceeded`   | 429                        | 429                     |
-| `Critical`        | 500                        | 500, any other 5xx code (e.g., 505, 507) |
-| `NotImplemented`  | 501                        | 501                     |
-| `Unavailable`     | 503                        | 502, 503                |
+| `ErrorCategory`    | `status` written (default) | `status` read (default) |
+| ------------------ | -------------------------- | ----------------------- |
+| `Validation`       | 400                        | 400, 413, 414, 431      |
+| `Unauthenticated`  | 401                        | 401                     |
+| `PermissionDenied` | 403                        | 403                     |
+| `NotFound`         | 404                        | 404, 410                |
+| `Timeout`          | 408                        | 408, 504                |
+| `Conflict`         | 409                        | 409, 412, 423           |
+| `Failure`          | 422                        | 422, any other 4xx code, any other code outside 4xx and 5xx |
+| `LimitExceeded`    | 429                        | 429                     |
+| `Critical`         | 500                        | 500, any other 5xx code (e.g., 505, 507) |
+| `NotImplemented`   | 501                        | 501                     |
+| `Unavailable`      | 503                        | 502, 503                |
 
 A status code that a category does not write is read by its meaning: `410` (Gone) is a resource that is not there, `412` (Precondition Failed) and `423` (Locked) are conflicts with the state of the resource, and `413`, `414` and `431` reject the size of the request (input-size checks are `Validation`, not `LimitExceeded`). A server error is never read as `Failure`, which is an expected error and is written as `422`: a gateway that passes on an upstream `502` answers `503`, and any other `5xx` answers `500`.
 

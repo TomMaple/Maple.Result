@@ -1223,7 +1223,7 @@ The function is synchronous: it runs after the `resultTask` completes, and it is
 ### Examples
 ```csharp
 var result = await _userService.GetUserAsync(id)
-    .ThenAsync(user => Error.Unauthorized(typeUri, $"{user.Name} cannot do this."));
+    .ThenAsync(user => Error.PermissionDenied(typeUri, $"{user.Name} cannot do this."));
 ```
 
 ## ThenAsync(Task&lt;Result&gt;, Func&lt;ValueTask&lt;Result&gt;&gt;, Boolean)
@@ -2691,7 +2691,7 @@ The function is synchronous: it runs after the `resultTask` completes, and it is
 ### Examples
 ```csharp
 var result = await _userService.GetUserAsync(id)
-    .ThenAsync(user => Error.Unauthorized(typeUri, $"{user.Name} cannot do this."));
+    .ThenAsync(user => Error.PermissionDenied(typeUri, $"{user.Name} cannot do this."));
 ```
 
 ## ThenAsync(ValueTask&lt;Result&gt;, Func&lt;Task&lt;Result&gt;&gt;, Boolean)

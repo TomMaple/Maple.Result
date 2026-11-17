@@ -799,6 +799,37 @@ public sealed record Error
     }
 
     /// <summary>
+    ///     Creates a new instance of the <see cref="Error" /> object of the <see cref="ErrorCategory.PermissionDenied" /> category.
+    /// </summary>
+    /// <remarks>
+    ///     Indicates that the operation has failed because the identity does not have permission to perform it.<br />
+    ///     It can be mapped to the 403 HTTP status code (Forbidden) response.
+    /// </remarks>
+    /// <inheritdoc cref="Create(ErrorCategory, ErrorUri, string, string?, ErrorUri?, string?, ReadOnlySpan{ValueTuple{string, object?}})" />
+    public static Error PermissionDenied(ErrorUri typeUri, string title, string? detail = null,
+        ErrorUri? instanceUri = null, string? detailTemplateId = null,
+        params ReadOnlySpan<(string Key, object? Value)> detailNamedValues)
+    {
+        return Create(ErrorCategory.PermissionDenied, typeUri, title, detail, instanceUri, detailTemplateId, detailNamedValues);
+    }
+
+    /// <summary>
+    ///     Creates a new instance of the <see cref="Error" /> object of the <see cref="ErrorCategory.PermissionDenied" /> category.
+    /// </summary>
+    /// <remarks>
+    ///     Indicates that the operation has failed because the identity does not have permission to perform it.<br />
+    ///     It can be mapped to the 403 HTTP status code (Forbidden) response.
+    /// </remarks>
+    /// <inheritdoc cref="Create(ErrorCategory, ErrorUri, string, string?, ErrorUri?, string?, IEnumerable{KeyValuePair{string, object?}}?)" />
+    [OverloadResolutionPriority(1)]
+    public static Error PermissionDenied(ErrorUri typeUri, string title, string? detail = null,
+        ErrorUri? instanceUri = null, string? detailTemplateId = null,
+        IEnumerable<KeyValuePair<string, object?>>? detailNamedValues = null)
+    {
+        return Create(ErrorCategory.PermissionDenied, typeUri, title, detail, instanceUri, detailTemplateId, detailNamedValues);
+    }
+
+    /// <summary>
     ///     Creates a new instance of the <see cref="Error" /> object of the <see cref="ErrorCategory.Timeout" /> category.
     /// </summary>
     /// <remarks>
@@ -860,37 +891,6 @@ public sealed record Error
         IEnumerable<KeyValuePair<string, object?>>? detailNamedValues = null)
     {
         return Create(ErrorCategory.Unauthenticated, typeUri, title, detail, instanceUri, detailTemplateId, detailNamedValues);
-    }
-
-    /// <summary>
-    ///     Creates a new instance of the <see cref="Error" /> object of the <see cref="ErrorCategory.Unauthorized" /> category.
-    /// </summary>
-    /// <remarks>
-    ///     Indicates that the operation has failed because the identity does not have permission to perform it.<br />
-    ///     It can be mapped to the 403 HTTP status code (Forbidden) response.
-    /// </remarks>
-    /// <inheritdoc cref="Create(ErrorCategory, ErrorUri, string, string?, ErrorUri?, string?, ReadOnlySpan{ValueTuple{string, object?}})" />
-    public static Error Unauthorized(ErrorUri typeUri, string title, string? detail = null,
-        ErrorUri? instanceUri = null, string? detailTemplateId = null,
-        params ReadOnlySpan<(string Key, object? Value)> detailNamedValues)
-    {
-        return Create(ErrorCategory.Unauthorized, typeUri, title, detail, instanceUri, detailTemplateId, detailNamedValues);
-    }
-
-    /// <summary>
-    ///     Creates a new instance of the <see cref="Error" /> object of the <see cref="ErrorCategory.Unauthorized" /> category.
-    /// </summary>
-    /// <remarks>
-    ///     Indicates that the operation has failed because the identity does not have permission to perform it.<br />
-    ///     It can be mapped to the 403 HTTP status code (Forbidden) response.
-    /// </remarks>
-    /// <inheritdoc cref="Create(ErrorCategory, ErrorUri, string, string?, ErrorUri?, string?, IEnumerable{KeyValuePair{string, object?}}?)" />
-    [OverloadResolutionPriority(1)]
-    public static Error Unauthorized(ErrorUri typeUri, string title, string? detail = null,
-        ErrorUri? instanceUri = null, string? detailTemplateId = null,
-        IEnumerable<KeyValuePair<string, object?>>? detailNamedValues = null)
-    {
-        return Create(ErrorCategory.Unauthorized, typeUri, title, detail, instanceUri, detailTemplateId, detailNamedValues);
     }
 
     /// <summary>

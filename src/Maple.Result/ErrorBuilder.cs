@@ -125,12 +125,12 @@ public sealed class ErrorBuilder
     }
 
     /// <summary>
-    ///     Returns a new <see cref="ErrorBuilder" /> of the <see cref="ErrorCategory.Unauthorized" /> category.
+    ///     Returns a new <see cref="ErrorBuilder" /> of the <see cref="ErrorCategory.PermissionDenied" /> category.
     /// </summary>
     /// <inheritdoc cref="ErrorBuilder(ErrorCategory, ErrorUri, string)" />
-    public static ErrorBuilder Unauthorized(ErrorUri typeUri, string title)
+    public static ErrorBuilder PermissionDenied(ErrorUri typeUri, string title)
     {
-        return new ErrorBuilder(ErrorCategory.Unauthorized, typeUri, title);
+        return new ErrorBuilder(ErrorCategory.PermissionDenied, typeUri, title);
     }
 
     /// <summary>

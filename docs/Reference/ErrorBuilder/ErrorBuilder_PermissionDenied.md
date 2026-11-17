@@ -1,13 +1,13 @@
-# ErrorBuilder.Unauthorized(ErrorUri, String) Method
+# ErrorBuilder.PermissionDenied(ErrorUri, String) Method
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
 Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L131" target="_blank">ErrorBuilder.cs</a>
 
-Returns a new [ErrorBuilder](ErrorBuilder.md) of the *Unauthorized* [ErrorCategory](../ErrorCategory.md).
+Returns a new [ErrorBuilder](ErrorBuilder.md) of the *PermissionDenied* [ErrorCategory](../ErrorCategory.md).
 
 ```csharp
-public static ErrorBuilder Unauthorized(ErrorUri typeUri, string title);
+public static ErrorBuilder PermissionDenied(ErrorUri typeUri, string title);
 ```
 
 ### Parameters
@@ -32,11 +32,11 @@ The `title` is `null`.
 The `title` is empty or consists only of white-space characters.
 
 ## Remarks
-It is equivalent to `new ErrorBuilder(ErrorCategory.Unauthorized, typeUri, title)`. See [Error.Unauthorized](../Error/Error_Unauthorized.md) for when to use this category.
+It is equivalent to `new ErrorBuilder(ErrorCategory.PermissionDenied, typeUri, title)`. See [Error.PermissionDenied](../Error/Error_PermissionDenied.md) for when to use this category.
 
 ## Examples
 ```csharp
-var error = ErrorBuilder.Unauthorized(
+var error = ErrorBuilder.PermissionDenied(
                 ErrorUri.Tag("tag:exampleapp.com,2026:errors:account:forbidden"),
                 "You cannot update this account.")
             .WithDetail("A human-readable explanation of this occurrence.")
@@ -45,5 +45,5 @@ var error = ErrorBuilder.Unauthorized(
 
 ## See Also
 * [ErrorBuilder](ErrorBuilder.md)
-* [Error.Unauthorized](../Error/Error_Unauthorized.md)
+* [Error.PermissionDenied](../Error/Error_PermissionDenied.md)
 * [ErrorCategory](../ErrorCategory.md)

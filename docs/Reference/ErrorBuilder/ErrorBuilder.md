@@ -85,9 +85,9 @@ The builder is not thread-safe. Use one builder per thread, or synchronize acces
 | [LimitExceeded(ErrorUri, String)](ErrorBuilder_LimitExceeded.md) | Returns a new builder of the *LimitExceeded* category. |
 | [NotFound(ErrorUri, String)](ErrorBuilder_NotFound.md) | Returns a new builder of the *NotFound* category. |
 | [NotImplemented(ErrorUri, String)](ErrorBuilder_NotImplemented.md) | Returns a new builder of the *NotImplemented* category. |
+| [PermissionDenied(ErrorUri, String)](ErrorBuilder_PermissionDenied.md) | Returns a new builder of the *PermissionDenied* category. |
 | [Timeout(ErrorUri, String)](ErrorBuilder_Timeout.md) | Returns a new builder of the *Timeout* category. |
 | [Unauthenticated(ErrorUri, String)](ErrorBuilder_Unauthenticated.md) | Returns a new builder of the *Unauthenticated* category. |
-| [Unauthorized(ErrorUri, String)](ErrorBuilder_Unauthorized.md) | Returns a new builder of the *Unauthorized* category. |
 | [Unavailable(ErrorUri, String)](ErrorBuilder_Unavailable.md) | Returns a new builder of the *Unavailable* category. |
 | [Validation(ErrorUri, String)](ErrorBuilder_Validation.md) | Returns a new builder of the *Validation* category. |
 | [WithCategory(ErrorCategory)](ErrorBuilder_WithCategory.md) | Sets the category. |

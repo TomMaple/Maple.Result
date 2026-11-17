@@ -10,6 +10,7 @@ Version 3.0 makes `Result`, `Result<T>` and `Error` **immutable** and **always v
   * [Namespace renamed to `Maple.Results`](#namespace-renamed-to-mapleresults)
   * [One namespace for the `Task` and `ValueTask` methods](#one-namespace-for-the-task-and-valuetask-methods)
   * [New `LimitExceeded` error category](#new-limitexceeded-error-category)
+  * [`Unauthorized` renamed to `PermissionDenied`](#unauthorized-renamed-to-permissiondenied)
   * [Public constructors removed](#public-constructors-removed)
   * [`AddDetail()` removed](#adddetail-removed)
   * [`with` expressions no longer change errors](#with-expressions-no-longer-change-errors)
@@ -37,7 +38,7 @@ Version 3.0 makes `Result`, `Result<T>` and `Error` **immutable** and **always v
 
 ## Quick checklist
 1. Replace `using Maple.Result…;` with `using Maple.Results…;`, and remove `using Maple.Result.Extensions.ValueTasks;` (see [Namespace renamed to `Maple.Results`](#namespace-renamed-to-mapleresults) and [One namespace for the `Task` and `ValueTask` methods](#one-namespace-for-the-task-and-valuetask-methods)).
-2. Handle `ErrorCategory.LimitExceeded` in every exhaustive `switch` over `ErrorCategory`.
+2. Handle `ErrorCategory.LimitExceeded` in every exhaustive `switch` over `ErrorCategory`, and rename `Unauthorized` to `PermissionDenied` (see [`Unauthorized` renamed to `PermissionDenied`](#unauthorized-renamed-to-permissiondenied)).
 3. Replace `error.AddDetail(...)` with `error = error.WithErrorDetail(...)` or an `ErrorBuilder`.
 4. Replace `error with { … }` with `error.ToBuilder()…Build()`.
 5. Replace `new Result()`, `new Result<T>()`, `new Error()` and `new ErrorUri(...)` with the factory methods.
@@ -108,6 +109,19 @@ var statusCode = error.Category switch
 The default mapping of the status codes that are **read** (e.g., by the `HttpClient` package) changed as well: in 2.x, every code without a category of its own was read as `Failure`. In 3.0, `502` is read as `Unavailable`, any other `5xx` code as `Critical`, `410` as `NotFound`, `412` and `423` as `Conflict`, and `413`, `414` and `431` as `Validation`; only the other `4xx` codes are still read as `Failure`. See [Category and status](problem-details.md#category-and-status).
 
 `default(ErrorCategory)` is still `Validation` (`0`), and the values did not change. Do not use the default value to mean "not set".
+
+### `Unauthorized` renamed to `PermissionDenied`
+`ErrorCategory.Unauthorized`, `Error.Unauthorized(...)` and `ErrorBuilder.Unauthorized(...)` are renamed to `PermissionDenied`. Only the name changed: the numeric value (`2`), the meaning (the identity is known, but it does not have the permission) and the default status code (`403`) are the same. "Unauthorized" names the missing authentication in HTTP (`401 Unauthorized`), so a caller who wanted a `401` could pick it and get a `403`; the category for a `401` is still `Unauthenticated`.
+
+```csharp
+// 2.x
+var error = Error.Unauthorized(typeUri, "The contact cannot be deleted.");
+
+// 3.0
+var error = Error.PermissionDenied(typeUri, "The contact cannot be deleted.");
+```
+
+Code that stores, compares or logs the **name** of the category (e.g., `category.ToString()`, an enumeration written as a string, or a string in a configuration) sees `PermissionDenied`. The problem details format is not affected: it carries the category as the `status`, not by name.
 
 ### Public constructors removed
 The types can only be created through their factory methods, which always produce a valid instance.
@@ -599,6 +613,8 @@ The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an
 | `using Maple.Result.Extensions.ValueTasks;` | `using Maple.Results.Extensions;` (one namespace for both kinds of task) |
 | `ThenTaskAsyncExtensions`, `ThenValueTaskAsyncExtensions` (and the other verbs) | `ThenAsyncExtensions` |
 | `ValueTask<Result<int>> r = result.ThenAsync(async x => …);` | `ValueTask<Result<int>> r = result.ThenAsync(async ValueTask<int> (int x) => …);` |
+| `ErrorCategory.Unauthorized` | `ErrorCategory.PermissionDenied` |
+| `Error.Unauthorized(…)`, `ErrorBuilder.Unauthorized(…)` | `Error.PermissionDenied(…)`, `ErrorBuilder.PermissionDenied(…)` |
 | `IResult` (`Maple.Result`) | `IOperationResult` (`Maple.Results`) |
 | `result.IsSuccess()` | `result.IsSuccess` |
 | `!result.IsSuccess()` | `result.IsError` |
