@@ -145,7 +145,7 @@ var result =
 
 
 ## SelectMany&lt;T, TMiddle&gt;(Result&lt;T&gt;, Func&lt;T, Result&lt;TMiddle&gt;&gt;, Func&lt;T, TMiddle, Result&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L566" target="_blank">LinqExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L556" target="_blank">LinqExtensions.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -194,7 +194,7 @@ var result =
 
 
 ## SelectMany&lt;T, TMiddle, TNext&gt;(Result&lt;T&gt;, Func&lt;T, Result&lt;TMiddle&gt;&gt;, Func&lt;T, TMiddle, Result&lt;TNext&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L618" target="_blank">LinqExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L608" target="_blank">LinqExtensions.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -246,7 +246,7 @@ var result =
 
 
 ## SelectMany&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, Result&gt;, Func&lt;T, Result, TNext&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L669" target="_blank">LinqExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L659" target="_blank">LinqExtensions.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -295,7 +295,7 @@ var result =
 
 
 ## SelectMany&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, Result&gt;, Func&lt;T, Result, Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L713" target="_blank">LinqExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L703" target="_blank">LinqExtensions.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -341,7 +341,7 @@ var result =
 
 
 ## SelectMany&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, Result&gt;, Func&lt;T, Result, Result&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L765" target="_blank">LinqExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L755" target="_blank">LinqExtensions.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -389,7 +389,7 @@ var result =
 
 
 ## SelectMany&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, Result&gt;, Func&lt;T, Result, Result&lt;TNext&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L818" target="_blank">LinqExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L808" target="_blank">LinqExtensions.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -440,7 +440,7 @@ var result =
 
 
 ## SelectMany&lt;TMiddle, TNext&gt;(Result, Func&lt;Result, Result&lt;TMiddle&gt;&gt;, Func&lt;Result, TMiddle, TNext&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L870" target="_blank">LinqExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L860" target="_blank">LinqExtensions.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -489,7 +489,7 @@ var result =
 
 
 ## SelectMany&lt;TMiddle&gt;(Result, Func&lt;Result, Result&lt;TMiddle&gt;&gt;, Func&lt;Result, TMiddle, Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L918" target="_blank">LinqExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L908" target="_blank">LinqExtensions.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -535,7 +535,7 @@ var result =
 
 
 ## SelectMany&lt;TMiddle&gt;(Result, Func&lt;Result, Result&lt;TMiddle&gt;&gt;, Func&lt;Result, TMiddle, Result&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L974" target="_blank">LinqExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L964" target="_blank">LinqExtensions.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -583,7 +583,7 @@ var result =
 
 
 ## SelectMany&lt;TMiddle, TNext&gt;(Result, Func&lt;Result, Result&lt;TMiddle&gt;&gt;, Func&lt;Result, TMiddle, Result&lt;TNext&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L1031" target="_blank">LinqExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L1021" target="_blank">LinqExtensions.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -634,7 +634,7 @@ var result =
 
 
 ## SelectMany&lt;TNext&gt;(Result, Func&lt;Result, Result&gt;, Func&lt;Result, Result, TNext&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L1082" target="_blank">LinqExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L1072" target="_blank">LinqExtensions.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -680,7 +680,7 @@ var result =
 
 
 ## SelectMany(Result, Func&lt;Result, Result&gt;, Func&lt;Result, Result, Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L1129" target="_blank">LinqExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L1119" target="_blank">LinqExtensions.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -722,7 +722,7 @@ var result =
 
 
 ## SelectMany(Result, Func&lt;Result, Result&gt;, Func&lt;Result, Result, Result&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L1181" target="_blank">LinqExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L1171" target="_blank">LinqExtensions.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -766,7 +766,7 @@ var result =
 
 
 ## SelectMany&lt;TNext&gt;(Result, Func&lt;Result, Result&gt;, Func&lt;Result, Result, Result&lt;TNext&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L1234" target="_blank">LinqExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqExtensions.cs#L1224" target="_blank">LinqExtensions.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
