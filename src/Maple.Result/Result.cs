@@ -19,8 +19,15 @@ namespace Maple.Results;
 ///     Defines the contract for an operation result, providing information about success or failure and any associated error details.
 /// </summary>
 /// <remarks>
-///     Use the <see cref="IsSuccess" /> or <see cref="IsError" /> property to determine whether the operation completed successfully,
-///     and access the <see cref="Error" /> property for error information if the operation failed.
+///     <para>
+///         Use the <see cref="IsSuccess" /> or <see cref="IsError" /> property to determine whether the operation completed successfully,
+///         and access the <see cref="Error" /> property for error information if the operation failed.
+///     </para>
+///     <para>
+///         The interface is closed: <see cref="Result" /> and <see cref="Result{T}" /> are its only implementations. A type outside the
+///         library cannot implement it (a compile error), and a mocking library cannot create a mock of it; in a test, create a result
+///         instead (e.g., <c>Result.Success()</c> or <c>Result.FromError(error)</c>).
+///     </para>
 /// </remarks>
 public interface IOperationResult
 {
@@ -58,6 +65,17 @@ public interface IOperationResult
     /// </param>
     /// <returns><see langword="true" /> if the result is failed; otherwise, <see langword="false" />.</returns>
     public bool TryGetError([NotNullWhen(true)] out Error? error);
+
+    /// <summary>
+    ///     Closes the interface (#277): a type of another assembly cannot implement an internal member, so <see cref="Result" /> and
+    ///     <see cref="Result{T}" /> are the only implementations, and the extension methods can rely on them. The method does nothing.
+    /// </summary>
+    /// <remarks>
+    ///     It has no body on purpose: with a default body, a type of another assembly could implement the interface again. It is not
+    ///     static either: a static abstract member would keep the interface from being a type argument (CS8920), e.g., in a
+    ///     <c>List&lt;IOperationResult&gt;</c>. Its name is what the compiler shows to someone who tries (CS0535).
+    /// </remarks>
+    internal void CannotBeImplementedOutsideTheLibrary();
 }
 
 /// <summary>
@@ -204,6 +222,15 @@ public sealed partial record Result : IOperationResult
         builder.Append("Error = ").Append(Error);
 
         return true;
+    }
+
+    #endregion
+
+    #region IOperationResult
+
+    // The internal member that closes the interface (#277); it does nothing.
+    void IOperationResult.CannotBeImplementedOutsideTheLibrary()
+    {
     }
 
     #endregion
@@ -450,6 +477,15 @@ public sealed record Result<T> : IOperationResult
             builder.Append("Error = ").Append(Error);
 
         return true;
+    }
+
+    #endregion
+
+    #region IOperationResult
+
+    // The internal member that closes the interface (#277); it does nothing.
+    void IOperationResult.CannotBeImplementedOutsideTheLibrary()
+    {
     }
 
     #endregion
