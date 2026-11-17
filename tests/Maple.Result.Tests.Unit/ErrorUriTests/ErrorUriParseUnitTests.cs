@@ -23,9 +23,12 @@ public class ErrorUriParseUnitTests
     public static readonly TheoryData<string, ErrorUri> ValidValues = new()
     {
         { "about:blank", ErrorUri.None },
-        // RFC 3986 section 3.1: the scheme is case-insensitive; None always stores "about:blank".
+        // "about:blank" is recognized in any case (#275); None always stores "about:blank".
         { "ABOUT:blank", ErrorUri.None },
         { "About:blank", ErrorUri.None },
+        { "about:BLANK", ErrorUri.None },
+        { "About:Blank", ErrorUri.None },
+        { "ABOUT:BLANK", ErrorUri.None },
         { "/account/12345/msgs/abc", ErrorUri.Relative("/account/12345/msgs/abc") },
         { "tag:example.com,2026:errors:out-of-credit", ErrorUri.Tag("tag:example.com,2026:errors:out-of-credit") },
         { "TAG:example.com,2026:x", ErrorUri.Tag("TAG:example.com,2026:x") },
@@ -44,10 +47,7 @@ public class ErrorUriParseUnitTests
     /// <summary>Values that are neither one of the supported kinds nor an absolute URI with another scheme.</summary>
     public static readonly TheoryData<string> UnknownKinds =
     [
-        "about:BLANK",              // the "blank" token is case-sensitive
-        "about:blank#x",            // a fragment
-        "about:blank?x",            // a query
-        "about:srcdoc",             // another about token
+        "about",                    // no colon: a relative path, not the "about" scheme
         "out-of-credit",            // a relative path (RFC 9457 allows it; the factories do not)
         "../probs/x",
         "",
@@ -63,6 +63,8 @@ public class ErrorUriParseUnitTests
         "https://exa mple.com/x",
         "//example.com/x",
         "mailto:a b",
+        "about:a b",
+        "about:blank ",             // a trailing space: not "about:blank", and not a valid URI
     ];
 
     /// <summary>Values of a known kind that its factory rejects, and the beginning of the factory's message.</summary>
@@ -73,7 +75,22 @@ public class ErrorUriParseUnitTests
         { "https://exa mple.com/x", "The URI locator is not valid." },
         { "//example.com/x", "The relative URI reference is not valid." },
         { "mailto:a b", "The URI is not a valid absolute URI." },
+        { "about:a b", "The URI is not a valid absolute URI." },
+        { "about:blank ", "The URI is not a valid absolute URI." },
     };
+
+    /// <summary>The <c>about</c> URIs other than <c>about:blank</c>, which are kept as they are, like any other scheme (#275).</summary>
+    public static readonly TheoryData<string> OtherAboutUris =
+    [
+        "about:invalid",            // a registered token (the IANA registry of "about" URI tokens)
+        "about:config",             // a token of an application
+        "ABOUT:config",             // the scheme in any case, stored as passed
+        "about:blank#x",            // a fragment: no longer "about:blank"
+        "about:blank?x",            // a query
+        "about:BLANK#x",
+        "about:blankx",
+        "about:",                   // an empty token (RFC 6694: about-token = *pchar)
+    ];
 
     /// <summary>Error URIs of every kind, for the round-trip through their value.</summary>
     public static readonly TheoryData<ErrorUri> ErrorUris =
@@ -101,6 +118,17 @@ public class ErrorUriParseUnitTests
         // Assert
         result.ShouldBe(expected);
         result.Value.ShouldBe(expected.Value);
+    }
+
+    [Theory]
+    [MemberData(nameof(OtherAboutUris))]
+    public void Parse_AboutUriOtherThanAboutBlank_ReturnsErrorUriWithTheValueAsPassed(string value)
+    {
+        // Act
+        var result = ErrorUri.Parse(value);
+
+        // Assert
+        result.Value.ShouldBe(value);
     }
 
     [Theory]
@@ -161,6 +189,18 @@ public class ErrorUriParseUnitTests
         parsed.ShouldBeTrue();
         result.ShouldBe(expected);
         result.Value.ShouldBe(expected.Value);
+    }
+
+    [Theory]
+    [MemberData(nameof(OtherAboutUris))]
+    public void TryParse_AboutUriOtherThanAboutBlank_ReturnsTrueAndErrorUriWithTheValueAsPassed(string value)
+    {
+        // Act
+        var parsed = ErrorUri.TryParse(value, out var result);
+
+        // Assert
+        parsed.ShouldBeTrue();
+        result.Value.ShouldBe(value);
     }
 
     [Theory]
@@ -267,6 +307,17 @@ public class ErrorUriParseUnitTests
     }
 
     [Theory]
+    [MemberData(nameof(OtherAboutUris))]
+    public void IParsableParse_AboutUriOtherThanAboutBlank_ReturnsErrorUriWithTheValueAsPassed(string value)
+    {
+        // Act
+        var result = ParseAs<ErrorUri>(value);
+
+        // Assert
+        result.Value.ShouldBe(value);
+    }
+
+    [Theory]
     [MemberData(nameof(UnknownKinds))]
     public void IParsableParse_UnknownKind_ThrowsUriFormatException(string value)
     {
@@ -287,6 +338,18 @@ public class ErrorUriParseUnitTests
         // Assert
         parsed.ShouldBeTrue();
         result.ShouldBe(expected);
+    }
+
+    [Theory]
+    [MemberData(nameof(OtherAboutUris))]
+    public void IParsableTryParse_AboutUriOtherThanAboutBlank_ReturnsTrueAndErrorUriWithTheValueAsPassed(string value)
+    {
+        // Act
+        var parsed = TryParseAs<ErrorUri>(value, out var result);
+
+        // Assert
+        parsed.ShouldBeTrue();
+        result.Value.ShouldBe(value);
     }
 
     [Theory]

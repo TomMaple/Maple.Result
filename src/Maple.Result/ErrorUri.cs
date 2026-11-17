@@ -57,7 +57,7 @@ namespace Maple.Results;
 /// </remarks>
 public readonly record struct ErrorUri : IParsable<ErrorUri>
 {
-    private const string NoneValue = "about:blank";
+    internal const string NoneValue = "about:blank";
 
     private const string UnknownKindMessage =
         "The error URI is not valid. Expected ‘about:blank’, a relative reference starting with ‘/’, or an absolute URI.";
@@ -207,9 +207,10 @@ public readonly record struct ErrorUri : IParsable<ErrorUri>
     ///         <see cref="Locator" />, <see cref="Tag" />, <see cref="Urn" /> or <see cref="Relative" />.
     ///     </para>
     ///     <para>
-    ///         The schemes <c>about</c>, <c>tag</c>, <c>urn</c>, <c>http</c> and <c>https</c> (in any case) are rejected: use their factory
-    ///         methods, or <see cref="Parse" /> when the kind is not known. The value is stored as passed: white space, characters that
-    ///         would need escaping, invalid percent-encoding and a second <c>#</c> are rejected.
+    ///         The schemes <c>tag</c>, <c>urn</c>, <c>http</c> and <c>https</c> and the value <c>about:blank</c> (all in any case) are rejected:
+    ///         use their factory methods or <see cref="None" />, or <see cref="Parse" /> when the kind is not known. Any other <c>about</c>
+    ///         <i>URI</i> (e.g., <c>about:invalid</c>) is accepted. The value is stored as passed: white space, characters that would need
+    ///         escaping, invalid percent-encoding and a second <c>#</c> are rejected.
     ///     </para>
     ///     <para>
     ///         Any other scheme is accepted, including <c>javascript:</c>, <c>vbscript:</c>, <c>data:</c> and <c>file:</c>: <i>RFC 3986</i> and
@@ -220,7 +221,7 @@ public readonly record struct ErrorUri : IParsable<ErrorUri>
     /// </remarks>
     /// <exception cref="ArgumentNullException">If the <paramref name="uri" /> is <see langword="null" />.</exception>
     /// <exception cref="UriFormatException">
-    ///     If the <paramref name="uri" /> is not a valid absolute <i>URI</i>, or its scheme has a factory method of its own.
+    ///     If the <paramref name="uri" /> is not a valid absolute <i>URI</i>, its scheme has a factory method of its own, or it is <c>about:blank</c>.
     /// </exception>
     public static ErrorUri Other(string uri)
     {
@@ -245,13 +246,13 @@ public readonly record struct ErrorUri : IParsable<ErrorUri>
     ///     <para>
     ///         The kind is detected from the value: <c>about:blank</c> returns <see cref="None" />; a value starting with <c>/</c> is passed to
     ///         <see cref="Relative" />; the scheme <c>tag</c> to <see cref="Tag" />, <c>urn</c> to <see cref="Urn" />, and <c>http</c> or
-    ///         <c>https</c> to <see cref="Locator" />, and any other scheme to <see cref="Other" />. A value without a scheme (e.g.,
-    ///         <c>out-of-credit</c>) and an <c>about</c> <i>URI</i> other than <c>about:blank</c> are rejected.
+    ///         <c>https</c> to <see cref="Locator" />, and any other scheme to <see cref="Other" />, including an <c>about</c> <i>URI</i> other
+    ///         than <c>about:blank</c> (e.g., <c>about:invalid</c>). A value without a scheme (e.g., <c>out-of-credit</c>) is rejected.
     ///     </para>
     ///     <para>
     ///         Schemes are case-insensitive (<i>RFC 3986</i>, section 3.1), so <c>TAG:…</c> is a <i>URI Tag</i>; the value is stored as passed.
-    ///         <c>about:blank</c> is the exception: its scheme may have any case, the <c>blank</c> token must be lowercase, and the result always has
-    ///         the value <c>about:blank</c>. <c>ErrorUri.Parse(uri.Value)</c> returns an <see cref="ErrorUri" /> equal to <c>uri</c>.
+    ///         <c>about:blank</c> is the exception: it is recognized in any case (e.g., <c>About:BLANK</c>, which is more lenient than the RFC), and
+    ///         the result always has the value <c>about:blank</c>. <c>ErrorUri.Parse(uri.Value)</c> returns an <see cref="ErrorUri" /> equal to <c>uri</c>.
     ///     </para>
     ///     <para>
     ///         Any scheme is accepted (see <see cref="Other" />), e.g., <c>javascript:</c>: check the scheme before showing the value as a link.
@@ -380,13 +381,10 @@ public readonly record struct ErrorUri : IParsable<ErrorUri>
     {
         var span = value.AsSpan();
 
-        // "about:blank" with the scheme in any case; the "blank" token is case-sensitive.
-        if (span.Length == NoneValue.Length
-            && span[..6].Equals("about:", StringComparison.OrdinalIgnoreCase)
-            && span[6..].SequenceEqual("blank"))
-        {
+        // "about:blank" in any case (#275). RFC 3986 makes only the scheme case-insensitive; the "blank" token is matched in any case
+        // on purpose, so that a value that reads as "about:blank" does not become a problem type of its own.
+        if (span.Equals(NoneValue, StringComparison.OrdinalIgnoreCase))
             return Kind.None;
-        }
 
         if (span.StartsWith('/'))
             return Kind.Relative;
@@ -406,8 +404,8 @@ public readonly record struct ErrorUri : IParsable<ErrorUri>
         if (scheme.Equals("http", StringComparison.OrdinalIgnoreCase) || scheme.Equals("https", StringComparison.OrdinalIgnoreCase))
             return Kind.Locator;
 
-        // An "about" URI other than "about:blank" has no kind; any other syntactically valid scheme is passed to Other.
-        if (scheme.Equals("about", StringComparison.OrdinalIgnoreCase) || !IsScheme(scheme))
+        // Any other syntactically valid scheme is passed to Other, including "about" with anything but "blank" after it.
+        if (!IsScheme(scheme))
             return Kind.Unknown;
 
         return Kind.Other;
