@@ -442,7 +442,7 @@ var result =
 
 
 ## SelectMany&lt;T, TMiddle&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;T, TMiddle, Result&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L997" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L998" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -491,7 +491,7 @@ var result = await (
 
 
 ## SelectMany&lt;T, TMiddle, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;T, TMiddle, Result&lt;TNext&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L1062" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L1063" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -543,7 +543,7 @@ var result = await (
 
 
 ## SelectMany&lt;T, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;Result&gt;&gt;, Func&lt;T, Result, TNext&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L1126" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L1127" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -592,7 +592,7 @@ var result = await (
 
 
 ## SelectMany&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;Result&gt;&gt;, Func&lt;T, Result, Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L1183" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L1184" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -638,7 +638,7 @@ var result = await (
 
 
 ## SelectMany&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;Result&gt;&gt;, Func&lt;T, Result, Result&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L1248" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L1249" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -686,7 +686,7 @@ var result = await (
 
 
 ## SelectMany&lt;T, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;Result&gt;&gt;, Func&lt;T, Result, Result&lt;TNext&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L1314" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L1315" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -737,7 +737,7 @@ var result = await (
 
 
 ## SelectMany&lt;TMiddle, TNext&gt;(Task&lt;Result&gt;, Func&lt;Result, Task&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;Result, TMiddle, TNext&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L1379" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L1380" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -786,7 +786,7 @@ var result = await (
 
 
 ## SelectMany&lt;TMiddle&gt;(Task&lt;Result&gt;, Func&lt;Result, Task&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;Result, TMiddle, Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L1440" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L1441" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -832,7 +832,7 @@ var result = await (
 
 
 ## SelectMany&lt;TMiddle&gt;(Task&lt;Result&gt;, Func&lt;Result, Task&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;Result, TMiddle, Result&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L1509" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L1510" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -880,7 +880,7 @@ var result = await (
 
 
 ## SelectMany&lt;TMiddle, TNext&gt;(Task&lt;Result&gt;, Func&lt;Result, Task&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;Result, TMiddle, Result&lt;TNext&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L1579" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L1580" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -931,7 +931,7 @@ var result = await (
 
 
 ## SelectMany&lt;TNext&gt;(Task&lt;Result&gt;, Func&lt;Result, Task&lt;Result&gt;&gt;, Func&lt;Result, Result, TNext&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L1643" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L1644" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -977,7 +977,7 @@ var result = await (
 
 
 ## SelectMany(Task&lt;Result&gt;, Func&lt;Result, Task&lt;Result&gt;&gt;, Func&lt;Result, Result, Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L1703" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L1704" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -1019,7 +1019,7 @@ var result = await (
 
 
 ## SelectMany(Task&lt;Result&gt;, Func&lt;Result, Task&lt;Result&gt;&gt;, Func&lt;Result, Result, Result&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L1768" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L1769" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -1063,7 +1063,7 @@ var result = await (
 
 
 ## SelectMany&lt;TNext&gt;(Task&lt;Result&gt;, Func&lt;Result, Task&lt;Result&gt;&gt;, Func&lt;Result, Result, Result&lt;TNext&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L1837" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L1838" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -1111,7 +1111,7 @@ var result = await (
 
 
 ## SelectMany&lt;T, TMiddle&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&lt;TMiddle&gt;&gt;, Func&lt;T, TMiddle, Result&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L1900" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L1901" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -1160,7 +1160,7 @@ var result = await (
 
 
 ## SelectMany&lt;T, TMiddle, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&lt;TMiddle&gt;&gt;, Func&lt;T, TMiddle, Result&lt;TNext&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L1949" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L1950" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -1212,7 +1212,7 @@ var result = await (
 
 
 ## SelectMany&lt;T, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&gt;, Func&lt;T, Result, TNext&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L2000" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L2001" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -1261,7 +1261,7 @@ var result = await (
 
 
 ## SelectMany&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&gt;, Func&lt;T, Result, Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L2048" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L2049" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -1307,7 +1307,7 @@ var result = await (
 
 
 ## SelectMany&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&gt;, Func&lt;T, Result, Result&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L2097" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L2098" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -1355,7 +1355,7 @@ var result = await (
 
 
 ## SelectMany&lt;T, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&gt;, Func&lt;T, Result, Result&lt;TNext&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L2147" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L2148" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -1406,7 +1406,7 @@ var result = await (
 
 
 ## SelectMany&lt;TMiddle, TNext&gt;(Task&lt;Result&gt;, Func&lt;Result, Result&lt;TMiddle&gt;&gt;, Func&lt;Result, TMiddle, TNext&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L2199" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L2200" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -1455,7 +1455,7 @@ var result = await (
 
 
 ## SelectMany&lt;TMiddle&gt;(Task&lt;Result&gt;, Func&lt;Result, Result&lt;TMiddle&gt;&gt;, Func&lt;Result, TMiddle, Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L2251" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L2252" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -1501,7 +1501,7 @@ var result = await (
 
 
 ## SelectMany&lt;TMiddle&gt;(Task&lt;Result&gt;, Func&lt;Result, Result&lt;TMiddle&gt;&gt;, Func&lt;Result, TMiddle, Result&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L2307" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L2308" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -1549,7 +1549,7 @@ var result = await (
 
 
 ## SelectMany&lt;TMiddle, TNext&gt;(Task&lt;Result&gt;, Func&lt;Result, Result&lt;TMiddle&gt;&gt;, Func&lt;Result, TMiddle, Result&lt;TNext&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L2364" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L2365" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -1600,7 +1600,7 @@ var result = await (
 
 
 ## SelectMany&lt;TNext&gt;(Task&lt;Result&gt;, Func&lt;Result, Result&gt;, Func&lt;Result, Result, TNext&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L2415" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L2416" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -1646,7 +1646,7 @@ var result = await (
 
 
 ## SelectMany(Task&lt;Result&gt;, Func&lt;Result, Result&gt;, Func&lt;Result, Result, Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L2466" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L2467" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -1688,7 +1688,7 @@ var result = await (
 
 
 ## SelectMany(Task&lt;Result&gt;, Func&lt;Result, Result&gt;, Func&lt;Result, Result, Result&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L2518" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L2519" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -1732,7 +1732,7 @@ var result = await (
 
 
 ## SelectMany&lt;TNext&gt;(Task&lt;Result&gt;, Func&lt;Result, Result&gt;, Func&lt;Result, Result, Result&lt;TNext&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L2571" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L2572" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -1780,7 +1780,7 @@ var result = await (
 
 
 ## SelectMany&lt;T, TMiddle&gt;(Result&lt;T&gt;, Func&lt;T, Task&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;T, TMiddle, Result&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L2623" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L2624" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -1829,7 +1829,7 @@ var result = await (
 
 
 ## SelectMany&lt;T, TMiddle, TNext&gt;(Result&lt;T&gt;, Func&lt;T, Task&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;T, TMiddle, Result&lt;TNext&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L2683" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L2684" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -1881,7 +1881,7 @@ var result = await (
 
 
 ## SelectMany&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, Task&lt;Result&gt;&gt;, Func&lt;T, Result, TNext&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L2745" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L2746" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -1930,7 +1930,7 @@ var result = await (
 
 
 ## SelectMany&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, Task&lt;Result&gt;&gt;, Func&lt;T, Result, Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L2800" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L2801" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -1976,7 +1976,7 @@ var result = await (
 
 
 ## SelectMany&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, Task&lt;Result&gt;&gt;, Func&lt;T, Result, Result&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L2860" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L2861" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -2024,7 +2024,7 @@ var result = await (
 
 
 ## SelectMany&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, Task&lt;Result&gt;&gt;, Func&lt;T, Result, Result&lt;TNext&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L2921" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L2922" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -2075,7 +2075,7 @@ var result = await (
 
 
 ## SelectMany&lt;TMiddle, TNext&gt;(Result, Func&lt;Result, Task&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;Result, TMiddle, TNext&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L2984" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L2985" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -2124,7 +2124,7 @@ var result = await (
 
 
 ## SelectMany&lt;TMiddle&gt;(Result, Func&lt;Result, Task&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;Result, TMiddle, Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L3043" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L3044" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -2170,7 +2170,7 @@ var result = await (
 
 
 ## SelectMany&lt;TMiddle&gt;(Result, Func&lt;Result, Task&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;Result, TMiddle, Result&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L3110" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L3111" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -2218,7 +2218,7 @@ var result = await (
 
 
 ## SelectMany&lt;TMiddle, TNext&gt;(Result, Func&lt;Result, Task&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;Result, TMiddle, Result&lt;TNext&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L3178" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L3179" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -2269,7 +2269,7 @@ var result = await (
 
 
 ## SelectMany&lt;TNext&gt;(Result, Func&lt;Result, Task&lt;Result&gt;&gt;, Func&lt;Result, Result, TNext&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L3240" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L3241" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -2315,7 +2315,7 @@ var result = await (
 
 
 ## SelectMany(Result, Func&lt;Result, Task&lt;Result&gt;&gt;, Func&lt;Result, Result, Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L3298" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L3299" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -2357,7 +2357,7 @@ var result = await (
 
 
 ## SelectMany(Result, Func&lt;Result, Task&lt;Result&gt;&gt;, Func&lt;Result, Result, Result&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L3361" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L3362" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -2401,7 +2401,7 @@ var result = await (
 
 
 ## SelectMany&lt;TNext&gt;(Result, Func&lt;Result, Task&lt;Result&gt;&gt;, Func&lt;Result, Result, Result&lt;TNext&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L3425" target="_blank">LinqAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs#L3426" target="_blank">LinqAsyncExtensions.Task.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -2772,7 +2772,7 @@ var result =
 
 
 ## SelectMany&lt;T, TMiddle&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;T, TMiddle, Result&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L967" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L968" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -2821,7 +2821,7 @@ var result = await (
 
 
 ## SelectMany&lt;T, TMiddle, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;T, TMiddle, Result&lt;TNext&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L1030" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L1031" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -2873,7 +2873,7 @@ var result = await (
 
 
 ## SelectMany&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Func&lt;T, Result, TNext&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L1092" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L1093" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -2922,7 +2922,7 @@ var result = await (
 
 
 ## SelectMany&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Func&lt;T, Result, Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L1150" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L1151" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -2968,7 +2968,7 @@ var result = await (
 
 
 ## SelectMany&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Func&lt;T, Result, Result&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L1216" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L1217" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -3016,7 +3016,7 @@ var result = await (
 
 
 ## SelectMany&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Func&lt;T, Result, Result&lt;TNext&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L1283" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L1284" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -3067,7 +3067,7 @@ var result = await (
 
 
 ## SelectMany&lt;TMiddle, TNext&gt;(ValueTask&lt;Result&gt;, Func&lt;Result, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;Result, TMiddle, TNext&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L1346" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L1347" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -3116,7 +3116,7 @@ var result = await (
 
 
 ## SelectMany&lt;TMiddle&gt;(ValueTask&lt;Result&gt;, Func&lt;Result, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;Result, TMiddle, Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L1405" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L1406" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -3162,7 +3162,7 @@ var result = await (
 
 
 ## SelectMany&lt;TMiddle&gt;(ValueTask&lt;Result&gt;, Func&lt;Result, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;Result, TMiddle, Result&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L1472" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L1473" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -3210,7 +3210,7 @@ var result = await (
 
 
 ## SelectMany&lt;TMiddle, TNext&gt;(ValueTask&lt;Result&gt;, Func&lt;Result, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;Result, TMiddle, Result&lt;TNext&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L1540" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L1541" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -3261,7 +3261,7 @@ var result = await (
 
 
 ## SelectMany&lt;TNext&gt;(ValueTask&lt;Result&gt;, Func&lt;Result, ValueTask&lt;Result&gt;&gt;, Func&lt;Result, Result, TNext&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L1602" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L1603" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -3307,7 +3307,7 @@ var result = await (
 
 
 ## SelectMany(ValueTask&lt;Result&gt;, Func&lt;Result, ValueTask&lt;Result&gt;&gt;, Func&lt;Result, Result, Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L1660" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L1661" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -3349,7 +3349,7 @@ var result = await (
 
 
 ## SelectMany(ValueTask&lt;Result&gt;, Func&lt;Result, ValueTask&lt;Result&gt;&gt;, Func&lt;Result, Result, Result&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L1726" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L1727" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -3393,7 +3393,7 @@ var result = await (
 
 
 ## SelectMany&lt;TNext&gt;(ValueTask&lt;Result&gt;, Func&lt;Result, ValueTask&lt;Result&gt;&gt;, Func&lt;Result, Result, Result&lt;TNext&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L1793" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L1794" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -3441,7 +3441,7 @@ var result = await (
 
 
 ## SelectMany&lt;T, TMiddle&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&lt;TMiddle&gt;&gt;, Func&lt;T, TMiddle, Result&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L1854" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L1855" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -3490,7 +3490,7 @@ var result = await (
 
 
 ## SelectMany&lt;T, TMiddle, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&lt;TMiddle&gt;&gt;, Func&lt;T, TMiddle, Result&lt;TNext&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L1904" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L1905" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -3542,7 +3542,7 @@ var result = await (
 
 
 ## SelectMany&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&gt;, Func&lt;T, Result, TNext&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L1953" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L1954" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -3591,7 +3591,7 @@ var result = await (
 
 
 ## SelectMany&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&gt;, Func&lt;T, Result, Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L2002" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L2003" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -3637,7 +3637,7 @@ var result = await (
 
 
 ## SelectMany&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&gt;, Func&lt;T, Result, Result&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L2052" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L2053" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -3685,7 +3685,7 @@ var result = await (
 
 
 ## SelectMany&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&gt;, Func&lt;T, Result, Result&lt;TNext&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L2103" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L2104" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -3736,7 +3736,7 @@ var result = await (
 
 
 ## SelectMany&lt;TMiddle, TNext&gt;(ValueTask&lt;Result&gt;, Func&lt;Result, Result&lt;TMiddle&gt;&gt;, Func&lt;Result, TMiddle, TNext&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L2153" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L2154" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -3785,7 +3785,7 @@ var result = await (
 
 
 ## SelectMany&lt;TMiddle&gt;(ValueTask&lt;Result&gt;, Func&lt;Result, Result&lt;TMiddle&gt;&gt;, Func&lt;Result, TMiddle, Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L2203" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L2204" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -3831,7 +3831,7 @@ var result = await (
 
 
 ## SelectMany&lt;TMiddle&gt;(ValueTask&lt;Result&gt;, Func&lt;Result, Result&lt;TMiddle&gt;&gt;, Func&lt;Result, TMiddle, Result&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L2257" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L2258" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -3879,7 +3879,7 @@ var result = await (
 
 
 ## SelectMany&lt;TMiddle, TNext&gt;(ValueTask&lt;Result&gt;, Func&lt;Result, Result&lt;TMiddle&gt;&gt;, Func&lt;Result, TMiddle, Result&lt;TNext&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L2312" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L2313" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -3930,7 +3930,7 @@ var result = await (
 
 
 ## SelectMany&lt;TNext&gt;(ValueTask&lt;Result&gt;, Func&lt;Result, Result&gt;, Func&lt;Result, Result, TNext&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L2361" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L2362" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -3976,7 +3976,7 @@ var result = await (
 
 
 ## SelectMany(ValueTask&lt;Result&gt;, Func&lt;Result, Result&gt;, Func&lt;Result, Result, Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L2410" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L2411" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -4018,7 +4018,7 @@ var result = await (
 
 
 ## SelectMany(ValueTask&lt;Result&gt;, Func&lt;Result, Result&gt;, Func&lt;Result, Result, Result&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L2463" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L2464" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -4062,7 +4062,7 @@ var result = await (
 
 
 ## SelectMany&lt;TNext&gt;(ValueTask&lt;Result&gt;, Func&lt;Result, Result&gt;, Func&lt;Result, Result, Result&lt;TNext&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L2517" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L2518" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -4110,7 +4110,7 @@ var result = await (
 
 
 ## SelectMany&lt;T, TMiddle&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;T, TMiddle, Result&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L2567" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L2568" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -4159,7 +4159,7 @@ var result = await (
 
 
 ## SelectMany&lt;T, TMiddle, TNext&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;T, TMiddle, Result&lt;TNext&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L2629" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L2630" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -4211,7 +4211,7 @@ var result = await (
 
 
 ## SelectMany&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Func&lt;T, Result, TNext&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L2690" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L2691" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -4260,7 +4260,7 @@ var result = await (
 
 
 ## SelectMany&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Func&lt;T, Result, Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L2747" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L2748" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -4306,7 +4306,7 @@ var result = await (
 
 
 ## SelectMany&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Func&lt;T, Result, Result&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L2809" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L2810" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -4354,7 +4354,7 @@ var result = await (
 
 
 ## SelectMany&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Func&lt;T, Result, Result&lt;TNext&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L2872" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L2873" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -4405,7 +4405,7 @@ var result = await (
 
 
 ## SelectMany&lt;TMiddle, TNext&gt;(Result, Func&lt;Result, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;Result, TMiddle, TNext&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L2934" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L2935" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -4454,7 +4454,7 @@ var result = await (
 
 
 ## SelectMany&lt;TMiddle&gt;(Result, Func&lt;Result, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;Result, TMiddle, Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L2992" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L2993" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -4500,7 +4500,7 @@ var result = await (
 
 
 ## SelectMany&lt;TMiddle&gt;(Result, Func&lt;Result, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;Result, TMiddle, Result&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L3058" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L3059" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -4548,7 +4548,7 @@ var result = await (
 
 
 ## SelectMany&lt;TMiddle, TNext&gt;(Result, Func&lt;Result, ValueTask&lt;Result&lt;TMiddle&gt;&gt;&gt;, Func&lt;Result, TMiddle, Result&lt;TNext&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L3125" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L3126" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -4599,7 +4599,7 @@ var result = await (
 
 
 ## SelectMany&lt;TNext&gt;(Result, Func&lt;Result, ValueTask&lt;Result&gt;&gt;, Func&lt;Result, Result, TNext&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L3186" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L3187" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -4645,7 +4645,7 @@ var result = await (
 
 
 ## SelectMany(Result, Func&lt;Result, ValueTask&lt;Result&gt;&gt;, Func&lt;Result, Result, Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L3243" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L3244" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -4687,7 +4687,7 @@ var result = await (
 
 
 ## SelectMany(Result, Func&lt;Result, ValueTask&lt;Result&gt;&gt;, Func&lt;Result, Result, Result&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L3308" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L3309" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 
@@ -4731,7 +4731,7 @@ var result = await (
 
 
 ## SelectMany&lt;TNext&gt;(Result, Func&lt;Result, ValueTask&lt;Result&gt;&gt;, Func&lt;Result, Result, Result&lt;TNext&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L3374" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs#L3375" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Chains a `from` clause of a query: if the source result is successful, gets the next result from the collection selector, and if that one is successful too, combines both with the result selector; otherwise, returns the first failed result.
 

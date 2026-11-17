@@ -103,7 +103,8 @@ are marked breaking. Preview the notes locally with `git cliff --unreleased --st
 		  unless the statement directly follows the line that opens it (e.g., the body of an `if` without braces, or the
 		  first statement after `{`); not in a `switch` section (no empty line before its `break`);
 		* after each section of a `switch` statement (after its `break`), except the last one;
-		* after a statement that spans several lines (Rider applies it, `.editorconfig`).
+		* after a statement that spans several lines (Rider applies it, `.editorconfig`);
+		* after `#region` and before `#endregion`, so that the region's content is set off from both.
 	* Conditional expressions (`?:`) go one operand per line, with `?` and `:` at the start of the line (Rider applies it,
 	  `.editorconfig`).
 	* In `src`, an argument or an initializer value is a simple expression: a variable, a constant or a literal, a member

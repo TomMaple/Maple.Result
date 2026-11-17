@@ -193,7 +193,7 @@ await _userService.DeleteUserAsync(id).MatchAsync(
 
 
 ## MatchAsync&lt;T, TOut&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, TOut&gt;, Func&lt;Error, TOut&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.Task.cs#L227" target="_blank">MatchAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.Task.cs#L228" target="_blank">MatchAsyncExtensions.Task.cs</a>
 
 Awaits the `resultTask` and invokes the provided synchronous `ifSuccessFunction` with the value if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, or the provided `ifErrorFunction` otherwise, and returns the value that the invoked function returns.
 
@@ -249,7 +249,7 @@ var addressResult = await _userService.GetUserAsync(id).MatchAsync(
 
 
 ## MatchAsync&lt;T, TOut&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;TOut&gt;&gt;, Func&lt;Error, Task&lt;TOut&gt;&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.Task.cs#L276" target="_blank">MatchAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.Task.cs#L277" target="_blank">MatchAsyncExtensions.Task.cs</a>
 
 Awaits the `resultTask` and invokes the provided asynchronous `ifSuccessFunction` with the value if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, or the provided asynchronous `ifErrorFunction` otherwise, awaits it and returns the value that it returns.
 
@@ -300,7 +300,7 @@ var orderCount = await _userService.GetUserAsync(id).MatchAsync(
 
 
 ## MatchAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&gt;, Func&lt;Error, Task&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.Task.cs#L330" target="_blank">MatchAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.Task.cs#L331" target="_blank">MatchAsyncExtensions.Task.cs</a>
 
 Awaits the `resultTask` and invokes the provided asynchronous `ifSuccessAction` with the value if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, or the provided asynchronous `ifErrorAction` otherwise, and awaits it.
 
@@ -347,7 +347,7 @@ await _userService.GetUserAsync(id).MatchAsync(
 ```
 
 ## MatchAsync&lt;TOut&gt;(Task&lt;Result&gt;, Func&lt;ValueTask&lt;TOut&gt;&gt;, Func&lt;Error, ValueTask&lt;TOut&gt;&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.Task.cs#L429" target="_blank">MatchAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.Task.cs#L432" target="_blank">MatchAsyncExtensions.Task.cs</a>
 
 Awaits the `resultTask` and invokes the provided asynchronous `ifSuccessFunction` if the [Result](../Result/Result.md) represents a successful operation, or the provided asynchronous `ifErrorFunction` otherwise, awaits it and returns the value that it returns.
 
@@ -391,7 +391,7 @@ The asynchronous operation represented by `resultTask` returns `null`, or the `i
 The function returns a `ValueTask`, the other kind of task: it is awaited, and a `Task` is returned, as for a function that returns a `Task`.
 
 ## MatchAsync(Task&lt;Result&gt;, Func&lt;ValueTask&gt;, Func&lt;Error, ValueTask&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.Task.cs#L485" target="_blank">MatchAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.Task.cs#L488" target="_blank">MatchAsyncExtensions.Task.cs</a>
 
 Awaits the `resultTask` and invokes the provided asynchronous `ifSuccessAction` if the [Result](../Result/Result.md) represents a successful operation, or the provided asynchronous `ifErrorAction` otherwise, and awaits it.
 
@@ -431,7 +431,7 @@ The asynchronous operation represented by `resultTask` returns `null`, or the `i
 The function returns a `ValueTask`, the other kind of task: it is awaited, and a `Task` is returned, as for a function that returns a `Task`.
 
 ## MatchAsync&lt;T, TOut&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;TOut&gt;&gt;, Func&lt;Error, ValueTask&lt;TOut&gt;&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.Task.cs#L545" target="_blank">MatchAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.Task.cs#L548" target="_blank">MatchAsyncExtensions.Task.cs</a>
 
 Awaits the `resultTask` and invokes the provided asynchronous `ifSuccessFunction` with the value if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, or the provided asynchronous `ifErrorFunction` otherwise, awaits it and returns the value that it returns.
 
@@ -478,7 +478,7 @@ The asynchronous operation represented by `resultTask` returns `null`, or the `i
 The function returns a `ValueTask`, the other kind of task: it is awaited, and a `Task` is returned, as for a function that returns a `Task`.
 
 ## MatchAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&gt;, Func&lt;Error, ValueTask&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.Task.cs#L602" target="_blank">MatchAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.Task.cs#L605" target="_blank">MatchAsyncExtensions.Task.cs</a>
 
 Awaits the `resultTask` and invokes the provided asynchronous `ifSuccessAction` with the value if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, or the provided asynchronous `ifErrorAction` otherwise, and awaits it.
 
@@ -666,7 +666,7 @@ await _userService.DeleteUserAsync(id).MatchAsync(
 
 
 ## MatchAsync&lt;T, TOut&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, TOut&gt;, Func&lt;Error, TOut&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.ValueTask.cs#L201" target="_blank">MatchAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.ValueTask.cs#L202" target="_blank">MatchAsyncExtensions.ValueTask.cs</a>
 
 Awaits the `resultTask` and invokes the provided synchronous `ifSuccessFunction` with the value if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, or the provided `ifErrorFunction` otherwise, and returns the value that the invoked function returns.
 
@@ -722,7 +722,7 @@ var addressResult = await _userService.GetUserAsync(id).MatchAsync(
 
 
 ## MatchAsync&lt;T, TOut&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;TOut&gt;&gt;, Func&lt;Error, ValueTask&lt;TOut&gt;&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.ValueTask.cs#L245" target="_blank">MatchAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.ValueTask.cs#L246" target="_blank">MatchAsyncExtensions.ValueTask.cs</a>
 
 Awaits the `resultTask` and invokes the provided asynchronous `ifSuccessFunction` with the value if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, or the provided asynchronous `ifErrorFunction` otherwise, awaits it and returns the value that it returns.
 
@@ -773,7 +773,7 @@ var orderCount = await _userService.GetUserAsync(id).MatchAsync(
 
 
 ## MatchAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&gt;, Func&lt;Error, ValueTask&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.ValueTask.cs#L294" target="_blank">MatchAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.ValueTask.cs#L295" target="_blank">MatchAsyncExtensions.ValueTask.cs</a>
 
 Awaits the `resultTask` and invokes the provided asynchronous `ifSuccessAction` with the value if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, or the provided asynchronous `ifErrorAction` otherwise, and awaits it.
 
@@ -820,7 +820,7 @@ await _userService.GetUserAsync(id).MatchAsync(
 ```
 
 ## MatchAsync&lt;TOut&gt;(ValueTask&lt;Result&gt;, Func&lt;Task&lt;TOut&gt;&gt;, Func&lt;Error, Task&lt;TOut&gt;&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.ValueTask.cs#L389" target="_blank">MatchAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.ValueTask.cs#L392" target="_blank">MatchAsyncExtensions.ValueTask.cs</a>
 
 Awaits the `resultTask` and invokes the provided asynchronous `ifSuccessFunction` if the [Result](../Result/Result.md) represents a successful operation, or the provided asynchronous `ifErrorFunction` otherwise, awaits it and returns the value that it returns.
 
@@ -864,7 +864,7 @@ The asynchronous operation represented by `resultTask` returns `null`.
 The function returns a `Task`, the other kind of task: it is awaited, and a `ValueTask` is returned, as for a function that returns a `ValueTask`.
 
 ## MatchAsync(ValueTask&lt;Result&gt;, Func&lt;Task&gt;, Func&lt;Error, Task&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.ValueTask.cs#L445" target="_blank">MatchAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.ValueTask.cs#L448" target="_blank">MatchAsyncExtensions.ValueTask.cs</a>
 
 Awaits the `resultTask` and invokes the provided asynchronous `ifSuccessAction` if the [Result](../Result/Result.md) represents a successful operation, or the provided asynchronous `ifErrorAction` otherwise, and awaits it.
 
@@ -904,7 +904,7 @@ The asynchronous operation represented by `resultTask` returns `null`.
 The function returns a `Task`, the other kind of task: it is awaited, and a `ValueTask` is returned, as for a function that returns a `ValueTask`.
 
 ## MatchAsync&lt;T, TOut&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;TOut&gt;&gt;, Func&lt;Error, Task&lt;TOut&gt;&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.ValueTask.cs#L505" target="_blank">MatchAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.ValueTask.cs#L508" target="_blank">MatchAsyncExtensions.ValueTask.cs</a>
 
 Awaits the `resultTask` and invokes the provided asynchronous `ifSuccessFunction` with the value if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, or the provided asynchronous `ifErrorFunction` otherwise, awaits it and returns the value that it returns.
 
@@ -951,7 +951,7 @@ The asynchronous operation represented by `resultTask` returns `null`.
 The function returns a `Task`, the other kind of task: it is awaited, and a `ValueTask` is returned, as for a function that returns a `ValueTask`.
 
 ## MatchAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&gt;, Func&lt;Error, Task&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.ValueTask.cs#L562" target="_blank">MatchAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchAsyncExtensions.ValueTask.cs#L565" target="_blank">MatchAsyncExtensions.ValueTask.cs</a>
 
 Awaits the `resultTask` and invokes the provided asynchronous `ifSuccessAction` with the value if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, or the provided asynchronous `ifErrorAction` otherwise, and awaits it.
 

@@ -75,7 +75,7 @@ await _userService.CreateUserAsync(userData).SwitchAsync(
 
 
 ## SwitchAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Action&lt;T&gt;, Action&lt;Error&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/SwitchAsyncExtensions.Task.cs#L102" target="_blank">SwitchAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/SwitchAsyncExtensions.Task.cs#L103" target="_blank">SwitchAsyncExtensions.Task.cs</a>
 
 Awaits the `resultTask` and invokes the provided `ifSuccessAction` with the value if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, or the provided `ifErrorAction` otherwise.
 
@@ -166,7 +166,7 @@ await _userService.CreateUserAsync(userData).SwitchAsync(
 
 
 ## SwitchAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Action&lt;T&gt;, Action&lt;Error&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/SwitchAsyncExtensions.ValueTask.cs#L87" target="_blank">SwitchAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/SwitchAsyncExtensions.ValueTask.cs#L88" target="_blank">SwitchAsyncExtensions.ValueTask.cs</a>
 
 Awaits the `resultTask` and invokes the provided `ifSuccessAction` with the value if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, or the provided `ifErrorAction` otherwise.
 
