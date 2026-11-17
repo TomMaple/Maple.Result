@@ -32,7 +32,7 @@ namespace Maple.Results;
 ///         <c>ErrorDetail.Pointer("items", 0, name)</c>.
 ///     </para>
 ///     <para>
-///         For more details about JSON Pointers, see: <seealso href="https://datatracker.ietf.org/doc/html/rfc6901"/>.
+///         For more details about JSON Pointers, see: <see href="https://datatracker.ietf.org/doc/html/rfc6901" />.
 ///     </para>
 /// </remarks>
 /// <param name="PropertyPointer">

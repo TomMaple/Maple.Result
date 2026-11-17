@@ -16,7 +16,8 @@ namespace Maple.Results;
 /// <remarks>
 ///     <para>
 ///         The packages that write and read problem details share these names, so that an <see cref="Error" /> written by one service
-///         is read back the same way by another. The format is described in <c>docs/problem-details.md</c>.
+///         is read back the same way by another. The format is described in
+///         <see href="https://github.com/TomMaple/Maple.Result/blob/main/docs/problem-details.md" />.
 ///     </para>
 ///     <para>
 ///         The top-level members (<see cref="Type" />, <see cref="Title" />, <see cref="Status" />, <see cref="Detail" />,

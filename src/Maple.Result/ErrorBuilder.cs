@@ -379,7 +379,7 @@ public sealed class ErrorBuilder
     /// </param>
     /// <returns>The current <see cref="ErrorBuilder" /> instance.</returns>
     /// <remarks>
-    ///     For more details about JSON Pointers, see: <seealso href="https://datatracker.ietf.org/doc/html/rfc6901" />.
+    ///     For more details about JSON Pointers, see: <see href="https://datatracker.ietf.org/doc/html/rfc6901" />.
     /// </remarks>
     /// <exception cref="ArgumentNullException">
     ///     If the <paramref name="detail" /> or a parameter name in <paramref name="detailNamedValues" /> is <see langword="null" />.

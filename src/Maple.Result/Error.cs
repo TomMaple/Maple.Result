@@ -25,7 +25,7 @@ namespace Maple.Results;
 /// </summary>
 /// <remarks>
 ///     <para>
-///         Based on the <i>RFC 9457</i>; for more information, see: <seealso href="https://datatracker.ietf.org/doc/html/rfc9457" />.
+///         Based on the <i>RFC 9457</i>; for more information, see: <see href="https://datatracker.ietf.org/doc/html/rfc9457" />.
 ///     </para>
 ///     <para>
 ///         The record is immutable. Create it with one of the factory methods
@@ -99,7 +99,7 @@ public sealed record Error
     ///             <term>URI Tag</term>
     ///             <description>
     ///                 it is not dereferenceable and uniquely represents the different types of problems; for more information about <i>URI Tags</i>,
-    ///                 see: <seealso href="https://datatracker.ietf.org/doc/html/rfc4151" />.
+    ///                 see: <see href="https://datatracker.ietf.org/doc/html/rfc4151" />.
     ///             </description>
     ///         </item>
     ///     </list>
@@ -160,7 +160,7 @@ public sealed record Error
     ///             <term>URI Tag</term>
     ///             <description>
     ///                 it serves as a unique identifier for the problem occurrence which may be meaningful to the server but is opaque to the client;
-    ///                 for more information about <i>URI Tags</i>, see: <seealso href="https://datatracker.ietf.org/doc/html/rfc4151" />.
+    ///                 for more information about <i>URI Tags</i>, see: <see href="https://datatracker.ietf.org/doc/html/rfc4151" />.
     ///             </description>
     ///         </item>
     ///     </list>
@@ -266,7 +266,7 @@ public sealed record Error
     ///         which does not copy the error for each one.
     ///     </para>
     ///     <para>
-    ///         For more details about JSON Pointers, see: <seealso href="https://datatracker.ietf.org/doc/html/rfc6901" />.
+    ///         For more details about JSON Pointers, see: <see href="https://datatracker.ietf.org/doc/html/rfc6901" />.
     ///     </para>
     /// </remarks>
     /// <exception cref="ArgumentNullException">
