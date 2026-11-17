@@ -21,6 +21,8 @@ env:
   ARTIFACTS_PATH: ${{ github.workspace }}/artifacts
   RESULTS_PATH: ${{ github.workspace }}/test-results
   REPORTGENERATOR_VERSION: 5.6.0
+  # The minimum line and branch coverage, in percent, of the code that runs (the overload traps are left out; #284).
+  MINIMUM_COVERAGE: 90
 
 permissions: {}
 
@@ -140,6 +142,15 @@ jobs:
         dotnet tool install --global dotnet-reportgenerator-globaltool --version "$REPORTGENERATOR_VERSION"
         reportgenerator "-reports:${RESULTS_PATH}/coverage.cobertura.xml" "-targetdir:${RESULTS_PATH}/coverage-report" -reporttypes:MarkdownSummaryGithub
         cat "${RESULTS_PATH}/coverage-report/SummaryGithub.md" >> "$GITHUB_STEP_SUMMARY"
+
+    # After the summary, so that it is in the job summary also when the coverage is too low. ReportGenerator exits with 1
+    # and names the coverage that is below the minimum.
+    - name: Coverage threshold
+      run: >-
+        reportgenerator "-reports:${RESULTS_PATH}/coverage.cobertura.xml" "-targetdir:${RESULTS_PATH}/coverage-report"
+        -reporttypes:TextSummary
+        "minimumCoverageThresholds:lineCoverage=${MINIMUM_COVERAGE}"
+        "minimumCoverageThresholds:branchCoverage=${MINIMUM_COVERAGE}"
 
     - name: Upload test results and coverage
       if: ${{ !cancelled() }}
