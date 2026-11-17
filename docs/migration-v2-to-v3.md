@@ -22,6 +22,7 @@ Version 3.0 makes `Result`, `Result<T>` and `Error` **immutable** and **always v
   * [Other behaviour changes](#other-behaviour-changes)
   * [`continueOnCapturedContext` is `bool?`](#continueoncapturedcontext-is-bool)
   * [`IResult` renamed to `IOperationResult`](#iresult-renamed-to-ioperationresult)
+  * [`IOperationResult` is closed](#ioperationresult-is-closed)
   * [`IsSuccess` is a property; new `IsError`](#issuccess-is-a-property-new-iserror)
   * [`ErrorUri.None()` is a property](#errorurinone-is-a-property)
   * [`Result<T>.Value` throws on a failed result](#resulttvalue-throws-on-a-failed-result)
@@ -54,6 +55,7 @@ Version 3.0 makes `Result`, `Result<T>` and `Error` **immutable** and **always v
 15. Replace `result.IsSuccess()` with `result.IsSuccess`, and `!result.IsSuccess()` with `result.IsError` (see [`IsSuccess` is a property; new `IsError`](#issuccess-is-a-property-new-iserror)).
 16. Make sure `Result<T>.Value` is read only on a successful result, or use `TryGetValue(out var value)`; and do not write a failed `Result<T>` with the default serializers (see [`Result<T>.Value` throws on a failed result](#resulttvalue-throws-on-a-failed-result)).
 17. Replace `ErrorUri.None()` with `ErrorUri.None` (see [`ErrorUri.None()` is a property](#errorurinone-is-a-property)).
+18. Replace your own implementations and mocks of `IResult` with `Result` and `Result<T>` (see [`IOperationResult` is closed](#ioperationresult-is-closed)).
 
 ## Breaking changes
 ### Namespace renamed to `Maple.Results`
@@ -323,7 +325,7 @@ ResultConfiguration.ContinueOnCapturedContext = true;
 ### `IResult` renamed to `IOperationResult`
 The common interface of `Result` and `Result<T>` was renamed from `IResult` to [`IOperationResult`](Reference/IOperationResult/IOperationResult.md). Its `Error` property did not change; `IsSuccess()` became a property and `IsError` was added (see [`IsSuccess` is a property; new `IsError`](#issuccess-is-a-property-new-iserror)).
 
-The interface also declares `TryGetError(out Error? error)`. If your own types implement `IOperationResult`, implement the `IsSuccess` and `IsError` properties and `TryGetError`, with the same nullable annotations (`[MemberNotNullWhen(false, nameof(Error))]` on `IsSuccess`, `[MemberNotNullWhen(true, nameof(Error))]` on `IsError`, `[NotNullWhen(true)]` on the `error` parameter).
+The interface also declares `TryGetError(out Error? error)`. Your own types can no longer implement it (see [`IOperationResult` is closed](#ioperationresult-is-closed)).
 
 The old name clashed with `Microsoft.AspNetCore.Http.IResult`. ASP.NET Core web projects import `Microsoft.AspNetCore.Http` implicitly, and Minimal API endpoints commonly return `IResult`, so adding `using Maple.Result;` caused CS0104 (ambiguous reference) in endpoint signatures. If you added an alias to work around it (e.g., `using IResult = Microsoft.AspNetCore.Http.IResult;`), you can remove it.
 
@@ -333,6 +335,26 @@ void Log(Maple.Result.IResult result) { … }
 
 // 3.0
 void Log(IOperationResult result) { … }
+```
+
+### `IOperationResult` is closed
+`Result` and `Result<T>` are the only implementations of [`IOperationResult`](Reference/IOperationResult/IOperationResult.md). In 2.x, any type could implement `IResult`.
+
+* A type of your own that implements the interface no longer compiles (CS0535: *'…' does not implement interface member 'IOperationResult.CannotBeImplementedOutsideTheLibrary()'*). The member is internal, so it cannot be implemented outside the library.
+* A mocking library can no longer create a mock of the interface: the type that it generates at run time fails to load (e.g., a `TypeLoadException`).
+
+The extension methods of the interface (`IfError`, `Else` and their asynchronous forms) rely on the two implementations: a failed result always has an `Error`. An implementation that reported a failure without an `Error` made `IfError` call its action with `null`. A closed interface can also get new members in a minor version.
+
+Using the interface does not change: it can still be the type of a parameter or a variable, a type argument and a generic constraint.
+
+```csharp
+// 2.x
+public sealed class Outcome : IResult { … }
+var result = new Mock<IResult>();
+
+// 3.0: return and create the results of the library
+Result outcome = Result.FromError(error);
+IOperationResult result = Result.Success();
 ```
 
 ### `ErrorUri.None()` is a property
