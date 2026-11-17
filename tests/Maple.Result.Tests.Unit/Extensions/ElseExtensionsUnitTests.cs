@@ -328,18 +328,29 @@ public class ElseExtensionsUnitTests
     }
 
     [Fact]
-    public void Else_TaskTrapOverload_HasPriorityOne()
+    public void Else_TrapsConstrainedToTheTaskType_HavePriorityOne()
     {
-        // Arrange
-        var overload = typeof(ElseExtensions).GetMethods()
-            .Single(m => OverloadTrapHelper.IsTrap(m, "The function returns a task, which Else")
-                         && m.GetParameters()[1].ParameterType == typeof(Func<Error, Task>));
-
         // Act
-        var priority = overload.GetCustomAttribute<OverloadResolutionPriorityAttribute>()?.Priority;
+        var traps = typeof(ElseExtensions).GetMethods()
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a task, which Else does not await") && OverloadTrapHelper.IsConstrainedToATask(m))
+            .ToList();
 
         // Assert
-        priority.ShouldBe(1);
+        traps.Count.ShouldBe(2);
+        traps.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 1);
+    }
+
+    [Fact]
+    public void Else_TrapsForValueTaskOfT_HaveDefaultPriority()
+    {
+        // Act
+        var traps = typeof(ElseExtensions).GetMethods()
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a task, which Else does not await") && !OverloadTrapHelper.IsConstrainedToATask(m))
+            .ToList();
+
+        // Assert
+        traps.Count.ShouldBe(1);
+        traps.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 0);
     }
 
     #endregion

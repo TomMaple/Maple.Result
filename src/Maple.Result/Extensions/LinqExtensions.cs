@@ -217,15 +217,19 @@ public static class LinqExtensions
     #region Not supported: selectors returning a task
 
     // These overloads turn a query whose select returns a task into a compile error (CS0619). Without them, the query binds to the
-    // generic overload, which wraps the task in a successful result without awaiting it (issue #126). They are more specific than the
-    // generic overloads, so they are chosen first; explicit type arguments (method syntax) exclude them and keep the task on purpose.
-    // The Task overloads have a higher priority than the ValueTask ones: an async lambda (possible in method syntax) converts to both,
-    // which would be ambiguous (CS0121).
+    // generic overload, which wraps the task in a successful result without awaiting it (issue #126). They are generic and constrained
+    // to the task type (#251): a selector that only throws has no return type to infer, so it does not reach them, and a selector that
+    // returns another value fails the constraint. The constraint to a Task also covers a Task<T>; IEquatable<ValueTask> is implemented
+    // by ValueTask only, and a ValueTask<T> has an overload of its own, which is more specific than the generic overload. The unused
+    // optional parameter only makes the signatures differ from the generic overloads. The overloads constrained to a Task or a
+    // ValueTask have priority 1, so that they win over the generic overloads, also with explicit type arguments (method syntax); a task
+    // is kept on purpose by selecting it in a result (e.g., select Result.FromValue(SaveAsync(x))). An async lambda (method syntax)
+    // gives a Task, which fails the ValueTask constraint, so the two are never ambiguous.
 
     private const string SelectorTaskNotAwaitedMessage =
         "The selector returns a task, which the query does not await. " +
         "Use ThenAsync (or IfSuccessAsync for a task without a value), or a from clause whose function returns a Task<Result<T>>, " +
-        "or specify the type arguments (e.g., Select<T, Task>(…)) to keep the task.";
+        "or select the task in a result to keep it (e.g., select Result.FromValue(SaveAsync(x))).";
 
     /// <summary>
     ///     Not supported: the selector returns a task, which the query does not await;
@@ -234,41 +238,8 @@ public static class LinqExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result Select<T>(this Result<T> result, Func<T, Task> selector)
-    {
-        throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the selector returns a task, which the query does not await;
-    ///     use <c>ThenAsync</c> (or <c>IfSuccessAsync</c> for a task without a value).
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
-    [OverloadResolutionPriority(1)]
-    public static Result<TNext> Select<T, TNext>(this Result<T> result, Func<T, Task<TNext>> selector)
-    {
-        throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the selector returns a task, which the query does not await;
-    ///     use <c>ThenAsync</c> (or <c>IfSuccessAsync</c> for a task without a value).
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
-    public static Result Select<T>(this Result<T> result, Func<T, ValueTask> selector)
-    {
-        throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the selector returns a task, which the query does not await;
-    ///     use <c>ThenAsync</c> (or <c>IfSuccessAsync</c> for a task without a value).
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
-    public static Result<TNext> Select<T, TNext>(this Result<T> result, Func<T, ValueTask<TNext>> selector)
+    public static Result Select<T, TTask>(this Result<T> result, Func<T, TTask> selector, Task? unused = null)
+        where TTask : Task
     {
         throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
     }
@@ -280,7 +251,19 @@ public static class LinqExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result SelectMany<T, TMiddle>(this Result<T> result, Func<T, Result<TMiddle>> collectionSelector, Func<T, TMiddle, Task> resultSelector)
+    public static Result Select<T, TValueTask>(this Result<T> result, Func<T, TValueTask> selector, ValueTask unused = default)
+        where TValueTask : struct, IEquatable<ValueTask>
+    {
+        throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the selector returns a task, which the query does not await;
+    ///     use <c>ThenAsync</c> (or <c>IfSuccessAsync</c> for a task without a value).
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
+    public static Result Select<T, TIgnored>(this Result<T> result, Func<T, ValueTask<TIgnored>> selector)
     {
         throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
     }
@@ -292,10 +275,12 @@ public static class LinqExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result<TNext> SelectMany<T, TMiddle, TNext>(
+    public static Result SelectMany<T, TMiddle, TTask>(
         this Result<T> result,
         Func<T, Result<TMiddle>> collectionSelector,
-        Func<T, TMiddle, Task<TNext>> resultSelector)
+        Func<T, TMiddle, TTask> resultSelector,
+        Task? unused = null)
+        where TTask : Task
     {
         throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
     }
@@ -306,25 +291,30 @@ public static class LinqExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
-    public static Result SelectMany<T, TMiddle>(this Result<T> result, Func<T, Result<TMiddle>> collectionSelector, Func<T, TMiddle, ValueTask> resultSelector)
-    {
-        throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the selector returns a task, which the query does not await;
-    ///     use <c>ThenAsync</c> (or <c>IfSuccessAsync</c> for a task without a value).
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
-    public static Result<TNext> SelectMany<T, TMiddle, TNext>(
+    [OverloadResolutionPriority(1)]
+    public static Result SelectMany<T, TMiddle, TValueTask>(
         this Result<T> result,
         Func<T, Result<TMiddle>> collectionSelector,
-        Func<T, TMiddle, ValueTask<TNext>> resultSelector)
+        Func<T, TMiddle, TValueTask> resultSelector,
+        ValueTask unused = default)
+        where TValueTask : struct, IEquatable<ValueTask>
     {
         throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
     }
 
+    /// <summary>
+    ///     Not supported: the selector returns a task, which the query does not await;
+    ///     use <c>ThenAsync</c> (or <c>IfSuccessAsync</c> for a task without a value).
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
+    public static Result SelectMany<T, TMiddle, TIgnored>(
+        this Result<T> result,
+        Func<T, Result<TMiddle>> collectionSelector,
+        Func<T, TMiddle, ValueTask<TIgnored>> resultSelector)
+    {
+        throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
+    }
     #endregion
 
     #region Non-generic results and selected results
@@ -1266,7 +1256,8 @@ public static class LinqExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result Select(this Result result, Func<Result, Task> selector)
+    public static Result Select<TTask>(this Result result, Func<Result, TTask> selector, Task? unused = null)
+        where TTask : Task
     {
         throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
     }
@@ -1277,7 +1268,8 @@ public static class LinqExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result<TNext> Select<TNext>(this Result result, Func<Result, Task<TNext>> selector)
+    public static Result Select<TValueTask>(this Result result, Func<Result, TValueTask> selector, ValueTask unused = default)
+        where TValueTask : struct, IEquatable<ValueTask>
     {
         throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
     }
@@ -1287,28 +1279,7 @@ public static class LinqExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
-    public static Result Select(this Result result, Func<Result, ValueTask> selector)
-    {
-        throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the selector returns a task, which the query does not await.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
-    public static Result<TNext> Select<TNext>(this Result result, Func<Result, ValueTask<TNext>> selector)
-    {
-        throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the selector returns a task, which the query does not await.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
-    [OverloadResolutionPriority(1)]
-    public static Result SelectMany<T>(this Result<T> result, Func<T, Result> collectionSelector, Func<T, Result, Task> resultSelector)
+    public static Result Select<TIgnored>(this Result result, Func<Result, ValueTask<TIgnored>> selector)
     {
         throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
     }
@@ -1319,10 +1290,12 @@ public static class LinqExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result<TNext> SelectMany<T, TNext>(
+    public static Result SelectMany<T, TTask>(
         this Result<T> result,
         Func<T, Result> collectionSelector,
-        Func<T, Result, Task<TNext>> resultSelector)
+        Func<T, Result, TTask> resultSelector,
+        Task? unused = null)
+        where TTask : Task
     {
         throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
     }
@@ -1332,20 +1305,26 @@ public static class LinqExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
-    public static Result SelectMany<T>(this Result<T> result, Func<T, Result> collectionSelector, Func<T, Result, ValueTask> resultSelector)
-    {
-        throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the selector returns a task, which the query does not await.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
-    public static Result<TNext> SelectMany<T, TNext>(
+    [OverloadResolutionPriority(1)]
+    public static Result SelectMany<T, TValueTask>(
         this Result<T> result,
         Func<T, Result> collectionSelector,
-        Func<T, Result, ValueTask<TNext>> resultSelector)
+        Func<T, Result, TValueTask> resultSelector,
+        ValueTask unused = default)
+        where TValueTask : struct, IEquatable<ValueTask>
+    {
+        throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
+    }
+
+    /// <summary>
+    ///     Not supported: the selector returns a task, which the query does not await.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
+    public static Result SelectMany<T, TIgnored>(
+        this Result<T> result,
+        Func<T, Result> collectionSelector,
+        Func<T, Result, ValueTask<TIgnored>> resultSelector)
     {
         throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
     }
@@ -1356,10 +1335,12 @@ public static class LinqExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result SelectMany<TMiddle>(
+    public static Result SelectMany<TMiddle, TTask>(
         this Result result,
         Func<Result, Result<TMiddle>> collectionSelector,
-        Func<Result, TMiddle, Task> resultSelector)
+        Func<Result, TMiddle, TTask> resultSelector,
+        Task? unused = null)
+        where TTask : Task
     {
         throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
     }
@@ -1370,10 +1351,12 @@ public static class LinqExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result<TNext> SelectMany<TMiddle, TNext>(
+    public static Result SelectMany<TMiddle, TValueTask>(
         this Result result,
         Func<Result, Result<TMiddle>> collectionSelector,
-        Func<Result, TMiddle, Task<TNext>> resultSelector)
+        Func<Result, TMiddle, TValueTask> resultSelector,
+        ValueTask unused = default)
+        where TValueTask : struct, IEquatable<ValueTask>
     {
         throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
     }
@@ -1383,23 +1366,10 @@ public static class LinqExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
-    public static Result SelectMany<TMiddle>(
+    public static Result SelectMany<TMiddle, TIgnored>(
         this Result result,
         Func<Result, Result<TMiddle>> collectionSelector,
-        Func<Result, TMiddle, ValueTask> resultSelector)
-    {
-        throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the selector returns a task, which the query does not await.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
-    public static Result<TNext> SelectMany<TMiddle, TNext>(
-        this Result result,
-        Func<Result, Result<TMiddle>> collectionSelector,
-        Func<Result, TMiddle, ValueTask<TNext>> resultSelector)
+        Func<Result, TMiddle, ValueTask<TIgnored>> resultSelector)
     {
         throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
     }
@@ -1410,21 +1380,12 @@ public static class LinqExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result SelectMany(this Result result, Func<Result, Result> collectionSelector, Func<Result, Result, Task> resultSelector)
-    {
-        throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the selector returns a task, which the query does not await.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
-    [OverloadResolutionPriority(1)]
-    public static Result<TNext> SelectMany<TNext>(
+    public static Result SelectMany<TTask>(
         this Result result,
         Func<Result, Result> collectionSelector,
-        Func<Result, Result, Task<TNext>> resultSelector)
+        Func<Result, Result, TTask> resultSelector,
+        Task? unused = null)
+        where TTask : Task
     {
         throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
     }
@@ -1434,23 +1395,28 @@ public static class LinqExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
-    public static Result SelectMany(this Result result, Func<Result, Result> collectionSelector, Func<Result, Result, ValueTask> resultSelector)
-    {
-        throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the selector returns a task, which the query does not await.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
-    public static Result<TNext> SelectMany<TNext>(
+    [OverloadResolutionPriority(1)]
+    public static Result SelectMany<TValueTask>(
         this Result result,
         Func<Result, Result> collectionSelector,
-        Func<Result, Result, ValueTask<TNext>> resultSelector)
+        Func<Result, Result, TValueTask> resultSelector,
+        ValueTask unused = default)
+        where TValueTask : struct, IEquatable<ValueTask>
     {
         throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
     }
 
+    /// <summary>
+    ///     Not supported: the selector returns a task, which the query does not await.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
+    public static Result SelectMany<TIgnored>(
+        this Result result,
+        Func<Result, Result> collectionSelector,
+        Func<Result, Result, ValueTask<TIgnored>> resultSelector)
+    {
+        throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
+    }
     #endregion
 }

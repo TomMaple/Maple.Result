@@ -445,7 +445,7 @@ Result<Address> addressResult = userResult.Match(user => FindAddress(user), erro
 Two kinds of calls compiled in 2.x but did not do what they looked like:
 
 * **A function that returns an `Error`** bound to the generic overload and returned a **successful** `Result<Error>`. In 3.0, `Then` and `ThenAsync` have overloads for such functions that return a **failed** `Result` with that error (`Match` returns what its functions return: `Match(x => Validate(x), e => e)` is a `Result<T>`; see [`Match` is a fold; `Switch` runs two actions](#match-is-a-fold-switch-runs-two-actions)). The same applies to a LINQ query that selects an `Error` (`from user in GetUser(id) select Error…`). Code that read `.Value` of the `Result<Error>` no longer compiles; if you need it, specify the type arguments.
-* **A function that returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>`** passed to `IfSuccess` (now `Then`), or to `Match` with an error action, was wrapped in a `Result<Task>` and **never awaited**. In 3.0 such a call is a compile error (CS0619); use the asynchronous method, or specify the type argument to keep the task on purpose.
+* **A function that returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>`** passed to `IfSuccess` (now `Then`), or to `Match` with an error action, was wrapped in a `Result<Task>` and **never awaited**. In 3.0 such a call is a compile error (CS0619); use the asynchronous method, or return the task in a result to keep it on purpose (explicit type arguments, e.g., `Then<Task>(…)`, are a compile error too).
 
 ```csharp
 // 2.x (IfSuccess): a successful Result<Error>; 3.0: a failed Result with the error
@@ -460,7 +460,7 @@ var result = Result.Success().Then(() => SaveAsync());
 var result = await Result.Success().IfSuccessAsync(() => SaveAsync());
 
 // …or keep the task on purpose
-Result<Task> result = Result.Success().Then<Task>(() => SaveAsync());
+Result<Task> result = Result.Success().Then(() => Result.FromValue(SaveAsync()));
 ```
 
 ### `IfError` and `Match` with an error action that returns a task
@@ -481,7 +481,7 @@ var result = userResult.IfError(error => { _ = LogAsync(error); });
 ```
 
 ### LINQ queries that select a task
-In 2.x, a query whose `select` returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>` wrapped the task in a successful result (e.g., `Result<Task<int>>`) and **never awaited** it. This applies to every source (`Result<T>`, `Task<Result<T>>`, `ValueTask<Result<T>>`) and to queries with several `from` clauses. In 3.0 such a query is a compile error (CS0619). Chain the operation in a `from` clause whose function returns a `Task<Result<T>>` (or `ValueTask<Result<T>>`), or use `ThenAsync`. To keep the task in the result on purpose, call `Select` with explicit type arguments.
+In 2.x, a query whose `select` returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>` wrapped the task in a successful result (e.g., `Result<Task<int>>`) and **never awaited** it. This applies to every source (`Result<T>`, `Task<Result<T>>`, `ValueTask<Result<T>>`) and to queries with several `from` clauses. In 3.0 such a query is a compile error (CS0619). Chain the operation in a `from` clause whose function returns a `Task<Result<T>>` (or `ValueTask<Result<T>>`), or use `ThenAsync`. To keep the task in the result on purpose, select it in a result (`select Result.FromValue(…)`); on a `Result<T>`, `Select` with explicit type arguments is a compile error too.
 
 ```csharp
 // 2.x: a Result<Task<int>> whose task was never awaited; 3.0: a compile error
@@ -491,7 +491,7 @@ var result = from user in userResult select SaveAsync(user);
 var result = await userResult.ThenAsync(user => SaveAsync(user));
 
 // …or keep the task on purpose
-Result<Task<int>> result = userResult.Select<User, Task<int>>(user => SaveAsync(user));
+Result<Task<int>> result = from user in userResult select Result.FromValue(SaveAsync(user));
 ```
 
 ### LINQ queries that select a result

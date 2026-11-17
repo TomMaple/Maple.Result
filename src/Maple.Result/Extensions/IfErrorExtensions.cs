@@ -62,9 +62,12 @@ public static class IfErrorExtensions
 
     // These overloads turn a call with an error action that returns a task into a compile error (CS0619). Without them, a lambda
     // that returns a task converts to Action<Error>, and the task is never awaited (an async lambda becomes async void, issue #123).
-    // A lambda whose body has a value prefers a delegate with a return type, so these overloads win over the Action<Error> one.
-    // A Task<T> converts to Task, so the Task overload also covers functions returning Task<T>. It has a higher priority than the
-    // ValueTask ones: an async lambda converts to both, which would be ambiguous (CS0121).
+    // They are generic and constrained to the task type (#251): a lambda that only throws has no return type to infer, so it does not
+    // reach them and binds to the Action<Error> overload, and a lambda that returns another value fails the constraint. The constraint
+    // to a Task also covers a Task<T>; IEquatable<ValueTask> is implemented by ValueTask only, and a ValueTask<T> has an overload of its
+    // own, whose type argument cannot be inferred from a lambda that only throws either. The unused optional parameter only makes the
+    // signatures differ. The overloads constrained to a Task or a ValueTask have priority 1, so that they win over the value trap below;
+    // an async lambda gives a Task, which fails the ValueTask constraint, so the two are never ambiguous.
 
     private const string ErrorActionTaskNotAwaitedMessage =
         "The error action returns a task, which IfError does not await. Use IfErrorAsync, or discard the task explicitly in a " +
@@ -76,8 +79,9 @@ public static class IfErrorExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ErrorActionTaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static TResult IfError<TResult>([DisallowNull] this TResult result, Func<Error, Task> ifErrorAction)
+    public static TResult IfError<TResult, TTask>([DisallowNull] this TResult result, Func<Error, TTask> ifErrorAction, Task? unused = null)
         where TResult : IOperationResult
+        where TTask : Task
     {
         throw new NotSupportedException(ErrorActionTaskNotAwaitedMessage);
     }
@@ -87,8 +91,11 @@ public static class IfErrorExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ErrorActionTaskNotAwaitedMessage, error: true)]
-    public static TResult IfError<TResult>([DisallowNull] this TResult result, Func<Error, ValueTask> ifErrorAction)
+    [OverloadResolutionPriority(1)]
+    public static TResult IfError<TResult, TValueTask>([DisallowNull] this TResult result, Func<Error, TValueTask> ifErrorAction,
+        ValueTask unused = default)
         where TResult : IOperationResult
+        where TValueTask : struct, IEquatable<ValueTask>
     {
         throw new NotSupportedException(ErrorActionTaskNotAwaitedMessage);
     }
@@ -98,7 +105,7 @@ public static class IfErrorExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ErrorActionTaskNotAwaitedMessage, error: true)]
-    public static TResult IfError<TResult, TTaskResult>([DisallowNull] this TResult result, Func<Error, ValueTask<TTaskResult>> ifErrorAction)
+    public static TResult IfError<TResult, TIgnored>([DisallowNull] this TResult result, Func<Error, ValueTask<TIgnored>> ifErrorAction)
         where TResult : IOperationResult
     {
         throw new NotSupportedException(ErrorActionTaskNotAwaitedMessage);

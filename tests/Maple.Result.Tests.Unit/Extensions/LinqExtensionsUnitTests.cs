@@ -695,7 +695,7 @@ public class LinqExtensionsUnitTests
             .ToArray();
 
         // Act & Assert
-        overloads.Length.ShouldBe(8);
+        overloads.Length.ShouldBe(6);
         overloads.ShouldAllBe(m => m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
                                    && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
     }
@@ -709,48 +709,46 @@ public class LinqExtensionsUnitTests
             .ToArray();
 
         // Act & Assert
-        overloads.Length.ShouldBe(16);
+        overloads.Length.ShouldBe(12);
         overloads.ShouldAllBe(m => m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
                                    && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
     }
 
     [Fact]
-    public void SelectAndSelectMany_Traps_HavePriorityOneForTaskSelectors()
+    public void SelectAndSelectMany_TrapsConstrainedToTheTaskType_HavePriorityOne()
     {
-        // Arrange
-        var overloads = typeof(LinqExtensions).GetMethods()
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The selector returns a task")
-                        && OverloadTrapHelper.IsTaskFunction(m.GetParameters()[^1].ParameterType))
-            .ToArray();
+        // Act
+        var traps = typeof(LinqExtensions).GetMethods()
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The selector returns a task") && OverloadTrapHelper.IsConstrainedToATask(m))
+            .ToList();
 
-        // Act & Assert
-        overloads.Length.ShouldBe(12);
-        overloads.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 1);
+        // Assert
+        traps.Count.ShouldBe(12);
+        traps.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 1);
     }
 
     [Fact]
-    public void SelectAndSelectMany_Traps_HaveDefaultPriorityForValueTaskSelectors()
+    public void SelectAndSelectMany_TrapsForValueTaskOfT_HaveDefaultPriority()
     {
-        // Arrange
-        var overloads = typeof(LinqExtensions).GetMethods()
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The selector returns a task")
-                        && !OverloadTrapHelper.IsTaskFunction(m.GetParameters()[^1].ParameterType))
-            .ToArray();
+        // Act
+        var traps = typeof(LinqExtensions).GetMethods()
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The selector returns a task") && !OverloadTrapHelper.IsConstrainedToATask(m))
+            .ToList();
 
-        // Act & Assert
-        overloads.Length.ShouldBe(12);
-        overloads.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 0);
+        // Assert
+        traps.Count.ShouldBe(6);
+        traps.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 0);
     }
 
     [Fact]
-    public void Select_SuccessfulResultWithTaskSelectorAndExplicitTypeArguments_ReturnsResultWithTaskNotAwaited()
+    public void Select_SuccessfulResultWithSelectorReturningTaskInResult_ReturnsResultWithTaskNotAwaited()
     {
         // Arrange
         var sut = Result<int>.FromValue(5);
         var taskSource = new TaskCompletionSource();
 
         // Act
-        Result<Task> result = sut.Select<int, Task>(_ => taskSource.Task);
+        Result<Task> result = sut.Select(_ => Result.FromValue(taskSource.Task));
 
         // Assert
         result.IsSuccess.ShouldBeTrue();

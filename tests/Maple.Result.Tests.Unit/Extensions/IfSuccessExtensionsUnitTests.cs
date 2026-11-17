@@ -288,10 +288,36 @@ public class IfSuccessExtensionsUnitTests
             .ToArray();
 
         // Act & Assert
-        overloads.Length.ShouldBe(8);
+        overloads.Length.ShouldBe(6);
         overloads.ShouldAllBe(m => m.Name == "IfSuccess"
                                    && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
                                    && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
+    }
+
+    [Fact]
+    public void IfSuccess_TrapsConstrainedToTheTaskType_HavePriorityOne()
+    {
+        // Act
+        var traps = typeof(IfSuccessExtensions).GetMethods()
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a task, which IfSuccess does not await") && OverloadTrapHelper.IsConstrainedToATask(m))
+            .ToList();
+
+        // Assert
+        traps.Count.ShouldBe(4);
+        traps.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 1);
+    }
+
+    [Fact]
+    public void IfSuccess_TrapsForValueTaskOfT_HaveDefaultPriority()
+    {
+        // Act
+        var traps = typeof(IfSuccessExtensions).GetMethods()
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a task, which IfSuccess does not await") && !OverloadTrapHelper.IsConstrainedToATask(m))
+            .ToList();
+
+        // Assert
+        traps.Count.ShouldBe(2);
+        traps.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 0);
     }
 
     #endregion

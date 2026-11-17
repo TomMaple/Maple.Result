@@ -19,6 +19,8 @@ How to chain operations that return results with the extension methods and the L
 
 A function that returns a value passed to `IfSuccess()` or `IfError()` is a compile error that names `Then()` or `Else()`, so that its value is not discarded by mistake. An action passed to `Then()` or `Else()` does not compile either: it has no value to return, and the compiler reports it (e.g., CS0029, “Cannot implicitly convert type ‘void’ to ‘Result’”); use `IfSuccess()` or `IfError()` for a side effect. `Match()` with two actions is a compile error that names `Switch()`, and an action that returns a task passed to `Switch()` is a compile error that names `Match()`.
 
+A lambda that only throws is fine in `IfSuccess()`, `IfError()`, `Then()`, `Else()`, `Switch()` and `Match()`, and in their asynchronous versions except `ElseAsync()` (e.g., `result.IfError(e => throw new OrderException(e.Title))`, or `int id = result.Match(x => x, e => throw new OrderException(e.Title))` to get the value). In `ElseAsync()` it is ambiguous (CS0121), because several overloads take a function that returns a task; use `Else()` after the `await`, or `MatchAsync()`. `Result.Try()` is the other exception: see [Try](../Reference/Result/Result_Try.md).
+
 ```csharp
 var createUserResult = _userService.CreateUser(userData);
 createUserResult.Switch(

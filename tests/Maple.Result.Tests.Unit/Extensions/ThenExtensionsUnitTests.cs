@@ -962,8 +962,8 @@ public class ThenExtensionsUnitTests
 
     #region Then with a function returning a task (overload trap)
 
-    // The traps of IfSuccess, copied to Then (#197): a function that returns a task points to ThenAsync, and explicit type
-    // arguments keep the task on purpose.
+    // The traps of IfSuccess, copied to Then (#197): a function that returns a task points to ThenAsync, and a task in a result is
+    // kept on purpose. The traps are constrained to the task type, so a lambda that only throws does not reach them (#251).
     // See issue #119.
 
     [Fact]
@@ -975,36 +975,47 @@ public class ThenExtensionsUnitTests
             .ToList();
 
         // Assert
-        traps.Count.ShouldBe(8);
+        traps.Count.ShouldBe(6);
         traps.ShouldAllBe(m => m.Name == "Then"
                                && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
                                && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
     }
 
-    // The Task traps win over the ValueTask ones for an async lambda, which converts to both (no CS0121).
     [Fact]
-    public void Then_FunctionReturningTaskTraps_HavePriorityOne()
+    public void Then_TrapsConstrainedToTheTaskType_HavePriorityOne()
     {
         // Act
-        var priorities = typeof(ThenExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a task") && OverloadTrapHelper.IsTaskFunction(m.GetParameters()[1].ParameterType))
-            .Select(OverloadTrapHelper.Priority)
+        var traps = typeof(ThenExtensions).GetMethods()
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a task, which Then does not await") && OverloadTrapHelper.IsConstrainedToATask(m))
             .ToList();
 
         // Assert
-        priorities.Count.ShouldBe(4);
-        priorities.ShouldAllBe(p => p == 1);
+        traps.Count.ShouldBe(4);
+        traps.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 1);
     }
 
     [Fact]
-    public void Then_SuccessfulResultWithTaskFunctionAndExplicitTypeArgument_ReturnsResultWithTaskNotAwaited()
+    public void Then_TrapsForValueTaskOfT_HaveDefaultPriority()
+    {
+        // Act
+        var traps = typeof(ThenExtensions).GetMethods()
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a task, which Then does not await") && !OverloadTrapHelper.IsConstrainedToATask(m))
+            .ToList();
+
+        // Assert
+        traps.Count.ShouldBe(2);
+        traps.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 0);
+    }
+
+    [Fact]
+    public void Then_SuccessfulResultWithFunctionReturningTaskInResult_ReturnsResultWithTaskNotAwaited()
     {
         // Arrange
         var sut = Result.Success();
         var taskSource = new TaskCompletionSource();
 
         // Act
-        Result<Task> result = sut.Then<Task>(() => taskSource.Task);
+        Result<Task> result = sut.Then(() => Result.FromValue(taskSource.Task));
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
@@ -1013,14 +1024,14 @@ public class ThenExtensionsUnitTests
     }
 
     [Fact]
-    public void Then_SuccessfulResultOfTWithTaskFunctionAndExplicitTypeArguments_ReturnsResultWithTaskNotAwaited()
+    public void Then_SuccessfulResultOfTWithFunctionReturningTaskInResult_ReturnsResultWithTaskNotAwaited()
     {
         // Arrange
         var sut = Result<int>.FromValue(5);
         var taskSource = new TaskCompletionSource();
 
         // Act
-        Result<Task> result = sut.Then<int, Task>(_ => taskSource.Task);
+        Result<Task> result = sut.Then(_ => Result.FromValue(taskSource.Task));
 
         // Assert
         result.IsSuccess.ShouldBeTrue();

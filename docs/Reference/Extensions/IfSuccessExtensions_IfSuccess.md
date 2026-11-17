@@ -14,7 +14,7 @@ Runs a side effect if the instance of [Result](../Result/Result.md) or [Result&l
 ## Remarks
 To transform or chain the result with a function that returns a value, a `Result`, a `Result<T>` or an `Error`, use [Then](ThenExtensions_Then.md). Such a function passed to `IfSuccess` is a compile error (CS0619) that names `Then`, so that its value is not discarded by mistake. For a side effect whose expression happens to return a value (e.g., `set.Add(x)`), use a statement lambda: `x => { set.Add(x); }`.
 
-A function that returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>` is not supported: `IfSuccess` does not await it, so such a call is a compile error (CS0619). Use [IfSuccessAsync](IfSuccessTaskAsyncExtensions_IfSuccessAsync.md) instead, or discard the task explicitly in a statement lambda (`x => { _ = SaveAsync(x); }`).
+A function that returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>` is not supported: `IfSuccess` does not await it, so such a call is a compile error (CS0619). Use [IfSuccessAsync](IfSuccessTaskAsyncExtensions_IfSuccessAsync.md) instead, or discard the task explicitly in a statement lambda (`x => { _ = SaveAsync(x); }`). A lambda that only throws is not a task, and compiles (e.g., `IfSuccess(x => throw new InvalidOperationException())`).
 
 
 ## IfSuccess(Result, Action)
