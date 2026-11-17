@@ -25,13 +25,16 @@ public static partial class ElseAsyncExtensions
     // Result<object>, it would bind to the overload with a synchronous function and give a successful result that holds the task, which
     // nobody awaits: these overloads turn the call into a compile error (CS0619) that names the method to use, for both kinds of task. On a result, and for a
     // synchronous action, the compiler reports the call by itself (e.g., CS0029, CS0266 or CS1643), so there are no overloads for them (#256).
+    // The parameter has the name of the overload that the call would bind to (ifErrorFunction), not the name of an asynchronous
+    // action: a trap applies only to a call that uses its names, so a call that names the argument reaches the trap too (#273).
 
     /// <summary>
     ///     Not supported: the function returns a task without a value; use <c>IfErrorAsync</c> for a side effect.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ActionMessage, error: true)]
-    public static ValueTask<TResult> ElseAsync<TResult>(this ValueTask<TResult> resultTask, Func<Error, ValueTask> ifErrorAction, bool? continueOnCapturedContext = null)
+    public static ValueTask<TResult> ElseAsync<TResult>(this ValueTask<TResult> resultTask,
+        Func<Error, ValueTask> ifErrorFunction, bool? continueOnCapturedContext = null)
         where TResult : IOperationResult
     {
         throw new NotSupportedException(ActionMessage);
@@ -44,7 +47,7 @@ public static partial class ElseAsyncExtensions
     [Obsolete(ActionMessage, error: true)]
     [OverloadResolutionPriority(1)]
     public static ValueTask<TResult> ElseAsync<TResult>(this ValueTask<TResult> resultTask,
-        Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
+        Func<Error, Task> ifErrorFunction, bool? continueOnCapturedContext = null)
         where TResult : IOperationResult
     {
         throw new NotSupportedException(ActionMessage);

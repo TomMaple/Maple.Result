@@ -29,7 +29,9 @@ public static partial class ThenExtensions
     // the generic overload. The unused optional parameter only makes the signatures differ from the generic overloads. The overloads
     // constrained to a Task or a ValueTask have priority 1, so that they win over the generic overloads, also with explicit type
     // arguments; a task is kept on purpose by returning it in a result (e.g., x => Result.FromValue(SaveAsync(x))). An async lambda
-    // gives a Task, which fails the ValueTask constraint, so the two are never ambiguous.
+    // gives a Task, which fails the ValueTask constraint, so the two are never ambiguous. The parameter has the name of the generic
+    // overload (ifSuccessFunction): a trap applies only to a call that uses its names, so a call that names the argument reaches the
+    // trap too (#273).
 
     private const string ThenTaskNotAwaitedMessage =
         "The function returns a task, which Then does not await. Use ThenAsync, or return the task in a result to keep it " +
@@ -41,7 +43,7 @@ public static partial class ThenExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ThenTaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result Then<TTask>(this Result result, Func<TTask> ifSuccessAction, Task? unused = null)
+    public static Result Then<TTask>(this Result result, Func<TTask> ifSuccessFunction, Task? unused = null)
         where TTask : Task
     {
         throw new NotSupportedException(ThenTaskNotAwaitedMessage);
@@ -53,7 +55,7 @@ public static partial class ThenExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ThenTaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result Then<TValueTask>(this Result result, Func<TValueTask> ifSuccessAction, ValueTask unused = default)
+    public static Result Then<TValueTask>(this Result result, Func<TValueTask> ifSuccessFunction, ValueTask unused = default)
         where TValueTask : struct, IEquatable<ValueTask>
     {
         throw new NotSupportedException(ThenTaskNotAwaitedMessage);
@@ -75,7 +77,7 @@ public static partial class ThenExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ThenTaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result Then<T, TTask>(this Result<T> result, Func<T, TTask> ifSuccessAction, Task? unused = null)
+    public static Result Then<T, TTask>(this Result<T> result, Func<T, TTask> ifSuccessFunction, Task? unused = null)
         where TTask : Task
     {
         throw new NotSupportedException(ThenTaskNotAwaitedMessage);
@@ -87,7 +89,7 @@ public static partial class ThenExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(ThenTaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result Then<T, TValueTask>(this Result<T> result, Func<T, TValueTask> ifSuccessAction, ValueTask unused = default)
+    public static Result Then<T, TValueTask>(this Result<T> result, Func<T, TValueTask> ifSuccessFunction, ValueTask unused = default)
         where TValueTask : struct, IEquatable<ValueTask>
     {
         throw new NotSupportedException(ThenTaskNotAwaitedMessage);

@@ -462,6 +462,29 @@ public class MatchValueTaskAsyncExtensionsUnitTests
         overloads.ShouldAllBe(m => m.Name == "MatchAsync" && OverloadTrapHelper.Priority(m) == 1);
     }
 
+    // MatchAsync awaits two functions that return a task without a value only as actions (ifSuccessAction, ifErrorAction). With the
+    // names of the functions, the call would bind to the fold of two synchronous functions and return a task in a task (#273). The
+    // success function of a trap is generic and constrained to the task type, and the error function is not: a trap is then more specific
+    // than the fold and less specific than the overload with two asynchronous actions, so it needs no priority.
+    [Fact]
+    public void MatchAsync_TrapsForFunctionsReturningTaskWithoutValue_AreHiddenCompileErrorsWithDefaultPriority()
+    {
+        // Act
+        var traps = OverloadTrapHelper.ValueTaskPartMethods(typeof(MatchAsyncExtensions))
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The functions return a task without a value"))
+            .ToList();
+
+        // Assert
+        traps.Count.ShouldBe(4);
+        traps.ShouldAllBe(m => m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
+                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never
+                               && OverloadTrapHelper.IsConstrainedToATask(m)
+                               && OverloadTrapHelper.Priority(m) == 0
+                               && m.GetParameters()[1].Name == "ifSuccessFunction"
+                               && m.GetParameters()[2].Name == "ifErrorFunction"
+                               && m.ReturnType == typeof(ValueTask));
+    }
+
     [Fact]
     public void MatchAsync_AllMethods_AreOverloadsOnAValueTaskOrTheTrapsForTwoActions()
     {
@@ -469,7 +492,9 @@ public class MatchValueTaskAsyncExtensionsUnitTests
         var methods = OverloadTrapHelper.ValueTaskPartMethods(typeof(MatchAsyncExtensions)).ToList();
 
         // Assert
-        methods.Count.ShouldBe(6 + 4 + 2); // the overloads, those for the other kind of task (#226), the traps for two actions
+        // The overloads, those for the other kind of task (#226), the traps for two actions, and the traps for two functions that
+        // return a task without a value (#273).
+        methods.Count.ShouldBe(6 + 4 + 2 + 4);
         methods.ShouldAllBe(m => m.Name == "MatchAsync" && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(ValueTask<>));
     }
 
