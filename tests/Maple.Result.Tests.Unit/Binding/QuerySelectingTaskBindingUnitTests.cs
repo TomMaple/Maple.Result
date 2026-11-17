@@ -16,7 +16,7 @@ namespace Maple.Results.Tests.Unit.Binding;
 
 /// <summary>
 ///     A query whose <c>select</c> returns a task is a compile error (CS0619) for every source, <c>from</c> order and the method syntax
-///     with an <c>async</c> lambda (#127); explicit type arguments keep the task on purpose.
+///     with an <c>async</c> lambda (#127), also with explicit type arguments (#251, #270); a result that holds the task keeps it on purpose.
 /// </summary>
 public class QuerySelectingTaskBindingUnitTests
 {
@@ -66,11 +66,12 @@ public class QuerySelectingTaskBindingUnitTests
         snippet.ErrorIds.ShouldAllBe(id => id == "CS0619", string.Join(Environment.NewLine, snippet.Errors));
     }
 
-    // On a Task of a result, explicit type arguments keep the task; on a result, the traps are constrained to the task type (#251), so
-    // explicit type arguments reach them, and a task is kept in a result instead.
+    // The traps are constrained to the task type on a result (#251) and on a task of a result (#270), so explicit type arguments reach
+    // them, and a task is kept in a result instead.
     [Theory]
     [InlineData("Result<Task> r = ok.Select(x => Result.FromValue(SaveAsync()));")]
-    [InlineData("Task<Result<Task<int>>> r = GetOkAsync().Select<int, Task<int>>(x => GetIntAsync());")]
+    [InlineData("Task<Result<Task<int>>> r = GetOkAsync().Select(x => Result.FromValue(GetIntAsync()));")]
+    [InlineData("ValueTask<Result<Task<int>>> r = GetOkValueTask().Select(x => Result.FromValue(GetIntAsync()));")]
     public void Select_TaskKeptOnPurpose_KeepsTheTask(string statements)
     {
         // Act

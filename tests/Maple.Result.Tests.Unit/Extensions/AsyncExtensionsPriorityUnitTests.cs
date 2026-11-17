@@ -30,7 +30,7 @@ public class AsyncExtensionsPriorityUnitTests
     [InlineData(typeof(ElseAsyncExtensions), 4)]
     [InlineData(typeof(IfSuccessAsyncExtensions), 4)]
     [InlineData(typeof(IfErrorAsyncExtensions), 2)]
-    [InlineData(typeof(LinqAsyncExtensions), 32)]
+    [InlineData(typeof(LinqAsyncExtensions), 28)]
     public void TaskPartOverloadOnAResult_HasPriorityOneAboveItsValueTaskTwin(Type type, int expectedCount)
     {
         // Arrange
