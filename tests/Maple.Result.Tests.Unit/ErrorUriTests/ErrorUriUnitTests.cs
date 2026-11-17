@@ -604,6 +604,13 @@ public class ErrorUriUnitTests
     [InlineData("custom:a/b?c=d#e")]                                    // a query and a fragment
     [InlineData("custom:caf%C3%A9")]                                    // percent-encoding
     [InlineData("custom:")]                                             // an empty hier-part (RFC 3986 path-empty)
+    [InlineData("about:invalid")]                                       // an "about" URI other than "about:blank" (#275)
+    [InlineData("about:config")]
+    [InlineData("ABOUT:config")]
+    [InlineData("about:blank#x")]                                       // a fragment: no longer "about:blank"
+    [InlineData("about:blank?x")]                                       // a query
+    [InlineData("about:blankx")]
+    [InlineData("about:")]                                              // an empty token (RFC 6694: about-token = *pchar)
     public void Other_AbsoluteUriWithOtherScheme_ReturnsErrorUriWithTheValueAsPassed(string value)
     {
         // Act
@@ -613,9 +620,23 @@ public class ErrorUriUnitTests
         result.Value.ShouldBe(value);
     }
 
+    // "about:blank" is None in any case (#275): as an Other, its value would not survive ErrorUri.Parse.
     [Theory]
-    [InlineData("about:blank", "None")]
-    [InlineData("about:srcdoc", "None")]
+    [InlineData("about:blank")]
+    [InlineData("about:BLANK")]
+    [InlineData("ABOUT:blank")]
+    [InlineData("About:Blank")]
+    public void Other_AboutBlankInAnyCase_ThrowsUriFormatExceptionNamingNone(string value)
+    {
+        // Act
+        var exception = Record.Exception(() => ErrorUri.Other(value));
+
+        // Assert
+        exception.ShouldBeOfType<UriFormatException>().Message.ShouldBe(
+            "The URI ‘about:blank’ has its own property. Use ErrorUri.None, or ErrorUri.Parse when the kind is not known.");
+    }
+
+    [Theory]
     [InlineData("tag:example.com,2026:x", "Tag")]
     [InlineData("TAG:example.com,2026:x", "Tag")]
     [InlineData("urn:example:x", "Urn")]
