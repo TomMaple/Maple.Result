@@ -9,8 +9,8 @@
  */
 
 using Maple.Results.Extensions;
-using Maple.Results.Extensions.ValueTasks;
 using System;
+using System.Linq;
 
 namespace Maple.Results.Tests.Unit;
 
@@ -49,14 +49,27 @@ public class NamespaceUnitTests
         result.ShouldBe("Maple.Results.Extensions");
     }
 
+    // The Task-based and the ValueTask-based methods share one class per verb in one namespace (#248).
     [Fact]
-    public void Namespace_ValueTaskExtensionMethods_IsMapleResultsExtensionsValueTasks()
+    public void Namespace_AsynchronousExtensionMethods_IsMapleResultsExtensions()
     {
         // Act
-        var result = typeof(IfSuccessValueTaskAsyncExtensions).Namespace;
+        var result = typeof(IfSuccessAsyncExtensions).Namespace;
 
         // Assert
-        result.ShouldBe("Maple.Results.Extensions.ValueTasks");
+        result.ShouldBe("Maple.Results.Extensions");
+    }
+
+    [Fact]
+    public void ExportedTypes_NamespaceOfValueTaskExtensionMethods_IsGone()
+    {
+        // Act
+        var result = typeof(Result).Assembly.GetExportedTypes()
+            .Where(t => t.Namespace == "Maple.Results.Extensions.ValueTasks")
+            .ToList();
+
+        // Assert
+        result.ShouldBeEmpty();
     }
 
     [Fact]

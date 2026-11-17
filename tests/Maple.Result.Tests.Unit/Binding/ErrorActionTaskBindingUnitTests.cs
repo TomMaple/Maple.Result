@@ -42,7 +42,7 @@ public class ErrorActionTaskBindingUnitTests
     public void IfError_ErrorActionReturningTask_ReportsOnlyCS0619(string statements)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Both, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         snippet.ErrorIds.ShouldNotBeEmpty();
@@ -57,7 +57,7 @@ public class ErrorActionTaskBindingUnitTests
     public void MatchOrSwitch_TwoFunctionsReturningTaskOrDiscardedTask_Compiles(string statements)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Both, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         snippet.ErrorIds.ShouldBeEmpty(string.Join(Environment.NewLine, snippet.Errors));

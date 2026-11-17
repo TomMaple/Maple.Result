@@ -77,7 +77,7 @@ public class ThenElseBindingUnitTests
     public void TaskBased_DelegateOfTheWrongKind_ReportsOnlyCS0619(string statements)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Task, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         snippet.ErrorIds.ShouldNotBeEmpty();
@@ -93,7 +93,7 @@ public class ThenElseBindingUnitTests
     public void ValueTaskBased_DelegateOfTheWrongKind_ReportsOnlyCS0619(string statements)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.ValueTask, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         snippet.ErrorIds.ShouldNotBeEmpty();
@@ -112,16 +112,16 @@ public class ThenElseBindingUnitTests
     [InlineData("Failed().Else(Log);", "CS0407")]
     [InlineData("Failed().Else(e => { });", "CS1643")]
     [InlineData("FailedObject().Else(e => Log(e));", "CS0029,CS1662")]
-    [InlineData("Ok().ThenAsync(x => SaveAsync());", "CS0266,CS1662")]
+    [InlineData("Ok().ThenAsync(x => SaveAsync());", "CS0029,CS0266,CS1662")]
     [InlineData("Ok().ThenAsync(async x => { await SaveAsync(); });", "CS1643")]
-    [InlineData("R().ThenAsync(() => SaveAsync());", "CS0266,CS1662")]
-    [InlineData("Failed().ElseAsync(e => LogAsync(e));", "CS0266,CS1662")]
+    [InlineData("R().ThenAsync(() => SaveAsync());", "CS0029,CS0266,CS1662")]
+    [InlineData("Failed().ElseAsync(e => LogAsync(e));", "CS0029,CS0266,CS1662")]
     [InlineData("Failed().ElseAsync(async e => { await LogAsync(e); });", "CS1643")]
-    [InlineData("FailedObject().ElseAsync(e => LogAsync(e));", "CS0266,CS1662")]
+    [InlineData("FailedObject().ElseAsync(e => LogAsync(e));", "CS0029,CS0266,CS1662")]
     public void TaskBased_ActionInATransformation_ReportsTheCompilerErrors(string statements, string errorIds)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Task, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         var reported = string.Join(",", snippet.ErrorIds.Distinct().Order(StringComparer.Ordinal));
@@ -138,7 +138,7 @@ public class ThenElseBindingUnitTests
     public void ValueTaskBased_ActionInATransformation_ReportsTheCompilerErrors(string statements, string errorIds)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.ValueTask, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         var reported = string.Join(",", snippet.ErrorIds.Distinct().Order(StringComparer.Ordinal));
@@ -155,7 +155,7 @@ public class ThenElseBindingUnitTests
     public void BothNamespaces_ActionInATransformation_ReportsTheCompilerErrors(string statements, string errorIds)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Both, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         var reported = string.Join(",", snippet.ErrorIds.Distinct().Order(StringComparer.Ordinal));
@@ -202,7 +202,7 @@ public class ThenElseBindingUnitTests
     public void TaskBased_SideEffectOrTransformation_CompilesToExpectedType(string statements)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Task, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         snippet.ErrorIds.ShouldBeEmpty(string.Join(Environment.NewLine, snippet.Errors));
@@ -220,7 +220,7 @@ public class ThenElseBindingUnitTests
     public void ValueTaskBased_SideEffectOrTransformation_CompilesToExpectedType(string statements)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.ValueTask, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         snippet.ErrorIds.ShouldBeEmpty(string.Join(Environment.NewLine, snippet.Errors));
@@ -235,7 +235,7 @@ public class ThenElseBindingUnitTests
     public void BothNamespaces_SynchronousCall_CompilesToExpectedType(string statements)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Both, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         snippet.ErrorIds.ShouldBeEmpty(string.Join(Environment.NewLine, snippet.Errors));

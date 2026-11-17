@@ -8,7 +8,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using Maple.Results.Extensions.ValueTasks;
+using Maple.Results.Extensions;
 using Maple.Results.Tests.Unit.TestingInfrastructure.Fakes;
 using Maple.Results.Tests.Unit.TestingInfrastructure.Helpers;
 using Moq;
@@ -1685,7 +1685,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
     public void ThenAsync_FunctionReturningTaskWithoutValueOverloads_AreHiddenCompileErrorsOnTaskResults()
     {
         // Act
-        var traps = typeof(ThenValueTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+        var traps = OverloadTrapHelper.ValueTaskPartMethods(typeof(ThenAsyncExtensions))
             .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a task without a value. ThenAsync needs"))
             .ToList();
 
@@ -1976,7 +1976,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
     public void ThenAsync_NoOverloadTakesASynchronousAction()
     {
         // Act
-        var overloads = typeof(ThenValueTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+        var overloads = OverloadTrapHelper.ValueTaskPartMethods(typeof(ThenAsyncExtensions))
             .Where(m => m.Name == "ThenAsync" && m.GetParameters().Any(p => OverloadTrapHelper.IsAction(p.ParameterType)))
             .ToList();
 
@@ -1988,8 +1988,8 @@ public class ThenValueTaskAsyncExtensionsUnitTests
     public void ThenAsync_FunctionReturningTaskOverloads_AreHiddenCompileErrors()
     {
         // Act
-        var traps = typeof(ThenValueTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a Task, which the ValueTask-based ThenAsync does not await"))
+        var traps = OverloadTrapHelper.ValueTaskPartMethods(typeof(ThenAsyncExtensions))
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a Task, which ThenAsync on a ValueTask of a result does not await"))
             .ToList();
 
         // Assert
@@ -2003,7 +2003,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
     public void ThenAsync_OverloadsWithValueTaskDelegatesOnValueTaskResults_HavePriorityOne()
     {
         // Act
-        var priorities = typeof(ThenValueTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+        var priorities = OverloadTrapHelper.ValueTaskPartMethods(typeof(ThenAsyncExtensions))
             .Where(m => m.GetParameters()[0].ParameterType is { IsGenericType: true } receiver && receiver.GetGenericTypeDefinition() == typeof(ValueTask<>)
                         && OverloadTrapHelper.IsValueTaskFunction(m.GetParameters()[1].ParameterType))
             .Select(OverloadTrapHelper.Priority)
@@ -2018,7 +2018,7 @@ public class ThenValueTaskAsyncExtensionsUnitTests
     public void ThenAsync_SynchronousOverloadsOnValueTaskResults_HavePriorityZero()
     {
         // Act
-        var priorities = typeof(ThenValueTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+        var priorities = OverloadTrapHelper.ValueTaskPartMethods(typeof(ThenAsyncExtensions))
             .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is null
                         && m.GetParameters()[0].ParameterType is { IsGenericType: true } receiver && receiver.GetGenericTypeDefinition() == typeof(ValueTask<>)
                         && !OverloadTrapHelper.IsTaskFunction(m.GetParameters()[1].ParameterType)

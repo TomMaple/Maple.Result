@@ -8,7 +8,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using Maple.Results.Extensions.ValueTasks;
+using Maple.Results.Extensions;
 using Maple.Results.Tests.Unit.TestingInfrastructure.Fakes;
 using Maple.Results.Tests.Unit.TestingInfrastructure.Helpers;
 using Moq;
@@ -560,7 +560,7 @@ public class ElseValueTaskAsyncExtensionsUnitTests
     public void ElseAsync_FunctionReturningTaskWithoutValueOverloads_AreHiddenCompileErrorsOnTaskResults()
     {
         // Act
-        var traps = typeof(ElseValueTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+        var traps = OverloadTrapHelper.ValueTaskPartMethods(typeof(ElseAsyncExtensions))
             .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a task without a value. ElseAsync needs"))
             .ToList();
 
@@ -646,7 +646,7 @@ public class ElseValueTaskAsyncExtensionsUnitTests
     public void ElseAsync_NoOverloadTakesASynchronousAction()
     {
         // Act
-        var overloads = typeof(ElseValueTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+        var overloads = OverloadTrapHelper.ValueTaskPartMethods(typeof(ElseAsyncExtensions))
             .Where(m => m.Name == "ElseAsync" && m.GetParameters().Any(p => OverloadTrapHelper.IsAction(p.ParameterType)))
             .ToList();
 
@@ -658,8 +658,8 @@ public class ElseValueTaskAsyncExtensionsUnitTests
     public void ElseAsync_FunctionReturningTaskOverloads_AreHiddenCompileErrors()
     {
         // Act
-        var traps = typeof(ElseValueTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a Task, which the ValueTask-based ElseAsync does not await"))
+        var traps = OverloadTrapHelper.ValueTaskPartMethods(typeof(ElseAsyncExtensions))
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a Task, which ElseAsync on a ValueTask of a result does not await"))
             .ToList();
 
         // Assert
@@ -673,7 +673,7 @@ public class ElseValueTaskAsyncExtensionsUnitTests
     public void ElseAsync_OverloadsWithValueTaskDelegatesOnValueTaskResults_HavePriorityOne()
     {
         // Act
-        var priorities = typeof(ElseValueTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+        var priorities = OverloadTrapHelper.ValueTaskPartMethods(typeof(ElseAsyncExtensions))
             .Where(m => m.GetParameters()[0].ParameterType is { IsGenericType: true } receiver && receiver.GetGenericTypeDefinition() == typeof(ValueTask<>)
                         && OverloadTrapHelper.IsValueTaskFunction(m.GetParameters()[1].ParameterType))
             .Select(OverloadTrapHelper.Priority)
@@ -688,7 +688,7 @@ public class ElseValueTaskAsyncExtensionsUnitTests
     public void ElseAsync_SynchronousOverloadsOnValueTaskResults_HavePriorityZero()
     {
         // Act
-        var priorities = typeof(ElseValueTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+        var priorities = OverloadTrapHelper.ValueTaskPartMethods(typeof(ElseAsyncExtensions))
             .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is null
                         && m.GetParameters()[0].ParameterType is { IsGenericType: true } receiver && receiver.GetGenericTypeDefinition() == typeof(ValueTask<>)
                         && !OverloadTrapHelper.IsTaskFunction(m.GetParameters()[1].ParameterType)

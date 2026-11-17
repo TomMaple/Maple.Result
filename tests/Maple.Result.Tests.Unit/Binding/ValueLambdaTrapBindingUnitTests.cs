@@ -43,7 +43,7 @@ public class ValueLambdaTrapBindingUnitTests
     public void Sync_AssignmentOrIncrement_ReportsCS0619ThatNamesIt(string statements)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Both, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         snippet.ErrorIds.ShouldNotBeEmpty();
@@ -61,7 +61,7 @@ public class ValueLambdaTrapBindingUnitTests
     public void TaskBased_AssignmentOrIncrement_ReportsCS0619ThatNamesIt(string statements)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Task, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         snippet.ErrorIds.ShouldNotBeEmpty();
@@ -78,7 +78,7 @@ public class ValueLambdaTrapBindingUnitTests
     public void ValueTaskBased_AssignmentOrIncrement_ReportsCS0619ThatNamesIt(string statements)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.ValueTask, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         snippet.ErrorIds.ShouldNotBeEmpty();
@@ -95,7 +95,7 @@ public class ValueLambdaTrapBindingUnitTests
     public void Sync_StatementLambdaWithAnAssignmentOrAnIncrement_Compiles(string statements)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Both, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         snippet.ErrorIds.ShouldBeEmpty(string.Join(Environment.NewLine, snippet.Errors));
@@ -108,7 +108,7 @@ public class ValueLambdaTrapBindingUnitTests
     public void TaskBased_StatementLambdaWithAnAssignmentOrAnIncrement_Compiles(string statements)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Task, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         snippet.ErrorIds.ShouldBeEmpty(string.Join(Environment.NewLine, snippet.Errors));
@@ -120,7 +120,7 @@ public class ValueLambdaTrapBindingUnitTests
     public void ValueTaskBased_StatementLambdaWithAnAssignmentOrAnIncrement_Compiles(string statements)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.ValueTask, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         snippet.ErrorIds.ShouldBeEmpty(string.Join(Environment.NewLine, snippet.Errors));

@@ -8,7 +8,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using Maple.Results.Extensions.ValueTasks;
+using Maple.Results.Extensions;
 using Maple.Results.Tests.Unit.TestingInfrastructure.Fakes;
 using Maple.Results.Tests.Unit.TestingInfrastructure.Helpers;
 using Moq;
@@ -491,7 +491,7 @@ public class IfSuccessValueTaskAsyncExtensionsUnitTests
     public void IfSuccessAsync_FunctionReturningValueOverloads_AreHiddenCompileErrors()
     {
         // Act
-        var traps = typeof(IfSuccessValueTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+        var traps = OverloadTrapHelper.ValueTaskPartMethods(typeof(IfSuccessAsyncExtensions))
             .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a value in a task, which IfSuccessAsync discards"))
             .ToList();
 
@@ -594,7 +594,7 @@ public class IfSuccessValueTaskAsyncExtensionsUnitTests
     public void IfSuccessAsync_SyncFunctionReturningValueOverloads_AreHiddenCompileErrors()
     {
         // Act
-        var traps = typeof(IfSuccessValueTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+        var traps = OverloadTrapHelper.ValueTaskPartMethods(typeof(IfSuccessAsyncExtensions))
             .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a value, which IfSuccessAsync discards"))
             .ToList();
 
@@ -609,8 +609,8 @@ public class IfSuccessValueTaskAsyncExtensionsUnitTests
     public void IfSuccessAsync_FunctionReturningTaskOverloads_AreHiddenCompileErrors()
     {
         // Act
-        var traps = typeof(IfSuccessValueTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a Task, which the ValueTask-based IfSuccessAsync does not await"))
+        var traps = OverloadTrapHelper.ValueTaskPartMethods(typeof(IfSuccessAsyncExtensions))
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a Task, which IfSuccessAsync on a ValueTask of a result does not await"))
             .ToList();
 
         // Assert
@@ -624,7 +624,7 @@ public class IfSuccessValueTaskAsyncExtensionsUnitTests
     public void IfSuccessAsync_OverloadsWithValueTaskDelegatesOnValueTaskResults_HavePriorityOne()
     {
         // Act
-        var priorities = typeof(IfSuccessValueTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+        var priorities = OverloadTrapHelper.ValueTaskPartMethods(typeof(IfSuccessAsyncExtensions))
             .Where(m => m.GetParameters()[0].ParameterType is { IsGenericType: true } receiver && receiver.GetGenericTypeDefinition() == typeof(ValueTask<>)
                         && OverloadTrapHelper.IsValueTaskFunction(m.GetParameters()[1].ParameterType))
             .Select(OverloadTrapHelper.Priority)
@@ -639,7 +639,7 @@ public class IfSuccessValueTaskAsyncExtensionsUnitTests
     public void IfSuccessAsync_SynchronousOverloadsOnValueTaskResults_HavePriorityZero()
     {
         // Act
-        var priorities = typeof(IfSuccessValueTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+        var priorities = OverloadTrapHelper.ValueTaskPartMethods(typeof(IfSuccessAsyncExtensions))
             .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is null
                         && m.GetParameters()[0].ParameterType is { IsGenericType: true } receiver && receiver.GetGenericTypeDefinition() == typeof(ValueTask<>)
                         && !OverloadTrapHelper.IsTaskFunction(m.GetParameters()[1].ParameterType)

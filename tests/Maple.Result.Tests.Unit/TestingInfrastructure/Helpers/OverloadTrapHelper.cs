@@ -28,6 +28,52 @@ internal static class OverloadTrapHelper
         return obsolete?.Message is not null && obsolete.Message.StartsWith(messagePrefix, StringComparison.Ordinal);
     }
 
+    /// <summary>
+    ///     The public static methods of the <c>Task</c>-based part of a class that holds the methods of both kinds of task (#248): those that
+    ///     return a <see cref="Task" /> or a <see cref="Task{TResult}" />.
+    /// </summary>
+    internal static MethodInfo[] TaskPartMethods(Type type)
+    {
+        return [.. type.GetMethods(BindingFlags.Public | BindingFlags.Static).Where(ReturnsTask)];
+    }
+
+    /// <summary>
+    ///     The public static methods of the <c>ValueTask</c>-based part of a class that holds the methods of both kinds of task (#248):
+    ///     those that return a <see cref="ValueTask" /> or a <see cref="ValueTask{TResult}" />.
+    /// </summary>
+    internal static MethodInfo[] ValueTaskPartMethods(Type type)
+    {
+        return [.. type.GetMethods(BindingFlags.Public | BindingFlags.Static).Where(ReturnsValueTask)];
+    }
+
+    /// <summary>Whether the method returns a <see cref="Task" /> or a <see cref="Task{TResult}" />.</summary>
+    internal static bool ReturnsTask(MethodInfo method)
+    {
+        var returnType = method.ReturnType;
+
+        return returnType == typeof(Task) || (returnType.IsGenericType && returnType.GetGenericTypeDefinition() == typeof(Task<>));
+    }
+
+    /// <summary>Whether the method returns a <see cref="ValueTask" /> or a <see cref="ValueTask{TResult}" />.</summary>
+    internal static bool ReturnsValueTask(MethodInfo method)
+    {
+        var returnType = method.ReturnType;
+
+        return returnType == typeof(ValueTask) || (returnType.IsGenericType && returnType.GetGenericTypeDefinition() == typeof(ValueTask<>));
+    }
+
+    /// <summary>Whether the receiver of the extension method is a result, not a task of one.</summary>
+    internal static bool HasSynchronousReceiver(MethodInfo method)
+    {
+        var receiver = method.GetParameters()[0].ParameterType;
+        if (!receiver.IsGenericType)
+            return true;
+
+        var definition = receiver.GetGenericTypeDefinition();
+
+        return definition != typeof(Task<>) && definition != typeof(ValueTask<>);
+    }
+
     /// <summary>Whether the parameter is an <see cref="Action" /> or an <see cref="Action{T}" />.</summary>
     internal static bool IsAction(Type parameterType)
     {

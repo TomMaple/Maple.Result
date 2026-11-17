@@ -34,7 +34,7 @@ public class ErrorFunctionBindingUnitTests
     public void Synchronous_FunctionReturningError_GivesFailedResult(string statements)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Both, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         snippet.ErrorIds.ShouldBeEmpty(string.Join(Environment.NewLine, snippet.Errors));
@@ -50,7 +50,7 @@ public class ErrorFunctionBindingUnitTests
     public void TaskBased_FunctionReturningError_GivesFailedResult(string statements)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Task, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         snippet.ErrorIds.ShouldBeEmpty(string.Join(Environment.NewLine, snippet.Errors));
@@ -63,7 +63,7 @@ public class ErrorFunctionBindingUnitTests
     public void ValueTaskBased_FunctionReturningError_GivesFailedResult(string statements)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.ValueTask, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         snippet.ErrorIds.ShouldBeEmpty(string.Join(Environment.NewLine, snippet.Errors));
@@ -76,7 +76,7 @@ public class ErrorFunctionBindingUnitTests
     public void ExplicitTypeArguments_FunctionReturningError_KeepsSuccessfulResultOfError(string statements)
     {
         // Act
-        var snippet = SnippetCompiler.Compile(statements, SnippetImports.Both, Members);
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
         snippet.ErrorIds.ShouldBeEmpty(string.Join(Environment.NewLine, snippet.Errors));

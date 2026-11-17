@@ -1776,7 +1776,7 @@ public class ThenTaskAsyncExtensionsUnitTests
     public void ThenAsync_FunctionReturningTaskWithoutValueOverloads_AreHiddenCompileErrorsOnTaskResults()
     {
         // Act
-        var traps = typeof(ThenTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+        var traps = OverloadTrapHelper.TaskPartMethods(typeof(ThenAsyncExtensions))
             .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a task without a value. ThenAsync needs"))
             .ToList();
 
@@ -2067,7 +2067,7 @@ public class ThenTaskAsyncExtensionsUnitTests
     public void ThenAsync_NoOverloadTakesASynchronousAction()
     {
         // Act
-        var overloads = typeof(ThenTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+        var overloads = OverloadTrapHelper.TaskPartMethods(typeof(ThenAsyncExtensions))
             .Where(m => m.Name == "ThenAsync" && m.GetParameters().Any(p => OverloadTrapHelper.IsAction(p.ParameterType)))
             .ToList();
 
@@ -2079,8 +2079,8 @@ public class ThenTaskAsyncExtensionsUnitTests
     public void ThenAsync_FunctionReturningValueTaskOverloads_AreHiddenCompileErrors()
     {
         // Act
-        var traps = typeof(ThenTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a ValueTask, which the Task-based ThenAsync does not await"))
+        var traps = OverloadTrapHelper.TaskPartMethods(typeof(ThenAsyncExtensions))
+            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a ValueTask, which ThenAsync on a Task of a result does not await"))
             .ToList();
 
         // Assert
@@ -2094,7 +2094,7 @@ public class ThenTaskAsyncExtensionsUnitTests
     public void ThenAsync_OverloadsWithTaskDelegatesOnTaskResults_HavePriorityOne()
     {
         // Act
-        var priorities = typeof(ThenTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+        var priorities = OverloadTrapHelper.TaskPartMethods(typeof(ThenAsyncExtensions))
             .Where(m => m.GetParameters()[0].ParameterType is { IsGenericType: true } receiver && receiver.GetGenericTypeDefinition() == typeof(Task<>)
                         && OverloadTrapHelper.IsTaskFunction(m.GetParameters()[1].ParameterType))
             .Select(OverloadTrapHelper.Priority)
@@ -2109,7 +2109,7 @@ public class ThenTaskAsyncExtensionsUnitTests
     public void ThenAsync_SynchronousOverloadsOnTaskResults_HavePriorityZero()
     {
         // Act
-        var priorities = typeof(ThenTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+        var priorities = OverloadTrapHelper.TaskPartMethods(typeof(ThenAsyncExtensions))
             .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is null
                         && m.GetParameters()[0].ParameterType is { IsGenericType: true } receiver && receiver.GetGenericTypeDefinition() == typeof(Task<>)
                         && !OverloadTrapHelper.IsTaskFunction(m.GetParameters()[1].ParameterType)

@@ -202,7 +202,7 @@ public class SwitchTaskAsyncExtensionsUnitTests
     public void SwitchAsync_ActionReturningTaskOverloads_AreHiddenCompileErrorsThatNameMatchAsync()
     {
         // Act
-        var traps = typeof(SwitchTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+        var traps = OverloadTrapHelper.TaskPartMethods(typeof(SwitchAsyncExtensions))
             .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is not null)
             .ToList();
 
@@ -218,7 +218,7 @@ public class SwitchTaskAsyncExtensionsUnitTests
     public void SwitchAsync_TrapsConstrainedToTheTaskType_HavePriorityOne()
     {
         // Act
-        var traps = typeof(SwitchTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+        var traps = OverloadTrapHelper.TaskPartMethods(typeof(SwitchAsyncExtensions))
             .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is not null
                         && m.GetGenericArguments().Any(a => a.GetGenericParameterConstraints().Length > 0))
             .ToList();
@@ -232,7 +232,7 @@ public class SwitchTaskAsyncExtensionsUnitTests
     public void SwitchAsync_Overloads_ReturnATaskWithDefaultPriority()
     {
         // Act
-        var overloads = typeof(SwitchTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+        var overloads = OverloadTrapHelper.TaskPartMethods(typeof(SwitchAsyncExtensions))
             .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is null)
             .ToList();
 

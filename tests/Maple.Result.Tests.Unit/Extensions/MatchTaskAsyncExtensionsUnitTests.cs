@@ -433,7 +433,7 @@ public class MatchTaskAsyncExtensionsUnitTests
     public void MatchAsync_TwoActionsOverloads_AreHiddenCompileErrorsThatNameSwitchAsync()
     {
         // Act
-        var traps = typeof(MatchTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+        var traps = OverloadTrapHelper.TaskPartMethods(typeof(MatchAsyncExtensions))
             .Where(m => OverloadTrapHelper.IsTrap(m, "MatchAsync takes two functions that return a value. Use SwitchAsync"))
             .ToList();
 
@@ -448,7 +448,7 @@ public class MatchTaskAsyncExtensionsUnitTests
     public void MatchAsync_ValueTaskFunctionsOverloads_AreHiddenCompileErrors()
     {
         // Act
-        var traps = typeof(MatchTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+        var traps = OverloadTrapHelper.TaskPartMethods(typeof(MatchAsyncExtensions))
             .Where(m => OverloadTrapHelper.IsTrap(m, "The delegates return a ValueTask"))
             .ToList();
 
@@ -463,7 +463,7 @@ public class MatchTaskAsyncExtensionsUnitTests
     public void MatchAsync_AllMethods_AreOverloadsOnATaskOrTheTwoKindsOfTraps()
     {
         // Act
-        var methods = typeof(MatchTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly).ToList();
+        var methods = OverloadTrapHelper.TaskPartMethods(typeof(MatchAsyncExtensions)).ToList();
 
         // Assert
         methods.Count.ShouldBe(6 + 2 + 4);
@@ -474,7 +474,7 @@ public class MatchTaskAsyncExtensionsUnitTests
     public void MatchAsync_OverloadsWithTaskFunctions_HavePriorityOne()
     {
         // Act
-        var overloads = typeof(MatchTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+        var overloads = OverloadTrapHelper.TaskPartMethods(typeof(MatchAsyncExtensions))
             .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is null && OverloadTrapHelper.IsTaskFunction(m.GetParameters()[1].ParameterType))
             .ToList();
 
