@@ -465,25 +465,16 @@ public static class ElseTaskAsyncExtensions
 
     #endregion
 
-    #region Not supported: actions
+    #region Not supported: functions returning a task without a value, on task results
 
-    // A function that returns nothing is a side effect, not a transformation (#197): these overloads turn the call into a compile
-    // error (CS0619) that names the method to use, instead of the conversion errors CS0029 and CS1662.
+    // A function that returns a task without a value is a side effect, not a transformation (#197). On a task result of a
+    // Result<object>, it would bind to the overload with a synchronous function and give a successful result that holds the task, which
+    // nobody awaits: this overload turns the call into a compile error (CS0619) that names the method to use. On a result, and for a
+    // synchronous action, the compiler reports the call by itself (e.g., CS0029, CS0266 or CS1643), so there are no overloads for them (#256).
 
     private const string ActionMessage =
         "The function returns a task without a value. ElseAsync needs a function whose task returns the replacement " +
         "result; use IfErrorAsync for a side effect.";
-
-    /// <summary>
-    ///     Not supported: the function returns a task without a value; use <c>IfErrorAsync</c> for a side effect.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(ActionMessage, error: true)]
-    public static Task<TResult> ElseAsync<TResult>([DisallowNull] this TResult result, Func<Error, Task> ifErrorAction, bool? continueOnCapturedContext = null)
-        where TResult : IOperationResult
-    {
-        throw new NotSupportedException(ActionMessage);
-    }
 
     /// <summary>
     ///     Not supported: the function returns a task without a value; use <c>IfErrorAsync</c> for a side effect.
@@ -547,33 +538,16 @@ public static class ElseTaskAsyncExtensions
 
     #endregion
 
-    #region Not supported: synchronous delegates of the wrong kind, and functions returning a ValueTask
+    #region Not supported: functions returning a ValueTask
 
-    // A synchronous action passed to ThenAsync or ElseAsync, or a synchronous function that returns a value passed to
-    // IfSuccessAsync or IfErrorAsync, is a compile error (CS0619) that names the method to use, as in #197.
     // A function that returns a ValueTask would bind to the overloads with a synchronous delegate and give a result holding a task
     // that nobody awaits (#214): these overloads turn the call into a compile error (CS0619) that names the namespace to import.
     // The overloads whose delegate returns a Task have priority 1 (#214): an async lambda converts to a Task and to a ValueTask,
     // so without it, a call with an async lambda would be ambiguous (CS0121) between them and the traps for the other kind of task.
 
-    private const string SyncActionMessage =
-        "The action returns nothing. ElseAsync needs a function that returns the replacement result; use IfErrorAsync " +
-        "for a side effect.";
-
     private const string OtherTaskMessage =
         "The function returns a ValueTask, which the Task-based ElseAsync does not await. Import " +
         "Maple.Results.Extensions.ValueTasks instead of Maple.Results.Extensions, or convert it with AsTask().";
-
-    /// <summary>
-    ///     Not supported: the action returns nothing; use <c>IfErrorAsync</c> for a side effect.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(SyncActionMessage, error: true)]
-    public static Task<TResult> ElseAsync<TResult>(this Task<TResult> resultTask, Action<Error> ifErrorFunction, bool? continueOnCapturedContext = null)
-        where TResult : IOperationResult
-    {
-        throw new NotSupportedException(SyncActionMessage);
-    }
 
     /// <summary>
     ///     Not supported: the function returns a <c>ValueTask</c>, which this method does not await.
