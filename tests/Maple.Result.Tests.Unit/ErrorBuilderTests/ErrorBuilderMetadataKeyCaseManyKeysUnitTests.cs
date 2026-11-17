@@ -277,6 +277,38 @@ public class ErrorBuilderMetadataKeyCaseManyKeysUnitTests
 
     #endregion
 
+    #region keys added in one call to many keys
+
+    [Fact]
+    public void WithMetadata_KeyDifferingOnlyInCaseFromKeyAddedAsTuple_ThrowsArgumentException()
+    {
+        // Arrange
+        var sut = CreateSut();
+        sut.WithMetadata(("added", 1), ("other", 2));
+
+        // Act
+        var exception = Record.Exception(() => sut.WithMetadata("ADDED", 0));
+
+        // Assert
+        exception.ShouldBeOfType<ArgumentException>().ParamName.ShouldBe("key");
+    }
+
+    [Fact]
+    public void WithMetadata_KeyDifferingOnlyInCaseFromKeyAddedAsPair_ThrowsArgumentException()
+    {
+        // Arrange
+        var sut = CreateSut();
+        sut.WithMetadata([new KeyValuePair<string, object?>("added", 1), new KeyValuePair<string, object?>("other", 2)]);
+
+        // Act
+        var exception = Record.Exception(() => sut.WithMetadata("ADDED", 0));
+
+        // Assert
+        exception.ShouldBeOfType<ArgumentException>().ParamName.ShouldBe("key");
+    }
+
+    #endregion
+
     #region built errors
 
     [Fact]

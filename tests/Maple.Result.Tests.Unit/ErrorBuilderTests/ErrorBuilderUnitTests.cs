@@ -695,6 +695,20 @@ public class ErrorBuilderUnitTests
         // Assert
         result.Metadata.ShouldHaveSingleItem().Key.ShouldBe("limit");
     }
+
+    [Fact]
+    public void WithMetadataTuples_NoEntries_LeavesMetadataUnchanged()
+    {
+        // Arrange
+        var sut = Sut.LimitExceeded(ErrorUri.None, "Test title").WithMetadata("limit", 100);
+
+        // Act
+        var result = sut.WithMetadata().Build();
+
+        // Assert
+        result.Metadata.ShouldHaveSingleItem().Key.ShouldBe("limit");
+    }
+
     [Fact]
     public void WithoutMetadata_ExistingAndAbsentKeys_RemovesOnlyExistingEntry()
     {

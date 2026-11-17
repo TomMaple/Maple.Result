@@ -214,6 +214,32 @@ public class TemplatedMessageUnitTests
     }
 
     [Fact]
+    public void Ctor_EmptySequenceOfUnknownLength_BuildsNullParams()
+    {
+        // Arrange
+        var parameters = NoParameters();
+
+        // Act
+        var sut = new TemplatedMessage("errors.length", parameters);
+
+        // Assert
+        sut.Params.ShouldBeNull();
+    }
+
+    [Fact]
+    public void Ctor_EmptyMetadataOfAnError_BuildsNullParams()
+    {
+        // Arrange
+        var error = Error.NotFound(ErrorUri.None, "Missing");
+
+        // Act
+        var sut = new TemplatedMessage("errors.length", error.Metadata);
+
+        // Assert
+        sut.Params.ShouldBeNull();
+    }
+
+    [Fact]
     public void Ctor_RepeatedTupleName_ThrowsArgumentException()
     {
         // Act
@@ -296,6 +322,19 @@ public class TemplatedMessageUnitTests
 
         // Assert
         result.ShouldBe("TemplatedMessage { TemplateId = message-id, Params = { min = 3 } }");
+    }
+
+    [Fact]
+    public void ToString_SeveralParams_SeparatesThemWithCommas()
+    {
+        // Arrange
+        var sut = new TemplatedMessage("message-id", ("min", 3), ("max", 5));
+
+        // Act
+        var result = sut.ToString();
+
+        // Assert
+        result.ShouldBe("TemplatedMessage { TemplateId = message-id, Params = { min = 3, max = 5 } }");
     }
 
     [Fact]
@@ -391,6 +430,12 @@ public class TemplatedMessageUnitTests
     #endregion
 
     #region helper methods
+
+    // An iterator: its length is unknown until it is enumerated.
+    private static IEnumerable<KeyValuePair<string, object?>> NoParameters()
+    {
+        yield break;
+    }
 
     private string Serialize(TemplatedMessage templatedMessage)
     {

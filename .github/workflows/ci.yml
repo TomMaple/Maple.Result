@@ -131,6 +131,7 @@ jobs:
       run: >-
         dotnet test --no-build --configuration Release --results-directory "$RESULTS_PATH"
         --coverage --coverage-output-format cobertura --coverage-output coverage.cobertura.xml
+        --coverage-settings "${{ github.workspace }}/tests/CodeCoverage.config"
         --report-xunit-trx
 
     - name: Coverage summary

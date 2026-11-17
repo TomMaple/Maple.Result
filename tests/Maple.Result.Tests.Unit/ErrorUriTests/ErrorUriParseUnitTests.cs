@@ -42,6 +42,11 @@ public class ErrorUriParseUnitTests
         { "ftp://example.com/x", ErrorUri.Other("ftp://example.com/x") },
         { "file:///x", ErrorUri.Other("file:///x") },
         { "MAILTO:support@example.com", ErrorUri.Other("MAILTO:support@example.com") },
+        // A scheme may contain digits, "+", "-" and "." after its first letter (RFC 3986, section 3.1).
+        { "web+app:x", ErrorUri.Other("web+app:x") },
+        { "x-custom:x", ErrorUri.Other("x-custom:x") },
+        { "a.b:x", ErrorUri.Other("a.b:x") },
+        { "h2:x", ErrorUri.Other("h2:x") },
     };
 
     /// <summary>Values that are neither one of the supported kinds nor an absolute URI with another scheme.</summary>
@@ -53,6 +58,8 @@ public class ErrorUriParseUnitTests
         "",
         " ",
         " https://example.com/x",   // a leading space
+        "my_scheme:x",              // "_" is not allowed in a scheme
+        "1abc:x",                   // a scheme starts with a letter
     ];
 
     /// <summary>Values of a known kind that its factory rejects.</summary>
