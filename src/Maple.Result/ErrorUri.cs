@@ -15,7 +15,8 @@ using System.Diagnostics.CodeAnalysis;
 namespace Maple.Results;
 
 /// <summary>
-///     Represents a <i>URI</i> that identifies or describes the type or category of an error in a standardized format.
+///     Represents a <i>URI</i> of a problem: the type of the problem (<see cref="Error.TypeUri" />) or one occurrence of it
+///     (<see cref="Error.InstanceUri" />).
 /// </summary>
 /// <remarks>
 ///     It can be
@@ -50,9 +51,9 @@ namespace Maple.Results;
 ///             </description>
 ///         </item>
 ///     </list>
-///     For <i>URI Locator</i> and relative reference specification, see also: <seealso href="https://datatracker.ietf.org/doc/html/rfc3986" />.<br />
-///     For <i>URI Tag</i> specification, see also: <seealso href="https://datatracker.ietf.org/doc/html/rfc4151" />.<br />
-///     For <i>URN</i> specification, see also: <seealso href="https://datatracker.ietf.org/doc/html/rfc8141" />.
+///     For <i>URI Locator</i> and relative reference specification, see also: <see href="https://datatracker.ietf.org/doc/html/rfc3986" />.<br />
+///     For <i>URI Tag</i> specification, see also: <see href="https://datatracker.ietf.org/doc/html/rfc4151" />.<br />
+///     For <i>URN</i> specification, see also: <see href="https://datatracker.ietf.org/doc/html/rfc8141" />.
 /// </remarks>
 public readonly record struct ErrorUri : IParsable<ErrorUri>
 {
