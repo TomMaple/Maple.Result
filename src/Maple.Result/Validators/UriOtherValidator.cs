@@ -15,6 +15,9 @@ namespace Maple.Results.Validators;
 
 internal static partial class UriOtherValidator
 {
+    private const string AboutBlankMessage =
+        "The URI ‘about:blank’ has its own property. Use ErrorUri.None, or ErrorUri.Parse when the kind is not known.";
+
     private const string Message =
         "The URI is not a valid absolute URI. Check https://datatracker.ietf.org/doc/html/rfc3986#section-3 for details.";
 
@@ -34,17 +37,21 @@ internal static partial class UriOtherValidator
     private static partial Regex AbsoluteUriPattern();
 
     /// <summary>
-    ///     Whether the value is an absolute <i>URI</i> (<i>RFC 3986</i>) whose scheme has no factory method of its own.
+    ///     Whether the value is an absolute <i>URI</i> (<i>RFC 3986</i>) that is neither <c>about:blank</c> (in any case) nor of a scheme
+    ///     that has a factory method of its own.
     /// </summary>
     internal static bool IsValid(string uri)
     {
-        return AbsoluteUriPattern().IsMatch(uri) && SupportingFactory(uri) is null;
+        return AbsoluteUriPattern().IsMatch(uri) && !IsAboutBlank(uri) && SupportingFactory(uri) is null;
     }
 
     internal static void Validate(string uri)
     {
         if (!AbsoluteUriPattern().IsMatch(uri))
             throw new UriFormatException(Message);
+
+        if (IsAboutBlank(uri))
+            throw new UriFormatException(AboutBlankMessage);
 
         var factory = SupportingFactory(uri);
         if (factory is not null)
@@ -58,6 +65,15 @@ internal static partial class UriOtherValidator
     }
 
     /// <summary>
+    ///     Whether the value is <c>about:blank</c> in any case, which is <see cref="ErrorUri.None" />: as an other <i>URI</i>, its value
+    ///     would not survive <see cref="ErrorUri.Parse" /> (#275). Any other <c>about</c> <i>URI</i> is an other <i>URI</i>.
+    /// </summary>
+    private static bool IsAboutBlank(string uri)
+    {
+        return uri.Equals(ErrorUri.NoneValue, StringComparison.OrdinalIgnoreCase);
+    }
+
+    /// <summary>
     ///     The name of the factory method that supports the scheme of the value (case-insensitive, <i>RFC 3986</i>, section 3.1),
     ///     or <see langword="null" /> for any other scheme.
     /// </summary>
@@ -65,9 +81,6 @@ internal static partial class UriOtherValidator
     {
         var colon = uri.IndexOf(':');
         var scheme = uri.AsSpan(0, colon);
-
-        if (scheme.Equals("about", StringComparison.OrdinalIgnoreCase))
-            return "None";
 
         if (scheme.Equals("tag", StringComparison.OrdinalIgnoreCase))
             return "Tag";
