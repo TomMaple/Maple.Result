@@ -164,9 +164,10 @@ are marked breaking. Preview the notes locally with `git cliff --unreleased --st
 	* No loops in assertions: one case per test, or per `[InlineData]` / `[MemberData]` row of a `[Theory]`.
 	* Every bug fix comes with a test that fails without the fix.
 	* Code coverage: CI collects it with `tests/CodeCoverage.config`, which leaves out the overload traps (their bodies never
-	  run; the binding tests cover them), and shows the summary in the job summary. Every line of the code that runs is
-	  covered; a branch that cannot be reached is explained in the pull request that leaves it. To measure it locally, pass
-	  the settings file with an absolute path (a relative one is resolved against the output folder of the tests):
+	  run; the binding tests cover them), and shows the summary in the job summary. The `build` job fails when the line or
+	  the branch coverage is below 90% (`MINIMUM_COVERAGE` in `ci.yml`). Every line of the code that runs is covered; a
+	  branch that cannot be reached is explained in the pull request that leaves it. To measure it locally, pass the
+	  settings file with an absolute path (a relative one is resolved against the output folder of the tests):
 	  `dotnet test -c Release --coverage --coverage-output-format cobertura --coverage-settings "$PWD/tests/CodeCoverage.config"`.
 	* Code written with an AI assistant is developed test-first
 	  ([TDD](https://martinfowler.com/bliki/TestDrivenDevelopment.html)): first the tests that describe the change are
