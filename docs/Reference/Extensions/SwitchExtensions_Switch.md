@@ -19,7 +19,7 @@ An action that returns a value is a side effect, and the value is ignored (e.g.,
 An action that returns a `Task`, a `Task<T>`, a `ValueTask` or a `ValueTask<T>` (e.g., `x => SaveAsync(x)` or an `async` lambda) is a compile error (CS0619) in either position, and in both: `Switch` would not await the task, and an `async` lambda would run as `async void`. The message names [Match](MatchExtensions_Match.md) with two functions that return a task, which the caller awaits. Two actions that both return a `ValueTask`, or one a `Task` and the other a `ValueTask`, are a compile error too, reported as an ambiguous call (CS0121). To start a task without awaiting it on purpose, discard it in a statement lambda (`x => { _ = SaveAsync(x); }`).
 
 ## Switch(Result, Action, Action&lt;Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/SwitchExtensions.cs#L45" target="_blank">SwitchExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/SwitchExtensions.cs#L42" target="_blank">SwitchExtensions.cs</a>
 
 Invokes the provided `ifSuccessAction` if the instance of [Result](../Result/Result.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), or the provided `ifErrorAction` otherwise.
 
@@ -50,7 +50,7 @@ _userService.CreateUser(userData).Switch(
 
 
 ## Switch&lt;T&gt;(Result&lt;T&gt;, Action&lt;T&gt;, Action&lt;Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/SwitchExtensions.cs#L76" target="_blank">SwitchExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/SwitchExtensions.cs#L73" target="_blank">SwitchExtensions.cs</a>
 
 Invokes the provided `ifSuccessAction` with the value if the instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), or the provided `ifErrorAction` otherwise.
 

@@ -15,7 +15,7 @@ To replace a failed result (recover with a value, or return another error), use 
 
 
 ## IfError&lt;TResult&gt;(TResult, Action&lt;Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/IfErrorExtensions.cs#L49" target="_blank">IfErrorExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/IfErrorExtensions.cs#L45" target="_blank">IfErrorExtensions.cs</a>
 
 Executes the provided action only if the instance of `TResult` represents a failed operation (i.e., contains an [Error](../Error/Error.md)).
 
