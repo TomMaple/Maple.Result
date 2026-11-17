@@ -29,6 +29,8 @@ public static partial class IfSuccessExtensions
     // cannot be inferred from a lambda that only throws either. The unused optional parameter only makes the signatures differ from
     // the value traps. The overloads constrained to a Task or a ValueTask have priority 1, so that they win over the value traps; an
     // async lambda gives a Task, which fails the ValueTask constraint, so the two are never ambiguous.
+    // They return the type of their receiver, as the overloads that run, so that a call that continues with the result (e.g.,
+    // Result<int> r = ok.IfSuccess(x => SaveAsync(x))) reports this error only (#274).
 
     private const string TaskNotAwaitedMessage =
         "The function returns a task, which IfSuccess does not await. Use IfSuccessAsync, or discard the task " +
@@ -74,7 +76,7 @@ public static partial class IfSuccessExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(TaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result IfSuccess<T, TTask>(this Result<T> result, Func<T, TTask> ifSuccessAction, Task? unused = null)
+    public static Result<T> IfSuccess<T, TTask>(this Result<T> result, Func<T, TTask> ifSuccessAction, Task? unused = null)
         where TTask : Task
     {
         throw new NotSupportedException(TaskNotAwaitedMessage);
@@ -86,7 +88,7 @@ public static partial class IfSuccessExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(TaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result IfSuccess<T, TValueTask>(this Result<T> result, Func<T, TValueTask> ifSuccessAction, ValueTask unused = default)
+    public static Result<T> IfSuccess<T, TValueTask>(this Result<T> result, Func<T, TValueTask> ifSuccessAction, ValueTask unused = default)
         where TValueTask : struct, IEquatable<ValueTask>
     {
         throw new NotSupportedException(TaskNotAwaitedMessage);
@@ -97,7 +99,7 @@ public static partial class IfSuccessExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(TaskNotAwaitedMessage, error: true)]
-    public static Result IfSuccess<T, TIgnored>(this Result<T> result, Func<T, ValueTask<TIgnored>> ifSuccessAction)
+    public static Result<T> IfSuccess<T, TIgnored>(this Result<T> result, Func<T, ValueTask<TIgnored>> ifSuccessAction)
     {
         throw new NotSupportedException(TaskNotAwaitedMessage);
     }

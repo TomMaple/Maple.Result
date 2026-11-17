@@ -30,6 +30,8 @@ public static partial class LinqExtensions
     // ValueTask have priority 1, so that they win over the generic overloads, also with explicit type arguments (method syntax); a task
     // is kept on purpose by selecting it in a result (e.g., select Result.FromValue(SaveAsync(x))). An async lambda (method syntax)
     // gives a Task, which fails the ValueTask constraint, so the two are never ambiguous.
+    // They return a result of the task, the type that the query would have without them, so that a query that continues with the
+    // result (e.g., (from x in ok select GetIntAsync(x)).Value) reports this error only (#274).
 
     private const string SelectorTaskNotAwaitedMessage =
         "The selector returns a task, which the query does not await. " +
@@ -43,7 +45,7 @@ public static partial class LinqExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result Select<T, TTask>(this Result<T> result, Func<T, TTask> selector, Task? unused = null)
+    public static Result<TTask> Select<T, TTask>(this Result<T> result, Func<T, TTask> selector, Task? unused = null)
         where TTask : Task
     {
         throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
@@ -56,7 +58,7 @@ public static partial class LinqExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result Select<T, TValueTask>(this Result<T> result, Func<T, TValueTask> selector, ValueTask unused = default)
+    public static Result<TValueTask> Select<T, TValueTask>(this Result<T> result, Func<T, TValueTask> selector, ValueTask unused = default)
         where TValueTask : struct, IEquatable<ValueTask>
     {
         throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
@@ -68,7 +70,7 @@ public static partial class LinqExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
-    public static Result Select<T, TIgnored>(this Result<T> result, Func<T, ValueTask<TIgnored>> selector)
+    public static Result<ValueTask<TIgnored>> Select<T, TIgnored>(this Result<T> result, Func<T, ValueTask<TIgnored>> selector)
     {
         throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
     }
@@ -80,7 +82,7 @@ public static partial class LinqExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result SelectMany<T, TMiddle, TTask>(
+    public static Result<TTask> SelectMany<T, TMiddle, TTask>(
         this Result<T> result,
         Func<T, Result<TMiddle>> collectionSelector,
         Func<T, TMiddle, TTask> resultSelector,
@@ -97,7 +99,7 @@ public static partial class LinqExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result SelectMany<T, TMiddle, TValueTask>(
+    public static Result<TValueTask> SelectMany<T, TMiddle, TValueTask>(
         this Result<T> result,
         Func<T, Result<TMiddle>> collectionSelector,
         Func<T, TMiddle, TValueTask> resultSelector,
@@ -113,7 +115,7 @@ public static partial class LinqExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
-    public static Result SelectMany<T, TMiddle, TIgnored>(
+    public static Result<ValueTask<TIgnored>> SelectMany<T, TMiddle, TIgnored>(
         this Result<T> result,
         Func<T, Result<TMiddle>> collectionSelector,
         Func<T, TMiddle, ValueTask<TIgnored>> resultSelector)
@@ -134,7 +136,7 @@ public static partial class LinqExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result Select<TTask>(this Result result, Func<Result, TTask> selector, Task? unused = null)
+    public static Result<TTask> Select<TTask>(this Result result, Func<Result, TTask> selector, Task? unused = null)
         where TTask : Task
     {
         throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
@@ -146,7 +148,7 @@ public static partial class LinqExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result Select<TValueTask>(this Result result, Func<Result, TValueTask> selector, ValueTask unused = default)
+    public static Result<TValueTask> Select<TValueTask>(this Result result, Func<Result, TValueTask> selector, ValueTask unused = default)
         where TValueTask : struct, IEquatable<ValueTask>
     {
         throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
@@ -157,7 +159,7 @@ public static partial class LinqExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
-    public static Result Select<TIgnored>(this Result result, Func<Result, ValueTask<TIgnored>> selector)
+    public static Result<ValueTask<TIgnored>> Select<TIgnored>(this Result result, Func<Result, ValueTask<TIgnored>> selector)
     {
         throw new NotSupportedException(SelectorTaskNotAwaitedMessage);
     }
@@ -168,7 +170,7 @@ public static partial class LinqExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result SelectMany<T, TTask>(
+    public static Result<TTask> SelectMany<T, TTask>(
         this Result<T> result,
         Func<T, Result> collectionSelector,
         Func<T, Result, TTask> resultSelector,
@@ -184,7 +186,7 @@ public static partial class LinqExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result SelectMany<T, TValueTask>(
+    public static Result<TValueTask> SelectMany<T, TValueTask>(
         this Result<T> result,
         Func<T, Result> collectionSelector,
         Func<T, Result, TValueTask> resultSelector,
@@ -199,7 +201,7 @@ public static partial class LinqExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
-    public static Result SelectMany<T, TIgnored>(
+    public static Result<ValueTask<TIgnored>> SelectMany<T, TIgnored>(
         this Result<T> result,
         Func<T, Result> collectionSelector,
         Func<T, Result, ValueTask<TIgnored>> resultSelector)
@@ -213,7 +215,7 @@ public static partial class LinqExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result SelectMany<TMiddle, TTask>(
+    public static Result<TTask> SelectMany<TMiddle, TTask>(
         this Result result,
         Func<Result, Result<TMiddle>> collectionSelector,
         Func<Result, TMiddle, TTask> resultSelector,
@@ -229,7 +231,7 @@ public static partial class LinqExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result SelectMany<TMiddle, TValueTask>(
+    public static Result<TValueTask> SelectMany<TMiddle, TValueTask>(
         this Result result,
         Func<Result, Result<TMiddle>> collectionSelector,
         Func<Result, TMiddle, TValueTask> resultSelector,
@@ -244,7 +246,7 @@ public static partial class LinqExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
-    public static Result SelectMany<TMiddle, TIgnored>(
+    public static Result<ValueTask<TIgnored>> SelectMany<TMiddle, TIgnored>(
         this Result result,
         Func<Result, Result<TMiddle>> collectionSelector,
         Func<Result, TMiddle, ValueTask<TIgnored>> resultSelector)
@@ -258,7 +260,7 @@ public static partial class LinqExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result SelectMany<TTask>(
+    public static Result<TTask> SelectMany<TTask>(
         this Result result,
         Func<Result, Result> collectionSelector,
         Func<Result, Result, TTask> resultSelector,
@@ -274,7 +276,7 @@ public static partial class LinqExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
     [OverloadResolutionPriority(1)]
-    public static Result SelectMany<TValueTask>(
+    public static Result<TValueTask> SelectMany<TValueTask>(
         this Result result,
         Func<Result, Result> collectionSelector,
         Func<Result, Result, TValueTask> resultSelector,
@@ -289,7 +291,7 @@ public static partial class LinqExtensions
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete(SelectorTaskNotAwaitedMessage, error: true)]
-    public static Result SelectMany<TIgnored>(
+    public static Result<ValueTask<TIgnored>> SelectMany<TIgnored>(
         this Result result,
         Func<Result, Result> collectionSelector,
         Func<Result, Result, ValueTask<TIgnored>> resultSelector)
