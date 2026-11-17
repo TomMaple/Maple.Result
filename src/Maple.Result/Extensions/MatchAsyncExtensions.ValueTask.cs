@@ -29,7 +29,7 @@ public static partial class MatchAsyncExtensions
     ///     returns it, <see langword="null" /> included.
     /// </remarks>
     /// <typeparam name="TOut">The type that both functions return.</typeparam>
-    /// <param name="resultTask">The asynchronous operation that returns the result to fold. Must not be <see langword="null" />.</param>
+    /// <param name="resultTask">The asynchronous operation that returns the result to fold.</param>
     /// <param name="ifSuccessFunction">
     ///     The function invoked if the result is successful. Must not be <see langword="null" />.
     /// </param>
@@ -72,7 +72,7 @@ public static partial class MatchAsyncExtensions
     ///     The value is returned as the function returns it, <see langword="null" /> included.
     /// </remarks>
     /// <typeparam name="TOut">The type of the value of the tasks that both functions return.</typeparam>
-    /// <param name="resultTask">The asynchronous operation that returns the result to fold. Must not be <see langword="null" />.</param>
+    /// <param name="resultTask">The asynchronous operation that returns the result to fold.</param>
     /// <param name="ifSuccessFunction">
     ///     The asynchronous function invoked if the result is successful. Must not be <see langword="null" />.
     /// </param>
@@ -120,7 +120,7 @@ public static partial class MatchAsyncExtensions
     ///     Awaits the <paramref name="resultTask" />, invokes one of the provided asynchronous actions depending on whether the result is
     ///     successful, and awaits it.
     /// </summary>
-    /// <param name="resultTask">The asynchronous operation that returns the result to fold. Must not be <see langword="null" />.</param>
+    /// <param name="resultTask">The asynchronous operation that returns the result to fold.</param>
     /// <param name="ifSuccessAction">
     ///     The asynchronous action invoked if the result is successful. Must not be <see langword="null" />.
     /// </param>
@@ -179,7 +179,7 @@ public static partial class MatchAsyncExtensions
     /// </remarks>
     /// <typeparam name="T">The type of the value of the result.</typeparam>
     /// <typeparam name="TOut">The type that both functions return.</typeparam>
-    /// <param name="resultTask">The asynchronous operation that returns the result to fold. Must not be <see langword="null" />.</param>
+    /// <param name="resultTask">The asynchronous operation that returns the result to fold.</param>
     /// <param name="ifSuccessFunction">
     ///     The function invoked if the result is successful, with its value. Must not be <see langword="null" />.
     /// </param>
@@ -223,7 +223,7 @@ public static partial class MatchAsyncExtensions
     /// </remarks>
     /// <typeparam name="T">The type of the value of the result.</typeparam>
     /// <typeparam name="TOut">The type of the value of the tasks that both functions return.</typeparam>
-    /// <param name="resultTask">The asynchronous operation that returns the result to fold. Must not be <see langword="null" />.</param>
+    /// <param name="resultTask">The asynchronous operation that returns the result to fold.</param>
     /// <param name="ifSuccessFunction">
     ///     The asynchronous function invoked if the result is successful, with its value. Must not be <see langword="null" />.
     /// </param>
@@ -272,7 +272,7 @@ public static partial class MatchAsyncExtensions
     ///     successful, and awaits it.
     /// </summary>
     /// <typeparam name="T">The type of the value of the result.</typeparam>
-    /// <param name="resultTask">The asynchronous operation that returns the result to fold. Must not be <see langword="null" />.</param>
+    /// <param name="resultTask">The asynchronous operation that returns the result to fold.</param>
     /// <param name="ifSuccessAction">
     ///     The asynchronous action invoked if the result is successful, with its value. Must not be <see langword="null" />.
     /// </param>
@@ -335,7 +335,7 @@ public static partial class MatchAsyncExtensions
     ///     </para>
     /// </remarks>
     /// <typeparam name="TOut">The type of the value of the tasks that both functions return.</typeparam>
-    /// <param name="resultTask">The asynchronous operation that returns the result to fold. Must not be <see langword="null" />.</param>
+    /// <param name="resultTask">The asynchronous operation that returns the result to fold.</param>
     /// <param name="ifSuccessFunction">
     ///     The asynchronous function invoked if the result is successful. Must not be <see langword="null" />.
     /// </param>
@@ -391,7 +391,7 @@ public static partial class MatchAsyncExtensions
     ///         is returned, as for a function that returns a <see cref="ValueTask" />.
     ///     </para>
     /// </remarks>
-    /// <param name="resultTask">The asynchronous operation that returns the result to fold. Must not be <see langword="null" />.</param>
+    /// <param name="resultTask">The asynchronous operation that returns the result to fold.</param>
     /// <param name="ifSuccessAction">
     ///     The asynchronous action invoked if the result is successful. Must not be <see langword="null" />.
     /// </param>
@@ -451,7 +451,7 @@ public static partial class MatchAsyncExtensions
     /// </remarks>
     /// <typeparam name="T">The type of the value of the result.</typeparam>
     /// <typeparam name="TOut">The type of the value of the tasks that both functions return.</typeparam>
-    /// <param name="resultTask">The asynchronous operation that returns the result to fold. Must not be <see langword="null" />.</param>
+    /// <param name="resultTask">The asynchronous operation that returns the result to fold.</param>
     /// <param name="ifSuccessFunction">
     ///     The asynchronous function invoked if the result is successful, with its value. Must not be <see langword="null" />.
     /// </param>
@@ -508,7 +508,7 @@ public static partial class MatchAsyncExtensions
     ///     </para>
     /// </remarks>
     /// <typeparam name="T">The type of the value of the result.</typeparam>
-    /// <param name="resultTask">The asynchronous operation that returns the result to fold. Must not be <see langword="null" />.</param>
+    /// <param name="resultTask">The asynchronous operation that returns the result to fold.</param>
     /// <param name="ifSuccessAction">
     ///     The asynchronous action invoked if the result is successful, with its value. Must not be <see langword="null" />.
     /// </param>

@@ -335,7 +335,7 @@ public static partial class ThenAsyncExtensions
     /// <param name="ifSuccessFunction">
     ///     An asynchronous function to execute if the <paramref name="result" /> is successful.
     ///     The value of the successful <see cref="Result{T}" /> is passed as a parameter.
-    ///     The function’s must return <see cref="ValueTask{Result}" /> that represents <see cref="Result{TNext}" />. Must not be <see langword="null" />.
+    ///     The function must return <see cref="ValueTask{Result}" /> that represents <see cref="Result{TNext}" />. Must not be <see langword="null" />.
     /// </param>
     /// <param name="continueOnCapturedContext">
     ///     <see langword="true" /> to run the continuations, including the passed delegates when they run after an <c>await</c>,
@@ -445,9 +445,7 @@ public static partial class ThenAsyncExtensions
     ///         To get that on purpose, specify the type arguments: <c>ThenAsync&lt;Error&gt;(…)</c>.
     ///     </para>
     /// </remarks>
-    /// <param name="resultTask">
-    ///     The asynchronous operation to be executed and which result is to be inspected. Must not be <see langword="null" />.
-    /// </param>
+    /// <param name="resultTask">The asynchronous operation to be executed and which result is to be inspected.</param>
     /// <param name="ifSuccessFunction">
     ///     An asynchronous function to execute if the <paramref name="resultTask" /> operation is successful.
     ///     It returns the <see cref="Error" /> of the failed <see cref="Result" />. Must not be <see langword="null" />.
@@ -685,9 +683,7 @@ public static partial class ThenAsyncExtensions
     ///     </para>
     /// </remarks>
     /// <typeparam name="T">The type of the value of the result of the <paramref name="resultTask" /> operation.</typeparam>
-    /// <param name="resultTask">
-    ///     The asynchronous operation to be executed and which result is to be inspected. Must not be <see langword="null" />.
-    /// </param>
+    /// <param name="resultTask">The asynchronous operation to be executed and which result is to be inspected.</param>
     /// <param name="ifSuccessFunction">
     ///     The asynchronous function to execute if the <paramref name="resultTask" /> operation is successful. The value of the successful
     ///     <see cref="Result{T}" /> is passed as a parameter. It returns the <see cref="Error" /> of the failed <see cref="Result" />.
@@ -819,7 +815,7 @@ public static partial class ThenAsyncExtensions
     /// <param name="ifSuccessFunction">
     ///     An asynchronous function to execute if <paramref name="resultTask" /> is successful asynchronous operation.
     ///     The value of the successful <see cref="Result{T}" /> is passed as a parameter.
-    ///     The function’s must return <see cref="ValueTask{Result}" /> that represents <see cref="Result{TNext}" />. Must not be <see langword="null" />.
+    ///     The function must return <see cref="ValueTask{Result}" /> that represents <see cref="Result{TNext}" />. Must not be <see langword="null" />.
     /// </param>
     /// <param name="continueOnCapturedContext">
     ///     <see langword="true" /> to run the continuations, including the passed delegates when they run after an <c>await</c>,
@@ -1247,9 +1243,7 @@ public static partial class ThenAsyncExtensions
     ///         is returned, as for a function that returns a <see cref="ValueTask" />.
     ///     </para>
     /// </remarks>
-    /// <param name="resultTask">
-    ///     The asynchronous operation to be executed and which result is to be inspected. Must not be <see langword="null" />.
-    /// </param>
+    /// <param name="resultTask">The asynchronous operation to be executed and which result is to be inspected.</param>
     /// <param name="ifSuccessFunction">
     ///     An asynchronous function to execute if the <paramref name="resultTask" /> operation is successful.
     ///     It returns the <see cref="Error" /> of the failed <see cref="Result" />. Must not be <see langword="null" />.
@@ -1504,9 +1498,7 @@ public static partial class ThenAsyncExtensions
     ///     </para>
     /// </remarks>
     /// <typeparam name="T">The type of the value of the result of the <paramref name="resultTask" /> operation.</typeparam>
-    /// <param name="resultTask">
-    ///     The asynchronous operation to be executed and which result is to be inspected. Must not be <see langword="null" />.
-    /// </param>
+    /// <param name="resultTask">The asynchronous operation to be executed and which result is to be inspected.</param>
     /// <param name="ifSuccessFunction">
     ///     The asynchronous function to execute if the <paramref name="resultTask" /> operation is successful. The value of the successful
     ///     <see cref="Result{T}" /> is passed as a parameter. It returns the <see cref="Error" /> of the failed <see cref="Result" />.
@@ -1654,7 +1646,7 @@ public static partial class ThenAsyncExtensions
     /// <param name="ifSuccessFunction">
     ///     An asynchronous function to execute if <paramref name="resultTask" /> is successful asynchronous operation.
     ///     The value of the successful <see cref="Result{T}" /> is passed as a parameter.
-    ///     The function’s must return <see cref="Task{Result}" /> that represents <see cref="Result{TNext}" />. Must not be <see langword="null" />.
+    ///     The function must return <see cref="Task{Result}" /> that represents <see cref="Result{TNext}" />. Must not be <see langword="null" />.
     /// </param>
     /// <param name="continueOnCapturedContext">
     ///     <see langword="true" /> to run the continuations, including the passed delegates when they run after an <c>await</c>,

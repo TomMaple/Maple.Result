@@ -180,7 +180,7 @@ Result<int> number = Result.Try<int, FormatException>(
 ```
 
 ## Try(Func&lt;Result&gt;, Func&lt;Exception, Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L633" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L639" target="_blank">Result.Try.cs</a>
 
 ```csharp
 public static Result Try(Func<Result> function, Func<Exception, Error?> mapException);
@@ -210,7 +210,7 @@ The [Result](Result.md) returned by the `function`, as it is; or a failed one wi
 `function` returns a `null` result.
 
 ## Try&lt;TException&gt;(Func&lt;Result&gt;, Func&lt;TException, Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L664" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L670" target="_blank">Result.Try.cs</a>
 
 ```csharp
 public static Result Try<TException>(Func<Result> function, Func<TException, Error?> mapException)
@@ -245,7 +245,7 @@ The [Result](Result.md) returned by the `function`, as it is; or a failed one wi
 `function` returns a `null` result.
 
 ## Try&lt;T&gt;(Func&lt;Result&lt;T&gt;&gt;, Func&lt;Exception, Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L714" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L720" target="_blank">Result.Try.cs</a>
 
 ```csharp
 public static Result<T> Try<T>(Func<Result<T>> function, Func<Exception, Error?> mapException);
@@ -279,7 +279,7 @@ The [Result&lt;T&gt;](../ResultT/ResultT.md) returned by the `function`, as it i
 `function` returns a `null` result.
 
 ## Try&lt;T, TException&gt;(Func&lt;Result&lt;T&gt;&gt;, Func&lt;TException, Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L746" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L752" target="_blank">Result.Try.cs</a>
 
 ```csharp
 public static Result<T> Try<T, TException>(Func<Result<T>> function, Func<TException, Error?> mapException)
@@ -317,7 +317,7 @@ The [Result&lt;T&gt;](../ResultT/ResultT.md) returned by the `function`, as it i
 `function` returns a `null` result.
 
 ## Try(Func&lt;Error&gt;, Func&lt;Exception, Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L795" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L801" target="_blank">Result.Try.cs</a>
 
 ```csharp
 public static Result Try(Func<Error> function, Func<Exception, Error?> mapException);
@@ -347,7 +347,7 @@ A failed [Result](Result.md) with the [Error](../Error/Error.md) returned by the
 `function` returns a `null` error.
 
 ## Try&lt;TException&gt;(Func&lt;Error&gt;, Func&lt;TException, Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L826" target="_blank">Result.Try.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Result.Try.cs#L832" target="_blank">Result.Try.cs</a>
 
 ```csharp
 public static Result Try<TException>(Func<Error> function, Func<TException, Error?> mapException)

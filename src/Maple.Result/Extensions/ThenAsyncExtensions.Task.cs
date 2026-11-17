@@ -429,7 +429,7 @@ public static partial class ThenAsyncExtensions
     /// <param name="result">The <see cref="Result{T}" /> to evaluate for success. Must not be <see langword="null" />.</param>
     /// <param name="ifSuccessFunction">
     ///     An asynchronous function to execute if the <paramref name="result" /> is successful. The value of the successful <see cref="Result{T}" /> is passed
-    ///     as a parameter. The function’s must return <see cref="Task{Result}" /> that represents <see cref="Result{TNext}" />.
+    ///     as a parameter. The function must return <see cref="Task{Result}" /> that represents <see cref="Result{TNext}" />.
     ///     Must not be <see langword="null" />.
     /// </param>
     /// <param name="continueOnCapturedContext">
@@ -945,7 +945,7 @@ public static partial class ThenAsyncExtensions
     /// <param name="ifSuccessFunction">
     ///     An asynchronous function to execute if <paramref name="resultTask" /> is successful asynchronous operation. The value of the successful
     ///     <see cref="Result{T}" /> is passed as a parameter.
-    ///     The function’s must return <see cref="Task{Result}" /> that represents <see cref="Result{TNext}" />. Must not be <see langword="null" />.
+    ///     The function must return <see cref="Task{Result}" /> that represents <see cref="Result{TNext}" />. Must not be <see langword="null" />.
     /// </param>
     /// <param name="continueOnCapturedContext">
     ///     <see langword="true" /> to run the continuations, including the passed delegates when they run after an <c>await</c>,
@@ -1813,7 +1813,7 @@ public static partial class ThenAsyncExtensions
     /// <param name="ifSuccessFunction">
     ///     An asynchronous function to execute if <paramref name="resultTask" /> is successful asynchronous operation. The value of the successful
     ///     <see cref="Result{T}" /> is passed as a parameter.
-    ///     The function’s must return <see cref="ValueTask{Result}" /> that represents <see cref="Result{TNext}" />. Must not be <see langword="null" />.
+    ///     The function must return <see cref="ValueTask{Result}" /> that represents <see cref="Result{TNext}" />. Must not be <see langword="null" />.
     /// </param>
     /// <param name="continueOnCapturedContext">
     ///     <see langword="true" /> to run the continuations, including the passed delegates when they run after an <c>await</c>,
