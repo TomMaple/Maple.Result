@@ -34,9 +34,9 @@ Runs a asynchronous function if the instance of [Result](../Result/Result.md) or
 | [ThenAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Error&gt;, Boolean)](#thenasyncttaskresultt-funct-error-boolean) | Runs the synchronous function on the value if the result that the `resultTask` returns is successful, and returns a failed result with the error that it returns. |
 
 ## Remarks
-The overloads with a synchronous function (e.g., `ThenAsync(user => user.Name)`) run it after the task completes. A synchronous action is a compile error (CS0619) that names `IfSuccessAsync`. A delegate that returns a `ValueTask` is a compile error too: this page is for the `Task` namespace; import `Maple.Results.Extensions.ValueTasks` for the other one.
+The overloads with a synchronous function (e.g., `ThenAsync(user => user.Name)`) run it after the task completes. A synchronous action does not compile: the compiler reports that it returns no value (e.g., CS0029); use `IfSuccessAsync` for a side effect. A delegate that returns a `ValueTask` is a compile error too: this page is for the `Task` namespace; import `Maple.Results.Extensions.ValueTasks` for the other one.
 
-A returned `Result` or `Result<T>` is flattened, and a returned [Error](../Error/Error.md) makes the result fail. Explicit type arguments keep a nested result on purpose. An action (a function that returns a task without a value) is a compile error (CS0619) that names [IfSuccessAsync](IfSuccessTaskAsyncExtensions_IfSuccessAsync.md), which runs a side effect and returns the result unchanged.
+A returned `Result` or `Result<T>` is flattened, and a returned [Error](../Error/Error.md) makes the result fail. Explicit type arguments keep a nested result on purpose. A function that returns a task without a value does not compile either: on a task of a result, it is a compile error (CS0619) that names [IfSuccessAsync](IfSuccessTaskAsyncExtensions_IfSuccessAsync.md), which runs a side effect and returns the result unchanged; on a result, the compiler reports it (e.g., CS0266).
 
 > [!NOTE]
 > When an asynchronous method awaits a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) directly, continuation usually occurs in the same thread that created the task, depending on the async context. This behavior can be costly in terms of performance and can result in a deadlock on the UI thread. To avoid these problems, `ConfigureAwait(false)` is used by default, so in the methods that take a `Task` of a result the passed delegates run on a thread-pool thread. When the delegates need the original context (e.g., to update UI elements), set the `continueOnCapturedContext` parameter to `true`, or set [ResultConfiguration.ContinueOnCapturedContext](../ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md) to `true` once at startup.
@@ -818,7 +818,7 @@ var createUserResult = await _userService.CreateUserAsync(userData)
 
 
 ## ThenAsync&lt;T&gt;(Task&lt;Result&gt;, Func&lt;T&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenTaskAsyncExtensions.cs#L1055" target="_blank">ThenTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenTaskAsyncExtensions.cs#L1039" target="_blank">ThenTaskAsyncExtensions.cs</a>
 
 Runs the synchronous function if the result that the `resultTask` returns is successful, and returns a result with its value.
 
@@ -864,7 +864,7 @@ var result = await _service.DeleteAsync(id)
 
 
 ## ThenAsync(Task&lt;Result&gt;, Func&lt;Result&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenTaskAsyncExtensions.cs#L1093" target="_blank">ThenTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenTaskAsyncExtensions.cs#L1077" target="_blank">ThenTaskAsyncExtensions.cs</a>
 
 Runs the synchronous function if the result that the `resultTask` returns is successful, and returns the result that it returns.
 
@@ -906,7 +906,7 @@ var result = await _service.DeleteAsync(id)
 
 
 ## ThenAsync&lt;T&gt;(Task&lt;Result&gt;, Func&lt;Result&lt;T&gt;&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenTaskAsyncExtensions.cs#L1132" target="_blank">ThenTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenTaskAsyncExtensions.cs#L1116" target="_blank">ThenTaskAsyncExtensions.cs</a>
 
 Runs the synchronous function if the result that the `resultTask` returns is successful, and returns the result that it returns.
 
@@ -952,7 +952,7 @@ var result = await _service.DeleteAsync(id)
 
 
 ## ThenAsync(Task&lt;Result&gt;, Func&lt;Error&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenTaskAsyncExtensions.cs#L1171" target="_blank">ThenTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenTaskAsyncExtensions.cs#L1155" target="_blank">ThenTaskAsyncExtensions.cs</a>
 
 Runs the synchronous function if the result that the `resultTask` returns is successful, and returns a failed result with the error that it returns.
 
@@ -994,7 +994,7 @@ var result = await _service.DeleteAsync(id)
 
 
 ## ThenAsync&lt;T, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, TNext&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenTaskAsyncExtensions.cs#L1213" target="_blank">ThenTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenTaskAsyncExtensions.cs#L1197" target="_blank">ThenTaskAsyncExtensions.cs</a>
 
 Runs the synchronous function on the value if the result that the `resultTask` returns is successful, and returns a result with the value that it returns.
 
@@ -1043,7 +1043,7 @@ var nameResult = await _userService.GetUserAsync(id)
 
 
 ## ThenAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenTaskAsyncExtensions.cs#L1255" target="_blank">ThenTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenTaskAsyncExtensions.cs#L1239" target="_blank">ThenTaskAsyncExtensions.cs</a>
 
 Runs the synchronous function on the value if the result that the `resultTask` returns is successful, and returns the result that it returns.
 
@@ -1089,7 +1089,7 @@ var result = await _userService.GetUserAsync(id)
 
 
 ## ThenAsync&lt;T, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&lt;TNext&gt;&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenTaskAsyncExtensions.cs#L1298" target="_blank">ThenTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenTaskAsyncExtensions.cs#L1282" target="_blank">ThenTaskAsyncExtensions.cs</a>
 
 Runs the synchronous function on the value if the result that the `resultTask` returns is successful, and returns the result that it returns.
 
@@ -1138,7 +1138,7 @@ var addressResult = await _userService.GetUserAsync(id)
 
 
 ## ThenAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Error&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenTaskAsyncExtensions.cs#L1338" target="_blank">ThenTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ThenTaskAsyncExtensions.cs#L1322" target="_blank">ThenTaskAsyncExtensions.cs</a>
 
 Runs the synchronous function on the value if the result that the `resultTask` returns is successful, and returns a failed result with the error that it returns.
 

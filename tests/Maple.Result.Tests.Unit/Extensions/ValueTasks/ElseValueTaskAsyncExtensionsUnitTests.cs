@@ -552,11 +552,12 @@ public class ElseValueTaskAsyncExtensionsUnitTests
 
     #region ElseAsync with a function returning a task without a value (overload trap)
 
-    // A function that returns nothing is a side effect: the transforming method reports it as a compile error (CS0619) that
-    // names the side-effect method (#197). The bindings are checked with a consumer project.
+    // A function that returns a task without a value is a side effect: on a task result, the transforming method reports it as a
+    // compile error (CS0619) that names the side-effect method (#197). On a result, the compiler reports it by itself, so there is no
+    // overload trap for it (#256). The bindings are checked in Binding/ThenElseBindingUnitTests.
 
     [Fact]
-    public void ElseAsync_FunctionReturningTaskWithoutValueOverloads_AreHiddenCompileErrors()
+    public void ElseAsync_FunctionReturningTaskWithoutValueOverloads_AreHiddenCompileErrorsOnTaskResults()
     {
         // Act
         var traps = typeof(ElseValueTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
@@ -564,8 +565,10 @@ public class ElseValueTaskAsyncExtensionsUnitTests
             .ToList();
 
         // Assert
-        traps.Count.ShouldBe(2);
+        traps.Count.ShouldBe(1);
         traps.ShouldAllBe(m => m.Name == "ElseAsync"
+                               && m.GetParameters()[0].ParameterType.IsGenericType
+                               && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(ValueTask<>)
                                && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
                                && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
     }
@@ -640,18 +643,15 @@ public class ElseValueTaskAsyncExtensionsUnitTests
     }
 
     [Fact]
-    public void ElseAsync_SyncActionOverloads_AreHiddenCompileErrors()
+    public void ElseAsync_NoOverloadTakesASynchronousAction()
     {
         // Act
-        var traps = typeof(ElseValueTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The action returns nothing. ElseAsync needs"))
+        var overloads = typeof(ElseValueTaskAsyncExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(m => m.Name == "ElseAsync" && m.GetParameters().Any(p => OverloadTrapHelper.IsAction(p.ParameterType)))
             .ToList();
 
         // Assert
-        traps.Count.ShouldBe(1);
-        traps.ShouldAllBe(m => m.Name == "ElseAsync"
-                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
-                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
+        overloads.ShouldBeEmpty();
     }
 
     [Fact]

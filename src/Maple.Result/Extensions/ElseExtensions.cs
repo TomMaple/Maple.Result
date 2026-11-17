@@ -108,26 +108,4 @@ public static class ElseExtensions
     }
 
     #endregion
-
-    #region Not supported: actions
-
-    // A function that returns nothing is a side effect, not a transformation (#197): these overloads turn the call into a compile
-    // error (CS0619) that names the method to use, instead of the conversion errors CS0029 and CS1662.
-
-    private const string ActionMessage =
-        "The action returns nothing. Else needs a function that returns the replacement result (a value, a result or an " +
-        "error); use IfError for a side effect.";
-
-    /// <summary>
-    ///     Not supported: the action returns nothing; use <c>IfError</c> for a side effect.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(ActionMessage, error: true)]
-    public static TResult Else<TResult>([DisallowNull] this TResult result, Action<Error> ifErrorFunction)
-        where TResult : IOperationResult
-    {
-        throw new NotSupportedException(ActionMessage);
-    }
-
-    #endregion
 }

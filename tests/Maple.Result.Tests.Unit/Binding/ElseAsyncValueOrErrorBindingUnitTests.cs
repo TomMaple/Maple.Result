@@ -85,12 +85,9 @@ public class ElseAsyncValueOrErrorBindingUnitTests
 
     [Theory]
     [InlineData("_ = failedTask.ElseAsync(e => LogAsync(e));", "The function returns a task without a value.")]
-    [InlineData("_ = failed.ElseAsync(e => LogAsync(e));", "The function returns a task without a value.")]
-    [InlineData("_ = failedTask.ElseAsync(e => Console.WriteLine(e));", "The action returns nothing.")]
     [InlineData("_ = failedTask.ElseAsync(e => LogVt(e));", "The function returns a ValueTask")]
     [InlineData("_ = failedTask.ElseAsync(e => IntFromErrorVt(e));", "The function returns a ValueTask")]
     [InlineData("_ = failedTask.ElseAsync(async e => { await LogAsync(e); });", "The function returns a task without a value.")]
-    [InlineData("_ = failed.ElseAsync(async e => { await LogAsync(e); });", "The function returns a task without a value.")]
     public void TaskBased_TrappedShape_StillReportsCS0619OnTheSameTrap(string statements, string message)
     {
         // Act
@@ -150,12 +147,9 @@ public class ElseAsyncValueOrErrorBindingUnitTests
 
     [Theory]
     [InlineData("_ = failedVt.ElseAsync(e => LogVt(e));", "The function returns a task without a value.")]
-    [InlineData("_ = failed.ElseAsync(e => LogVt(e));", "The function returns a task without a value.")]
-    [InlineData("_ = failedVt.ElseAsync(e => Console.WriteLine(e));", "The action returns nothing.")]
     [InlineData("_ = failedVt.ElseAsync(e => LogAsync(e));", "The function returns a Task")]
     [InlineData("_ = failedVt.ElseAsync(e => IntFromErrorAsync(e));", "The function returns a Task")]
     [InlineData("_ = failedVt.ElseAsync(async e => { await LogVt(e); });", "The function returns a task without a value.")]
-    [InlineData("_ = failed.ElseAsync(async e => { await LogVt(e); });", "The function returns a task without a value.")]
     public void ValueTaskBased_TrappedShape_StillReportsCS0619OnTheSameTrap(string statements, string message)
     {
         // Act

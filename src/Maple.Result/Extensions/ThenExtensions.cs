@@ -436,35 +436,4 @@ public static class ThenExtensions
     }
 
     #endregion
-
-    #region Not supported: actions
-
-    // A function that returns nothing is a side effect, not a transformation (#197): these overloads turn the call into a compile
-    // error (CS0619) that names the method to use, instead of the conversion errors CS0029 and CS1662.
-
-    private const string ActionMessage =
-        "The action returns nothing. Then needs a function that returns a value, a result or an error; use IfSuccess " +
-        "for a side effect.";
-
-    /// <summary>
-    ///     Not supported: the action returns nothing; use <c>IfSuccess</c> for a side effect.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(ActionMessage, error: true)]
-    public static Result Then(this Result result, Action ifSuccessFunction)
-    {
-        throw new NotSupportedException(ActionMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the action returns nothing; use <c>IfSuccess</c> for a side effect.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(ActionMessage, error: true)]
-    public static Result<T> Then<T>(this Result<T> result, Action<T> ifSuccessFunction)
-    {
-        throw new NotSupportedException(ActionMessage);
-    }
-
-    #endregion
 }

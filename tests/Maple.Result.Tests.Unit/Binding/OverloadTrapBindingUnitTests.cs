@@ -39,10 +39,9 @@ public class OverloadTrapBindingUnitTests
     // The same shapes with an untyped mapper.
     [InlineData("Result.Try(() => GetIntValueTask(), e => err);")]
     [InlineData("Result.Try(() => GetIntAsync(), e => err);")]
-    // Side-effect methods given a function that returns a value, and Then given an action (#197).
+    // Side-effect methods given a function that returns a value (#197).
     [InlineData("ok.IfSuccess(x => x + 1);")]
     [InlineData("ok.IfError(e => 0);")]
-    [InlineData("ok.Then(x => { });")]
     // An asynchronous action in IfError and Match (#124).
     [InlineData("ok.IfError(e => SaveAsync());")]
     public void Compile_TrappedCallShape_ReportsCS0619(string statement)

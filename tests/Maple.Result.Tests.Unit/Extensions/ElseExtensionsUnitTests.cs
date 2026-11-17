@@ -344,24 +344,21 @@ public class ElseExtensionsUnitTests
 
     #endregion
 
-    #region Else with an action (overload trap)
+    #region Else with an action
 
-    // A function that returns nothing is a side effect: the transforming method reports it as a compile error (CS0619) that
-    // names the side-effect method (#197). The bindings are checked with a consumer project.
+    // A function that returns nothing is a side effect, not a transformation (#197). The compiler reports it by itself, so there is
+    // no overload trap for it (#256). The bindings are checked in Binding/ThenElseBindingUnitTests.
 
     [Fact]
-    public void Else_ActionOverloads_AreHiddenCompileErrors()
+    public void Else_NoOverloadTakesAnAction()
     {
         // Act
-        var traps = typeof(ElseExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The action returns nothing. Else needs"))
+        var overloads = typeof(ElseExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(m => m.Name == "Else" && m.GetParameters().Any(p => OverloadTrapHelper.IsAction(p.ParameterType)))
             .ToList();
 
         // Assert
-        traps.Count.ShouldBe(1);
-        traps.ShouldAllBe(m => m.Name == "Else"
-                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
-                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
+        overloads.ShouldBeEmpty();
     }
 
     #endregion

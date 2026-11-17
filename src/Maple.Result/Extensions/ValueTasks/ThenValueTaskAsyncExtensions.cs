@@ -888,34 +888,16 @@ public static class ThenValueTaskAsyncExtensions
 
     #endregion
 
-    #region Not supported: actions
+    #region Not supported: functions returning a task without a value, on task results
 
-    // A function that returns nothing is a side effect, not a transformation (#197): these overloads turn the call into a compile
-    // error (CS0619) that names the method to use, instead of the conversion errors CS0029 and CS1662.
+    // A function that returns a task without a value is a side effect, not a transformation (#197). On a task result, it would bind
+    // to the overload with a synchronous function and give a result that holds the task, which nobody awaits: these overloads turn
+    // the call into a compile error (CS0619) that names the method to use. On a result, and for a synchronous action, the compiler
+    // reports the call by itself (e.g., CS0029, CS0266 or CS1643), so there are no overloads for them (#256).
 
     private const string ActionMessage =
         "The function returns a task without a value. ThenAsync needs a function whose task returns a value, a result " +
         "or an error; use IfSuccessAsync for a side effect.";
-
-    /// <summary>
-    ///     Not supported: the function returns a task without a value; use <c>IfSuccessAsync</c> for a side effect.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(ActionMessage, error: true)]
-    public static ValueTask<Result> ThenAsync(this Result result, Func<ValueTask> ifSuccessAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(ActionMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the function returns a task without a value; use <c>IfSuccessAsync</c> for a side effect.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(ActionMessage, error: true)]
-    public static ValueTask<Result<T>> ThenAsync<T>(this Result<T> result, Func<T, ValueTask> ifSuccessAction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(ActionMessage);
-    }
 
     /// <summary>
     ///     Not supported: the function returns a task without a value; use <c>IfSuccessAsync</c> for a side effect.
@@ -1244,43 +1226,17 @@ public static class ThenValueTaskAsyncExtensions
 
     #endregion
 
-    #region Not supported: synchronous delegates of the wrong kind, and functions returning a Task
+    #region Not supported: functions returning a Task
 
-    // A synchronous action passed to ThenAsync or ElseAsync, or a synchronous function that returns a value passed to
-    // IfSuccessAsync or IfErrorAsync, is a compile error (CS0619) that names the method to use, as in #197.
     // A function that returns a Task would bind to the overloads with a synchronous delegate and give a result holding a task
     // that nobody awaits (#214): these overloads turn the call into a compile error (CS0619) that names the namespace to import.
     // The overloads whose delegate returns a ValueTask have priority 1 (#214): an async lambda converts to a Task and to a ValueTask,
     // so without it, a call with an async lambda would be ambiguous (CS0121) between them and the traps for the other kind of task.
 
-    private const string SyncActionMessage =
-        "The action returns nothing. ThenAsync needs a function that returns a value, a result or an error; use " +
-        "IfSuccessAsync for a side effect.";
-
     private const string OtherTaskMessage =
         "The function returns a Task, which the ValueTask-based ThenAsync does not await. Import " +
         "Maple.Results.Extensions instead of Maple.Results.Extensions.ValueTasks, or wrap it in a ValueTask (e.g., new " +
         "ValueTask<T>(task)).";
-
-    /// <summary>
-    ///     Not supported: the action returns nothing; use <c>IfSuccessAsync</c> for a side effect.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(SyncActionMessage, error: true)]
-    public static ValueTask<Result> ThenAsync(this ValueTask<Result> resultTask, Action ifSuccessFunction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(SyncActionMessage);
-    }
-
-    /// <summary>
-    ///     Not supported: the action returns nothing; use <c>IfSuccessAsync</c> for a side effect.
-    /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete(SyncActionMessage, error: true)]
-    public static ValueTask<Result<T>> ThenAsync<T>(this ValueTask<Result<T>> resultTask, Action<T> ifSuccessFunction, bool? continueOnCapturedContext = null)
-    {
-        throw new NotSupportedException(SyncActionMessage);
-    }
 
     /// <summary>
     ///     Not supported: the function returns a <c>Task</c>, which this method does not await.

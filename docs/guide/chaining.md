@@ -17,7 +17,7 @@ How to chain operations that return results with the extension methods and the L
 * `Match()` and `MatchAsync()`: fold both cases into one value, with two functions that return the same type (e.g., `int count = result.Match(x => x.Count, e => 0)`); the value can be a result or a task, which the caller awaits,
 * `Switch()` and `SwitchAsync()`: handle both cases with two actions for a side effect, and return nothing.
 
-A function that returns a value passed to `IfSuccess()` or `IfError()` is a compile error that names `Then()` or `Else()`, so that its value is not discarded by mistake; an action passed to `Then()` or `Else()` is a compile error that names `IfSuccess()` or `IfError()`. `Match()` with two actions is a compile error that names `Switch()`, and an action that returns a task passed to `Switch()` is a compile error that names `Match()`.
+A function that returns a value passed to `IfSuccess()` or `IfError()` is a compile error that names `Then()` or `Else()`, so that its value is not discarded by mistake. An action passed to `Then()` or `Else()` does not compile either: it has no value to return, and the compiler reports it (e.g., CS0029, “Cannot implicitly convert type ‘void’ to ‘Result’”); use `IfSuccess()` or `IfError()` for a side effect. `Match()` with two actions is a compile error that names `Switch()`, and an action that returns a task passed to `Switch()` is a compile error that names `Match()`.
 
 ```csharp
 var createUserResult = _userService.CreateUser(userData);

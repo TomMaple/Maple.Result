@@ -397,8 +397,8 @@ public static class IfSuccessTaskAsyncExtensions
 
     #region Not supported: synchronous delegates of the wrong kind, and functions returning a ValueTask
 
-    // A synchronous action passed to ThenAsync or ElseAsync, or a synchronous function that returns a value passed to
-    // IfSuccessAsync or IfErrorAsync, is a compile error (CS0619) that names the method to use, as in #197.
+    // A synchronous function that returns a value, passed to IfSuccessAsync or IfErrorAsync, is a compile error (CS0619) that names
+    // the method to use, as in #197.
     // A function that returns a ValueTask would bind to the overloads with a synchronous delegate and give a result holding a task
     // that nobody awaits (#214): these overloads turn the call into a compile error (CS0619) that names the namespace to import.
     // The overloads whose delegate returns a Task have priority 1 (#214): an async lambda converts to a Task and to a ValueTask,

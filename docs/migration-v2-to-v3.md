@@ -366,7 +366,7 @@ In 3.0 the name says what the call does:
 * `Then` and `ThenAsync` transform or chain a successful result with a function that returns a value, a `Result`, a `Result<T>` or an `Error` (the overloads, the flattening of a returned result and the handling of a returned `Error` are the same as before);
 * `Else` and `ElseAsync` replace a failed result with the result that the function returns.
 
-A 2.x call that transforms or replaces the result is a compile error (CS0619) whose message names the method to use, so the compiler finds every such call. An action passed to `Then` or `Else` is a compile error that names `IfSuccess` or `IfError`.
+A 2.x call that transforms or replaces the result is a compile error (CS0619) whose message names the method to use, so the compiler finds every such call. An action passed to `Then` or `Else` does not compile either, but the error is the compiler’s own (e.g., CS0029, “Cannot implicitly convert type ‘void’ to ‘Result’”) and does not name `IfSuccess` or `IfError`. On a task of a result, a function that returns a task without a value passed to `ThenAsync` or `ElseAsync` is a compile error (CS0619) that names `IfSuccessAsync` or `IfErrorAsync`: without it, the call could compile and keep the task in the result without awaiting it.
 
 ```csharp
 // 2.x

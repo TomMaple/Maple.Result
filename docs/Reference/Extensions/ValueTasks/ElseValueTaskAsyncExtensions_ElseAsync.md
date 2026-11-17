@@ -19,11 +19,11 @@ Runs a asynchronous function if the instance of `TResult` represents a failed op
 | [ElseAsync(ValueTask&lt;Result&gt;, Func&lt;Error, ValueTask&lt;Error&gt;&gt;, Boolean)](#elseasyncvaluetaskresult-funcerror-valuetaskerror-boolean) | Runs the asynchronous function if the result that the `resultTask` returns is failed, and returns a failed [Result](../../Result/Result.md) with the [Error](../../Error/Error.md) that the function returns; otherwise, returns the original result. |
 
 ## Remarks
-The overload with a synchronous function (e.g., `ElseAsync(error => Result.FromValue(User.Guest))`) runs it after the task completes. A synchronous action is a compile error (CS0619) that names `IfErrorAsync`. A delegate that returns a `Task` is a compile error too: this page is for the `ValueTask` namespace; import `Maple.Results.Extensions` for the other one.
+The overload with a synchronous function (e.g., `ElseAsync(error => Result.FromValue(User.Guest))`) runs it after the task completes. A synchronous action does not compile: the compiler reports that it returns no value (e.g., CS0029); use `IfErrorAsync` for a side effect. A delegate that returns a `Task` is a compile error too: this page is for the `ValueTask` namespace; import `Maple.Results.Extensions` for the other one.
 
 A function that returns the value or the [Error](../../Error/Error.md) of the replacement result is accepted too, as `Else` takes one through the implicit conversions: e.g., `ElseAsync(async error => 0)` gives a successful result with the value, and `ElseAsync(async error => error.WithMetadata("retried", true))` a failed one with that error. A function whose value task returns a value that does not convert to `T` is a compile error (e.g., a `ValueTask<string>` for a `Result<int>`). When `T` is [Error](../../Error/Error.md), a returned `Error` is the error of a failed result; return `Result<Error>.FromValue(…)` for a successful one.
 
-A successful result is returned unchanged, and the function is not called. An action (a function that returns a task without a value) is a compile error (CS0619) that names [IfErrorAsync](IfErrorValueTaskAsyncExtensions_IfErrorAsync.md), which runs a side effect and returns the result unchanged.
+A successful result is returned unchanged, and the function is not called. A function that returns a task without a value does not compile either: on a task of a result, it is a compile error (CS0619) that names [IfErrorAsync](IfErrorValueTaskAsyncExtensions_IfErrorAsync.md), which runs a side effect and returns the result unchanged; on a result, the compiler reports it (e.g., CS0029).
 
 > [!NOTE]
 > When an asynchronous method awaits a [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask) directly, continuation usually occurs in the same thread that created the operation, depending on the async context. This behavior can be costly in terms of performance and can result in a deadlock on the UI thread. To avoid these problems, `ConfigureAwait(false)` is used by default, so in the methods that take a `ValueTask` of a result the passed delegates run on a thread-pool thread. When the delegates need the original context (e.g., to update UI elements), set the `continueOnCapturedContext` parameter to `true`, or set [ResultConfiguration.ContinueOnCapturedContext](../../ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md) to `true` once at startup.
@@ -152,7 +152,7 @@ var userResult = await _userService.GetUserAsync(userData)
 
 
 ## ElseAsync&lt;TResult&gt;(ValueTask&lt;TResult&gt;, Func&lt;Error, TResult&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/ElseValueTaskAsyncExtensions.cs#L384" target="_blank">ElseValueTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/ElseValueTaskAsyncExtensions.cs#L377" target="_blank">ElseValueTaskAsyncExtensions.cs</a>
 
 Runs the synchronous function if the result that the `resultTask` returns is failed, and returns the result that the function returns instead (e.g., a recovered value or another error).
 
