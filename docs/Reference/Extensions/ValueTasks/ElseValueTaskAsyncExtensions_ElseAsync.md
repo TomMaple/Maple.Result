@@ -152,7 +152,7 @@ var userResult = await _userService.GetUserAsync(userData)
 
 
 ## ElseAsync&lt;TResult&gt;(ValueTask&lt;TResult&gt;, Func&lt;Error, TResult&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/ElseValueTaskAsyncExtensions.cs#L384" target="_blank">ElseValueTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/ElseValueTaskAsyncExtensions.cs#L377" target="_blank">ElseValueTaskAsyncExtensions.cs</a>
 
 Runs the synchronous function if the result that the `resultTask` returns is failed, and returns the result that the function returns instead (e.g., a recovered value or another error).
 

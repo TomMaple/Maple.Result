@@ -212,7 +212,7 @@ var userResult = await _userService.CreateUserAsync(userData)
 
 
 ## IfSuccessAsync(ValueTask&lt;Result&gt;, Action, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/IfSuccessValueTaskAsyncExtensions.cs#L285" target="_blank">IfSuccessValueTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/IfSuccessValueTaskAsyncExtensions.cs#L287" target="_blank">IfSuccessValueTaskAsyncExtensions.cs</a>
 
 Runs the synchronous action if the result that the `resultTask` returns is successful, and returns the result unchanged.
 
@@ -254,7 +254,7 @@ var result = await _service.DeleteAsync(id)
 
 
 ## IfSuccessAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Action&lt;T&gt;, Boolean)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/IfSuccessValueTaskAsyncExtensions.cs#L320" target="_blank">IfSuccessValueTaskAsyncExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ValueTasks/IfSuccessValueTaskAsyncExtensions.cs#L322" target="_blank">IfSuccessValueTaskAsyncExtensions.cs</a>
 
 Runs the synchronous action on the value if the result that the `resultTask` returns is successful, and returns the result unchanged.
 
