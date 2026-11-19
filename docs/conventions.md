@@ -102,6 +102,10 @@ are marked breaking. Preview the notes locally with `git cliff --unreleased --st
 	  analyzer project, `src/Maple.Result.Analyzers`. The library has no overload whose only purpose is to turn a call into a
 	  compile error, and `[Obsolete]` is not used for that.
 	* Chained calls go one per line, unless the whole statement fits on one line.
+	* An expression-bodied method or local function is never written on one line: the `=>` starts the next line, indented
+	  once (e.g., `private static bool IsFunction(SyntaxNode node)` and, on the next line, `=> node is …;`). Any other `=>`
+	  that is followed by a line break (a lambda, a property, a switch expression arm) starts the next line too, unless it
+	  opens a block (`{`).
 	* Empty lines:
 		* before a `return`, unless the block has only two one-line statements;
 		* before the other control-flow statements (`throw`, `break`, `continue`, `goto`, `yield return`, `yield break`),
