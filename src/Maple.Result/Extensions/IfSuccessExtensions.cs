@@ -22,7 +22,7 @@ namespace Maple.Results.Extensions;
 ///     returns a value, a <see cref="Result" />, a <see cref="Result{T}" /> or an <see cref="Error" />, use <c>Then</c>: here it only runs
 ///     as a side effect, and what it returns is ignored. The analyzer of the package reports the likely mistakes (MR0004, MR0005).
 /// </remarks>
-public static partial class IfSuccessExtensions
+public static class IfSuccessExtensions
 {
     #region Result extensions
 

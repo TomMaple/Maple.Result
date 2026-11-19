@@ -22,7 +22,7 @@ namespace Maple.Results.Extensions;
 ///     value, or return another error), use <c>Else</c>: here a function that returns a value only runs as a side effect, and the
 ///     failed result stays failed. The analyzer of the package reports the calls that are probably a mistake (MR0004, MR0005).
 /// </remarks>
-public static partial class IfErrorExtensions
+public static class IfErrorExtensions
 {
     /// <summary>
     ///     Invokes the specified action if the <paramref name="result" /> represents an error, and returns the original <paramref name="result" />.

@@ -21,7 +21,7 @@ namespace Maple.Results.Extensions;
 ///     <see cref="Result{T}" />, or a task, which the caller awaits (e.g., <c>await result.Match(x => CountAsync(x), e => CountAsync(0))</c>).
 ///     For two side effects, use <c>Switch</c>: two actions return no value, so they do not compile here.
 /// </remarks>
-public static partial class MatchExtensions
+public static class MatchExtensions
 {
     #region Result
 

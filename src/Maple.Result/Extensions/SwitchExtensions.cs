@@ -21,7 +21,7 @@ namespace Maple.Results.Extensions;
 ///     <c>IfSuccess(…).IfError(…)</c>, which return the result. An action that returns a value is a side effect (e.g.,
 ///     <c>x => set.Add(x)</c>); a function that returns a task is not awaited, and the analyzer of the package reports it (MR0002).
 /// </remarks>
-public static partial class SwitchExtensions
+public static class SwitchExtensions
 {
     #region Result
 
