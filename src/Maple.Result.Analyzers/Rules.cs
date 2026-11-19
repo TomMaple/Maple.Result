@@ -22,13 +22,13 @@ public static class Rules
     /// <summary>MR0001: a task becomes the value of a result.</summary>
     public const string InferredResultValueId = "MR0001";
 
-    /// <summary>MR0002: a task is not awaited by a side-effect method.</summary>
+    /// <summary>MR0002: a task is not awaited by a side effect method.</summary>
     public const string UnawaitedTaskId = "MR0002";
 
     /// <summary>MR0003: a task, a result or an <c>Error</c> is stored as the value of a result.</summary>
     public const string ConvertedResultValueId = "MR0003";
 
-    /// <summary>MR0004: a side-effect method drops the result of its function.</summary>
+    /// <summary>MR0004: a side effect method drops the result of its function.</summary>
     public const string DroppedResultId = "MR0004";
 
     /// <summary>MR0005: <c>IfSuccess</c> or <c>IfError</c> ignores the value of its function.</summary>
@@ -83,7 +83,7 @@ public static class Rules
 
     internal static readonly DiagnosticDescriptor DroppedResult = new(
         DroppedResultId,
-        "A side-effect method drops the result of its function",
+        "A side effect method drops the result of its function",
         "{0} ignores the {1} that this function returns, so a failure is lost. {2}.",
         Category,
         DiagnosticSeverity.Error,
@@ -119,7 +119,7 @@ public static class Rules
 
     internal static readonly DiagnosticDescriptor UnawaitedTask = new(
         UnawaitedTaskId,
-        "A task is not awaited by a side-effect method",
+        "A task is not awaited by a side effect method",
         "{0} takes an action here, so {1} is not awaited. {2}.",
         Category,
         DiagnosticSeverity.Error,

@@ -14,7 +14,7 @@ using Microsoft.CodeAnalysis;
 namespace Maple.Results.Analyzers.Tests.Unit.DroppedResultAnalyzerTests;
 
 /// <summary>
-///     Tests of the <see cref="DroppedResultAnalyzer" /> (MR0004): a function passed to a side-effect method that returns a result or an
+///     Tests of the <see cref="DroppedResultAnalyzer" /> (MR0004): a function passed to a side effect method that returns a result or an
 ///     <c>Error</c> (or a task of one) is reported; a function that returns something else, or stores the result, is not.
 /// </summary>
 public class DroppedResultAnalyzerUnitTests

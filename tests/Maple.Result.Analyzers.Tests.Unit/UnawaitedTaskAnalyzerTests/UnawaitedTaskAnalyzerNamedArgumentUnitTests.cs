@@ -13,7 +13,7 @@ using Maple.Results.Analyzers.Tests.Unit.TestingInfrastructure.Helpers;
 namespace Maple.Results.Analyzers.Tests.Unit.UnawaitedTaskAnalyzerTests;
 
 /// <summary>
-///     Tests that the <see cref="UnawaitedTaskAnalyzer" /> (MR0002) reports a task that a side-effect method does not await,
+///     Tests that the <see cref="UnawaitedTaskAnalyzer" /> (MR0002) reports a task that a side effect method does not await,
 ///     on call shapes that compile without a diagnostic of the compiler: calls with named arguments.
 /// </summary>
 public class UnawaitedTaskAnalyzerNamedArgumentUnitTests

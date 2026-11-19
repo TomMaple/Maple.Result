@@ -13,7 +13,7 @@ using Maple.Results.Analyzers.Tests.Unit.TestingInfrastructure.Helpers;
 namespace Maple.Results.Analyzers.Tests.Unit.DroppedResultAnalyzerTests;
 
 /// <summary>
-///     Tests that the <see cref="DroppedResultAnalyzer" /> (MR0004) reports a result that a side-effect method drops,
+///     Tests that the <see cref="DroppedResultAnalyzer" /> (MR0004) reports a result that a side effect method drops,
 ///     on call shapes that compile without a diagnostic of the compiler: calls of Then, Else, IfSuccess and IfError.
 /// </summary>
 public class DroppedResultAnalyzerThenElseUnitTests
