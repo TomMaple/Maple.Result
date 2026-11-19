@@ -40,7 +40,9 @@ internal static class OverloadReflectionHelper
         return [.. type.GetMethods(BindingFlags.Public | BindingFlags.Static).Where(ReturnsValueTask)];
     }
 
-    /// <summary>Whether the method returns a <see cref="Task" /> or a <see cref="Task{TResult}" />.</summary>
+    /// <summary>
+    ///     Whether the method returns a <see cref="Task" /> or a <see cref="Task{TResult}" />.
+    /// </summary>
     internal static bool ReturnsTask(MethodInfo method)
     {
         var returnType = method.ReturnType;
@@ -48,7 +50,9 @@ internal static class OverloadReflectionHelper
         return returnType == typeof(Task) || (returnType.IsGenericType && returnType.GetGenericTypeDefinition() == typeof(Task<>));
     }
 
-    /// <summary>Whether the method returns a <see cref="ValueTask" /> or a <see cref="ValueTask{TResult}" />.</summary>
+    /// <summary>
+    ///     Whether the method returns a <see cref="ValueTask" /> or a <see cref="ValueTask{TResult}" />.
+    /// </summary>
     internal static bool ReturnsValueTask(MethodInfo method)
     {
         var returnType = method.ReturnType;
@@ -56,7 +60,9 @@ internal static class OverloadReflectionHelper
         return returnType == typeof(ValueTask) || (returnType.IsGenericType && returnType.GetGenericTypeDefinition() == typeof(ValueTask<>));
     }
 
-    /// <summary>Whether the receiver of the extension method is a result, not a task of one.</summary>
+    /// <summary>
+    ///     Whether the receiver of the extension method is a result, not a task of one.
+    /// </summary>
     internal static bool HasSynchronousReceiver(MethodInfo method)
     {
         var receiver = method.GetParameters()[0].ParameterType;
@@ -68,14 +74,18 @@ internal static class OverloadReflectionHelper
         return definition != typeof(Task<>) && definition != typeof(ValueTask<>);
     }
 
-    /// <summary>Whether the parameter is an <see cref="Action" /> or an <see cref="Action{T}" />.</summary>
+    /// <summary>
+    ///     Whether the parameter is an <see cref="Action" /> or an <see cref="Action{T}" />.
+    /// </summary>
     internal static bool IsAction(Type parameterType)
     {
         return parameterType == typeof(Action)
                || (parameterType.IsGenericType && parameterType.GetGenericTypeDefinition() == typeof(Action<>));
     }
 
-    /// <summary>Whether the parameter is a delegate that returns a <see cref="Task" /> or a <see cref="Task{TResult}" />.</summary>
+    /// <summary>
+    ///     Whether the parameter is a delegate that returns a <see cref="Task" /> or a <see cref="Task{TResult}" />.
+    /// </summary>
     internal static bool IsTaskFunction(Type parameterType)
     {
         if (!parameterType.IsGenericType)
@@ -86,7 +96,9 @@ internal static class OverloadReflectionHelper
         return returnType == typeof(Task) || (returnType.IsGenericType && returnType.GetGenericTypeDefinition() == typeof(Task<>));
     }
 
-    /// <summary>Whether the parameter is a delegate that returns a <see cref="ValueTask" /> or a <see cref="ValueTask{TResult}" />.</summary>
+    /// <summary>
+    ///     Whether the parameter is a delegate that returns a <see cref="ValueTask" /> or a <see cref="ValueTask{TResult}" />.
+    /// </summary>
     internal static bool IsValueTaskFunction(Type parameterType)
     {
         if (!parameterType.IsGenericType)
@@ -98,7 +110,9 @@ internal static class OverloadReflectionHelper
                || (returnType.IsGenericType && returnType.GetGenericTypeDefinition() == typeof(ValueTask<>));
     }
 
-    /// <summary>The overload resolution priority of the method; 0 when it has none.</summary>
+    /// <summary>
+    ///     The overload resolution priority of the method; 0 when it has none.
+    /// </summary>
     internal static int Priority(MethodInfo method)
     {
         return method.GetCustomAttribute<OverloadResolutionPriorityAttribute>()?.Priority ?? 0;

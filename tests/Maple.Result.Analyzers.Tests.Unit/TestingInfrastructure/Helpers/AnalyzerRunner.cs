@@ -153,23 +153,35 @@ internal static class AnalyzerRunner
 /// </summary>
 internal sealed class AnalysisResult(SyntaxTree tree, Diagnostic[] compilerErrors, Diagnostic[] diagnostics)
 {
-    /// <summary>The identifiers of the errors of the compiler; a snippet that a rule is tested on has none.</summary>
+    /// <summary>
+    ///     The identifiers of the errors of the compiler; a snippet that a rule is tested on has none.
+    /// </summary>
     public IReadOnlyList<string> CompilerErrorIds => [.. compilerErrors.Select(d => d.Id)];
 
-    /// <summary>The errors of the compiler, for the message of a failed assertion.</summary>
+    /// <summary>
+    ///     The errors of the compiler, for the message of a failed assertion.
+    /// </summary>
     public string CompilerErrors => string.Join(Environment.NewLine, compilerErrors.Select(d => d.ToString()));
 
-    /// <summary>The identifiers of the diagnostics of the analyzers, in the order of their positions.</summary>
+    /// <summary>
+    ///     The identifiers of the diagnostics of the analyzers, in the order of their positions.
+    /// </summary>
     public IReadOnlyList<string> DiagnosticIds => [.. diagnostics.Select(d => d.Id)];
 
-    /// <summary>The diagnostics of the analyzers, in the order of their positions.</summary>
+    /// <summary>
+    ///     The diagnostics of the analyzers, in the order of their positions.
+    /// </summary>
     public IReadOnlyList<Diagnostic> Diagnostics => diagnostics;
 
-    /// <summary>The text that the <paramref name="diagnostic" /> marks.</summary>
+    /// <summary>
+    ///     The text that the <paramref name="diagnostic" /> marks.
+    /// </summary>
     public string MarkedText(Diagnostic diagnostic)
         => TextAt(diagnostic.Location);
 
-    /// <summary>The text of the snippet at the <paramref name="location" />.</summary>
+    /// <summary>
+    ///     The text of the snippet at the <paramref name="location" />.
+    /// </summary>
     public string TextAt(Location location)
         => tree.GetText().ToString(location.SourceSpan);
 }

@@ -33,13 +33,19 @@ internal readonly struct DelegateArgument
 
     #endregion
 
-    /// <summary>The body of the lambda when it is an expression; <see langword="null" /> for a block body and for a method group.</summary>
+    /// <summary>
+    ///     The body of the lambda when it is an expression; <see langword="null" /> for a block body and for a method group.
+    /// </summary>
     public SyntaxNode? ExpressionBody { get; }
 
-    /// <summary>The <c>Invoke</c> method of the delegate type that the argument was converted to.</summary>
+    /// <summary>
+    ///     The <c>Invoke</c> method of the delegate type that the argument was converted to.
+    /// </summary>
     public IMethodSymbol Invoke { get; }
 
-    /// <summary>Whether the argument is a lambda with the <see langword="async" /> modifier.</summary>
+    /// <summary>
+    ///     Whether the argument is a lambda with the <see langword="async" /> modifier.
+    /// </summary>
     public bool IsAsyncLambda { get; }
 
     /// <summary>
@@ -48,10 +54,14 @@ internal readonly struct DelegateArgument
     /// </summary>
     public ITypeSymbol? ReturnedType { get; }
 
-    /// <summary>The lambda or the method group.</summary>
+    /// <summary>
+    ///     The lambda or the method group.
+    /// </summary>
     public SyntaxNode Syntax { get; }
 
-    /// <summary>Whether the body of the lambda is an assignment, whose value is stored and not lost.</summary>
+    /// <summary>
+    ///     Whether the body of the lambda is an assignment, whose value is stored and not lost.
+    /// </summary>
     public bool IsAssignment => ExpressionBody is AssignmentExpressionSyntax;
 
     #region factory methods

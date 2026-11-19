@@ -47,16 +47,22 @@ internal sealed class KnownTypes
 
     #region factory methods
 
-    /// <summary>Returns the known types of the <paramref name="compilation" />.</summary>
+    /// <summary>
+    ///     Returns the known types of the <paramref name="compilation" />.
+    /// </summary>
     public static KnownTypes For(Compilation compilation)
         => Cache.GetValue(compilation, static key => new KnownTypes(key));
 
     #endregion
 
-    /// <summary>The names of the synchronous methods that have a form with the <c>Async</c> suffix for an asynchronous function.</summary>
+    /// <summary>
+    ///     The names of the synchronous methods that have a form with the <c>Async</c> suffix for an asynchronous function.
+    /// </summary>
     public static ImmutableHashSet<string> MethodsWithAsyncForm { get; } = ImmutableHashSet.Create("Else", "IfError", "IfSuccess", "Then", "Try");
 
-    /// <summary>Whether the compilation references the library; the analyzers register nothing when it does not.</summary>
+    /// <summary>
+    ///     Whether the compilation references the library; the analyzers register nothing when it does not.
+    /// </summary>
     public bool IsLibraryReferenced => _result is not null;
 
     /// <summary>
@@ -74,27 +80,39 @@ internal sealed class KnownTypes
             : null;
     }
 
-    /// <summary>The name of the <paramref name="type" /> as a caller writes it (e.g., <c>Task&lt;int&gt;</c>).</summary>
+    /// <summary>
+    ///     The name of the <paramref name="type" /> as a caller writes it (e.g., <c>Task&lt;int&gt;</c>).
+    /// </summary>
     public static string Display(ITypeSymbol type)
         => type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
 
-    /// <summary>Whether the <paramref name="symbol" /> is declared in the library.</summary>
+    /// <summary>
+    ///     Whether the <paramref name="symbol" /> is declared in the library.
+    /// </summary>
     public bool IsLibraryMember(ISymbol symbol)
         => Same(symbol.ContainingAssembly, _result?.ContainingAssembly);
 
-    /// <summary>Whether the <paramref name="type" /> is a <c>Task</c> or a <c>ValueTask</c> without a value.</summary>
+    /// <summary>
+    ///     Whether the <paramref name="type" /> is a <c>Task</c> or a <c>ValueTask</c> without a value.
+    /// </summary>
     public bool IsPlainTask(ITypeSymbol? type)
         => Same(type, _task) || Same(type, _valueTask);
 
-    /// <summary>Whether the <paramref name="type" /> is a <c>Result</c> or a <c>Result&lt;T&gt;</c>.</summary>
+    /// <summary>
+    ///     Whether the <paramref name="type" /> is a <c>Result</c> or a <c>Result&lt;T&gt;</c>.
+    /// </summary>
     public bool IsResult(ITypeSymbol? type)
         => Same(type, _result) || Same(type?.OriginalDefinition, _resultOfT);
 
-    /// <summary>Whether the <paramref name="type" /> is a result or an <c>Error</c>.</summary>
+    /// <summary>
+    ///     Whether the <paramref name="type" /> is a result or an <c>Error</c>.
+    /// </summary>
     public bool IsResultOrError(ITypeSymbol? type)
         => IsResult(type) || Same(type, _error);
 
-    /// <summary>Whether the <paramref name="type" /> is a <c>Task</c>, a <c>Task&lt;T&gt;</c>, a <c>ValueTask</c> or a <c>ValueTask&lt;T&gt;</c>.</summary>
+    /// <summary>
+    ///     Whether the <paramref name="type" /> is a <c>Task</c>, a <c>Task&lt;T&gt;</c>, a <c>ValueTask</c> or a <c>ValueTask&lt;T&gt;</c>.
+    /// </summary>
     public bool IsTask(ITypeSymbol? type)
         => IsPlainTask(type) || AwaitedValue(type) is not null;
 

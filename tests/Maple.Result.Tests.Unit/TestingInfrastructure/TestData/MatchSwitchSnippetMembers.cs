@@ -16,7 +16,9 @@ namespace Maple.Results.Tests.Unit.TestingInfrastructure.TestData;
 /// </summary>
 internal static class MatchSwitchSnippetMembers
 {
-    /// <summary>The members, placed in the snippet class next to <c>err</c> and <c>ok</c> of the snippet compiler.</summary>
+    /// <summary>
+    ///     The members, placed in the snippet class next to <c>err</c> and <c>ok</c> of the snippet compiler.
+    /// </summary>
     public const string Members = """
         static Result done = Result.Success();
         static Task<Result<int>> okTask = Task.FromResult(Result.FromValue(1));

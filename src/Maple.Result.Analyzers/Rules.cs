@@ -19,22 +19,34 @@ public static class Rules
 {
     #region identifiers
 
-    /// <summary>MR0001: a task becomes the value of a result.</summary>
+    /// <summary>
+    ///     MR0001: a task becomes the value of a result.
+    /// </summary>
     public const string InferredResultValueId = "MR0001";
 
-    /// <summary>MR0002: a task is not awaited by a side effect method.</summary>
+    /// <summary>
+    ///     MR0002: a task is not awaited by a side effect method.
+    /// </summary>
     public const string UnawaitedTaskId = "MR0002";
 
-    /// <summary>MR0003: a task, a result or an <c>Error</c> is stored as the value of a result.</summary>
+    /// <summary>
+    ///     MR0003: a task, a result or an <c>Error</c> is stored as the value of a result.
+    /// </summary>
     public const string ConvertedResultValueId = "MR0003";
 
-    /// <summary>MR0004: a side effect method drops the result of its function.</summary>
+    /// <summary>
+    ///     MR0004: a side effect method drops the result of its function.
+    /// </summary>
     public const string DroppedResultId = "MR0004";
 
-    /// <summary>MR0005: <c>IfSuccess</c> or <c>IfError</c> ignores the value of its function.</summary>
+    /// <summary>
+    ///     MR0005: <c>IfSuccess</c> or <c>IfError</c> ignores the value of its function.
+    /// </summary>
     public const string IgnoredValueId = "MR0005";
 
-    /// <summary>MR0006: a result is discarded.</summary>
+    /// <summary>
+    ///     MR0006: a result is discarded.
+    /// </summary>
     public const string DiscardedResultId = "MR0006";
 
     #endregion

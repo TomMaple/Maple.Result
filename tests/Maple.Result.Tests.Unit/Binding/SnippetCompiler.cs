@@ -109,12 +109,16 @@ internal static class SnippetCompiler
 
 internal sealed class SnippetResult(CSharpCompilation compilation, SyntaxTree tree, Diagnostic[] errors)
 {
-    /// <summary>The ids of the error diagnostics, e.g., <c>CS0411</c>.</summary>
+    /// <summary>
+    ///     The ids of the error diagnostics, e.g., <c>CS0411</c>.
+    /// </summary>
     public IReadOnlyList<string> ErrorIds => [.. errors.Select(d => d.Id)];
 
     public IReadOnlyList<Diagnostic> Errors => errors;
 
-    /// <summary>The signature of the method that the first call of <paramref name="methodName"/> binds to.</summary>
+    /// <summary>
+    ///     The signature of the method that the first call of <paramref name="methodName"/> binds to.
+    /// </summary>
     public string BoundMethod(string methodName)
     {
         var model = compilation.GetSemanticModel(tree);

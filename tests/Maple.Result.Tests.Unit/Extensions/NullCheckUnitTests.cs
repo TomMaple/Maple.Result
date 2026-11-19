@@ -124,7 +124,9 @@ public class NullCheckUnitTests
     private const string NullTask = "null task";
     private const string NullTaskResult = "task with a null result";
 
-    /// <summary>The ways a function of the type can return <see langword="null" /> where the extension methods require a value.</summary>
+    /// <summary>
+    ///     The ways a function of the type can return <see langword="null" /> where the extension methods require a value.
+    /// </summary>
     private static IEnumerable<string> NullVariants(Type type)
     {
         if (!IsDelegate(type) || DelegateReturnType(type) is not { } returnType || returnType == typeof(void))
@@ -151,7 +153,9 @@ public class NullCheckUnitTests
         }
     }
 
-    /// <summary>The types that a function may not return as <see langword="null" />.</summary>
+    /// <summary>
+    ///     The types that a function may not return as <see langword="null" />.
+    /// </summary>
     private static bool IsRequired(Type type)
     {
         return type == typeof(Result) || type == typeof(Error) || (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Result<>));

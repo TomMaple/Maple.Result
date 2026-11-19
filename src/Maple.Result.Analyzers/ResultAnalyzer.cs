@@ -69,7 +69,9 @@ public abstract class ResultAnalyzer : DiagnosticAnalyzer
         };
     }
 
-    /// <summary>Whether the call names its type arguments, e.g., <c>Then&lt;int, Task&lt;int&gt;&gt;(…)</c>.</summary>
+    /// <summary>
+    ///     Whether the call names its type arguments, e.g., <c>Then&lt;int, Task&lt;int&gt;&gt;(…)</c>.
+    /// </summary>
     private protected static bool HasExplicitTypeArguments(IInvocationOperation invocation)
         => CalledName(invocation) is GenericNameSyntax;
 

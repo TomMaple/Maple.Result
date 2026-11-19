@@ -18,10 +18,14 @@ namespace Maple.Results.Tests.Unit.Binding;
 /// </summary>
 public class ClosedInterfaceBindingUnitTests
 {
-    /// <summary>The internal member of the interface, which a type of another assembly cannot implement.</summary>
+    /// <summary>
+    ///     The internal member of the interface, which a type of another assembly cannot implement.
+    /// </summary>
     private const string ClosingMember = "CannotBeImplementedOutsideTheLibrary";
 
-    /// <summary>The public members of the interface, as a type that tries to implement it declares them.</summary>
+    /// <summary>
+    ///     The public members of the interface, as a type that tries to implement it declares them.
+    /// </summary>
     private const string PublicMembers = """
 
             public Error? Error => null;

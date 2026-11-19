@@ -87,7 +87,9 @@ public class IOperationResultUnitTests
 
     #region helper methods
 
-    /// <summary>Calls the internal member by reflection, so that this class compiles before the member exists.</summary>
+    /// <summary>
+    ///     Calls the internal member by reflection, so that this class compiles before the member exists.
+    /// </summary>
     private static void InvokeClosingMember(IOperationResult result)
     {
         var method = typeof(IOperationResult).GetMethod(ClosingMember, BindingFlags.Instance | BindingFlags.NonPublic);
