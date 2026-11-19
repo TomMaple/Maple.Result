@@ -9,7 +9,6 @@
  */
 
 using Maple.Results.Extensions;
-using Maple.Results.Tests.Unit.TestingInfrastructure.Helpers;
 using Moq;
 using System;
 using System.Threading.Tasks;

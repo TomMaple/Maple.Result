@@ -8,7 +8,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using System.Collections.Generic;
 using Sut = Maple.Results.Error;
 
 namespace Maple.Results.Tests.Unit.ErrorTests;
