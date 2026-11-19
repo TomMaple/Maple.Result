@@ -51,14 +51,13 @@ public sealed class IgnoredValueAnalyzer : ResultAnalyzer
         if (newName is null || !types.IsLibraryMember(method) || !IsResultUsed(invocation.Syntax))
             return;
 
-        // The receiver is the first parameter of the extension method; the function is the only delegate among the others.
-        var receiver = ReceiverArgument(invocation);
-        var receiverType = receiver?.Value.Type;
+        // The receiver is a result or a task of one, so the function is the only delegate among the arguments.
+        var receiverType = ReceiverArgument(invocation)?.Value.Type;
         DelegateArgument function = default;
 
         foreach (var argument in invocation.Arguments)
         {
-            if (argument != receiver && DelegateArgument.TryCreate(argument, context.CancellationToken, out var candidate))
+            if (DelegateArgument.TryCreate(argument, context.CancellationToken, out var candidate))
                 function = candidate;
         }
 
