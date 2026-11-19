@@ -19,8 +19,8 @@ namespace Maple.Results.Extensions;
 /// </summary>
 /// <remarks>
 ///     A successful result is returned unchanged, and the action is not called. To replace a failed result (e.g., recover with a
-///     value, or return another error), use <c>Else</c>; a function that returns a value is a compile error here (CS0619), so that a failure
-///     is not turned into a success by mistake.
+///     value, or return another error), use <c>Else</c>: here a function that returns a value only runs as a side effect, and the
+///     failed result stays failed. The analyzer of the package reports the calls that are probably a mistake (MR0004, MR0005).
 /// </remarks>
 public static partial class IfErrorExtensions
 {

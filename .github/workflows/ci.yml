@@ -21,7 +21,7 @@ env:
   ARTIFACTS_PATH: ${{ github.workspace }}/artifacts
   RESULTS_PATH: ${{ github.workspace }}/test-results
   REPORTGENERATOR_VERSION: 5.6.0
-  # The minimum line and branch coverage, in percent, of the code that runs (the overload traps are left out; #284).
+  # The minimum line and branch coverage, in percent, of the library, the analyzers and the code fixes together (#284).
   MINIMUM_COVERAGE: 90
 
 permissions: {}
@@ -129,10 +129,11 @@ jobs:
         PACKAGE_VERSION: ${{ steps.calculate_version.outputs.package_version }}
         INFORMATIONAL_VERSION: ${{ steps.calculate_version.outputs.informational_version }}
 
+    # Every test project writes a coverage file of its own (no coverage-output option, which would give them one name).
     - name: Test
       run: >-
         dotnet test --no-build --configuration Release --results-directory "$RESULTS_PATH"
-        --coverage --coverage-output-format cobertura --coverage-output coverage.cobertura.xml
+        --coverage --coverage-output-format cobertura
         --coverage-settings "${{ github.workspace }}/tests/CodeCoverage.config"
         --report-xunit-trx
 
@@ -140,14 +141,14 @@ jobs:
       if: ${{ !cancelled() }}
       run: |
         dotnet tool install --global dotnet-reportgenerator-globaltool --version "$REPORTGENERATOR_VERSION"
-        reportgenerator "-reports:${RESULTS_PATH}/coverage.cobertura.xml" "-targetdir:${RESULTS_PATH}/coverage-report" -reporttypes:MarkdownSummaryGithub
+        reportgenerator "-reports:${RESULTS_PATH}/*.cobertura.xml" "-targetdir:${RESULTS_PATH}/coverage-report" -reporttypes:MarkdownSummaryGithub
         cat "${RESULTS_PATH}/coverage-report/SummaryGithub.md" >> "$GITHUB_STEP_SUMMARY"
 
     # After the summary, so that it is in the job summary also when the coverage is too low. ReportGenerator exits with 1
     # and names the coverage that is below the minimum.
     - name: Coverage threshold
       run: >-
-        reportgenerator "-reports:${RESULTS_PATH}/coverage.cobertura.xml" "-targetdir:${RESULTS_PATH}/coverage-report"
+        reportgenerator "-reports:${RESULTS_PATH}/*.cobertura.xml" "-targetdir:${RESULTS_PATH}/coverage-report"
         -reporttypes:TextSummary
         "minimumCoverageThresholds:lineCoverage=${MINIMUM_COVERAGE}"
         "minimumCoverageThresholds:branchCoverage=${MINIMUM_COVERAGE}"

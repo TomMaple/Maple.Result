@@ -16,8 +16,10 @@ namespace Maple.Results.Tests.Unit.Binding;
 /// <summary>
 ///     The <c>Task</c>-based and the <c>ValueTask</c>-based methods in one class per verb, in <c>Maple.Results.Extensions</c> (#248):
 ///     on a synchronous result the function decides the kind of task (an <c>async</c> lambda gives a <c>Task</c>, an explicit return type
-///     a <c>ValueTask</c>), on a task result the receiver decides it (a function of the other kind is awaited, #226), and a trapped shape
-///     reports only CS0619, never an ambiguity (CS0121).
+///     a <c>ValueTask</c>), on a task result the receiver decides it (a function of the other kind is awaited, #226), and a shape that
+///     no overload takes reports the errors of the compiler, never an ambiguity (CS0121). The shapes that compile into something wrong
+///     (e.g., a task without a value in <c>ThenAsync</c> on a task result) are reported by the analyzer (rules MR0001 to MR0006 of
+///     <c>Maple.Result.Analyzers</c>) and tested with it (#223).
 /// </summary>
 public class MergedAsyncClassesBindingUnitTests
 {
@@ -153,6 +155,11 @@ public class MergedAsyncClassesBindingUnitTests
     // The synchronous methods and the ValueTask-based methods with one using.
     [InlineData("Result<int> r = ok.Then(x => x + 1).IfError(e => { });")]
     [InlineData("Result<int> r = from x in ok select x + 1;")]
+    // A Task with a value in IfSuccessAsync or IfErrorAsync converts to a task without a value: it is awaited, and its value is ignored.
+    [InlineData("Task<Result<int>> r = ok.IfSuccessAsync(x => DoubleAsync(x));")]
+    [InlineData("Task<Result<int>> r = ok.IfErrorAsync(e => RecoverAsync(e));")]
+    [InlineData("ValueTask<Result<int>> r = GetValueTask().IfSuccessAsync(x => DoubleAsync(x));")]
+    [InlineData("ValueTask<Result<int>> r = GetValueTask().IfErrorAsync(e => RecoverAsync(e));")]
     public void Call_OneNamespace_CompilesToExpectedType(string statements)
     {
         // Act
@@ -163,13 +170,12 @@ public class MergedAsyncClassesBindingUnitTests
     }
 
     [Theory]
-    // A synchronous result: the value traps of both kinds apply to an async lambda (#257).
-    [InlineData("_ = ok.IfSuccessAsync(async x => { await Task.Yield(); return 1; });", "CS0619")]
-    [InlineData("_ = ok.IfErrorAsync(async e => { await Task.Yield(); return 1; });", "CS0619")]
-    [InlineData("_ = ok.IfSuccessAsync(x => DoubleAsync(x));", "CS0619")]
-    [InlineData("_ = ok.IfSuccessAsync(x => DoubleValueAsync(x));", "CS0619")]
-    [InlineData("_ = ok.IfErrorAsync(e => RecoverAsync(e));", "CS0619")]
-    [InlineData("_ = ok.IfErrorAsync(e => RecoverValueAsync(e));", "CS0619")]
+    // A synchronous result: a value in a task in IfSuccessAsync or IfErrorAsync, from an async lambda with a block body or in a
+    // ValueTask, which does not convert to a task without a value (#257).
+    [InlineData("_ = ok.IfSuccessAsync(async x => { await Task.Yield(); return 1; });", "CS8031")]
+    [InlineData("_ = ok.IfErrorAsync(async e => { await Task.Yield(); return 1; });", "CS8031")]
+    [InlineData("_ = ok.IfSuccessAsync(x => DoubleValueAsync(x));", "CS0029,CS1662")]
+    [InlineData("_ = ok.IfErrorAsync(e => RecoverValueAsync(e));", "CS0029,CS1662")]
     // A synchronous result: a task without a value in ThenAsync or ElseAsync; the compiler reports it (#256).
     [InlineData("_ = ok.ThenAsync(async x => { await Task.Yield(); });", "CS1643")]
     [InlineData("_ = done.ThenAsync(async () => { await Task.Yield(); });", "CS1643")]
@@ -178,23 +184,11 @@ public class MergedAsyncClassesBindingUnitTests
     [InlineData("_ = ok.ThenAsync(x => StoreValueAsync(x));", "CS0029,CS1662")]
     [InlineData("_ = ok.ElseAsync(e => LogAsync(e));", "CS0029,CS0266,CS1662")]
     [InlineData("_ = ok.ElseAsync(e => LogValueAsync(e));", "CS0029,CS1662")]
-    // A task result: a task without a value in ThenAsync.
-    [InlineData("_ = GetTask().ThenAsync(x => StoreAsync(x));", "CS0619")]
-    [InlineData("_ = GetValueTask().ThenAsync(x => StoreValueAsync(x));", "CS0619")]
-    // A task result with a function that returns the other kind of task: a task without a value in ThenAsync or ElseAsync, and a
-    // value in a task in IfSuccessAsync or IfErrorAsync, as for the own kind (#226).
-    [InlineData("_ = GetTask().ThenAsync(x => StoreValueAsync(x));", "CS0619")]
-    [InlineData("_ = GetValueTask().ThenAsync(x => StoreAsync(x));", "CS0619")]
-    [InlineData("_ = GetDoneTask().ThenAsync(() => StoreValueAsync(1));", "CS0619")]
-    [InlineData("_ = GetDoneValueTask().ThenAsync(() => StoreAsync(1));", "CS0619")]
-    [InlineData("_ = GetTask().ElseAsync(e => LogValueAsync(e));", "CS0619")]
-    [InlineData("_ = GetValueTask().ElseAsync(e => LogAsync(e));", "CS0619")]
-    [InlineData("_ = GetTask().IfSuccessAsync(x => DoubleValueAsync(x));", "CS0619")]
-    [InlineData("_ = GetValueTask().IfSuccessAsync(x => DoubleAsync(x));", "CS0619")]
-    [InlineData("_ = GetTask().IfErrorAsync(e => RecoverValueAsync(e));", "CS0619")]
-    [InlineData("_ = GetValueTask().IfErrorAsync(e => RecoverAsync(e));", "CS0619")]
+    // A task result with a function that returns the other kind of task: a task without a value in ElseAsync (#226).
+    [InlineData("_ = GetTask().ElseAsync(e => LogValueAsync(e));", "CS0029,CS1662")]
+    [InlineData("_ = GetValueTask().ElseAsync(e => LogAsync(e));", "CS0029,CS0266,CS1662")]
     // Still rejected: one function of each kind, and a query that mixes the kinds of task.
-    [InlineData("_ = GetTask().MatchAsync(x => DoubleAsync(x), e => RecoverValueAsync(e));", "CS0619")]
+    [InlineData("_ = GetTask().MatchAsync(x => DoubleAsync(x), e => RecoverValueAsync(e));", "CS0029,CS1662")]
     [InlineData("_ = from x in GetTask() from y in NextValueAsync(x) select x + y;", "CS0019,CS0029,CS1503")]
     public void Call_OneNamespace_ReportsOnlyTheStatedErrors(string statements, string errorIds)
     {

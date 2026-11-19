@@ -31,7 +31,6 @@ public class NullCheckUnitTests
     private static readonly Dictionary<string, MethodInfo> Methods = typeof(Result).Assembly.GetExportedTypes()
         .Where(t => t.Namespace?.StartsWith("Maple.Results.Extensions", StringComparison.Ordinal) == true)
         .SelectMany(t => t.GetMethods(BindingFlags.Public | BindingFlags.Static))
-        .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is null)
         .Select(Close)
         .ToDictionary(Describe);
 

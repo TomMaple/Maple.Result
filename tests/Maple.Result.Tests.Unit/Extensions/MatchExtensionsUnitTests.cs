@@ -11,7 +11,6 @@
 using Maple.Results.Extensions;
 using Maple.Results.Tests.Unit.TestingInfrastructure.Helpers;
 using System;
-using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -373,26 +372,7 @@ public class MatchExtensionsUnitTests
 
     #endregion
 
-    #region Match with two actions (overload trap)
-
-    // See issue #255.
-
-    [Fact]
-    public void Match_TwoActionsOverloads_AreHiddenCompileErrorsThatNameSwitch()
-    {
-        // Act
-        var traps = typeof(MatchExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is not null)
-            .ToList();
-
-        // Assert
-        traps.Count.ShouldBe(2);
-        traps.ShouldAllBe(m => m.Name == "Match"
-                               && OverloadTrapHelper.IsTrap(m, "Match takes two functions that return a value. Use Switch")
-                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
-                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never
-                               && m.GetParameters().Skip(1).All(p => p.ParameterType.Name.StartsWith("Action", StringComparison.Ordinal)));
-    }
+    #region Match overloads and their priority
 
     [Fact]
     public void Match_Overloads_HaveDefaultPriority()
@@ -403,23 +383,8 @@ public class MatchExtensionsUnitTests
             .ToList();
 
         // Assert
-        overloads.Count.ShouldBe(4);
-        overloads.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 0);
-    }
-
-    [Fact]
-    public void Match_TwoActionsTrapCalledByReflection_ThrowsNotSupportedException()
-    {
-        // Arrange
-        var trap = typeof(MatchExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Single(m => m.GetCustomAttribute<ObsoleteAttribute>() is not null && !m.IsGenericMethodDefinition);
-        object?[] arguments = [Result.Success(), (Action)(() => { }), (Action<Error>)(_ => { })];
-
-        // Act
-        var exception = Record.Exception(() => trap.Invoke(null, arguments));
-
-        // Assert
-        exception.ShouldBeOfType<TargetInvocationException>().InnerException.ShouldBeOfType<NotSupportedException>();
+        overloads.Count.ShouldBe(2);
+        overloads.ShouldAllBe(m => OverloadReflectionHelper.Priority(m) == 0);
     }
 
     #endregion

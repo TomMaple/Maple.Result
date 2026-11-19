@@ -38,7 +38,6 @@ public sealed class ContinueOnCapturedContextUnitTests : IDisposable
 
     private static readonly Dictionary<string, MethodInfo> Methods = typeof(Result).Assembly.GetExportedTypes()
         .SelectMany(t => t.GetMethods(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly))
-        .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is null)
         .Where(m => m.GetParameters().Any(p => p.Name == "continueOnCapturedContext"))
         .ToDictionary(Describe, Close);
 

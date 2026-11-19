@@ -30,7 +30,6 @@ public class LinqOverloadsUnitTests
 
     private static readonly Dictionary<string, MethodInfo> Methods = new[] { typeof(LinqExtensions), typeof(LinqAsyncExtensions) }
         .SelectMany(t => t.GetMethods(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly))
-        .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is null)
         .ToDictionary(Describe, Close);
 
     public static TheoryData<string> MethodCases()

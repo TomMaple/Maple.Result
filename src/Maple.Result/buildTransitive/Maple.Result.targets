@@ -1,0 +1,17 @@
+<Project>
+
+  <!-- NuGet adds the analyzers of a package to the projects that reference it, also through another project or package
+       (NuGet/Home#6279). This target is the insurance for a NuGet version that stops doing so for transitive references:
+       it adds the analyzer assemblies only when they are not among the analyzers already, so that they are never passed
+       to the compiler twice. -->
+  <Target Name="MapleResultAddAnalyzers" BeforeTargets="CoreCompile">
+    <ItemGroup>
+      <_MapleResultAnalyzer Include="@(Analyzer)" Condition="'%(Filename)%(Extension)' == 'Maple.Result.Analyzers.dll'" />
+    </ItemGroup>
+    <ItemGroup Condition="'@(_MapleResultAnalyzer)' == ''">
+      <Analyzer Include="$(MSBuildThisFileDirectory)..\analyzers\dotnet\cs\Maple.Result.Analyzers.dll" />
+      <Analyzer Include="$(MSBuildThisFileDirectory)..\analyzers\dotnet\cs\Maple.Result.Analyzers.CodeFixes.dll" />
+    </ItemGroup>
+  </Target>
+
+</Project>

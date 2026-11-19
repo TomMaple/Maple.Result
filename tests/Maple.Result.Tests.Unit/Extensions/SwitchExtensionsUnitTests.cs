@@ -11,7 +11,6 @@
 using Maple.Results.Extensions;
 using Maple.Results.Tests.Unit.TestingInfrastructure.Helpers;
 using System;
-using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 
@@ -207,65 +206,18 @@ public class SwitchExtensionsUnitTests
 
     #endregion
 
-    #region Switch with an action returning a task (overload trap)
-
-    // See issue #255.
-
-    [Fact]
-    public void Switch_ActionReturningTaskOverloads_AreHiddenCompileErrorsThatNameMatch()
-    {
-        // Act
-        var traps = typeof(SwitchExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is not null)
-            .ToList();
-
-        // Assert
-        traps.Count.ShouldBe(14);
-        traps.ShouldAllBe(m => m.Name == "Switch"
-                               && OverloadTrapHelper.IsTrap(m, "An action returns a task, which Switch does not await. Use Match")
-                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
-                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
-    }
-
-    [Fact]
-    public void Switch_TrapsConstrainedToTheTaskType_HavePriorityOne()
-    {
-        // Act
-        var traps = typeof(SwitchExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is not null
-                        && m.GetGenericArguments().Any(a => a.GetGenericParameterConstraints().Length > 0))
-            .ToList();
-
-        // Assert
-        traps.Count.ShouldBe(10);
-        traps.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 1);
-    }
-
-    [Fact]
-    public void Switch_TrapsForValueTaskOfT_HaveDefaultPriority()
-    {
-        // Act
-        var traps = typeof(SwitchExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is not null
-                        && m.GetGenericArguments().All(a => a.GetGenericParameterConstraints().Length == 0))
-            .ToList();
-
-        // Assert
-        traps.Count.ShouldBe(4);
-        traps.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 0);
-    }
+    #region Switch overloads and their priority
 
     [Fact]
     public void Switch_Overloads_HaveDefaultPriority()
     {
         // Act
         var overloads = typeof(SwitchExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is null)
             .ToList();
 
         // Assert
         overloads.Count.ShouldBe(2);
-        overloads.ShouldAllBe(m => m.Name == "Switch" && m.ReturnType == typeof(void) && OverloadTrapHelper.Priority(m) == 0);
+        overloads.ShouldAllBe(m => m.Name == "Switch" && m.ReturnType == typeof(void) && OverloadReflectionHelper.Priority(m) == 0);
     }
 
     #endregion

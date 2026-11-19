@@ -22,8 +22,8 @@ namespace Maple.Results.Extensions;
 /// </summary>
 /// <remarks>
 ///     A failed result is returned unchanged, and the action is not called. To transform or chain the result with a function that
-///     returns a value, a <see cref="Result" />, a <see cref="Result{T}" /> or an <see cref="Error" />, use <c>ThenAsync</c>; a function that returns
-///     a value is a compile error here (CS0619), so that the value is not discarded by mistake.
+///     returns a value, a <see cref="Result" />, a <see cref="Result{T}" /> or an <see cref="Error" />, use <c>ThenAsync</c>: here it only runs
+///     as a side effect, and what it returns is ignored. The analyzer of the package reports the likely mistakes (MR0004, MR0005).
 ///     <para>
 ///         The methods for a <see cref="System.Threading.Tasks.Task" /> and for a <see cref="System.Threading.Tasks.ValueTask" /> are in this
 ///         one class. On a task of a result, the kind of the task is kept, and a function that returns the other kind of task is awaited.

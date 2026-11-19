@@ -6,7 +6,7 @@ Usage:
 
 Prints one line per problem (`path:line: message`) and exits with 1 when there is any. The rules are those of
 docs/conventions.md, "Documentation":
-- Every public member of a public type has a page; the overload traps (`[Obsolete]`) have none.
+- Every public member of a public type of the library (src/Maple.Result) has a page; a member marked `[Obsolete]` has none.
 - A type page links to the file (or files) of its type, with no line; its declaration is the one in the source,
   without `partial`.
 - Every other `Source:` link opens the line of the declaration that the page documents, and is labelled with the
@@ -614,7 +614,7 @@ class Checker:
     # -- The members without a page -----------------------------------------------------------------------------------
 
     def check_undocumented(self, folder):
-        """Every public member of a public type has a page; the overload traps (compile errors) have none."""
+        """Every public member of a public type has a page; a member marked `[Obsolete]` has none."""
         type_declaration = re.compile(r"^public .*\b(class|record|struct|interface|enum)\b")
         for directory, _, files in os.walk(os.path.join(self.root, folder)):
             if os.path.basename(directory) in ("bin", "obj"):

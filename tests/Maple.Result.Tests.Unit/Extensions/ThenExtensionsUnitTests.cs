@@ -13,7 +13,6 @@ using Maple.Results.Tests.Unit.TestingInfrastructure.Fakes;
 using Maple.Results.Tests.Unit.TestingInfrastructure.Helpers;
 using Moq;
 using System;
-using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -806,7 +805,7 @@ public class ThenExtensionsUnitTests
 
     #endregion
 
-    #region IfSuccess with a function returning an Error (overload trap)
+    #region IfSuccess with a function returning an Error
 
     // See issue #119.
 
@@ -960,52 +959,7 @@ public class ThenExtensionsUnitTests
 
     #endregion
 
-    #region Then with a function returning a task (overload trap)
-
-    // The traps of IfSuccess, copied to Then (#197): a function that returns a task points to ThenAsync, and a task in a result is
-    // kept on purpose. The traps are constrained to the task type, so a lambda that only throws does not reach them (#251).
-    // See issue #119.
-
-    [Fact]
-    public void Then_FunctionReturningTaskOverloads_AreHiddenCompileErrors()
-    {
-        // Act
-        var traps = typeof(ThenExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a task, which Then does not await"))
-            .ToList();
-
-        // Assert
-        traps.Count.ShouldBe(6);
-        traps.ShouldAllBe(m => m.Name == "Then"
-                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
-                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
-    }
-
-    [Fact]
-    public void Then_TrapsConstrainedToTheTaskType_HavePriorityOne()
-    {
-        // Act
-        var traps = typeof(ThenExtensions).GetMethods()
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a task, which Then does not await") && OverloadTrapHelper.IsConstrainedToATask(m))
-            .ToList();
-
-        // Assert
-        traps.Count.ShouldBe(4);
-        traps.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 1);
-    }
-
-    [Fact]
-    public void Then_TrapsForValueTaskOfT_HaveDefaultPriority()
-    {
-        // Act
-        var traps = typeof(ThenExtensions).GetMethods()
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a task, which Then does not await") && !OverloadTrapHelper.IsConstrainedToATask(m))
-            .ToList();
-
-        // Assert
-        traps.Count.ShouldBe(2);
-        traps.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 0);
-    }
+    #region Then with a function returning a task in a result
 
     [Fact]
     public void Then_SuccessfulResultWithFunctionReturningTaskInResult_ReturnsResultWithTaskNotAwaited()
@@ -1043,15 +997,15 @@ public class ThenExtensionsUnitTests
 
     #region Then with an action
 
-    // A function that returns nothing is a side effect, not a transformation (#197). The compiler reports it by itself, so there is
-    // no overload trap for it (#256). The bindings are checked in Binding/ThenElseBindingUnitTests.
+    // A function that returns nothing is a side effect, not a transformation (#197). The compiler reports it by itself (#256).
+    // The bindings are checked in Binding/ThenElseBindingUnitTests.
 
     [Fact]
     public void Then_NoOverloadTakesAnAction()
     {
         // Act
         var overloads = typeof(ThenExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Where(m => m.Name == "Then" && m.GetParameters().Any(p => OverloadTrapHelper.IsAction(p.ParameterType)))
+            .Where(m => m.Name == "Then" && m.GetParameters().Any(p => OverloadReflectionHelper.IsAction(p.ParameterType)))
             .ToList();
 
         // Assert

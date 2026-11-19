@@ -90,18 +90,13 @@ public class ValueTaskDocumentationUnitTests
     {
         return typeof(Result).Assembly.GetExportedTypes()
             .SelectMany(t => t.GetMethods(BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance | BindingFlags.DeclaredOnly))
-            .Where(m => !m.IsSpecialName && !IsTrap(m))
+            .Where(m => !m.IsSpecialName)
             .Where(m => IsValueTask(m.ReturnType) || m.GetParameters().Any(p => IsValueTask(p.ParameterType)));
     }
 
     private static IEnumerable<ParameterInfo> ValueTaskParameters(MethodInfo method)
     {
         return method.GetParameters().Where(p => IsValueTask(p.ParameterType));
-    }
-
-    private static bool IsTrap(MethodInfo method)
-    {
-        return method.GetCustomAttribute<ObsoleteAttribute>() is { IsError: true };
     }
 
     private static bool IsValueTask(Type type)

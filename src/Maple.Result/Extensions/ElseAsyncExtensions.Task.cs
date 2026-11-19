@@ -165,7 +165,7 @@ public static partial class ElseAsyncExtensions
     // Else takes a function that returns a value or an Error through the implicit conversions to the result type. A task blocks
     // them: Task<int> does not convert to Task<Result<int>>, and the type argument of the task contradicts the receiver in the type
     // inference, so these overloads give ElseAsync the same functions (#237). The overloads on a task receiver have priority 1, as
-    // the generic one: an async lambda converts to a Task and to a ValueTask, and the traps for a ValueTask would be ambiguous.
+    // the generic one: an async lambda converts to a Task and to a ValueTask, and the two overloads would be ambiguous.
 
     /// <summary>
     ///     Invokes the specified asynchronous function if the <paramref name="result" /> is failed and returns a successful

@@ -13,9 +13,7 @@ using Maple.Results.Tests.Unit.TestingInfrastructure.Fakes;
 using Maple.Results.Tests.Unit.TestingInfrastructure.Helpers;
 using Moq;
 using System;
-using System.ComponentModel;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Maple.Results.Tests.Unit.Extensions;
@@ -1595,7 +1593,7 @@ public class ThenTaskAsyncExtensionsUnitTests
 
     #endregion
 
-    #region IfSuccessAsync with a function returning an Error (overload trap)
+    #region IfSuccessAsync with a function returning an Error
 
     // See issue #119.
 
@@ -1762,31 +1760,6 @@ public class ThenTaskAsyncExtensionsUnitTests
     private static Result<T> GetErrorResult<T>()
     {
         return Error.Failure(ErrorUri.None, "a3ef9d52-c18d-4707-8ef3-f7e25072224f", "Error title 4");
-    }
-
-    #endregion
-
-    #region ThenAsync with a function returning a task without a value (overload trap)
-
-    // A function that returns a task without a value is a side effect: on a task result, the transforming method reports it as a
-    // compile error (CS0619) that names the side-effect method (#197). On a result, the compiler reports it by itself, so there is no
-    // overload trap for it (#256). The bindings are checked in Binding/ThenElseBindingUnitTests.
-
-    [Fact]
-    public void ThenAsync_FunctionReturningTaskWithoutValueOverloads_AreHiddenCompileErrorsOnTaskResults()
-    {
-        // Act
-        var traps = OverloadTrapHelper.TaskPartMethods(typeof(ThenAsyncExtensions))
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a task without a value. ThenAsync needs"))
-            .ToList();
-
-        // Assert
-        traps.Count.ShouldBe(4);
-        traps.ShouldAllBe(m => m.Name == "ThenAsync"
-                               && m.GetParameters()[0].ParameterType.IsGenericType
-                               && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(Task<>)
-                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
-                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
     }
 
     #endregion
@@ -2067,8 +2040,8 @@ public class ThenTaskAsyncExtensionsUnitTests
     public void ThenAsync_NoOverloadTakesASynchronousAction()
     {
         // Act
-        var overloads = OverloadTrapHelper.TaskPartMethods(typeof(ThenAsyncExtensions))
-            .Where(m => m.Name == "ThenAsync" && m.GetParameters().Any(p => OverloadTrapHelper.IsAction(p.ParameterType)))
+        var overloads = OverloadReflectionHelper.TaskPartMethods(typeof(ThenAsyncExtensions))
+            .Where(m => m.Name == "ThenAsync" && m.GetParameters().Any(p => OverloadReflectionHelper.IsAction(p.ParameterType)))
             .ToList();
 
         // Assert
@@ -2080,31 +2053,30 @@ public class ThenTaskAsyncExtensionsUnitTests
     public void ThenAsync_FunctionReturningValueTaskOnTaskResult_IsAnOverloadWithPriorityZero()
     {
         // Act
-        var overloads = OverloadTrapHelper.TaskPartMethods(typeof(ThenAsyncExtensions))
-            .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is null
-                        && m.GetParameters()[0].ParameterType is { IsGenericType: true } receiver && receiver.GetGenericTypeDefinition() == typeof(Task<>)
+        var overloads = OverloadReflectionHelper.TaskPartMethods(typeof(ThenAsyncExtensions))
+            .Where(m => m.GetParameters()[0].ParameterType is { IsGenericType: true } receiver && receiver.GetGenericTypeDefinition() == typeof(Task<>)
                         && m.GetParameters().Where(p => p.ParameterType.Name.StartsWith("Func`", StringComparison.Ordinal))
-                            .All(p => OverloadTrapHelper.IsValueTaskFunction(p.ParameterType))
-                        && m.GetParameters().Any(p => OverloadTrapHelper.IsValueTaskFunction(p.ParameterType)))
+                            .All(p => OverloadReflectionHelper.IsValueTaskFunction(p.ParameterType))
+                        && m.GetParameters().Any(p => OverloadReflectionHelper.IsValueTaskFunction(p.ParameterType)))
             .ToList();
 
         // Assert
         overloads.Count.ShouldBe(8);
-        overloads.ShouldAllBe(m => m.Name == "ThenAsync" && OverloadTrapHelper.Priority(m) == 0);
+        overloads.ShouldAllBe(m => m.Name == "ThenAsync" && OverloadReflectionHelper.Priority(m) == 0);
     }
 
     [Fact]
     public void ThenAsync_OverloadsWithTaskDelegatesOnTaskResults_HavePriorityOne()
     {
         // Act
-        var priorities = OverloadTrapHelper.TaskPartMethods(typeof(ThenAsyncExtensions))
+        var priorities = OverloadReflectionHelper.TaskPartMethods(typeof(ThenAsyncExtensions))
             .Where(m => m.GetParameters()[0].ParameterType is { IsGenericType: true } receiver && receiver.GetGenericTypeDefinition() == typeof(Task<>)
-                        && OverloadTrapHelper.IsTaskFunction(m.GetParameters()[1].ParameterType))
-            .Select(OverloadTrapHelper.Priority)
+                        && OverloadReflectionHelper.IsTaskFunction(m.GetParameters()[1].ParameterType))
+            .Select(OverloadReflectionHelper.Priority)
             .ToList();
 
         // Assert
-        priorities.Count.ShouldBe(10);
+        priorities.Count.ShouldBe(8);
         priorities.ShouldAllBe(p => p == 1);
     }
 
@@ -2112,12 +2084,11 @@ public class ThenTaskAsyncExtensionsUnitTests
     public void ThenAsync_SynchronousOverloadsOnTaskResults_HavePriorityZero()
     {
         // Act
-        var priorities = OverloadTrapHelper.TaskPartMethods(typeof(ThenAsyncExtensions))
-            .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is null
-                        && m.GetParameters()[0].ParameterType is { IsGenericType: true } receiver && receiver.GetGenericTypeDefinition() == typeof(Task<>)
-                        && !OverloadTrapHelper.IsTaskFunction(m.GetParameters()[1].ParameterType)
-                        && !OverloadTrapHelper.IsValueTaskFunction(m.GetParameters()[1].ParameterType))
-            .Select(OverloadTrapHelper.Priority)
+        var priorities = OverloadReflectionHelper.TaskPartMethods(typeof(ThenAsyncExtensions))
+            .Where(m => m.GetParameters()[0].ParameterType is { IsGenericType: true } receiver && receiver.GetGenericTypeDefinition() == typeof(Task<>)
+                        && !OverloadReflectionHelper.IsTaskFunction(m.GetParameters()[1].ParameterType)
+                        && !OverloadReflectionHelper.IsValueTaskFunction(m.GetParameters()[1].ParameterType))
+            .Select(OverloadReflectionHelper.Priority)
             .ToList();
 
         // Assert

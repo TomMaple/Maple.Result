@@ -19,7 +19,7 @@ namespace Maple.Results.Extensions;
 /// <remarks>
 ///     <c>Match</c> returns what the function that ran returns, and does not look at it: a value, a <see cref="Result" />, a
 ///     <see cref="Result{T}" />, or a task, which the caller awaits (e.g., <c>await result.Match(x => CountAsync(x), e => CountAsync(0))</c>).
-///     For two side effects, use <c>Switch</c>; two actions are a compile error here (CS0619).
+///     For two side effects, use <c>Switch</c>: two actions return no value, so they do not compile here.
 /// </remarks>
 public static partial class MatchExtensions
 {

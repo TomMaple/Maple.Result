@@ -13,10 +13,6 @@ using Maple.Results.Tests.Unit.TestingInfrastructure.Fakes;
 using Maple.Results.Tests.Unit.TestingInfrastructure.Helpers;
 using Moq;
 using System;
-using System.ComponentModel;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Maple.Results.Tests.Unit.Extensions;
@@ -256,50 +252,7 @@ public class IfErrorExtensionsUnitTests
 
     #endregion
 
-    #region IfError with an error action returning a task (overload trap)
-
-    // See issue #123.
-
-    [Fact]
-    public void IfError_ErrorActionReturningTaskOverloads_AreHiddenCompileErrors()
-    {
-        // Arrange
-        var overloads = typeof(IfErrorExtensions).GetMethods()
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The error action returns a task"))
-            .ToArray();
-
-        // Act & Assert
-        overloads.Length.ShouldBe(3);
-        overloads.ShouldAllBe(m => m.Name == "IfError"
-                                   && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
-                                   && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
-    }
-
-    [Fact]
-    public void IfError_TrapsConstrainedToTheTaskType_HavePriorityOne()
-    {
-        // Act
-        var traps = typeof(IfErrorExtensions).GetMethods()
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The error action returns a task") && OverloadTrapHelper.IsConstrainedToATask(m))
-            .ToList();
-
-        // Assert
-        traps.Count.ShouldBe(2);
-        traps.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 1);
-    }
-
-    [Fact]
-    public void IfError_TrapsForValueTaskOfT_HaveDefaultPriority()
-    {
-        // Act
-        var traps = typeof(IfErrorExtensions).GetMethods()
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The error action returns a task") && !OverloadTrapHelper.IsConstrainedToATask(m))
-            .ToList();
-
-        // Assert
-        traps.Count.ShouldBe(1);
-        traps.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 0);
-    }
+    #region IfError with an error action discarding a task
 
     [Fact]
     public void IfError_FailedResultWithStatementLambdaDiscardingTask_CallsErrorAction()
@@ -338,28 +291,6 @@ public class IfErrorExtensionsUnitTests
     private static Error GetReplacementError()
     {
         return Error.Failure(ErrorUri.None, "a73d2604-e540-4dd3-8db8-3e6a70f89d72", "Replacement error");
-    }
-
-    #endregion
-
-    #region IfError with a function returning a value (overload trap)
-
-    // A function that returns a value is a transformation: the side-effect method reports it as a compile error (CS0619) that
-    // names the transforming method, instead of discarding the value (#197). The bindings are checked with a consumer project.
-
-    [Fact]
-    public void IfError_FunctionReturningValueOverloads_AreHiddenCompileErrors()
-    {
-        // Act
-        var traps = typeof(IfErrorExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a value, which IfError discards; an assignment or an increment"))
-            .ToList();
-
-        // Assert
-        traps.Count.ShouldBe(1);
-        traps.ShouldAllBe(m => m.Name == "IfError"
-                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
-                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
     }
 
     #endregion

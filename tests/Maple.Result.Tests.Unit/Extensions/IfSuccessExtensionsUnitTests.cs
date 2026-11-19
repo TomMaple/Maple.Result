@@ -13,10 +13,6 @@ using Maple.Results.Tests.Unit.TestingInfrastructure.Fakes;
 using Maple.Results.Tests.Unit.TestingInfrastructure.Helpers;
 using Moq;
 using System;
-using System.ComponentModel;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
 
 namespace Maple.Results.Tests.Unit.Extensions;
 
@@ -271,75 +267,6 @@ public class IfSuccessExtensionsUnitTests
     private static Result<T> GetErrorResult<T>()
     {
         return Error.Failure(ErrorUri.None, "a3ef9d52-c18d-4707-8ef3-f7e25072224f", "Error title 4");
-    }
-
-    #endregion
-
-    #region IfSuccess with a function returning a task (overload trap)
-
-    // See issue #119.
-
-    [Fact]
-    public void IfSuccess_FunctionReturningTaskOverloads_AreHiddenCompileErrors()
-    {
-        // Arrange
-        var overloads = typeof(IfSuccessExtensions).GetMethods()
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a task"))
-            .ToArray();
-
-        // Act & Assert
-        overloads.Length.ShouldBe(6);
-        overloads.ShouldAllBe(m => m.Name == "IfSuccess"
-                                   && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
-                                   && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
-    }
-
-    [Fact]
-    public void IfSuccess_TrapsConstrainedToTheTaskType_HavePriorityOne()
-    {
-        // Act
-        var traps = typeof(IfSuccessExtensions).GetMethods()
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a task, which IfSuccess does not await") && OverloadTrapHelper.IsConstrainedToATask(m))
-            .ToList();
-
-        // Assert
-        traps.Count.ShouldBe(4);
-        traps.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 1);
-    }
-
-    [Fact]
-    public void IfSuccess_TrapsForValueTaskOfT_HaveDefaultPriority()
-    {
-        // Act
-        var traps = typeof(IfSuccessExtensions).GetMethods()
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a task, which IfSuccess does not await") && !OverloadTrapHelper.IsConstrainedToATask(m))
-            .ToList();
-
-        // Assert
-        traps.Count.ShouldBe(2);
-        traps.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 0);
-    }
-
-    #endregion
-
-    #region IfSuccess with a function returning a value (overload trap)
-
-    // A function that returns a value is a transformation: the side-effect method reports it as a compile error (CS0619) that
-    // names the transforming method, instead of discarding the value (#197). The bindings are checked with a consumer project.
-
-    [Fact]
-    public void IfSuccess_FunctionReturningValueOverloads_AreHiddenCompileErrors()
-    {
-        // Act
-        var traps = typeof(IfSuccessExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a value, which IfSuccess discards; an assignment or an increment"))
-            .ToList();
-
-        // Assert
-        traps.Count.ShouldBe(2);
-        traps.ShouldAllBe(m => m.Name == "IfSuccess"
-                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
-                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
     }
 
     #endregion
