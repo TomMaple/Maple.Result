@@ -42,7 +42,7 @@ The overload with a synchronous function (e.g., `ElseAsync(error => Result.FromV
 
 A function that returns the value or the [Error](../Error/Error.md) of the replacement result is accepted too, as `Else` takes one through the implicit conversions: e.g., `ElseAsync(async error => 0)` gives a successful result with the value, and `ElseAsync(async error => error.WithMetadata("retried", true))` a failed one with that error. A function whose task returns a value that does not convert to `T` is a compile error (e.g., a `Task<string>` for a `Result<int>`). When `T` is [Error](../Error/Error.md), a returned `Error` is the error of a failed result; return `Result<Error>.FromValue(…)` for a successful one.
 
-A successful result is returned unchanged, and the function is not called. A function that returns a task without a value does not compile either: on a task of a result, it is a compile error (CS0619) that names [IfErrorAsync](IfErrorAsyncExtensions_IfErrorAsync.md), which runs a side effect and returns the result unchanged; on a result, the compiler reports it (e.g., CS0266).
+A successful result is returned unchanged, and the function is not called. A function that returns a `Task` or a `ValueTask` without a value does not compile, on a result and on a task of a result (CS0029 and CS1662, and CS0266 for a `Task`); use [IfErrorAsync](IfErrorAsyncExtensions_IfErrorAsync.md), which runs a side effect and returns the result unchanged. On a task of a `Result<object>` such a function compiles, because a task is an `object`, and the task becomes the value of a successful result: the analyzer reports it as an error ([MR0003](../../Analyzers/MR0003.md)).
 
 > [!NOTE]
 > When an asynchronous method awaits a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) directly, continuation usually occurs in the same thread that created the task, depending on the async context. This behavior can be costly in terms of performance and can result in a deadlock on the UI thread. To avoid these problems, `ConfigureAwait(false)` is used by default, so in the methods that take a `Task` of a result the passed delegates run on a thread-pool thread. When the delegates need the original context (e.g., to update UI elements), set the `continueOnCapturedContext` parameter to `true`, or set [ResultConfiguration.ContinueOnCapturedContext](../ResultConfiguration/ResultConfiguration_ContinueOnCapturedContext.md) to `true` once at startup.
@@ -94,7 +94,7 @@ The `ifErrorFunction` function returns a `null` task or a task with a `null` res
 ```csharp
 var userResult = await _userService.GetUserAsync(userData);
 
-await userResult.ElseAsync(async error =>
+userResult = await userResult.ElseAsync(async error =>
 {
     if (error.Category == ErrorCategory.NotFound)
     {
@@ -688,7 +688,7 @@ The `ifErrorFunction` function returns a value task with a `null` result.
 ```csharp
 var userResult = await _userService.GetUserAsync(userData);
 
-await userResult.ElseAsync(async error =>
+userResult = await userResult.ElseAsync(async error =>
 {
     if (error.Category == ErrorCategory.NotFound)
     {

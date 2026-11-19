@@ -20,7 +20,7 @@ Folds a [Result](../Result/Result.md) or a [Result&lt;T&gt;](../ResultT/ResultT.
 
 A function that returns `null` gives `null`, also when `TOut` is a [Result](../Result/Result.md) or a [Result&lt;T&gt;](../ResultT/ResultT.md): the fold does not check the value.
 
-Two actions (e.g., `Match(x => Log(x), e => Log(e))`) are a compile error (CS0619) that names [Switch](SwitchExtensions_Switch.md), which runs one of two actions and returns nothing. To run a side effect and keep the result, use [IfSuccess](IfSuccessExtensions_IfSuccess.md)`(…).`[IfError](IfErrorExtensions_IfError.md)`(…)`; to transform the value and handle the error, [Then](ThenExtensions_Then.md)`(…).IfError(…)`. Two lambdas that only throw are a compile error too: they have no type to infer.
+Two actions (e.g., `Match(x => Log(x), e => Log(e))`) do not compile: they return nothing, so the compiler cannot infer `TOut` (CS0411). Use [Switch](SwitchExtensions_Switch.md), which runs one of two actions and returns nothing. To run a side effect and keep the result, use [IfSuccess](IfSuccessExtensions_IfSuccess.md)`(…).`[IfError](IfErrorExtensions_IfError.md)`(…)`; to transform the value and handle the error, [Then](ThenExtensions_Then.md)`(…).IfError(…)`. Two lambdas that only throw do not compile either (CS0411): they have no type to infer.
 
 A call whose functions have no common return type is rejected by the compiler (e.g., a value and an `Error`, or one synchronous and one asynchronous function).
 

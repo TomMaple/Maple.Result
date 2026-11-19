@@ -20,7 +20,7 @@ Runs a function if the instance of [Result](../Result/Result.md) or [Result&lt;T
 ## Remarks
 A returned `Result` or `Result<T>` is flattened, and a returned [Error](../Error/Error.md) makes the result fail. Explicit type arguments keep a nested result on purpose. An action (a function that returns nothing) does not compile: the compiler reports that it returns no value (e.g., CS0029). Use [IfSuccess](IfSuccessExtensions_IfSuccess.md) for a side effect; it returns the result unchanged.
 
-A function that returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>` is not supported: `Then` does not await it, so such a call is a compile error (CS0619). Use [ThenAsync](ThenAsyncExtensions_ThenAsync.md) instead, or return the task in a result to keep it on purpose (e.g., `x => Result.FromValue(SaveAsync(x))`); explicit type arguments (e.g., `Then<T, Task>(…)`) are a compile error too. A lambda that only throws is not a task, and compiles (e.g., `Then(x => throw new InvalidOperationException())`).
+`Then` does not await a task. A function that returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>` compiles, and the task becomes the value of the result (e.g., a `Result<Task<int>>`), which nobody awaits: the analyzer reports such a call as an error ([MR0001](../../Analyzers/MR0001.md)). Use [ThenAsync](ThenAsyncExtensions_ThenAsync.md) instead. To keep the task in the result on purpose, name the type arguments (e.g., `Then<int, Task<int>>(…)`) or return the task in a result (e.g., `x => Result.FromValue(SaveAsync(x))`); the analyzer does not report these. A lambda that only throws is not a task, and compiles (e.g., `Then(x => throw new InvalidOperationException())`).
 
 
 ## Then(Result, Func&lt;Result&gt;)

@@ -12,9 +12,14 @@ Runs a side effect if the instance of [Result](../Result/Result.md) or [Result&l
 | [IfSuccess&lt;T&gt;(Result&lt;T&gt;, Action&lt;T&gt;)](#ifsuccesstresultt-actiont) | Executes the specified action, if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation. |
 
 ## Remarks
-To transform or chain the result with a function that returns a value, a `Result`, a `Result<T>` or an `Error`, use [Then](ThenExtensions_Then.md). Such a function passed to `IfSuccess` is a compile error (CS0619) that names `Then`, so that its value is not discarded by mistake. For a side effect whose expression happens to return a value (e.g., `set.Add(x)`), use a statement lambda: `x => { set.Add(x); }`.
+To transform or chain the result with a function that returns a value, a `Result`, a `Result<T>` or an `Error`, use [Then](ThenExtensions_Then.md). `IfSuccess` runs a function that returns a value as a side effect and ignores the value (e.g., `x => set.Add(x)` or `x => builder.Append(x)`). The analyzer reports the functions whose value is ignored by mistake:
 
-A function that returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>` is not supported: `IfSuccess` does not await it, so such a call is a compile error (CS0619). Use [IfSuccessAsync](IfSuccessAsyncExtensions_IfSuccessAsync.md) instead, or discard the task explicitly in a statement lambda (`x => { _ = SaveAsync(x); }`). A lambda that only throws is not a task, and compiles (e.g., `IfSuccess(x => throw new InvalidOperationException())`).
+* a function that returns a `Result`, a `Result<T>` or an `Error`, whose failure would be lost, is an error ([MR0004](../../Analyzers/MR0004.md));
+* a function that returns a value of the type of the result’s value, in a call whose result is used, is a warning ([MR0005](../../Analyzers/MR0005.md)): in version 2 such a call transformed the result. For a side effect that happens to return that type (e.g., `x => count++` on a `Result<int>`), use a statement lambda: `x => { count++; }`.
+
+An expression that cannot be a statement (e.g., `x => x + 1`) does not compile (CS0201).
+
+`IfSuccess` does not await a task. A function that returns a `Task`, `Task<T>`, `ValueTask` or `ValueTask<T>`, or an `async` lambda, compiles as an action, and its task is discarded: the analyzer reports it as an error ([MR0002](../../Analyzers/MR0002.md)). Use [IfSuccessAsync](IfSuccessAsyncExtensions_IfSuccessAsync.md) instead, or discard the task explicitly in a statement lambda (`x => { _ = SaveAsync(x); }`). A lambda that only throws is not a task, and compiles (e.g., `IfSuccess(x => throw new InvalidOperationException())`).
 
 
 ## IfSuccess(Result, Action)

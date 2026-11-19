@@ -36,9 +36,9 @@ The overloads on a `Task` of a result return a `Task`, and those on a `ValueTask
 
 There is no `MatchAsync` on a [Result](../Result/Result.md) or a [Result&lt;T&gt;](../ResultT/ResultT.md): [Match](MatchExtensions_Match.md) returns the task of the function that ran (e.g., `await result.Match(x => CountAsync(x), e => CountAsync(0))`).
 
-Two actions (e.g., `MatchAsync(x => Log(x), e => Log(e))`) are a compile error (CS0619) that names [SwitchAsync](SwitchAsyncExtensions_SwitchAsync.md), which runs one of two actions after the task completes. To transform the value and handle the error, use `ThenAsync(…).IfErrorAsync(…)`. A call whose functions have no common return type (e.g., one synchronous and one asynchronous function) is rejected by the compiler.
+Two actions (e.g., `MatchAsync(x => Log(x), e => Log(e))`) do not compile (CS0029 and CS1662). Use [SwitchAsync](SwitchAsyncExtensions_SwitchAsync.md), which runs one of two actions after the task completes. To transform the value and handle the error, use `ThenAsync(…).IfErrorAsync(…)`. A call whose functions have no common return type (e.g., one synchronous and one asynchronous function) is rejected by the compiler.
 
-Two functions that return a `Task` or a `ValueTask` without a value are awaited as actions: pass them without names, or as `ifSuccessAction` and `ifErrorAction`. Named `ifSuccessFunction` and `ifErrorFunction`, they are a compile error (CS0619): the call would bind to the overload with two synchronous functions and return the task of one function in a task, which nobody awaits.
+Two functions that return a `Task` or a `ValueTask` without a value are awaited as actions: pass them without names, or as `ifSuccessAction` and `ifErrorAction`. Named `ifSuccessFunction` and `ifErrorFunction`, they bind to the overload with two synchronous functions, and the call returns the task of one function in a task, which nobody awaits: the analyzer reports it as an error ([MR0001](../../Analyzers/MR0001.md)).
 
 On a task of a result, two functions that return the other kind of task (a `ValueTask` on a `Task`, a `Task` on a `ValueTask`) are awaited, and the kind of the receiver is kept.
 

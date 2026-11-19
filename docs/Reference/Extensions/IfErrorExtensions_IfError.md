@@ -11,7 +11,14 @@ Runs a side effect if the instance of `TResult` represents a failed operation (i
 | [IfError&lt;TResult&gt;(TResult, Action&lt;Error&gt;)](#iferrortresulttresult-actionerror) | Executes the provided action if the `TResult` instance represents a failed operation. |
 
 ## Remarks
-To replace a failed result (recover with a value, or return another error), use [Else](ElseExtensions_Else.md). A function that returns a value passed to `IfError` is a compile error (CS0619) that names `Else`, so that a failure is not turned into a success by mistake (e.g., `e => Interlocked.Increment(ref failures)`). For a side effect, use a statement lambda. An error action that returns a task is a compile error (CS0619) that names [IfErrorAsync](IfErrorAsyncExtensions_IfErrorAsync.md). A lambda that only throws is not a task, and compiles (e.g., `IfError(e => throw new OrderException(e.Title))`).
+To replace a failed result (recover with a value, or return another error), use [Else](ElseExtensions_Else.md). `IfError` runs a function that returns a value as a side effect and ignores the value, so a failure is not turned into a success (e.g., `e => titles.Add(e.Title)`). The analyzer reports the functions whose value is ignored by mistake:
+
+* a function that returns a `Result`, a `Result<T>` or an `Error` is an error ([MR0004](../../Analyzers/MR0004.md));
+* a function that returns a value of the type of the result’s value, in a call whose result is used, is a warning ([MR0005](../../Analyzers/MR0005.md)): in version 2 such a call replaced the failed result. For a side effect that happens to return that type (e.g., `e => Interlocked.Increment(ref failures)` on a `Result<int>`), use a statement lambda.
+
+An expression that cannot be a statement (e.g., `e => 0`) does not compile (CS0201).
+
+`IfError` does not await a task. An error action that returns a task, or an `async` lambda, compiles as an action, and its task is discarded: the analyzer reports it as an error ([MR0002](../../Analyzers/MR0002.md)). Use [IfErrorAsync](IfErrorAsyncExtensions_IfErrorAsync.md) instead. A lambda that only throws is not a task, and compiles (e.g., `IfError(e => throw new OrderException(e.Title))`).
 
 
 ## IfError&lt;TResult&gt;(TResult, Action&lt;Error&gt;)

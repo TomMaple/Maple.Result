@@ -7,6 +7,7 @@ How to chain operations that return results with the extension methods and the L
 * [Asynchronous operations](#asynchronous-operations)
 * [Query syntax](#query-syntax)
 * [Turning exceptions into results](#turning-exceptions-into-results)
+* [Analyzer](#analyzer)
 * [Asynchronous methods in UI applications](#asynchronous-methods-in-ui-applications)
 
 ## Extension methods
@@ -17,9 +18,9 @@ How to chain operations that return results with the extension methods and the L
 * `Match()` and `MatchAsync()`: fold both cases into one value, with two functions that return the same type (e.g., `int count = result.Match(x => x.Count, e => 0)`); the value can be a result or a task, which the caller awaits,
 * `Switch()` and `SwitchAsync()`: handle both cases with two actions for a side effect, and return nothing.
 
-A function that returns a value passed to `IfSuccess()` or `IfError()` is a compile error that names `Then()` or `Else()`, so that its value is not discarded by mistake. An action passed to `Then()` or `Else()` does not compile either: it has no value to return, and the compiler reports it (e.g., CS0029, “Cannot implicitly convert type ‘void’ to ‘Result’”); use `IfSuccess()` or `IfError()` for a side effect. `Match()` with two actions is a compile error that names `Switch()`, and an action that returns a task passed to `Switch()` is a compile error that names `Match()`.
+A function that returns a value passed to `IfSuccess()` or `IfError()` runs as a side effect, and its value is ignored (e.g., `result.IfSuccess(x => builder.Append(x))`); to continue with the value, use `Then()` or `Else()`. An action passed to `Then()` or `Else()` does not compile: it has no value to return, and the compiler reports it (e.g., CS0029, “Cannot implicitly convert type ‘void’ to ‘Result’”); use `IfSuccess()` or `IfError()` for a side effect. `Match()` with two actions does not compile either (CS0411); use `Switch()`. A call that compiles but loses a task or a failure (e.g., an action that returns a task passed to `Switch()`) is reported by the [analyzer](#analyzer).
 
-A lambda that only throws is fine in `IfSuccess()`, `IfError()`, `Then()`, `Else()`, `Switch()` and `Match()`, in their asynchronous versions except `ElseAsync()`, and in `Select()` and `SelectMany()` called as methods on a result or a task of a result (e.g., `result.IfError(e => throw new OrderException(e.Title))`, or `int id = result.Match(x => x, e => throw new OrderException(e.Title))` to get the value). In `ElseAsync()` it is ambiguous (CS0121), because several overloads take a function that returns a task; use `Else()` after the `await`, or `MatchAsync()`. `Result.Try()` is the other exception: see [Try](../Reference/Result/Result_Try.md).
+A lambda that only throws is fine in `IfSuccess()`, `IfError()`, `Then()`, `Else()`, `Switch()` and `Match()`, in their asynchronous versions except `ElseAsync()`, and in `Select()` and `SelectMany()` called as methods on a result or a task of a result (e.g., `result.IfError(e => throw new OrderException(e.Title))`, or `int id = result.Match(x => x, e => throw new OrderException(e.Title))` to get the value). In `ElseAsync()` it is ambiguous (CS0121), because several overloads take a function that returns a task; use `Else()` after the `await`, or `MatchAsync()`. `Match()` with two lambdas that only throw does not compile either (CS0411): they have no type to infer.
 
 ```csharp
 var createUserResult = _userService.CreateUser(userData);
@@ -99,7 +100,7 @@ var orderResult =
 ```
 
 > [!NOTE]
-> A query cannot declare a range variable twice, so a second non-generic clause needs another name (e.g., `from active in …`). Mixing a `Task` and a `ValueTask` in one query is not supported. A `select` that returns a task is a compile error, because the query would not await it: chain the operation in a `from` clause (with a function that returns `Task<Result<T>>`) or use `ThenAsync()`.
+> A query cannot declare a range variable twice, so a second non-generic clause needs another name (e.g., `from active in …`). Mixing a `Task` and a `ValueTask` in one query is not supported. A `select` that returns a task is not awaited by the query, and the analyzer reports it as an error ([MR0001](../Analyzers/MR0001.md)): chain the operation in a `from` clause (with a function that returns `Task<Result<T>>`) or use `ThenAsync()`.
 
 ## Turning exceptions into results
 `Result.Try()` and `Result.TryAsync()` run code that can throw (e.g., a library or a database call) and return a failed result instead of the exception. The mapper from the exception to the `Error` is required: the library cannot pick the category, the type *URI* and the title, and it never copies the exception message into the error, which is meant for clients.
@@ -137,6 +138,33 @@ Result result = Result.Try(
 A function that returns a `Result`, a `Result<T>` or an `Error` is flattened: `Result.Try(() => _repository.Load(id), map)` is a `Result<Customer>` when `Load` returns a `Result<Customer>`, and an `Error` gives a failed result.
 
 See more: [Try](../Reference/Result/Result_Try.md), [TryAsync](../Reference/Result/Result_TryAsync.md)
+
+## Analyzer
+The package contains an analyzer, with nothing to install. It reports the calls that compile but do not do what they look like: a task that nobody awaits, a failure that nobody sees, and a task or a result stored as the value of another result.
+
+```csharp
+// MR0001 (error): a Result<Task<Result<User>>>, whose task nobody awaits; use ThenAsync()
+var userResult = userDataResult.Then(userData => _userService.GetUserAsync(userData));
+
+// MR0002 (error): IfError() takes an action, so the task is discarded; use IfErrorAsync()
+userDataResult.IfError(error => _auditService.LogErrorAsync(error));
+
+// MR0006 (warning): SaveAsync() returns a Task<Result>, and a failed result is lost
+await _userService.SaveAsync(user);
+```
+
+| Rule | Severity | Reports |
+| ---- | -------- | ------- |
+| [MR0001](../Analyzers/MR0001.md) | Error | A task becomes the value of a result (e.g., a function that returns a task in `Then()`, `Result.Try()` or a `select` clause). |
+| [MR0002](../Analyzers/MR0002.md) | Error | A function that returns a task, or an `async` lambda, is passed as an action (e.g., to `IfSuccess()`, `IfError()` or `Switch()`), and its task is not awaited. |
+| [MR0003](../Analyzers/MR0003.md) | Error | A task, a result or an `Error` is converted to a `Result<object>` and stored as its value. |
+| [MR0004](../Analyzers/MR0004.md) | Error | A function passed to `IfSuccess()`, `IfError()` or `Switch()` returns a result or an `Error`, which is ignored. |
+| [MR0005](../Analyzers/MR0005.md) | Warning | `IfSuccess()` or `IfError()` ignores a value of the type of the result’s value; in version 2 such a call transformed the result. |
+| [MR0006](../Analyzers/MR0006.md) | Warning | A statement calls a method that returns a result, and nothing uses the result. |
+
+The errors cannot be suppressed as a warning can; a call that is meant as it is written says so in the code (e.g., explicit type arguments or `Result.FromValue()` to keep a task as a value). A delegate that fits no overload is rejected by the compiler, without advice of the library.
+
+See more: [Analyzer](../Analyzers/README.md), [Configuring the rules](../Analyzers/README.md#configuring-the-rules), [What the compiler reports by itself](../Analyzers/README.md#what-the-compiler-reports-by-itself)
 
 ## Asynchronous methods in UI applications
 The asynchronous extension methods that take a `Task` or `ValueTask` of a result await it with `ConfigureAwait(false)` by default, so the delegates you pass run on a thread-pool thread. That is the right choice for ASP.NET Core, console applications, Azure Functions and background services.
