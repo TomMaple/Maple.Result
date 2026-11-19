@@ -52,14 +52,13 @@ public sealed class IgnoredValueAnalyzer : ResultAnalyzer
             return;
 
         // The receiver is the first parameter of the extension method; the function is the only delegate among the others.
-        ITypeSymbol? receiverType = null;
+        var receiver = ReceiverArgument(invocation);
+        var receiverType = receiver?.Value.Type;
         DelegateArgument function = default;
 
         foreach (var argument in invocation.Arguments)
         {
-            if (argument.Parameter is { Ordinal: 0 })
-                receiverType = argument.Value.Type;
-            else if (DelegateArgument.TryCreate(argument, context.CancellationToken, out var candidate))
+            if (argument != receiver && DelegateArgument.TryCreate(argument, context.CancellationToken, out var candidate))
                 function = candidate;
         }
 

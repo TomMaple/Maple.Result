@@ -13,6 +13,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
 using System.Collections.Immutable;
+using System.Linq;
 
 namespace Maple.Results.Analyzers;
 
@@ -66,6 +67,14 @@ public abstract class ResultAnalyzer : DiagnosticAnalyzer
         => CalledName(invocation) is GenericNameSyntax;
 
     /// <summary>
+    ///     Returns the argument of the first parameter of the called method: the receiver of an extension method, in both forms of the call
+    ///     (<c>result.Then(…)</c> and <c>ThenExtensions.Then(result, …)</c>). The arguments are in the order they are evaluated, so a named
+    ///     argument can put it anywhere.
+    /// </summary>
+    private protected static IArgumentOperation? ReceiverArgument(IInvocationOperation invocation)
+        => invocation.Arguments.FirstOrDefault(static argument => argument.Parameter is { Ordinal: 0 });
+
+    /// <summary>
     ///     Registers the actions of the analyzer for a compilation that references the library.
     /// </summary>
     private protected abstract void Register(CompilationStartAnalysisContext context, KnownTypes types);
@@ -77,14 +86,8 @@ public abstract class ResultAnalyzer : DiagnosticAnalyzer
     /// </summary>
     private protected static ImmutableDictionary<string, string?> RenameTo(IInvocationOperation invocation, string? newName)
     {
-        var isStaticForm = false;
-
-        foreach (var argument in invocation.Arguments)
-        {
-            // Written as an argument, the receiver of an extension method makes the call the static form.
-            if (invocation.TargetMethod.IsExtensionMethod && argument.Parameter is { Ordinal: 0 } && argument.Syntax is ArgumentSyntax)
-                isStaticForm = true;
-        }
+        // Written as an argument, the receiver of an extension method makes the call the static form.
+        var isStaticForm = invocation.TargetMethod.IsExtensionMethod && ReceiverArgument(invocation)?.Syntax is ArgumentSyntax;
 
         return newName is null || isStaticForm
             ? ImmutableDictionary<string, string?>.Empty

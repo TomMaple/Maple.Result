@@ -112,15 +112,7 @@ public sealed class DiscardedResultAnalyzer : ResultAnalyzer
 
     // The call that produces the receiver of an extension method of the library, or null when the receiver is not a call.
     private static IInvocationOperation? Receiver(IInvocationOperation invocation)
-    {
-        foreach (var argument in invocation.Arguments)
-        {
-            if (argument.Parameter is { Ordinal: 0 })
-                return Call(argument.Value);
-        }
-
-        return null;
-    }
+        => ReceiverArgument(invocation) is { } receiver ? Call(receiver.Value) : null;
 
     // The expression body of a lambda passed to a method of the library: MR0002 and MR0004 report what such a function drops.
     private static bool IsBodyOfLibraryFunction(IExpressionStatementOperation statement, KnownTypes types)

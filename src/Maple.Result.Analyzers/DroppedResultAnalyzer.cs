@@ -41,14 +41,7 @@ public sealed class DroppedResultAnalyzer : ResultAnalyzer
         if (!types.IsLibraryMember(method))
             return;
 
-        ITypeSymbol? receiverType = null;
-
-        foreach (var argument in invocation.Arguments)
-        {
-            if (argument.Parameter is { Ordinal: 0 })
-                receiverType = argument.Value.Type;
-        }
-
+        var receiverType = ReceiverArgument(invocation)?.Value.Type;
         var resultType = types.AwaitedValue(receiverType) ?? receiverType;
 
         foreach (var argument in invocation.Arguments)
