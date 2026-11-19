@@ -61,6 +61,8 @@ public sealed class DiscardResultCodeFixProvider : CodeFixProvider
         }
     }
 
+    #region helper methods
+
     private static async Task<Document> DiscardAsync(Document document, ExpressionSyntax expression, CancellationToken cancellationToken)
     {
         var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
@@ -77,4 +79,6 @@ public sealed class DiscardResultCodeFixProvider : CodeFixProvider
 
         return document.WithSyntaxRoot(newRoot);
     }
+
+    #endregion
 }

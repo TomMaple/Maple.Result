@@ -20,6 +20,8 @@ namespace Maple.Results.Analyzers;
 /// </summary>
 internal readonly struct DelegateArgument
 {
+    #region constructors
+
     private DelegateArgument(IMethodSymbol invoke, SyntaxNode syntax, SyntaxNode? expressionBody, ITypeSymbol? returnedType, bool isAsyncLambda)
     {
         Invoke = invoke;
@@ -28,6 +30,8 @@ internal readonly struct DelegateArgument
         ReturnedType = returnedType;
         IsAsyncLambda = isAsyncLambda;
     }
+
+    #endregion
 
     /// <summary>The body of the lambda when it is an expression; <see langword="null" /> for a block body and for a method group.</summary>
     public SyntaxNode? ExpressionBody { get; }
@@ -49,6 +53,8 @@ internal readonly struct DelegateArgument
 
     /// <summary>Whether the body of the lambda is an assignment, whose value is stored and not lost.</summary>
     public bool IsAssignment => ExpressionBody is AssignmentExpressionSyntax;
+
+    #region factory methods
 
     /// <summary>
     ///     Reads the <paramref name="argument" />; returns <see langword="false" /> if it is not a lambda or a method group converted to a delegate.
@@ -80,4 +86,6 @@ internal readonly struct DelegateArgument
                 return false;
         }
     }
+
+    #endregion
 }

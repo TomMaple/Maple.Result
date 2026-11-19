@@ -30,6 +30,8 @@ internal sealed class KnownTypes
     private readonly INamedTypeSymbol? _valueTask;
     private readonly INamedTypeSymbol? _valueTaskOfT;
 
+    #region constructors
+
     private KnownTypes(Compilation compilation)
     {
         _result = compilation.GetTypeByMetadataName("Maple.Results.Result");
@@ -40,6 +42,16 @@ internal sealed class KnownTypes
         _valueTask = compilation.GetTypeByMetadataName("System.Threading.Tasks.ValueTask");
         _valueTaskOfT = compilation.GetTypeByMetadataName("System.Threading.Tasks.ValueTask`1");
     }
+
+    #endregion
+
+    #region factory methods
+
+    /// <summary>Returns the known types of the <paramref name="compilation" />.</summary>
+    public static KnownTypes For(Compilation compilation)
+        => Cache.GetValue(compilation, static key => new KnownTypes(key));
+
+    #endregion
 
     /// <summary>The names of the synchronous methods that have a form with the <c>Async</c> suffix for an asynchronous function.</summary>
     public static ImmutableHashSet<string> MethodsWithAsyncForm { get; } = ImmutableHashSet.Create("Else", "IfError", "IfSuccess", "Then", "Try");
@@ -65,10 +77,6 @@ internal sealed class KnownTypes
     /// <summary>The name of the <paramref name="type" /> as a caller writes it (e.g., <c>Task&lt;int&gt;</c>).</summary>
     public static string Display(ITypeSymbol type)
         => type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
-
-    /// <summary>Returns the known types of the <paramref name="compilation" />.</summary>
-    public static KnownTypes For(Compilation compilation)
-        => Cache.GetValue(compilation, static key => new KnownTypes(key));
 
     /// <summary>Whether the <paramref name="symbol" /> is declared in the library.</summary>
     public bool IsLibraryMember(ISymbol symbol)
@@ -98,6 +106,10 @@ internal sealed class KnownTypes
             ? named.TypeArguments[0]
             : null;
 
+    #region helper methods
+
     private static bool Same(ISymbol? left, ISymbol? right)
         => left is not null && SymbolEqualityComparer.Default.Equals(left, right);
+
+    #endregion
 }

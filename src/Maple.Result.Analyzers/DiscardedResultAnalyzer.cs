@@ -58,6 +58,8 @@ public sealed class DiscardedResultAnalyzer : ResultAnalyzer
         context.ReportDiagnostic(diagnostic);
     }
 
+    #region helper methods
+
     // The call that produces the value of the statement: directly, awaited, or after a null-conditional access (order?.Save()).
     private static IInvocationOperation? Call(IOperation operation)
     {
@@ -121,4 +123,6 @@ public sealed class DiscardedResultAnalyzer : ResultAnalyzer
             Parent: IAnonymousFunctionOperation { Parent: IDelegateCreationOperation { Parent: IArgumentOperation { Parent: IInvocationOperation call } } }
         }
         && types.IsLibraryMember(call.TargetMethod);
+
+    #endregion
 }

@@ -46,6 +46,13 @@ public abstract class ResultAnalyzer : DiagnosticAnalyzer
     }
 
     /// <summary>
+    ///     Registers the actions of the analyzer for a compilation that references the library.
+    /// </summary>
+    private protected abstract void Register(CompilationStartAnalysisContext context, KnownTypes types);
+
+    #region helper methods
+
+    /// <summary>
     ///     Returns the name that the <paramref name="invocation" /> calls the method by (<c>Then</c> in <c>result.Then(…)</c>, with its type
     ///     arguments when they are written); for a query clause, which has no name, the clause.
     /// </summary>
@@ -75,11 +82,6 @@ public abstract class ResultAnalyzer : DiagnosticAnalyzer
         => invocation.Arguments.FirstOrDefault(static argument => argument.Parameter is { Ordinal: 0 });
 
     /// <summary>
-    ///     Registers the actions of the analyzer for a compilation that references the library.
-    /// </summary>
-    private protected abstract void Register(CompilationStartAnalysisContext context, KnownTypes types);
-
-    /// <summary>
     ///     Returns the properties of a diagnostic that a code fix resolves by renaming the called method to <paramref name="newName" />.
     ///     No property for <see langword="null" />, and none for an extension method called in its static form
     ///     (<c>ThenExtensions.Then(result, …)</c>), where the other method is in another class.
@@ -93,4 +95,6 @@ public abstract class ResultAnalyzer : DiagnosticAnalyzer
             ? ImmutableDictionary<string, string?>.Empty
             : ImmutableDictionary<string, string?>.Empty.Add(Rules.RenameToProperty, newName);
     }
+
+    #endregion
 }

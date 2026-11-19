@@ -90,6 +90,8 @@ public sealed class RenameMethodCodeFixProvider : CodeFixProvider
         }
     }
 
+    #region helper methods
+
     private static async Task<Document> RenameAsync(Document document, SimpleNameSyntax name, string newName, CancellationToken cancellationToken)
     {
         var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
@@ -100,4 +102,6 @@ public sealed class RenameMethodCodeFixProvider : CodeFixProvider
 
         return document.WithSyntaxRoot(newRoot);
     }
+
+    #endregion
 }

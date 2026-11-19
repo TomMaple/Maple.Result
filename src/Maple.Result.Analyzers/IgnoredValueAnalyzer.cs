@@ -79,6 +79,8 @@ public sealed class IgnoredValueAnalyzer : ResultAnalyzer
         context.ReportDiagnostic(diagnostic);
     }
 
+    #region helper methods
+
     // A call that is a statement of its own (also awaited) does not use the result it returns.
     private static bool IsResultUsed(SyntaxNode call)
     {
@@ -89,4 +91,6 @@ public sealed class IgnoredValueAnalyzer : ResultAnalyzer
 
         return node.Parent is not ExpressionStatementSyntax;
     }
+
+    #endregion
 }

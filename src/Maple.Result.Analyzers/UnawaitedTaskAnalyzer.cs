@@ -31,16 +31,6 @@ public sealed class UnawaitedTaskAnalyzer : ResultAnalyzer
     private protected override void Register(CompilationStartAnalysisContext context, KnownTypes types)
         => context.RegisterOperationAction(operationContext => Analyze(operationContext, types), OperationKind.Invocation);
 
-    private static string Advice(IMethodSymbol method)
-    {
-        if (KnownTypes.MethodsWithAsyncForm.Contains(method.Name))
-            return "Use " + method.Name + "Async";
-
-        return method.Name is "Switch" or "SwitchAsync"
-            ? "Use Match or MatchAsync with two functions that return a task"
-            : "Pass a function that returns a Task or a ValueTask without a value, e.g., an async lambda that awaits it";
-    }
-
     private static void Analyze(OperationAnalysisContext context, KnownTypes types)
     {
         var invocation = (IInvocationOperation)context.Operation;
@@ -74,4 +64,18 @@ public sealed class UnawaitedTaskAnalyzer : ResultAnalyzer
             context.ReportDiagnostic(diagnostic);
         }
     }
+
+    #region helper methods
+
+    private static string Advice(IMethodSymbol method)
+    {
+        if (KnownTypes.MethodsWithAsyncForm.Contains(method.Name))
+            return "Use " + method.Name + "Async";
+
+        return method.Name is "Switch" or "SwitchAsync"
+            ? "Use Match or MatchAsync with two functions that return a task"
+            : "Pass a function that returns a Task or a ValueTask without a value, e.g., an async lambda that awaits it";
+    }
+
+    #endregion
 }

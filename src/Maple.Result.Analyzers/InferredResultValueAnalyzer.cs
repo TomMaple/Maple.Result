@@ -34,21 +34,6 @@ public sealed class InferredResultValueAnalyzer : ResultAnalyzer
     private protected override void Register(CompilationStartAnalysisContext context, KnownTypes types)
         => context.RegisterOperationAction(operationContext => Analyze(operationContext, types), OperationKind.Invocation);
 
-    private static string Advice(IMethodSymbol method, string? asyncForm, bool isTaskOfTask)
-    {
-        if (isTaskOfTask)
-            return "Pass functions that the method awaits";
-
-        if (method.Name is "Select" or "SelectMany")
-            return "Await it in a from clause, or use ThenAsync";
-
-        // Without an asynchronous form, what is left is ThenAsync on a task of a result with a task without a value: a function that returns
-        // a task with a value is awaited by an overload of its own.
-        return asyncForm is null or "IfSuccessAsync"
-            ? "Use IfSuccessAsync for a side effect that returns no value"
-            : "Use " + asyncForm + " to await it";
-    }
-
     private static void Analyze(OperationAnalysisContext context, KnownTypes types)
     {
         var invocation = (IInvocationOperation)context.Operation;
@@ -77,6 +62,23 @@ public sealed class InferredResultValueAnalyzer : ResultAnalyzer
         var advice = Advice(method, asyncForm, isTaskOfTask);
         var diagnostic = Diagnostic.Create(Rules.InferredResultValue, location, RenameTo(invocation, asyncForm), method.Name, typeName, consequence, advice);
         context.ReportDiagnostic(diagnostic);
+    }
+
+    #region helper methods
+
+    private static string Advice(IMethodSymbol method, string? asyncForm, bool isTaskOfTask)
+    {
+        if (isTaskOfTask)
+            return "Pass functions that the method awaits";
+
+        if (method.Name is "Select" or "SelectMany")
+            return "Await it in a from clause, or use ThenAsync";
+
+        // Without an asynchronous form, what is left is ThenAsync on a task of a result with a task without a value: a function that returns
+        // a task with a value is awaited by an overload of its own.
+        return asyncForm is null or "IfSuccessAsync"
+            ? "Use IfSuccessAsync for a side effect that returns no value"
+            : "Use " + asyncForm + " to await it";
     }
 
     // The method that awaits the task: the Async form, or IfSuccessAsync where Then got a task without a value (ThenAsync takes none).
@@ -139,4 +141,6 @@ public sealed class InferredResultValueAnalyzer : ResultAnalyzer
             ? null
             : parameter;
     }
+
+    #endregion
 }

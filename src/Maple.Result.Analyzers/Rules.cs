@@ -17,7 +17,7 @@ namespace Maple.Results.Analyzers;
 /// </summary>
 public static class Rules
 {
-    #region Identifiers
+    #region identifiers
 
     /// <summary>MR0001: a task becomes the value of a result.</summary>
     public const string InferredResultValueId = "MR0001";
@@ -39,7 +39,7 @@ public static class Rules
 
     #endregion
 
-    #region Properties
+    #region properties
 
     /// <summary>
     ///     The name of the diagnostic property that holds the method name a code fix renames the call to (e.g., <c>ThenAsync</c>).
@@ -49,7 +49,7 @@ public static class Rules
 
     #endregion
 
-    #region Descriptors
+    #region descriptors
 
     private const string Category = "Usage";
 

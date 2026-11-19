@@ -44,12 +44,16 @@ internal sealed class AwaitedCall
     private readonly bool _functionReturnsValue;
     private readonly InvocationExpressionSyntax _invocation;
 
+    #region constructors
+
     private AwaitedCall(InvocationExpressionSyntax invocation, SyntaxNode? function, bool functionReturnsValue)
     {
         _invocation = invocation;
         _function = function;
         _functionReturnsValue = functionReturnsValue;
     }
+
+    #endregion
 
     /// <summary>
     ///     Returns the <paramref name="root" /> with the call renamed to <paramref name="newName" /> and awaited.
@@ -67,6 +71,8 @@ internal sealed class AwaitedCall
                 ? Await((InvocationExpressionSyntax)rewritten, newName)
                 : MakeAsync(rewritten, _functionReturnsValue));
     }
+
+    #region factory methods
 
     /// <summary>
     ///     Returns how to await the call that the <paramref name="name" /> names, or <see langword="null" /> if it cannot be awaited where it
@@ -116,6 +122,29 @@ internal sealed class AwaitedCall
         }
     }
 
+    private static AwaitedCall? Create(InvocationExpressionSyntax invocation, SyntaxNode function, bool isAsync, ITypeSymbol? returnType)
+    {
+        if (isAsync)
+            return new AwaitedCall(invocation, function: null, functionReturnsValue: false);
+
+        // Making the function asynchronous keeps its signature only when it returns a task already.
+        var isTask = returnType is INamedTypeSymbol
+        {
+            Name: "Task" or "ValueTask",
+            ContainingNamespace: { Name: "Tasks", ContainingNamespace: { Name: "Threading", ContainingNamespace.Name: "System" } }
+        };
+
+        // A returned task cannot be awaited inside a lock. (A lambda that becomes an expression tree has no delegate type, so no task.)
+        if (!isTask || ReturnsInsideUnawaitableStatement(function))
+            return null;
+
+        return new AwaitedCall(invocation, function, ((INamedTypeSymbol)returnType!).IsGenericType);
+    }
+
+    #endregion
+
+    #region helper methods
+
     private static bool IsContainer(SyntaxNode node)
         => node is LockStatementSyntax or UnsafeStatementSyntax or FixedStatementSyntax or QueryExpressionSyntax or CatchFilterClauseSyntax
             or AnonymousFunctionExpressionSyntax or LocalFunctionStatementSyntax or MemberDeclarationSyntax or AccessorDeclarationSyntax;
@@ -145,25 +174,6 @@ internal sealed class AwaitedCall
             : SyntaxFactory.ParenthesizedExpression(awaited.WithoutLeadingTrivia())
                 .WithLeadingTrivia(awaited.GetLeadingTrivia())
                 .WithAdditionalAnnotations(Simplifier.Annotation);
-    }
-
-    private static AwaitedCall? Create(InvocationExpressionSyntax invocation, SyntaxNode function, bool isAsync, ITypeSymbol? returnType)
-    {
-        if (isAsync)
-            return new AwaitedCall(invocation, function: null, functionReturnsValue: false);
-
-        // Making the function asynchronous keeps its signature only when it returns a task already.
-        var isTask = returnType is INamedTypeSymbol
-        {
-            Name: "Task" or "ValueTask",
-            ContainingNamespace: { Name: "Tasks", ContainingNamespace: { Name: "Threading", ContainingNamespace.Name: "System" } }
-        };
-
-        // A returned task cannot be awaited inside a lock. (A lambda that becomes an expression tree has no delegate type, so no task.)
-        if (!isTask || ReturnsInsideUnawaitableStatement(function))
-            return null;
-
-        return new AwaitedCall(invocation, function, ((INamedTypeSymbol)returnType!).IsGenericType);
     }
 
     private static SyntaxNode MakeAsync(SyntaxNode function, bool returnsValue)
@@ -377,4 +387,6 @@ internal sealed class AwaitedCall
         private static SyntaxToken Semicolon(SyntaxTriviaList trailingTrivia)
             => SyntaxFactory.Token(SyntaxFactory.TriviaList(), SyntaxKind.SemicolonToken, trailingTrivia);
     }
+
+    #endregion
 }
