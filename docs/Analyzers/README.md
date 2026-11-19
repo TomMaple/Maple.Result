@@ -18,9 +18,9 @@ There is nothing to install. The analyzer is part of the `Maple.Result` package:
 | Rule | Severity | Title | Example |
 | ---- | -------- | ----- | ------- |
 | [MR0001](MR0001.md) | Error | A task becomes the value of a result | `result.Then(x => GetAsync(x))` is a `Result<Task<int>>` whose task nobody awaits |
-| [MR0002](MR0002.md) | Error | A task is not awaited by a side-effect method | `result.IfSuccess(x => SaveAsync(x))` discards the task |
+| [MR0002](MR0002.md) | Error | A task is not awaited by a side effect method | `result.IfSuccess(x => SaveAsync(x))` discards the task |
 | [MR0003](MR0003.md) | Error | A task, a result or an Error is stored as the value of a result | `Result<object> result = SaveAsync();` is a successful result that holds the task |
-| [MR0004](MR0004.md) | Error | A side-effect method drops the result of its function | `result.IfSuccess(x => Validate(x))` loses a failure of `Validate` |
+| [MR0004](MR0004.md) | Error | A side effect method drops the result of its function | `result.IfSuccess(x => Validate(x))` loses a failure of `Validate` |
 | [MR0005](MR0005.md) | Warning | IfSuccess or IfError ignores the value of its function | `var normalized = result.IfSuccess(x => Normalize(x));` keeps the original result |
 | [MR0006](MR0006.md) | Warning | A result is discarded | `await SaveAsync(order);` loses a failed `Result` |
 
