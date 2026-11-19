@@ -30,8 +30,8 @@ public sealed class DroppedResultAnalyzer : ResultAnalyzer
     /// <inheritdoc />
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = [Rules.DroppedResult];
 
-    private protected override void Register(CompilationStartAnalysisContext context, KnownTypes types) =>
-        context.RegisterOperationAction(operationContext => Analyze(operationContext, types), OperationKind.Invocation);
+    private protected override void Register(CompilationStartAnalysisContext context, KnownTypes types)
+        => context.RegisterOperationAction(operationContext => Analyze(operationContext, types), OperationKind.Invocation);
 
     private static void Analyze(OperationAnalysisContext context, KnownTypes types)
     {

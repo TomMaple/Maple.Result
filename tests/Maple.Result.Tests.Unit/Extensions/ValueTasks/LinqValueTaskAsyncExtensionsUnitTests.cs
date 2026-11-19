@@ -395,8 +395,10 @@ public class LinqValueTaskAsyncExtensionsUnitTests
 
         var sut = ValueTask.FromResult(Result.FromValue(90));
 
-        static ValueTask<Result<int>> Function1(int value) => ValueTask.FromResult(Result.FromValue(value + 10));
-        static ValueTask<Result<string>> Function2(int value) => ValueTask.FromResult(Result.FromValue(value.ToString()));
+        static ValueTask<Result<int>> Function1(int value)
+            => ValueTask.FromResult(Result.FromValue(value + 10));
+        static ValueTask<Result<string>> Function2(int value)
+            => ValueTask.FromResult(Result.FromValue(value.ToString()));
 
         // Act
         var result = await (
@@ -606,11 +608,14 @@ public class LinqValueTaskAsyncExtensionsUnitTests
 
     private static readonly Error MixedError = Error.NotFound(ErrorUri.Tag("tag:test.com,2024:Mixed"), "Mixed title");
 
-    private static ValueTask<Result<int>> GetAsync(int value) => ValueTask.FromResult(Result<int>.FromValue(value));
+    private static ValueTask<Result<int>> GetAsync(int value)
+        => ValueTask.FromResult(Result<int>.FromValue(value));
 
-    private static ValueTask<Result<int>> GetErrorAsync() => ValueTask.FromResult(Result<int>.FromError(MixedError));
+    private static ValueTask<Result<int>> GetErrorAsync()
+        => ValueTask.FromResult(Result<int>.FromError(MixedError));
 
-    private static Result<int> Get(int value) => Result<int>.FromValue(value);
+    private static Result<int> Get(int value)
+        => Result<int>.FromValue(value);
 
     [Fact]
     public async Task LinqQuerySyntax_AsyncThenSyncSuccessfulResults_ReturnsCombinedValue()
@@ -726,8 +731,8 @@ public class LinqValueTaskAsyncExtensionsUnitTests
     public async Task SelectMany_AsyncSourceWithNullSyncSelector_ThrowsArgumentNullException()
     {
         // Act
-        var exception = await Record.ExceptionAsync(async () =>
-            await GetAsync(1).SelectMany((Func<int, Result<int>>)null!, (a, b) => a + b));
+        var exception = await Record.ExceptionAsync(async ()
+            => await GetAsync(1).SelectMany((Func<int, Result<int>>)null!, (a, b) => a + b));
 
         // Assert
         exception.ShouldBeOfType<ArgumentNullException>();
@@ -737,8 +742,8 @@ public class LinqValueTaskAsyncExtensionsUnitTests
     public async Task SelectMany_SyncSourceWithNullAsyncSelector_ThrowsArgumentNullException()
     {
         // Act
-        var exception = await Record.ExceptionAsync(async () =>
-            await Get(1).SelectMany((Func<int, ValueTask<Result<int>>>)null!, (a, b) => a + b));
+        var exception = await Record.ExceptionAsync(async ()
+            => await Get(1).SelectMany((Func<int, ValueTask<Result<int>>>)null!, (a, b) => a + b));
 
         // Assert
         exception.ShouldBeOfType<ArgumentNullException>();

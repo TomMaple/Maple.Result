@@ -32,8 +32,8 @@ public sealed class IgnoredValueAnalyzer : ResultAnalyzer
     /// <inheritdoc />
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = [Rules.IgnoredValue];
 
-    private protected override void Register(CompilationStartAnalysisContext context, KnownTypes types) =>
-        context.RegisterOperationAction(operationContext => Analyze(operationContext, types), OperationKind.Invocation);
+    private protected override void Register(CompilationStartAnalysisContext context, KnownTypes types)
+        => context.RegisterOperationAction(operationContext => Analyze(operationContext, types), OperationKind.Invocation);
 
     private static void Analyze(OperationAnalysisContext context, KnownTypes types)
     {

@@ -577,7 +577,8 @@ public class LinqExtensionsUnitTests
 
     private static readonly Error TrapError = Error.Conflict(ErrorUri.Tag("tag:test.com,2024:Trap"), "Trap title");
 
-    private static Result<int> Get(int value) => Result<int>.FromValue(value);
+    private static Result<int> Get(int value)
+        => Result<int>.FromValue(value);
 
     [Fact]
     public void LinqQuerySyntax_SuccessfulResultSelectingError_ReturnsFailedResultWithSelectedError()

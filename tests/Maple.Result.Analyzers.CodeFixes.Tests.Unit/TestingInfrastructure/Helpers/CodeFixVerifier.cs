@@ -64,22 +64,22 @@ internal static class CodeFixVerifier<TAnalyzer, TCodeFix>
     ///     Compiles the <paramref name="statements" /> as the body of a method, checks the marked diagnostics, applies the code fix and
     ///     compares the result with the <paramref name="fixedStatements" />. The method is asynchronous when the statements await something.
     /// </summary>
-    public static Task VerifyAsync(string statements, string fixedStatements) =>
-        VerifySourceAsync(Wrap(statements), Wrap(fixedStatements));
+    public static Task VerifyAsync(string statements, string fixedStatements)
+        => VerifySourceAsync(Wrap(statements), Wrap(fixedStatements));
 
     /// <summary>
     ///     Compiles the <paramref name="members" /> as members of a class (methods, fields), checks the marked diagnostics, applies the code
     ///     fix and compares the result with the <paramref name="fixedMembers" />. Each line of the members is indented by four spaces.
     /// </summary>
-    public static Task VerifyMembersAsync(string members, string fixedMembers) =>
-        VerifySourceAsync(Usings + ClassStart + "\n" + members + "\n}\n", Usings + ClassStart + "\n" + fixedMembers + "\n}\n");
+    public static Task VerifyMembersAsync(string members, string fixedMembers)
+        => VerifySourceAsync(Usings + ClassStart + "\n" + members + "\n}\n", Usings + ClassStart + "\n" + fixedMembers + "\n}\n");
 
     /// <summary>
     ///     Compiles the <paramref name="statements" /> as the top-level statements of a program, checks the marked diagnostics, applies the
     ///     code fix and compares the result with the <paramref name="fixedStatements" />.
     /// </summary>
-    public static Task VerifyProgramAsync(string statements, string fixedStatements) =>
-        VerifySourceAsync(Usings + "\n" + statements + "\n", Usings + "\n" + fixedStatements + "\n", OutputKind.ConsoleApplication);
+    public static Task VerifyProgramAsync(string statements, string fixedStatements)
+        => VerifySourceAsync(Usings + "\n" + statements + "\n", Usings + "\n" + fixedStatements + "\n", OutputKind.ConsoleApplication);
 
     private static Task VerifySourceAsync(string source, string fixedSource, OutputKind outputKind = OutputKind.DynamicallyLinkedLibrary)
     {

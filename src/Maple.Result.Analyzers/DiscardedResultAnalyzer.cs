@@ -31,8 +31,8 @@ public sealed class DiscardedResultAnalyzer : ResultAnalyzer
     /// <inheritdoc />
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = [Rules.DiscardedResult];
 
-    private protected override void Register(CompilationStartAnalysisContext context, KnownTypes types) =>
-        context.RegisterOperationAction(operationContext => Analyze(operationContext, types), OperationKind.ExpressionStatement);
+    private protected override void Register(CompilationStartAnalysisContext context, KnownTypes types)
+        => context.RegisterOperationAction(operationContext => Analyze(operationContext, types), OperationKind.ExpressionStatement);
 
     private static void Analyze(OperationAnalysisContext context, KnownTypes types)
     {
@@ -123,8 +123,8 @@ public sealed class DiscardedResultAnalyzer : ResultAnalyzer
     }
 
     // The expression body of a lambda passed to a method of the library: MR0002 and MR0004 report what such a function drops.
-    private static bool IsBodyOfLibraryFunction(IExpressionStatementOperation statement, KnownTypes types) =>
-        statement.Parent is IBlockOperation
+    private static bool IsBodyOfLibraryFunction(IExpressionStatementOperation statement, KnownTypes types)
+        => statement.Parent is IBlockOperation
         {
             Parent: IAnonymousFunctionOperation { Parent: IDelegateCreationOperation { Parent: IArgumentOperation { Parent: IInvocationOperation call } } }
         }

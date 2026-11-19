@@ -81,8 +81,8 @@ internal static class AnalyzerRunner
     ///     <typeparamref name="TAnalyzer" /> on it.
     /// </summary>
     public static AnalysisResult Run<TAnalyzer>(string statements, string members = "")
-        where TAnalyzer : DiagnosticAnalyzer, new() =>
-        Run(statements, members, [new TAnalyzer()]);
+        where TAnalyzer : DiagnosticAnalyzer, new()
+        => Run(statements, members, [new TAnalyzer()]);
 
     /// <summary>
     ///     Compiles the <paramref name="statements" /> as the body of a method of a class with the <paramref name="members" />, and runs the
@@ -166,8 +166,10 @@ internal sealed class AnalysisResult(SyntaxTree tree, Diagnostic[] compilerError
     public IReadOnlyList<Diagnostic> Diagnostics => diagnostics;
 
     /// <summary>The text that the <paramref name="diagnostic" /> marks.</summary>
-    public string MarkedText(Diagnostic diagnostic) => TextAt(diagnostic.Location);
+    public string MarkedText(Diagnostic diagnostic)
+        => TextAt(diagnostic.Location);
 
     /// <summary>The text of the snippet at the <paramref name="location" />.</summary>
-    public string TextAt(Location location) => tree.GetText().ToString(location.SourceSpan);
+    public string TextAt(Location location)
+        => tree.GetText().ToString(location.SourceSpan);
 }

@@ -60,15 +60,20 @@ csharp_style_prefer_primary_constructors = false
 csharp_style_var_when_type_is_apparent = true
 
 #
-# Expression bodies (=>): allowed, not enforced, for a method, operator or local function whose body fits on one line;
+# Expression bodies (=>): allowed, not enforced, for a method, operator or local function whose body is one expression;
 # a multi-line body is a block body ({ }). Neither style is suggested.
+# An expression-bodied method is never written on one line: the "=>" starts the next line. Any other "=>" that is followed by
+# a line break (a lambda, a property, a switch expression arm) starts the next line too, unless it opens a block
+# (Rider / ReSharper only; dotnet format has no such rule).
 #
 csharp_style_expression_bodied_local_functions = when_on_single_line:silent
 csharp_style_expression_bodied_methods = when_on_single_line:silent
 csharp_style_expression_bodied_operators = when_on_single_line:silent
 resharper_arrange_local_function_body_highlighting = none
 resharper_arrange_method_or_operator_body_highlighting = none
+resharper_place_expr_method_on_single_line = never
 resharper_use_heuristics_for_body_style = true
+resharper_wrap_before_arrow_with_expressions = true
 
 #
 # Wrapping: chained calls are wrapped one per line, before the ".", and binary expressions one operand per line,

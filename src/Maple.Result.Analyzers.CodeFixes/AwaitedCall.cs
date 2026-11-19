@@ -116,12 +116,12 @@ internal sealed class AwaitedCall
         }
     }
 
-    private static bool IsContainer(SyntaxNode node) =>
-        node is LockStatementSyntax or UnsafeStatementSyntax or FixedStatementSyntax or QueryExpressionSyntax or CatchFilterClauseSyntax
+    private static bool IsContainer(SyntaxNode node)
+        => node is LockStatementSyntax or UnsafeStatementSyntax or FixedStatementSyntax or QueryExpressionSyntax or CatchFilterClauseSyntax
             or AnonymousFunctionExpressionSyntax or LocalFunctionStatementSyntax or MemberDeclarationSyntax or AccessorDeclarationSyntax;
 
-    private static SyntaxToken AsyncKeyword(SyntaxTriviaList leadingTrivia) =>
-        SyntaxFactory.Token(leadingTrivia, SyntaxKind.AsyncKeyword, SyntaxFactory.TriviaList(SyntaxFactory.Space));
+    private static SyntaxToken AsyncKeyword(SyntaxTriviaList leadingTrivia)
+        => SyntaxFactory.Token(leadingTrivia, SyntaxKind.AsyncKeyword, SyntaxFactory.TriviaList(SyntaxFactory.Space));
 
     private static ExpressionSyntax Await(ExpressionSyntax expression)
     {
@@ -209,8 +209,8 @@ internal sealed class AwaitedCall
         }
     }
 
-    private static ArrowExpressionClauseSyntax? AwaitReturned(ArrowExpressionClauseSyntax? expressionBody, bool returnsValue) =>
-        expressionBody?.WithExpression(AwaitReturned(expressionBody.Expression, returnsValue));
+    private static ArrowExpressionClauseSyntax? AwaitReturned(ArrowExpressionClauseSyntax? expressionBody, bool returnsValue)
+        => expressionBody?.WithExpression(AwaitReturned(expressionBody.Expression, returnsValue));
 
     // What an asynchronous function returns in place of the task that the synchronous one returned: the awaited task, or the value itself
     // for Task.FromResult(value).
@@ -244,7 +244,8 @@ internal sealed class AwaitedCall
         return false;
     }
 
-    private static bool IsFunction(SyntaxNode node) => node is AnonymousFunctionExpressionSyntax or LocalFunctionStatementSyntax;
+    private static bool IsFunction(SyntaxNode node)
+        => node is AnonymousFunctionExpressionSyntax or LocalFunctionStatementSyntax;
 
     // The async modifier goes after the other modifiers but before partial; without modifiers it takes the place, and the leading trivia,
     // of the return type.
@@ -283,9 +284,11 @@ internal sealed class AwaitedCall
             _returnsValue = returnsValue;
         }
 
-        public static BlockSyntax Rewrite(BlockSyntax body, bool returnsValue) => (BlockSyntax)new ReturnRewriter(body, returnsValue).Visit(body);
+        public static BlockSyntax Rewrite(BlockSyntax body, bool returnsValue)
+            => (BlockSyntax)new ReturnRewriter(body, returnsValue).Visit(body);
 
-        public override SyntaxNode VisitAnonymousMethodExpression(AnonymousMethodExpressionSyntax node) => node;
+        public override SyntaxNode VisitAnonymousMethodExpression(AnonymousMethodExpressionSyntax node)
+            => node;
 
         public override SyntaxNode? VisitBlock(BlockSyntax node)
         {
@@ -312,9 +315,11 @@ internal sealed class AwaitedCall
             return node.WithStatements(SyntaxFactory.List(statements));
         }
 
-        public override SyntaxNode VisitLocalFunctionStatement(LocalFunctionStatementSyntax node) => node;
+        public override SyntaxNode VisitLocalFunctionStatement(LocalFunctionStatementSyntax node)
+            => node;
 
-        public override SyntaxNode VisitParenthesizedLambdaExpression(ParenthesizedLambdaExpressionSyntax node) => node;
+        public override SyntaxNode VisitParenthesizedLambdaExpression(ParenthesizedLambdaExpressionSyntax node)
+            => node;
 
         public override SyntaxNode? VisitReturnStatement(ReturnStatementSyntax node)
         {
@@ -335,7 +340,8 @@ internal sealed class AwaitedCall
             return SyntaxFactory.Block(openBrace, SyntaxFactory.List<StatementSyntax>([awaitStatement, returnStatement]), closeBrace);
         }
 
-        public override SyntaxNode VisitSimpleLambdaExpression(SimpleLambdaExpressionSyntax node) => node;
+        public override SyntaxNode VisitSimpleLambdaExpression(SimpleLambdaExpressionSyntax node)
+            => node;
 
         // "return task;" as two statements, each on a line of its own with the indentation and the line end of the original. The tokens
         // get their trivia explicitly, so that the formatter has nothing to decide.
@@ -365,9 +371,10 @@ internal sealed class AwaitedCall
             }
         }
 
-        private static SyntaxToken Keyword(SyntaxKind kind) => SyntaxFactory.Token(SyntaxFactory.TriviaList(), kind, SyntaxFactory.TriviaList());
+        private static SyntaxToken Keyword(SyntaxKind kind)
+            => SyntaxFactory.Token(SyntaxFactory.TriviaList(), kind, SyntaxFactory.TriviaList());
 
-        private static SyntaxToken Semicolon(SyntaxTriviaList trailingTrivia) =>
-            SyntaxFactory.Token(SyntaxFactory.TriviaList(), SyntaxKind.SemicolonToken, trailingTrivia);
+        private static SyntaxToken Semicolon(SyntaxTriviaList trailingTrivia)
+            => SyntaxFactory.Token(SyntaxFactory.TriviaList(), SyntaxKind.SemicolonToken, trailingTrivia);
     }
 }

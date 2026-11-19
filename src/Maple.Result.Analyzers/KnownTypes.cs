@@ -63,33 +63,41 @@ internal sealed class KnownTypes
     }
 
     /// <summary>The name of the <paramref name="type" /> as a caller writes it (e.g., <c>Task&lt;int&gt;</c>).</summary>
-    public static string Display(ITypeSymbol type) => type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
+    public static string Display(ITypeSymbol type)
+        => type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
 
     /// <summary>Returns the known types of the <paramref name="compilation" />.</summary>
-    public static KnownTypes For(Compilation compilation) => Cache.GetValue(compilation, static key => new KnownTypes(key));
+    public static KnownTypes For(Compilation compilation)
+        => Cache.GetValue(compilation, static key => new KnownTypes(key));
 
     /// <summary>Whether the <paramref name="symbol" /> is declared in the library.</summary>
-    public bool IsLibraryMember(ISymbol symbol) => Same(symbol.ContainingAssembly, _result?.ContainingAssembly);
+    public bool IsLibraryMember(ISymbol symbol)
+        => Same(symbol.ContainingAssembly, _result?.ContainingAssembly);
 
     /// <summary>Whether the <paramref name="type" /> is a <c>Task</c> or a <c>ValueTask</c> without a value.</summary>
-    public bool IsPlainTask(ITypeSymbol? type) => Same(type, _task) || Same(type, _valueTask);
+    public bool IsPlainTask(ITypeSymbol? type)
+        => Same(type, _task) || Same(type, _valueTask);
 
     /// <summary>Whether the <paramref name="type" /> is a <c>Result</c> or a <c>Result&lt;T&gt;</c>.</summary>
-    public bool IsResult(ITypeSymbol? type) => Same(type, _result) || Same(type?.OriginalDefinition, _resultOfT);
+    public bool IsResult(ITypeSymbol? type)
+        => Same(type, _result) || Same(type?.OriginalDefinition, _resultOfT);
 
     /// <summary>Whether the <paramref name="type" /> is a result or an <c>Error</c>.</summary>
-    public bool IsResultOrError(ITypeSymbol? type) => IsResult(type) || Same(type, _error);
+    public bool IsResultOrError(ITypeSymbol? type)
+        => IsResult(type) || Same(type, _error);
 
     /// <summary>Whether the <paramref name="type" /> is a <c>Task</c>, a <c>Task&lt;T&gt;</c>, a <c>ValueTask</c> or a <c>ValueTask&lt;T&gt;</c>.</summary>
-    public bool IsTask(ITypeSymbol? type) => IsPlainTask(type) || AwaitedValue(type) is not null;
+    public bool IsTask(ITypeSymbol? type)
+        => IsPlainTask(type) || AwaitedValue(type) is not null;
 
     /// <summary>
     ///     Returns the type argument of a <c>Result&lt;T&gt;</c>, or <see langword="null" /> for any other type.
     /// </summary>
-    public ITypeSymbol? ResultValue(ITypeSymbol? type) =>
-        type is INamedTypeSymbol named && Same(named.OriginalDefinition, _resultOfT)
+    public ITypeSymbol? ResultValue(ITypeSymbol? type)
+        => type is INamedTypeSymbol named && Same(named.OriginalDefinition, _resultOfT)
             ? named.TypeArguments[0]
             : null;
 
-    private static bool Same(ISymbol? left, ISymbol? right) => left is not null && SymbolEqualityComparer.Default.Equals(left, right);
+    private static bool Same(ISymbol? left, ISymbol? right)
+        => left is not null && SymbolEqualityComparer.Default.Equals(left, right);
 }

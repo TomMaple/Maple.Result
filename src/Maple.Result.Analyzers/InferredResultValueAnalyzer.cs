@@ -31,8 +31,8 @@ public sealed class InferredResultValueAnalyzer : ResultAnalyzer
     /// <inheritdoc />
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = [Rules.InferredResultValue];
 
-    private protected override void Register(CompilationStartAnalysisContext context, KnownTypes types) =>
-        context.RegisterOperationAction(operationContext => Analyze(operationContext, types), OperationKind.Invocation);
+    private protected override void Register(CompilationStartAnalysisContext context, KnownTypes types)
+        => context.RegisterOperationAction(operationContext => Analyze(operationContext, types), OperationKind.Invocation);
 
     private static string Advice(IMethodSymbol method, string? asyncForm, bool isTaskOfTask)
     {
@@ -80,8 +80,8 @@ public sealed class InferredResultValueAnalyzer : ResultAnalyzer
     }
 
     // The method that awaits the task: the Async form, or IfSuccessAsync where Then got a task without a value (ThenAsync takes none).
-    private static string? AsyncForm(KnownTypes types, IMethodSymbol method, ITypeSymbol inferred) =>
-        method.Name switch
+    private static string? AsyncForm(KnownTypes types, IMethodSymbol method, ITypeSymbol inferred)
+        => method.Name switch
         {
             "Then" when types.IsPlainTask(inferred) => "IfSuccessAsync",
             "Then" => "ThenAsync",

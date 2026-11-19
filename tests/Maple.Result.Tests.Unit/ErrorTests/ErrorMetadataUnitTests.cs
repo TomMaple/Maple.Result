@@ -287,8 +287,8 @@ public class ErrorMetadataUnitTests
         var sut = CreateError();
 
         // Act & Assert
-        Should.Throw<ArgumentException>(() =>
-            sut.WithMetadata([new KeyValuePair<string, object?>("limit", 1), new KeyValuePair<string, object?>("Type", 1)]));
+        Should.Throw<ArgumentException>(()
+            => sut.WithMetadata([new KeyValuePair<string, object?>("limit", 1), new KeyValuePair<string, object?>("Type", 1)]));
     }
 
     [Fact]
@@ -308,8 +308,8 @@ public class ErrorMetadataUnitTests
         var sut = CreateError();
 
         // Act & Assert
-        Should.Throw<ArgumentException>(() =>
-            sut.WithMetadata([new KeyValuePair<string, object?>(" ", 1)]));
+        Should.Throw<ArgumentException>(()
+            => sut.WithMetadata([new KeyValuePair<string, object?>(" ", 1)]));
     }
 
     #endregion
@@ -628,8 +628,8 @@ public class ErrorMetadataUnitTests
         var sut = CreateError();
 
         // Act
-        var exception = Record.Exception(() =>
-            sut.WithMetadata([new KeyValuePair<string, object?>("limit", 1), new KeyValuePair<string, object?>("type ", 1)]));
+        var exception = Record.Exception(()
+            => sut.WithMetadata([new KeyValuePair<string, object?>("limit", 1), new KeyValuePair<string, object?>("type ", 1)]));
 
         // Assert
         exception.ShouldNotBeNull();

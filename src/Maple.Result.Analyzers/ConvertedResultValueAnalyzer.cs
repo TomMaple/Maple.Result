@@ -28,8 +28,8 @@ public sealed class ConvertedResultValueAnalyzer : ResultAnalyzer
     /// <inheritdoc />
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = [Rules.ConvertedResultValue];
 
-    private protected override void Register(CompilationStartAnalysisContext context, KnownTypes types) =>
-        context.RegisterOperationAction(operationContext => Analyze(operationContext, types), OperationKind.Conversion);
+    private protected override void Register(CompilationStartAnalysisContext context, KnownTypes types)
+        => context.RegisterOperationAction(operationContext => Analyze(operationContext, types), OperationKind.Conversion);
 
     private static void Analyze(OperationAnalysisContext context, KnownTypes types)
     {

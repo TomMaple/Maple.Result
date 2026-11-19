@@ -47,7 +47,8 @@ public sealed class RenameMethodCodeFixProvider : CodeFixProvider
         [Rules.InferredResultValueId, Rules.UnawaitedTaskId, Rules.DroppedResultId, Rules.IgnoredValueId];
 
     /// <inheritdoc />
-    public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+    public override FixAllProvider GetFixAllProvider()
+        => WellKnownFixAllProviders.BatchFixer;
 
     /// <inheritdoc />
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
