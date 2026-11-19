@@ -29,7 +29,7 @@ namespace Maple.Results.Analyzers;
 public sealed class DiscardedResultAnalyzer : ResultAnalyzer
 {
     /// <inheritdoc />
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(Rules.DiscardedResult);
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = [Rules.DiscardedResult];
 
     private protected override void Register(CompilationStartAnalysisContext context, KnownTypes types) =>
         context.RegisterOperationAction(operationContext => Analyze(operationContext, types), OperationKind.ExpressionStatement);

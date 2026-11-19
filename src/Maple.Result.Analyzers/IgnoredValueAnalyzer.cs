@@ -30,7 +30,7 @@ namespace Maple.Results.Analyzers;
 public sealed class IgnoredValueAnalyzer : ResultAnalyzer
 {
     /// <inheritdoc />
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(Rules.IgnoredValue);
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = [Rules.IgnoredValue];
 
     private protected override void Register(CompilationStartAnalysisContext context, KnownTypes types) =>
         context.RegisterOperationAction(operationContext => Analyze(operationContext, types), OperationKind.Invocation);

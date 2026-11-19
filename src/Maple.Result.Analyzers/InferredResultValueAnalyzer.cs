@@ -29,7 +29,7 @@ namespace Maple.Results.Analyzers;
 public sealed class InferredResultValueAnalyzer : ResultAnalyzer
 {
     /// <inheritdoc />
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(Rules.InferredResultValue);
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = [Rules.InferredResultValue];
 
     private protected override void Register(CompilationStartAnalysisContext context, KnownTypes types) =>
         context.RegisterOperationAction(operationContext => Analyze(operationContext, types), OperationKind.Invocation);

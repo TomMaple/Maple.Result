@@ -28,7 +28,7 @@ namespace Maple.Results.Analyzers;
 public sealed class DroppedResultAnalyzer : ResultAnalyzer
 {
     /// <inheritdoc />
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(Rules.DroppedResult);
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = [Rules.DroppedResult];
 
     private protected override void Register(CompilationStartAnalysisContext context, KnownTypes types) =>
         context.RegisterOperationAction(operationContext => Analyze(operationContext, types), OperationKind.Invocation);

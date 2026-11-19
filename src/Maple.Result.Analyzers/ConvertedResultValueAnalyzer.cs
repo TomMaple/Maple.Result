@@ -26,7 +26,7 @@ namespace Maple.Results.Analyzers;
 public sealed class ConvertedResultValueAnalyzer : ResultAnalyzer
 {
     /// <inheritdoc />
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(Rules.ConvertedResultValue);
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = [Rules.ConvertedResultValue];
 
     private protected override void Register(CompilationStartAnalysisContext context, KnownTypes types) =>
         context.RegisterOperationAction(operationContext => Analyze(operationContext, types), OperationKind.Conversion);

@@ -43,11 +43,9 @@ internal sealed class AwaitedCall
     private readonly SyntaxNode? _function;
     private readonly bool _functionReturnsValue;
     private readonly InvocationExpressionSyntax _invocation;
-    private readonly SimpleNameSyntax _name;
 
-    private AwaitedCall(SimpleNameSyntax name, InvocationExpressionSyntax invocation, SyntaxNode? function, bool functionReturnsValue)
+    private AwaitedCall(InvocationExpressionSyntax invocation, SyntaxNode? function, bool functionReturnsValue)
     {
-        _name = name;
         _invocation = invocation;
         _function = function;
         _functionReturnsValue = functionReturnsValue;
@@ -94,23 +92,23 @@ internal sealed class AwaitedCall
                 var isAsyncLambda = lambda.AsyncKeyword.IsKind(SyntaxKind.AsyncKeyword);
                 var lambdaType = model.GetTypeInfo(lambda, cancellationToken).ConvertedType as INamedTypeSymbol;
 
-                return Create(name, invocation, lambda, isAsyncLambda, lambdaType?.DelegateInvokeMethod?.ReturnType);
+                return Create(invocation, lambda, isAsyncLambda, lambdaType?.DelegateInvokeMethod?.ReturnType);
 
             case LocalFunctionStatementSyntax localFunction:
                 var isAsyncLocalFunction = localFunction.Modifiers.Any(SyntaxKind.AsyncKeyword);
                 var localFunctionSymbol = model.GetDeclaredSymbol(localFunction, cancellationToken);
 
-                return Create(name, invocation, localFunction, isAsyncLocalFunction, localFunctionSymbol?.ReturnType);
+                return Create(invocation, localFunction, isAsyncLocalFunction, localFunctionSymbol?.ReturnType);
 
             case MethodDeclarationSyntax method:
                 var isAsyncMethod = method.Modifiers.Any(SyntaxKind.AsyncKeyword);
                 var methodSymbol = model.GetDeclaredSymbol(method, cancellationToken);
 
-                return Create(name, invocation, method, isAsyncMethod, methodSymbol?.ReturnType);
+                return Create(invocation, method, isAsyncMethod, methodSymbol?.ReturnType);
 
             // Top-level statements can await.
             case GlobalStatementSyntax:
-                return new AwaitedCall(name, invocation, function: null, functionReturnsValue: false);
+                return new AwaitedCall(invocation, function: null, functionReturnsValue: false);
 
             // A lock, unsafe or fixed statement, a query, a catch filter; a constructor, an accessor, an operator, an initializer.
             default:
@@ -149,10 +147,10 @@ internal sealed class AwaitedCall
                 .WithAdditionalAnnotations(Simplifier.Annotation);
     }
 
-    private static AwaitedCall? Create(SimpleNameSyntax name, InvocationExpressionSyntax invocation, SyntaxNode function, bool isAsync, ITypeSymbol? returnType)
+    private static AwaitedCall? Create(InvocationExpressionSyntax invocation, SyntaxNode function, bool isAsync, ITypeSymbol? returnType)
     {
         if (isAsync)
-            return new AwaitedCall(name, invocation, function: null, functionReturnsValue: false);
+            return new AwaitedCall(invocation, function: null, functionReturnsValue: false);
 
         // Making the function asynchronous keeps its signature only when it returns a task already.
         var isTask = returnType is INamedTypeSymbol
@@ -165,7 +163,7 @@ internal sealed class AwaitedCall
         if (!isTask || ReturnsInsideUnawaitableStatement(function))
             return null;
 
-        return new AwaitedCall(name, invocation, function, ((INamedTypeSymbol)returnType!).IsGenericType);
+        return new AwaitedCall(invocation, function, ((INamedTypeSymbol)returnType!).IsGenericType);
     }
 
     private static SyntaxNode MakeAsync(SyntaxNode function, bool returnsValue)
@@ -285,9 +283,9 @@ internal sealed class AwaitedCall
             _returnsValue = returnsValue;
         }
 
-        public static BlockSyntax Rewrite(BlockSyntax body, bool returnsValue) => (BlockSyntax)new ReturnRewriter(body, returnsValue).Visit(body)!;
+        public static BlockSyntax Rewrite(BlockSyntax body, bool returnsValue) => (BlockSyntax)new ReturnRewriter(body, returnsValue).Visit(body);
 
-        public override SyntaxNode? VisitAnonymousMethodExpression(AnonymousMethodExpressionSyntax node) => node;
+        public override SyntaxNode VisitAnonymousMethodExpression(AnonymousMethodExpressionSyntax node) => node;
 
         public override SyntaxNode? VisitBlock(BlockSyntax node)
         {
@@ -307,16 +305,16 @@ internal sealed class AwaitedCall
                 }
                 else
                 {
-                    statements.Add((StatementSyntax)Visit(statement)!);
+                    statements.Add((StatementSyntax)Visit(statement));
                 }
             }
 
             return node.WithStatements(SyntaxFactory.List(statements));
         }
 
-        public override SyntaxNode? VisitLocalFunctionStatement(LocalFunctionStatementSyntax node) => node;
+        public override SyntaxNode VisitLocalFunctionStatement(LocalFunctionStatementSyntax node) => node;
 
-        public override SyntaxNode? VisitParenthesizedLambdaExpression(ParenthesizedLambdaExpressionSyntax node) => node;
+        public override SyntaxNode VisitParenthesizedLambdaExpression(ParenthesizedLambdaExpressionSyntax node) => node;
 
         public override SyntaxNode? VisitReturnStatement(ReturnStatementSyntax node)
         {
@@ -337,7 +335,7 @@ internal sealed class AwaitedCall
             return SyntaxFactory.Block(openBrace, SyntaxFactory.List<StatementSyntax>([awaitStatement, returnStatement]), closeBrace);
         }
 
-        public override SyntaxNode? VisitSimpleLambdaExpression(SimpleLambdaExpressionSyntax node) => node;
+        public override SyntaxNode VisitSimpleLambdaExpression(SimpleLambdaExpressionSyntax node) => node;
 
         // "return task;" as two statements, each on a line of its own with the indentation and the line end of the original. The tokens
         // get their trivia explicitly, so that the formatter has nothing to decide.

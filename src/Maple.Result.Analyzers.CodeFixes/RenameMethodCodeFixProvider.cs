@@ -44,7 +44,7 @@ public sealed class RenameMethodCodeFixProvider : CodeFixProvider
 
     /// <inheritdoc />
     public override ImmutableArray<string> FixableDiagnosticIds { get; } =
-        ImmutableArray.Create(Rules.InferredResultValueId, Rules.UnawaitedTaskId, Rules.DroppedResultId, Rules.IgnoredValueId);
+        [Rules.InferredResultValueId, Rules.UnawaitedTaskId, Rules.DroppedResultId, Rules.IgnoredValueId];
 
     /// <inheritdoc />
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;

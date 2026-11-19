@@ -34,7 +34,7 @@ public sealed class DiscardResultCodeFixProvider : CodeFixProvider
     private const string Title = "Discard the result";
 
     /// <inheritdoc />
-    public override ImmutableArray<string> FixableDiagnosticIds { get; } = ImmutableArray.Create(Rules.DiscardedResultId);
+    public override ImmutableArray<string> FixableDiagnosticIds { get; } = [Rules.DiscardedResultId];
 
     /// <inheritdoc />
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
