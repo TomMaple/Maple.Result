@@ -31,7 +31,11 @@ namespace Maple.Results.Analyzers.CodeFixes;
 [Shared]
 public sealed class DiscardResultCodeFixProvider : CodeFixProvider
 {
+    #region consts
+
     private const string Title = "Discard the result";
+
+    #endregion
 
     /// <inheritdoc />
     public override ImmutableArray<string> FixableDiagnosticIds { get; } = [Rules.DiscardedResultId];

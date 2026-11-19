@@ -40,7 +40,11 @@ namespace Maple.Results.Analyzers.CodeFixes;
 [Shared]
 public sealed class RenameMethodCodeFixProvider : CodeFixProvider
 {
+    #region consts
+
     private const string AsyncSuffix = "Async";
+
+    #endregion
 
     /// <inheritdoc />
     public override ImmutableArray<string> FixableDiagnosticIds { get; } =

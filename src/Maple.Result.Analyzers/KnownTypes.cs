@@ -19,8 +19,14 @@ namespace Maple.Results.Analyzers;
 /// </summary>
 internal sealed class KnownTypes
 {
+    #region consts
+
     // Keyed weakly by the compilation, so that the six analyzers resolve the types once and nothing outlives the compilation.
     private static readonly ConditionalWeakTable<Compilation, KnownTypes> Cache = new();
+
+    #endregion
+
+    #region read-only fields
 
     private readonly INamedTypeSymbol? _error;
     private readonly INamedTypeSymbol? _result;
@@ -29,6 +35,8 @@ internal sealed class KnownTypes
     private readonly INamedTypeSymbol? _taskOfT;
     private readonly INamedTypeSymbol? _valueTask;
     private readonly INamedTypeSymbol? _valueTaskOfT;
+
+    #endregion
 
     #region constructors
 
@@ -42,16 +50,6 @@ internal sealed class KnownTypes
         _valueTask = compilation.GetTypeByMetadataName("System.Threading.Tasks.ValueTask");
         _valueTaskOfT = compilation.GetTypeByMetadataName("System.Threading.Tasks.ValueTask`1");
     }
-
-    #endregion
-
-    #region factory methods
-
-    /// <summary>
-    ///     Returns the known types of the <paramref name="compilation" />.
-    /// </summary>
-    public static KnownTypes For(Compilation compilation)
-        => Cache.GetValue(compilation, static key => new KnownTypes(key));
 
     #endregion
 
@@ -85,6 +83,12 @@ internal sealed class KnownTypes
     /// </summary>
     public static string Display(ITypeSymbol type)
         => type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
+
+    /// <summary>
+    ///     Returns the known types of the <paramref name="compilation" />.
+    /// </summary>
+    public static KnownTypes For(Compilation compilation)
+        => Cache.GetValue(compilation, static key => new KnownTypes(key));
 
     /// <summary>
     ///     Whether the <paramref name="symbol" /> is declared in the library.

@@ -64,8 +64,6 @@ internal readonly struct DelegateArgument
     /// </summary>
     public bool IsAssignment => ExpressionBody is AssignmentExpressionSyntax;
 
-    #region factory methods
-
     /// <summary>
     ///     Reads the <paramref name="argument" />; returns <see langword="false" /> if it is not a lambda or a method group converted to a delegate.
     /// </summary>
@@ -96,6 +94,4 @@ internal readonly struct DelegateArgument
                 return false;
         }
     }
-
-    #endregion
 }

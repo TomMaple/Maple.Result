@@ -40,9 +40,13 @@ namespace Maple.Results.Analyzers.CodeFixes;
 /// </remarks>
 internal sealed class AwaitedCall
 {
+    #region read-only fields
+
     private readonly SyntaxNode? _function;
     private readonly bool _functionReturnsValue;
     private readonly InvocationExpressionSyntax _invocation;
+
+    #endregion
 
     #region constructors
 
@@ -71,8 +75,6 @@ internal sealed class AwaitedCall
                 ? Await((InvocationExpressionSyntax)rewritten, newName)
                 : MakeAsync(rewritten, _functionReturnsValue));
     }
-
-    #region factory methods
 
     /// <summary>
     ///     Returns how to await the call that the <paramref name="name" /> names, or <see langword="null" /> if it cannot be awaited where it
@@ -122,6 +124,8 @@ internal sealed class AwaitedCall
         }
     }
 
+    #region helper methods
+
     private static AwaitedCall? Create(InvocationExpressionSyntax invocation, SyntaxNode function, bool isAsync, ITypeSymbol? returnType)
     {
         if (isAsync)
@@ -140,10 +144,6 @@ internal sealed class AwaitedCall
 
         return new AwaitedCall(invocation, function, ((INamedTypeSymbol)returnType!).IsGenericType);
     }
-
-    #endregion
-
-    #region helper methods
 
     private static bool IsContainer(SyntaxNode node)
         => node is LockStatementSyntax or UnsafeStatementSyntax or FixedStatementSyntax or QueryExpressionSyntax or CatchFilterClauseSyntax
@@ -285,8 +285,12 @@ internal sealed class AwaitedCall
     /// </summary>
     private sealed class ReturnRewriter : CSharpSyntaxRewriter
     {
+        #region read-only fields
+
         private readonly bool _returnsValue;
         private readonly BlockSyntax _body;
+
+        #endregion
 
         private ReturnRewriter(BlockSyntax body, bool returnsValue)
         {
