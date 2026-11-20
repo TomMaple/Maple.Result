@@ -9,6 +9,7 @@
  */
 
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
 using System.Collections.Immutable;
@@ -116,11 +117,16 @@ public sealed class DiscardedResultAnalyzer : ResultAnalyzer
     private static IInvocationOperation? Receiver(IInvocationOperation invocation)
         => ReceiverArgument(invocation) is { } receiver ? Call(receiver.Value) : null;
 
-    // The expression body of a lambda passed to a method of the library: MR0002 and MR0004 report what such a function drops.
+    // The expression body of a lambda passed to a method of the library: MR0002 and MR0004 report what such a function drops. A statement
+    // in a block body is reported here, as in any other method.
     private static bool IsBodyOfLibraryFunction(IExpressionStatementOperation statement, KnownTypes types)
         => statement.Parent is IBlockOperation
         {
-            Parent: IAnonymousFunctionOperation { Parent: IDelegateCreationOperation { Parent: IArgumentOperation { Parent: IInvocationOperation call } } }
+            Parent: IAnonymousFunctionOperation
+            {
+                Syntax: AnonymousFunctionExpressionSyntax { ExpressionBody: not null },
+                Parent: IDelegateCreationOperation { Parent: IArgumentOperation { Parent: IInvocationOperation call } },
+            },
         }
         && types.IsLibraryMember(call.TargetMethod);
 
