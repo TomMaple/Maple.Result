@@ -26,6 +26,11 @@ There is nothing to install. The analyzer is part of the `Maple.Result` package:
 
 The category of every rule is `Usage`.
 
+The identifiers of this package are `MR0001` to `MR0999`. The companion packages use their own ranges of the same
+family: `MR1xxx` for the mapping to HTTP responses (ASP.NET Core, Minimal API, Azure Functions), `MR2xxx` for
+`HttpClient`, `MR3xxx` for resilience and `MR4xxx` for the JSON converters. An identifier says nothing about the severity
+of a rule, and it is never reused for another rule.
+
 ## Code fixes
 | Rule | Code fix |
 | ---- | -------- |
