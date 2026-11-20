@@ -34,7 +34,7 @@ The category of every rule is `Usage`.
 | [MR0003](MR0003.md) | None. |
 | [MR0004](MR0004.md) | Renames `IfSuccess` to `Then` and `IfSuccessAsync` to `ThenAsync`; `IfError` to `Else` and `IfErrorAsync` to `ElseAsync` when the function returns an `Error` or the type of the result itself. |
 | [MR0005](MR0005.md) | Renames `IfSuccess` to `Then`, `IfError` to `Else`, `IfSuccessAsync` to `ThenAsync`, and `IfErrorAsync` to `ElseAsync`. |
-| [MR0006](MR0006.md) | Adds a discard: `_ = …`. |
+| [MR0006](MR0006.md) | Adds a discard: `_ = …`. For a task of a result that is not awaited, it awaits the task and discards the result (`_ = await …`) in an `async` function, and is not offered elsewhere. |
 
 A method renamed to its `Async` form returns a task, so the code fix also awaits the call, as the code fixes of Microsoft for the same change do (VSTHRD103 of the threading analyzers, and the asynchronous assertions of MSTest):
 
@@ -48,7 +48,7 @@ No rename is offered for an extension method called in its static form (e.g., `T
 * C# code. A project that does not reference the library is not analyzed.
 * Generated code, for the errors: MR0001 to MR0004 are reported there too, as a compile error would be. MR0005 and MR0006 are not reported in generated code.
 * MR0001 to MR0005 report only the calls of the members of the library. A call of another method is not reported, also when it discards a task in the same way (e.g., `ids.ForEach(id => SaveAsync(id))`).
-* MR0006 reports a call of any method that returns a `Result`, a `Result<T>`, or a `Task` or a `ValueTask` of one.
+* MR0006 reports a call of any method that returns a `Result`, a `Result<T>`, an `IOperationResult`, or a `Task` or a `ValueTask` of one, and an `await` of anything that gives one (e.g., a call with `ConfigureAwait`, or a variable).
 * A call that does not compile is the compiler’s to report: see the next section.
 
 ## What the compiler reports by itself
