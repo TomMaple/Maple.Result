@@ -9,12 +9,8 @@
  */
 
 using Maple.Results.Extensions;
-using Maple.Results.Tests.Unit.TestingInfrastructure.Helpers;
 using Moq;
 using System;
-using System.ComponentModel;
-using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Maple.Results.Tests.Unit.Extensions;
@@ -423,8 +419,10 @@ public class LinqTaskAsyncExtensionsUnitTests
 
         var sut = Task.FromResult(Result.FromValue(90));
 
-        static Task<Result<int>> Function1(int value) => Task.FromResult(Result.FromValue(value + 10));
-        static Task<Result<string>> Function2(int value) => Task.FromResult(Result.FromValue(value.ToString()));
+        static Task<Result<int>> Function1(int value)
+            => Task.FromResult(Result.FromValue(value + 10));
+        static Task<Result<string>> Function2(int value)
+            => Task.FromResult(Result.FromValue(value.ToString()));
 
         // Act
         var result = await (
@@ -634,11 +632,14 @@ public class LinqTaskAsyncExtensionsUnitTests
 
     private static readonly Error MixedError = Error.NotFound(ErrorUri.Tag("tag:test.com,2024:Mixed"), "Mixed title");
 
-    private static Task<Result<int>> GetAsync(int value) => Task.FromResult(Result<int>.FromValue(value));
+    private static Task<Result<int>> GetAsync(int value)
+        => Task.FromResult(Result<int>.FromValue(value));
 
-    private static Task<Result<int>> GetErrorAsync() => Task.FromResult(Result<int>.FromError(MixedError));
+    private static Task<Result<int>> GetErrorAsync()
+        => Task.FromResult(Result<int>.FromError(MixedError));
 
-    private static Result<int> Get(int value) => Result<int>.FromValue(value);
+    private static Result<int> Get(int value)
+        => Result<int>.FromValue(value);
 
     [Fact]
     public async Task LinqQuerySyntax_AsyncThenSyncSuccessfulResults_ReturnsCombinedValue()
@@ -754,8 +755,8 @@ public class LinqTaskAsyncExtensionsUnitTests
     public async Task SelectMany_AsyncSourceWithNullSyncSelector_ThrowsArgumentNullException()
     {
         // Act
-        var exception = await Record.ExceptionAsync(async () =>
-            await GetAsync(1).SelectMany((Func<int, Result<int>>)null!, (a, b) => a + b));
+        var exception = await Record.ExceptionAsync(async ()
+            => await GetAsync(1).SelectMany((Func<int, Result<int>>)null!, (a, b) => a + b));
 
         // Assert
         exception.ShouldBeOfType<ArgumentNullException>();
@@ -765,8 +766,8 @@ public class LinqTaskAsyncExtensionsUnitTests
     public async Task SelectMany_SyncSourceWithNullAsyncSelector_ThrowsArgumentNullException()
     {
         // Act
-        var exception = await Record.ExceptionAsync(async () =>
-            await Get(1).SelectMany((Func<int, Task<Result<int>>>)null!, (a, b) => a + b));
+        var exception = await Record.ExceptionAsync(async ()
+            => await Get(1).SelectMany((Func<int, Task<Result<int>>>)null!, (a, b) => a + b));
 
         // Assert
         exception.ShouldBeOfType<ArgumentNullException>();
@@ -774,7 +775,7 @@ public class LinqTaskAsyncExtensionsUnitTests
 
     #endregion
 
-    #region LINQ query selecting an Error (overload trap)
+    #region LINQ query selecting an Error
 
     // See issue #119.
 
@@ -913,67 +914,7 @@ public class LinqTaskAsyncExtensionsUnitTests
 
     #endregion
 
-    #region LINQ query selecting a task (overload trap)
-
-    // See issue #126.
-
-    [Fact]
-    public void Select_SelectorReturningTaskOverloads_AreHiddenCompileErrors()
-    {
-        // Arrange
-        var overloads = OverloadTrapHelper.TaskPartMethods(typeof(LinqAsyncExtensions))
-            .Where(m => m.Name == "Select" && OverloadTrapHelper.IsTrap(m, "The selector returns a task"))
-            .ToArray();
-
-        // Act & Assert
-        overloads.Length.ShouldBe(6);
-        overloads.ShouldAllBe(m => m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
-                                   && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
-    }
-
-    [Fact]
-    public void SelectMany_ResultSelectorReturningTaskOverloads_AreHiddenCompileErrors()
-    {
-        // Arrange
-        var overloads = OverloadTrapHelper.TaskPartMethods(typeof(LinqAsyncExtensions))
-            .Where(m => m.Name == "SelectMany" && OverloadTrapHelper.IsTrap(m, "The selector returns a task"))
-            .ToArray();
-
-        // Act & Assert
-        overloads.Length.ShouldBe(36);
-        overloads.ShouldAllBe(m => m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
-                                   && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
-    }
-
-    // The traps constrained to a Task or a ValueTask have a priority one above the overloads of their place that run (#270): 1, or 2 on
-    // a result, whose overloads with a Task collection selector have priority 1 (#248). The trap for a ValueTask<T> has their priority.
-    [Fact]
-    public void SelectAndSelectMany_TrapsConstrainedToTheTaskType_HavePriorityOneAboveTheOverloadsThatRun()
-    {
-        // Arrange
-        var overloads = OverloadTrapHelper.TaskPartMethods(typeof(LinqAsyncExtensions))
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The selector returns a task")
-                        && OverloadTrapHelper.IsConstrainedToATask(m))
-            .ToArray();
-
-        // Act & Assert
-        overloads.Length.ShouldBe(28);
-        overloads.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == (OverloadTrapHelper.HasSynchronousReceiver(m) ? 2 : 1));
-    }
-
-    [Fact]
-    public void SelectAndSelectMany_TrapsForValueTaskOfT_HaveThePriorityOfTheOverloadsThatRun()
-    {
-        // Arrange
-        var overloads = OverloadTrapHelper.TaskPartMethods(typeof(LinqAsyncExtensions))
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The selector returns a task")
-                        && !OverloadTrapHelper.IsConstrainedToATask(m))
-            .ToArray();
-
-        // Act & Assert
-        overloads.Length.ShouldBe(14);
-        overloads.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == (OverloadTrapHelper.HasSynchronousReceiver(m) ? 1 : 0));
-    }
+    #region LINQ query selecting a task in a result
 
     [Fact]
     public async Task Select_SuccessfulResultTaskWithSelectorReturningTaskInResult_ReturnsResultWithTaskNotAwaited()

@@ -31,7 +31,6 @@ public class NullCheckUnitTests
     private static readonly Dictionary<string, MethodInfo> Methods = typeof(Result).Assembly.GetExportedTypes()
         .Where(t => t.Namespace?.StartsWith("Maple.Results.Extensions", StringComparison.Ordinal) == true)
         .SelectMany(t => t.GetMethods(BindingFlags.Public | BindingFlags.Static))
-        .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is null)
         .Select(Close)
         .ToDictionary(Describe);
 
@@ -125,7 +124,9 @@ public class NullCheckUnitTests
     private const string NullTask = "null task";
     private const string NullTaskResult = "task with a null result";
 
-    /// <summary>The ways a function of the type can return <see langword="null" /> where the extension methods require a value.</summary>
+    /// <summary>
+    ///     The ways a function of the type can return <see langword="null" /> where the extension methods require a value.
+    /// </summary>
     private static IEnumerable<string> NullVariants(Type type)
     {
         if (!IsDelegate(type) || DelegateReturnType(type) is not { } returnType || returnType == typeof(void))
@@ -152,7 +153,9 @@ public class NullCheckUnitTests
         }
     }
 
-    /// <summary>The types that a function may not return as <see langword="null" />.</summary>
+    /// <summary>
+    ///     The types that a function may not return as <see langword="null" />.
+    /// </summary>
     private static bool IsRequired(Type type)
     {
         return type == typeof(Result) || type == typeof(Error) || (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Result<>));

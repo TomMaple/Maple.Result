@@ -10,7 +10,6 @@
 
 using Maple.Results.Helpers;
 using System;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Maple.Results.Extensions;

@@ -98,13 +98,14 @@ are marked breaking. Preview the notes locally with `git cliff --unreleased --st
 	* Formatting: `.editorconfig`; lines up to 160 characters.
 	* Every source file starts with the SPDX license identifier and the copyright header.
 	* Members are ordered alphabetically within each `#region`.
-	* An overload trap (an `[Obsolete(…, error: true)]` and `[EditorBrowsable(EditorBrowsableState.Never)]` overload that turns
-	  an unsupported call into a compile error) goes into the `.Traps.cs` file of its class, next to it (e.g.,
-	  `ThenExtensions.Traps.cs`, `ThenAsyncExtensions.Task.Traps.cs`, `Result.Try.Traps.cs`), in a `Not supported: …` region
-	  with its message constant and a comment that says why it exists; the class is `partial`. The file of the class keeps the
-	  methods that run.
-	  `[Obsolete]` marks only overload traps: the code coverage leaves out every `[Obsolete]` member (see *Tests*).
+	* A call that compiles but does not do what it looks like (e.g., a task that nobody awaits) is reported by a rule of the
+	  analyzer project, `src/Maple.Result.Analyzers`. The library has no overload whose only purpose is to turn a call into a
+	  compile error, and `[Obsolete]` is not used for that.
 	* Chained calls go one per line, unless the whole statement fits on one line.
+	* An expression-bodied method or local function is never written on one line: the `=>` starts the next line, indented
+	  once (e.g., `private static bool IsFunction(SyntaxNode node)` and, on the next line, `=> node is …;`). Any other `=>`
+	  that is followed by a line break (a lambda, a property, a switch expression arm) starts the next line too, unless it
+	  opens a block (`{`).
 	* Empty lines:
 		* before a `return`, unless the block has only two one-line statements;
 		* before the other control-flow statements (`throw`, `break`, `continue`, `goto`, `yield return`, `yield break`),
@@ -135,7 +136,8 @@ are marked breaking. Preview the notes locally with `git cliff --unreleased --st
 	  tags (e.g., `<summary>`, `<returns>`) go before it.
 1. Tests
 	* Types: unit, integration, functional, guard (convention); one project per type, named
-	  `Maple.Result.Tests.<Type>` (e.g., `Maple.Result.Tests.Unit`).
+	  `Maple.Result.Tests.<Type>` (e.g., `Maple.Result.Tests.Unit`). Each other project of `src` has its own test project,
+	  named `<project>.Tests.Unit` (e.g., `src/Maple.Result.Analyzers` → `tests/Maple.Result.Analyzers.Tests.Unit`).
 	* Layout: the folders mirror the tested project (e.g., `src/Maple.Result/Validators/MetadataKeyValidator.cs` →
 	  `tests/Maple.Result.Tests.Unit/Validators/MetadataKeyValidatorUnitTests.cs`); namespaces follow the folders,
 	  under the root namespace `Maple.Results.Tests.<Type>` (the project and folder names keep the package name
@@ -163,8 +165,8 @@ are marked breaking. Preview the notes locally with `git cliff --unreleased --st
 	  then asserted.
 	* No loops in assertions: one case per test, or per `[InlineData]` / `[MemberData]` row of a `[Theory]`.
 	* Every bug fix comes with a test that fails without the fix.
-	* Code coverage: CI collects it with `tests/CodeCoverage.config`, which leaves out the overload traps (their bodies never
-	  run; the binding tests cover them), and shows the summary in the job summary. The `build` job fails when the line or
+	* Code coverage: CI collects it with `tests/CodeCoverage.config`, which leaves nothing out, and shows the summary in the
+	  job summary. The `build` job fails when the line or
 	  the branch coverage is below 90% (`MINIMUM_COVERAGE` in `ci.yml`). Every line of the code that runs is covered; a
 	  branch that cannot be reached is explained in the pull request that leaves it. To measure it locally, pass the
 	  settings file with an absolute path (a relative one is resolved against the output folder of the tests):
@@ -186,8 +188,7 @@ are marked breaking. Preview the notes locally with `git cliff --unreleased --st
    start of both in sync.
 1. The reference pages in `docs/Reference` are written by hand, in the layout of the
    [.NET API reference](https://learn.microsoft.com/dotnet/api/) of Microsoft:
-	* Every public member has a page, or a section of the page of its overloads. The overload traps (compile errors)
-	  have none.
+	* Every public member has a page, or a section of the page of its overloads.
 	* A type page links to the file of its type, without a line (one link for each file of a `partial` type). Its
 	  declaration is the one of the code, without `partial`. Its member tables (*Constructors*, *Properties*,
 	  *Methods*, *Operators*) are in alphabetical order, static and instance members together.

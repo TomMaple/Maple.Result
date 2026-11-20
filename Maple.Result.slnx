@@ -30,6 +30,15 @@
     <File Path="docs/migration-v2-to-v3.md" />
     <File Path="docs/problem-details.md" />
   </Folder>
+  <Folder Name="/docs/Analyzers/">
+    <File Path="docs/Analyzers/MR0001.md" />
+    <File Path="docs/Analyzers/MR0002.md" />
+    <File Path="docs/Analyzers/MR0003.md" />
+    <File Path="docs/Analyzers/MR0004.md" />
+    <File Path="docs/Analyzers/MR0005.md" />
+    <File Path="docs/Analyzers/MR0006.md" />
+    <File Path="docs/Analyzers/README.md" />
+  </Folder>
   <Folder Name="/docs/guide/">
     <File Path="docs/guide/chaining.md" />
     <File Path="docs/guide/errors.md" />
@@ -213,8 +222,12 @@
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/Maple.Result/Maple.Result.csproj" />
+    <Project Path="src/Maple.Result.Analyzers/Maple.Result.Analyzers.csproj" />
+    <Project Path="src/Maple.Result.Analyzers.CodeFixes/Maple.Result.Analyzers.CodeFixes.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/Maple.Result.Analyzers.CodeFixes.Tests.Unit/Maple.Result.Analyzers.CodeFixes.Tests.Unit.csproj" />
+    <Project Path="tests/Maple.Result.Analyzers.Tests.Unit/Maple.Result.Analyzers.Tests.Unit.csproj" />
     <Project Path="tests/Maple.Result.Tests.Unit/Maple.Result.Tests.Unit.csproj" />
   </Folder>
 </Solution>

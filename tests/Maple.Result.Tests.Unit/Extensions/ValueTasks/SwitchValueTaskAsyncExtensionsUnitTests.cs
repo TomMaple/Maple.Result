@@ -11,9 +11,7 @@
 using Maple.Results.Extensions;
 using Maple.Results.Tests.Unit.TestingInfrastructure.Helpers;
 using System;
-using System.ComponentModel;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Maple.Results.Tests.Unit.Extensions.ValueTasks;
@@ -196,51 +194,18 @@ public class SwitchValueTaskAsyncExtensionsUnitTests
 
     #endregion
 
-    #region SwitchAsync with an action returning a task (overload trap)
-
-    // See issue #255.
-
-    [Fact]
-    public void SwitchAsync_ActionReturningTaskOverloads_AreHiddenCompileErrorsThatNameMatchAsync()
-    {
-        // Act
-        var traps = OverloadTrapHelper.ValueTaskPartMethods(typeof(SwitchAsyncExtensions))
-            .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is not null)
-            .ToList();
-
-        // Assert
-        traps.Count.ShouldBe(14);
-        traps.ShouldAllBe(m => m.Name == "SwitchAsync"
-                               && OverloadTrapHelper.IsTrap(m, "An action returns a task, which SwitchAsync does not await. Use MatchAsync")
-                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
-                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
-    }
-
-    [Fact]
-    public void SwitchAsync_TrapsConstrainedToTheTaskType_HavePriorityOne()
-    {
-        // Act
-        var traps = OverloadTrapHelper.ValueTaskPartMethods(typeof(SwitchAsyncExtensions))
-            .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is not null
-                        && m.GetGenericArguments().Any(a => a.GetGenericParameterConstraints().Length > 0))
-            .ToList();
-
-        // Assert
-        traps.Count.ShouldBe(10);
-        traps.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 1);
-    }
+    #region SwitchAsync overloads and their priority
 
     [Fact]
     public void SwitchAsync_Overloads_ReturnAValueTaskWithDefaultPriority()
     {
         // Act
-        var overloads = OverloadTrapHelper.ValueTaskPartMethods(typeof(SwitchAsyncExtensions))
-            .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is null)
+        var overloads = OverloadReflectionHelper.ValueTaskPartMethods(typeof(SwitchAsyncExtensions))
             .ToList();
 
         // Assert
         overloads.Count.ShouldBe(2);
-        overloads.ShouldAllBe(m => m.Name == "SwitchAsync" && m.ReturnType == typeof(ValueTask) && OverloadTrapHelper.Priority(m) == 0);
+        overloads.ShouldAllBe(m => m.Name == "SwitchAsync" && m.ReturnType == typeof(ValueTask) && OverloadReflectionHelper.Priority(m) == 0);
     }
 
     #endregion

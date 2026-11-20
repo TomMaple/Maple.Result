@@ -252,8 +252,8 @@ public class ResultTryFlatteningUnitTests
     public void TryTyped_ResultOfValueFunctionThrowsOtherException_Propagates()
     {
         // Act
-        var exception = Record.Exception(() =>
-            Result.Try<int, FormatException>(() => Fail<Result<int>>(new TimeoutException()), _ => MappedError));
+        var exception = Record.Exception(()
+            => Result.Try<int, FormatException>(() => Fail<Result<int>>(new TimeoutException()), _ => MappedError));
 
         // Assert
         exception.ShouldBeOfType<TimeoutException>();

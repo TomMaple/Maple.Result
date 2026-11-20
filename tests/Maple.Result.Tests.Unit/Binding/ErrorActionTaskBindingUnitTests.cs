@@ -9,13 +9,16 @@
  */
 
 using System;
+using System.Linq;
 
 namespace Maple.Results.Tests.Unit.Binding;
 
 /// <summary>
-///     An error action that returns a task is a compile error (CS0619) in <c>IfError</c>, not an ambiguity (CS0121) (#124); <c>Match</c>
-///     and <c>Switch</c> are covered by their own tests (#255). Two functions of <c>Match</c> that return a task still give the task, and
-///     a statement lambda that discards the task still compiles.
+///     An error action that returns a task in <c>IfError</c> (#124): a method group is a compile error that the compiler reports by
+///     itself; a lambda compiles and discards the task, which the analyzer reports (rules MR0001 to MR0006 of
+///     <c>Maple.Result.Analyzers</c>), so those shapes are tested with the analyzer (#223). <c>Match</c> and <c>Switch</c> are covered by
+///     their own tests (#255). Two functions of <c>Match</c> that return a task still give the task, and a statement lambda that
+///     discards the task still compiles.
 /// </summary>
 public class ErrorActionTaskBindingUnitTests
 {
@@ -26,27 +29,18 @@ public class ErrorActionTaskBindingUnitTests
         static Task LogAsync(Error error) => Task.CompletedTask;
         """;
 
+    // A method group does not convert to an action when the method returns a value, so the compiler reports it by itself.
     [Theory]
-    [InlineData("_ = GetResult().IfError(e => LogAsync(e));")]
-    [InlineData("_ = GetResult().IfError(e => LogIntAsync(e));")]
-    [InlineData("_ = GetResult().IfError(e => LogValueTask(e));")]
-    [InlineData("_ = GetResult().IfError(e => LogIntValueTask(e));")]
-    [InlineData("_ = GetResult().IfError(async e => await LogAsync(e));")]
-    [InlineData("_ = GetResult().IfError(LogAsync);")]
-    [InlineData("_ = ok.IfError(e => LogAsync(e));")]
-    [InlineData("_ = ok.IfError(e => LogIntAsync(e));")]
-    [InlineData("_ = ok.IfError(e => LogValueTask(e));")]
-    [InlineData("_ = ok.IfError(e => LogIntValueTask(e));")]
-    [InlineData("_ = ok.IfError(async e => await LogAsync(e));")]
-    [InlineData("_ = ok.IfError(LogAsync);")]
-    public void IfError_ErrorActionReturningTask_ReportsOnlyCS0619(string statements)
+    [InlineData("_ = GetResult().IfError(LogAsync);", "CS0407")]
+    [InlineData("_ = ok.IfError(LogAsync);", "CS0407")]
+    public void IfError_MethodGroupReturningTask_ReportsTheCompilerErrors(string statements, string errorIds)
     {
         // Act
         var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
-        snippet.ErrorIds.ShouldNotBeEmpty();
-        snippet.ErrorIds.ShouldAllBe(id => id == "CS0619", string.Join(Environment.NewLine, snippet.Errors));
+        var reported = string.Join(",", snippet.ErrorIds.Distinct().Order(StringComparer.Ordinal));
+        reported.ShouldBe(errorIds, string.Join(Environment.NewLine, snippet.Errors));
     }
 
     [Theory]

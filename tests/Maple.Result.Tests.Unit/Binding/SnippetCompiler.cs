@@ -20,8 +20,8 @@ using System.Linq;
 namespace Maple.Results.Tests.Unit.Binding;
 
 /// <summary>
-/// Compiles a snippet against the library assembly, so that a test can assert the diagnostic (e.g., CS0619 of an
-/// overload trap) or the method that a call binds to, which a reflection test of the attributes cannot show.
+/// Compiles a snippet against the library assembly, so that a test can assert the errors of the compiler (e.g., CS0411 of
+/// a type that it cannot infer) or the method that a call binds to, which a reflection test of the attributes cannot show.
 /// </summary>
 internal static class SnippetCompiler
 {
@@ -109,12 +109,16 @@ internal static class SnippetCompiler
 
 internal sealed class SnippetResult(CSharpCompilation compilation, SyntaxTree tree, Diagnostic[] errors)
 {
-    /// <summary>The ids of the error diagnostics, e.g., <c>CS0619</c>.</summary>
+    /// <summary>
+    ///     The ids of the error diagnostics, e.g., <c>CS0411</c>.
+    /// </summary>
     public IReadOnlyList<string> ErrorIds => [.. errors.Select(d => d.Id)];
 
     public IReadOnlyList<Diagnostic> Errors => errors;
 
-    /// <summary>The signature of the method that the first call of <paramref name="methodName"/> binds to.</summary>
+    /// <summary>
+    ///     The signature of the method that the first call of <paramref name="methodName"/> binds to.
+    /// </summary>
     public string BoundMethod(string methodName)
     {
         var model = compilation.GetSemanticModel(tree);

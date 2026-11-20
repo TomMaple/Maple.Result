@@ -22,7 +22,7 @@ namespace Maple.Results.Extensions;
 ///     flattened, and a returned <see cref="Error" /> gives a failed result. For a side effect that keeps the result unchanged, use
 ///     <c>IfSuccess</c>.
 /// </remarks>
-public static partial class ThenExtensions
+public static class ThenExtensions
 {
     #region Result extensions
 

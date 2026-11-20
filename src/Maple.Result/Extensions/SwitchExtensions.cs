@@ -19,9 +19,9 @@ namespace Maple.Results.Extensions;
 /// <remarks>
 ///     <c>Switch</c> ends a chain for side effects, as <c>Match</c> ends it for a value. To run a side effect and keep chaining, use
 ///     <c>IfSuccess(…).IfError(…)</c>, which return the result. An action that returns a value is a side effect (e.g.,
-///     <c>x => set.Add(x)</c>); an action that returns a task is a compile error (CS0619), because <c>Switch</c> would not await it.
+///     <c>x => set.Add(x)</c>); a function that returns a task is not awaited, and the analyzer of the package reports it (MR0002).
 /// </remarks>
-public static partial class SwitchExtensions
+public static class SwitchExtensions
 {
     #region Result
 

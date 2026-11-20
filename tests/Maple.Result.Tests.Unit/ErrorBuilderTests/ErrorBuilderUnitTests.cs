@@ -1071,8 +1071,8 @@ public class ErrorBuilderUnitTests
         var sut = Sut.LimitExceeded(ErrorUri.None, "Test title").WithMetadata("limit", 100);
 
         // Act
-        var exception = Record.Exception(() =>
-            sut.WithMetadata([new KeyValuePair<string, object?>("remaining", 0), new KeyValuePair<string, object?>("type ", 1)]));
+        var exception = Record.Exception(()
+            => sut.WithMetadata([new KeyValuePair<string, object?>("remaining", 0), new KeyValuePair<string, object?>("type ", 1)]));
 
         // Assert
         exception.ShouldNotBeNull();

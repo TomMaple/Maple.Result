@@ -40,6 +40,17 @@
     <InternalsVisibleTo Include="Maple.Result.Tests.Unit" />
   </ItemGroup>
 
+  <!-- The analyzers and their code fixes ship inside this package (analyzers/dotnet/cs), so that every consumer gets them without a
+       second reference. The two projects are built before this one (CI packs with no-build) but the library does not reference
+       them: the package gets no dependency, and the library stays trimmable. The code-fix assembly is loaded by the IDE only. -->
+  <ItemGroup>
+    <ProjectReference Include="..\Maple.Result.Analyzers\Maple.Result.Analyzers.csproj" ReferenceOutputAssembly="false" PrivateAssets="all" />
+    <ProjectReference Include="..\Maple.Result.Analyzers.CodeFixes\Maple.Result.Analyzers.CodeFixes.csproj" ReferenceOutputAssembly="false" PrivateAssets="all" />
+    <None Include="..\Maple.Result.Analyzers\bin\$(Configuration)\netstandard2.0\Maple.Result.Analyzers.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <None Include="..\Maple.Result.Analyzers.CodeFixes\bin\$(Configuration)\netstandard2.0\Maple.Result.Analyzers.CodeFixes.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <None Include="buildTransitive\Maple.Result.targets" Pack="true" PackagePath="buildTransitive" />
+  </ItemGroup>
+
   <ItemGroup>
     <None Include="..\..\.resources\icon.png" Pack="true" PackagePath="" />
     <None Include="..\..\LICENSE" Pack="true" PackagePath="" />

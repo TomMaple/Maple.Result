@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- An analyzer is loaded by the compiler, which requires netstandard2.0. -->
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>Maple.Result.Analyzers</AssemblyName>
+    <RootNamespace>Maple.Results.Analyzers</RootNamespace>
+
+    <!-- Shipped inside the Maple.Result package (analyzers/dotnet/cs), not as a package of its own. -->
+    <IsPackable>false</IsPackable>
+    <IsRoslynComponent>true</IsRoslynComponent>
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Not newer than the compiler of the oldest SDK that builds a net10.0 consumer (the .NET 10 SDK). -->
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="AnalyzerReleases.Shipped.md" />
+    <AdditionalFiles Include="AnalyzerReleases.Unshipped.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Maple.Result.Analyzers.CodeFixes" />
+    <InternalsVisibleTo Include="Maple.Result.Analyzers.Tests.Unit" />
+  </ItemGroup>
+
+</Project>

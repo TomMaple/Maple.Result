@@ -16,7 +16,7 @@ namespace Maple.Results.Tests.Unit.Binding;
 /// <summary>
 ///     <c>ElseAsync</c> with a function that returns a value or an <see cref="Error" /> in a task (#237), as <c>Else</c> takes one through the
 ///     implicit conversions: the shapes of the issue compile and give the stated result type, the shapes that compiled before still do,
-///     and the trapped shapes still report CS0619 on the same traps.
+///     and a function that returns a task without a value is a compile error that the compiler reports by itself.
 /// </summary>
 public class ElseAsyncValueOrErrorBindingUnitTests
 {
@@ -85,19 +85,17 @@ public class ElseAsyncValueOrErrorBindingUnitTests
     }
 
     [Theory]
-    [InlineData("_ = failedTask.ElseAsync(e => LogAsync(e));", "The function returns a task without a value.")]
-    [InlineData("_ = failedTask.ElseAsync(e => LogVt(e));", "The function returns a task without a value.")]
-    [InlineData("_ = failedTask.ElseAsync(async e => { await LogAsync(e); });", "The function returns a task without a value.")]
-    public void TaskBased_TrappedShape_StillReportsCS0619OnTheSameTrap(string statements, string message)
+    [InlineData("_ = failedTask.ElseAsync(e => LogAsync(e));", "CS0029,CS0266,CS1662")]
+    [InlineData("_ = failedTask.ElseAsync(e => LogVt(e));", "CS0029,CS1662")]
+    [InlineData("_ = failedTask.ElseAsync(async e => { await LogAsync(e); });", "CS1643")]
+    public void TaskBased_FunctionReturningATaskWithoutAValue_ReportsTheCompilerErrors(string statements, string errorIds)
     {
         // Act
         var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
-        snippet.ErrorIds.ShouldNotBeEmpty();
-        snippet.ErrorIds.ShouldAllBe(id => id == "CS0619", string.Join(Environment.NewLine, snippet.Errors));
-        var error = snippet.Errors.First().GetMessage();
-        error.ShouldContain(message);
+        var reported = string.Join(",", snippet.ErrorIds.Distinct().Order(StringComparer.Ordinal));
+        reported.ShouldBe(errorIds, string.Join(Environment.NewLine, snippet.Errors));
     }
 
     #endregion
@@ -150,19 +148,17 @@ public class ElseAsyncValueOrErrorBindingUnitTests
     }
 
     [Theory]
-    [InlineData("_ = failedVt.ElseAsync(e => LogVt(e));", "The function returns a task without a value.")]
-    [InlineData("_ = failedVt.ElseAsync(e => LogAsync(e));", "The function returns a task without a value.")]
-    [InlineData("_ = failedVt.ElseAsync(async e => { await LogVt(e); });", "The function returns a task without a value.")]
-    public void ValueTaskBased_TrappedShape_StillReportsCS0619OnTheSameTrap(string statements, string message)
+    [InlineData("_ = failedVt.ElseAsync(e => LogVt(e));", "CS0029,CS1662")]
+    [InlineData("_ = failedVt.ElseAsync(e => LogAsync(e));", "CS0029,CS0266,CS1662")]
+    [InlineData("_ = failedVt.ElseAsync(async e => { await LogVt(e); });", "CS1643")]
+    public void ValueTaskBased_FunctionReturningATaskWithoutAValue_ReportsTheCompilerErrors(string statements, string errorIds)
     {
         // Act
         var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
-        snippet.ErrorIds.ShouldNotBeEmpty();
-        snippet.ErrorIds.ShouldAllBe(id => id == "CS0619", string.Join(Environment.NewLine, snippet.Errors));
-        var error = snippet.Errors.First().GetMessage();
-        error.ShouldContain(message);
+        var reported = string.Join(",", snippet.ErrorIds.Distinct().Order(StringComparer.Ordinal));
+        reported.ShouldBe(errorIds, string.Join(Environment.NewLine, snippet.Errors));
     }
 
     #endregion

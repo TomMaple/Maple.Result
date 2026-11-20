@@ -11,9 +11,7 @@
 using Maple.Results.Extensions;
 using Maple.Results.Tests.Unit.TestingInfrastructure.Helpers;
 using System;
-using System.ComponentModel;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Maple.Results.Tests.Unit.Extensions;
@@ -425,76 +423,34 @@ public class MatchTaskAsyncExtensionsUnitTests
 
     #endregion
 
-    #region overload traps
-
-    // See issue #255.
-
-    [Fact]
-    public void MatchAsync_TwoActionsOverloads_AreHiddenCompileErrorsThatNameSwitchAsync()
-    {
-        // Act
-        var traps = OverloadTrapHelper.TaskPartMethods(typeof(MatchAsyncExtensions))
-            .Where(m => OverloadTrapHelper.IsTrap(m, "MatchAsync takes two functions that return a value. Use SwitchAsync"))
-            .ToList();
-
-        // Assert
-        traps.Count.ShouldBe(2);
-        traps.ShouldAllBe(m => m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
-                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never
-                               && m.GetParameters().Skip(1).Take(2).All(p => p.ParameterType.Name.StartsWith("Action", StringComparison.Ordinal)));
-    }
+    #region MatchAsync overloads and their priority
 
     // A function that returns a ValueTask on a Task of a result is awaited by an overload of its own, which returns a Task (#226).
     [Fact]
     public void MatchAsync_FunctionReturningValueTaskOnTaskResult_IsAnOverloadWithPriorityZero()
     {
         // Act
-        var overloads = OverloadTrapHelper.TaskPartMethods(typeof(MatchAsyncExtensions))
-            .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is null
-                        && m.GetParameters()[0].ParameterType is { IsGenericType: true } receiver && receiver.GetGenericTypeDefinition() == typeof(Task<>)
+        var overloads = OverloadReflectionHelper.TaskPartMethods(typeof(MatchAsyncExtensions))
+            .Where(m => m.GetParameters()[0].ParameterType is { IsGenericType: true } receiver && receiver.GetGenericTypeDefinition() == typeof(Task<>)
                         && m.GetParameters().Where(p => p.ParameterType.Name.StartsWith("Func`", StringComparison.Ordinal))
-                            .All(p => OverloadTrapHelper.IsValueTaskFunction(p.ParameterType))
-                        && m.GetParameters().Any(p => OverloadTrapHelper.IsValueTaskFunction(p.ParameterType)))
+                            .All(p => OverloadReflectionHelper.IsValueTaskFunction(p.ParameterType))
+                        && m.GetParameters().Any(p => OverloadReflectionHelper.IsValueTaskFunction(p.ParameterType)))
             .ToList();
 
         // Assert
         overloads.Count.ShouldBe(4);
-        overloads.ShouldAllBe(m => m.Name == "MatchAsync" && OverloadTrapHelper.Priority(m) == 0);
-    }
-
-    // MatchAsync awaits two functions that return a task without a value only as actions (ifSuccessAction, ifErrorAction). With the
-    // names of the functions, the call would bind to the fold of two synchronous functions and return a task in a task (#273). The
-    // success function of a trap is generic and constrained to the task type, and the error function is not: a trap is then more specific
-    // than the fold and less specific than the overload with two asynchronous actions, so it needs no priority.
-    [Fact]
-    public void MatchAsync_TrapsForFunctionsReturningTaskWithoutValue_AreHiddenCompileErrorsWithDefaultPriority()
-    {
-        // Act
-        var traps = OverloadTrapHelper.TaskPartMethods(typeof(MatchAsyncExtensions))
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The functions return a task without a value"))
-            .ToList();
-
-        // Assert
-        traps.Count.ShouldBe(4);
-        traps.ShouldAllBe(m => m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
-                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never
-                               && OverloadTrapHelper.IsConstrainedToATask(m)
-                               && OverloadTrapHelper.Priority(m) == 0
-                               && m.GetParameters()[1].Name == "ifSuccessFunction"
-                               && m.GetParameters()[2].Name == "ifErrorFunction"
-                               && m.ReturnType == typeof(Task));
+        overloads.ShouldAllBe(m => m.Name == "MatchAsync" && OverloadReflectionHelper.Priority(m) == 0);
     }
 
     [Fact]
-    public void MatchAsync_AllMethods_AreOverloadsOnATaskOrTheTrapsForTwoActions()
+    public void MatchAsync_AllMethods_AreOverloadsOnATask()
     {
         // Act
-        var methods = OverloadTrapHelper.TaskPartMethods(typeof(MatchAsyncExtensions)).ToList();
+        var methods = OverloadReflectionHelper.TaskPartMethods(typeof(MatchAsyncExtensions)).ToList();
 
         // Assert
-        // The overloads, those for the other kind of task (#226), the traps for two actions, and the traps for two functions that
-        // return a task without a value (#273).
-        methods.Count.ShouldBe(6 + 4 + 2 + 4);
+        // The overloads, and those for the other kind of task (#226).
+        methods.Count.ShouldBe(6 + 4);
         methods.ShouldAllBe(m => m.Name == "MatchAsync" && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(Task<>));
     }
 
@@ -502,13 +458,13 @@ public class MatchTaskAsyncExtensionsUnitTests
     public void MatchAsync_OverloadsWithTaskFunctions_HavePriorityOne()
     {
         // Act
-        var overloads = OverloadTrapHelper.TaskPartMethods(typeof(MatchAsyncExtensions))
-            .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is null && OverloadTrapHelper.IsTaskFunction(m.GetParameters()[1].ParameterType))
+        var overloads = OverloadReflectionHelper.TaskPartMethods(typeof(MatchAsyncExtensions))
+            .Where(m => OverloadReflectionHelper.IsTaskFunction(m.GetParameters()[1].ParameterType))
             .ToList();
 
         // Assert
         overloads.Count.ShouldBe(4);
-        overloads.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 1);
+        overloads.ShouldAllBe(m => OverloadReflectionHelper.Priority(m) == 1);
     }
 
     #endregion

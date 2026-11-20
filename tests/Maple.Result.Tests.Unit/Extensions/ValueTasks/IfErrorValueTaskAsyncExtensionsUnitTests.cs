@@ -9,13 +9,10 @@
  */
 
 using Maple.Results.Extensions;
-using Maple.Results.Tests.Unit.TestingInfrastructure.Fakes;
 using Maple.Results.Tests.Unit.TestingInfrastructure.Helpers;
 using Moq;
 using System;
-using System.ComponentModel;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Maple.Results.Tests.Unit.Extensions.ValueTasks;
@@ -483,28 +480,6 @@ public class IfErrorValueTaskAsyncExtensionsUnitTests
 
     #endregion
 
-    #region IfErrorAsync with a function returning a value (overload trap)
-
-    // A function that returns a value is a transformation: the side-effect method reports it as a compile error (CS0619) that
-    // names the transforming method, instead of discarding the value (#197). The bindings are checked with a consumer project.
-
-    [Fact]
-    public void IfErrorAsync_FunctionReturningValueOverloads_AreHiddenCompileErrors()
-    {
-        // Act
-        var traps = OverloadTrapHelper.ValueTaskPartMethods(typeof(IfErrorAsyncExtensions))
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a value in a task, which IfErrorAsync discards"))
-            .ToList();
-
-        // Assert
-        traps.Count.ShouldBe(3);
-        traps.ShouldAllBe(m => m.Name == "IfErrorAsync"
-                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
-                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
-    }
-
-    #endregion
-
     #region ValueTask results with synchronous delegates
 
     // See issue #214.
@@ -561,37 +536,21 @@ public class IfErrorValueTaskAsyncExtensionsUnitTests
         called.ShouldBeTrue();
     }
 
-    [Fact]
-    public void IfErrorAsync_SyncFunctionReturningValueOverloads_AreHiddenCompileErrors()
-    {
-        // Act
-        var traps = OverloadTrapHelper.ValueTaskPartMethods(typeof(IfErrorAsyncExtensions))
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The function returns a value, which IfErrorAsync discards"))
-            .ToList();
-
-        // Assert
-        traps.Count.ShouldBe(1);
-        traps.ShouldAllBe(m => m.Name == "IfErrorAsync"
-                               && m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
-                               && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
-    }
-
     // A function that returns a Task on a ValueTask of a result is awaited by an overload of its own, which returns a ValueTask (#226).
     [Fact]
     public void IfErrorAsync_FunctionReturningTaskOnValueTaskResult_IsAnOverloadWithPriorityOne()
     {
         // Act
-        var overloads = OverloadTrapHelper.ValueTaskPartMethods(typeof(IfErrorAsyncExtensions))
-            .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is null
-                        && m.GetParameters()[0].ParameterType is { IsGenericType: true } receiver && receiver.GetGenericTypeDefinition() == typeof(ValueTask<>)
+        var overloads = OverloadReflectionHelper.ValueTaskPartMethods(typeof(IfErrorAsyncExtensions))
+            .Where(m => m.GetParameters()[0].ParameterType is { IsGenericType: true } receiver && receiver.GetGenericTypeDefinition() == typeof(ValueTask<>)
                         && m.GetParameters().Where(p => p.ParameterType.Name.StartsWith("Func`", StringComparison.Ordinal))
-                            .All(p => OverloadTrapHelper.IsTaskFunction(p.ParameterType))
-                        && m.GetParameters().Any(p => OverloadTrapHelper.IsTaskFunction(p.ParameterType)))
+                            .All(p => OverloadReflectionHelper.IsTaskFunction(p.ParameterType))
+                        && m.GetParameters().Any(p => OverloadReflectionHelper.IsTaskFunction(p.ParameterType)))
             .ToList();
 
         // Assert
         overloads.Count.ShouldBe(1);
-        overloads.ShouldAllBe(m => m.Name == "IfErrorAsync" && OverloadTrapHelper.Priority(m) == 1);
+        overloads.ShouldAllBe(m => m.Name == "IfErrorAsync" && OverloadReflectionHelper.Priority(m) == 1);
     }
 
     // An async lambda binds to the overloads whose delegates return a Task, on every receiver (#226): on a ValueTask of a
@@ -600,14 +559,14 @@ public class IfErrorValueTaskAsyncExtensionsUnitTests
     public void IfErrorAsync_OverloadsWithTaskDelegatesOnValueTaskResults_HavePriorityOne()
     {
         // Act
-        var priorities = OverloadTrapHelper.ValueTaskPartMethods(typeof(IfErrorAsyncExtensions))
+        var priorities = OverloadReflectionHelper.ValueTaskPartMethods(typeof(IfErrorAsyncExtensions))
             .Where(m => m.GetParameters()[0].ParameterType is { IsGenericType: true } receiver && receiver.GetGenericTypeDefinition() == typeof(ValueTask<>)
-                        && OverloadTrapHelper.IsTaskFunction(m.GetParameters()[1].ParameterType))
-            .Select(OverloadTrapHelper.Priority)
+                        && OverloadReflectionHelper.IsTaskFunction(m.GetParameters()[1].ParameterType))
+            .Select(OverloadReflectionHelper.Priority)
             .ToList();
 
         // Assert
-        priorities.Count.ShouldBe(2);
+        priorities.Count.ShouldBe(1);
         priorities.ShouldAllBe(p => p == 1);
     }
 
@@ -615,14 +574,14 @@ public class IfErrorValueTaskAsyncExtensionsUnitTests
     public void IfErrorAsync_OverloadsWithValueTaskDelegatesOnValueTaskResults_HavePriorityZero()
     {
         // Act
-        var priorities = OverloadTrapHelper.ValueTaskPartMethods(typeof(IfErrorAsyncExtensions))
+        var priorities = OverloadReflectionHelper.ValueTaskPartMethods(typeof(IfErrorAsyncExtensions))
             .Where(m => m.GetParameters()[0].ParameterType is { IsGenericType: true } receiver && receiver.GetGenericTypeDefinition() == typeof(ValueTask<>)
-                        && OverloadTrapHelper.IsValueTaskFunction(m.GetParameters()[1].ParameterType))
-            .Select(OverloadTrapHelper.Priority)
+                        && OverloadReflectionHelper.IsValueTaskFunction(m.GetParameters()[1].ParameterType))
+            .Select(OverloadReflectionHelper.Priority)
             .ToList();
 
         // Assert
-        priorities.Count.ShouldBe(2);
+        priorities.Count.ShouldBe(1);
         priorities.ShouldAllBe(p => p == 0);
     }
 
@@ -630,12 +589,11 @@ public class IfErrorValueTaskAsyncExtensionsUnitTests
     public void IfErrorAsync_SynchronousOverloadsOnValueTaskResults_HavePriorityZero()
     {
         // Act
-        var priorities = OverloadTrapHelper.ValueTaskPartMethods(typeof(IfErrorAsyncExtensions))
-            .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is null
-                        && m.GetParameters()[0].ParameterType is { IsGenericType: true } receiver && receiver.GetGenericTypeDefinition() == typeof(ValueTask<>)
-                        && !OverloadTrapHelper.IsTaskFunction(m.GetParameters()[1].ParameterType)
-                        && !OverloadTrapHelper.IsValueTaskFunction(m.GetParameters()[1].ParameterType))
-            .Select(OverloadTrapHelper.Priority)
+        var priorities = OverloadReflectionHelper.ValueTaskPartMethods(typeof(IfErrorAsyncExtensions))
+            .Where(m => m.GetParameters()[0].ParameterType is { IsGenericType: true } receiver && receiver.GetGenericTypeDefinition() == typeof(ValueTask<>)
+                        && !OverloadReflectionHelper.IsTaskFunction(m.GetParameters()[1].ParameterType)
+                        && !OverloadReflectionHelper.IsValueTaskFunction(m.GetParameters()[1].ParameterType))
+            .Select(OverloadReflectionHelper.Priority)
             .ToList();
 
         // Assert

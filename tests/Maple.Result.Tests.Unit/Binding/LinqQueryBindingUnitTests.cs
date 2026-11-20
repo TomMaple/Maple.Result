@@ -15,7 +15,9 @@ namespace Maple.Results.Tests.Unit.Binding;
 /// <summary>
 ///     What the query syntax compiles to (#217): a non-generic <see cref="Result" /> in a <c>from</c> clause, and a selected
 ///     <see cref="Result" /> or <see cref="Result{T}" />, which is not nested. Each query is assigned to a variable of the expected
-///     type, so a different binding (e.g., a nested result) is a compile error.
+///     type, so a different binding (e.g., a nested result) is a compile error. A query with a non-generic clause that selects a task
+///     compiles into a result of the task; the analyzer reports it (rules MR0001 to MR0006 of <c>Maple.Result.Analyzers</c>), and
+///     those shapes are tested with the analyzer (#223).
 /// </summary>
 public class LinqQueryBindingUnitTests
 {
@@ -112,23 +114,5 @@ public class LinqQueryBindingUnitTests
 
         // Assert
         snippet.ErrorIds.ShouldBeEmpty(string.Join(Environment.NewLine, snippet.Errors));
-    }
-
-    [Theory]
-    [InlineData(Locals + "var r = from x in ok from _ in GetResult() select SaveAsync();")]
-    [InlineData(Locals + "var r = from _ in GetResult() select SaveAsync();")]
-    [InlineData(Locals + "var r = from _ in GetResult() select GetIntAsync();")]
-    [InlineData(Locals + "var r = from _ in GetResult() from x in ok select GetIntAsync();")]
-    [InlineData(Locals + "var r = from _ in GetResult() from x in ok select GetIntValueTask();")]
-    [InlineData(Locals + "var r = from x in GetOkAsync() from _ in CheckAsync() select GetIntAsync();")]
-    [InlineData(Locals + "var r = from _ in CheckAsync() select SaveAsync();")]
-    [InlineData(Locals + "var r = from x in GetOkValueTask() from _ in CheckValueTask() select GetIntValueTask();")]
-    public void Query_NonGenericClauseSelectingTask_ReportsCS0619(string statements)
-    {
-        // Act
-        var snippet = SnippetCompiler.Compile(statements);
-
-        // Assert
-        snippet.ErrorIds.ShouldContain("CS0619", string.Join(Environment.NewLine, snippet.Errors));
     }
 }

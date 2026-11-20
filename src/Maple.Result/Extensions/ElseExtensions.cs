@@ -22,7 +22,7 @@ namespace Maple.Results.Extensions;
 ///     A successful result is returned unchanged, and the function is not called. For a side effect that keeps the result unchanged, use
 ///     <c>IfError</c>.
 /// </remarks>
-public static partial class ElseExtensions
+public static class ElseExtensions
 {
     #region None
 

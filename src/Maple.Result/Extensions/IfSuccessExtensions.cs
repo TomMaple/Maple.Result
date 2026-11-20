@@ -19,10 +19,10 @@ namespace Maple.Results.Extensions;
 /// </summary>
 /// <remarks>
 ///     A failed result is returned unchanged, and the action is not called. To transform or chain the result with a function that
-///     returns a value, a <see cref="Result" />, a <see cref="Result{T}" /> or an <see cref="Error" />, use <c>Then</c>; a function that returns
-///     a value is a compile error here (CS0619), so that the value is not discarded by mistake.
+///     returns a value, a <see cref="Result" />, a <see cref="Result{T}" /> or an <see cref="Error" />, use <c>Then</c>: here it only runs
+///     as a side effect, and what it returns is ignored. The analyzer of the package reports the likely mistakes (MR0004, MR0005).
 /// </remarks>
-public static partial class IfSuccessExtensions
+public static class IfSuccessExtensions
 {
     #region Result extensions
 

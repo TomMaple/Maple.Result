@@ -5,6 +5,7 @@ The *Result* pattern for .NET: an operation returns a `Result` or a `Result<T>`,
 * Precise errors: a type *URI*, a title, a detail, an instance *URI*, error details (e.g., one per invalid field) and machine-readable metadata.
 * Localization: a message template and named values next to each message.
 * Chaining with `Then`, `Else`, `IfSuccess`, `IfError`, `Match`, `Switch`, their asynchronous versions for `Task` and `ValueTask`, and the LINQ query syntax.
+* An [analyzer](https://github.com/TomMaple/Maple.Result/blob/main/docs/Analyzers/README.md) in the package, with nothing to install: it reports the calls that compile but lose a task or a failure (e.g., a task that nobody awaits in `Then`, or a statement that discards a `Result`).
 * Native AOT and trimming compatible, with no dependencies.
 
 **Version 3.0 is a major release with breaking changes.** Read the [migration guide from 2.x to 3.0](https://github.com/TomMaple/Maple.Result/blob/main/docs/migration-v2-to-v3.md) before you upgrade, and upgrade the [related packages](https://github.com/TomMaple/Maple.Result#related-packages) together with `Maple.Result`: their published versions are built for 2.x.
@@ -71,6 +72,7 @@ Result sendResult = await GetContactAsync(id)
 * [Results](https://github.com/TomMaple/Maple.Result/blob/main/docs/guide/results.md) — returning and reading a `Result` and a `Result<T>`
 * [Errors](https://github.com/TomMaple/Maple.Result/blob/main/docs/guide/errors.md) — categories, properties, *URI*s, error details, metadata, `ErrorBuilder` and localization
 * [Chaining operations](https://github.com/TomMaple/Maple.Result/blob/main/docs/guide/chaining.md) — extension methods, asynchronous operations, the query syntax and `Result.Try()`
+* [Analyzer](https://github.com/TomMaple/Maple.Result/blob/main/docs/Analyzers/README.md) — the rules MR0001 to MR0006, their code fixes and their configuration
 * [The Result pattern](https://github.com/TomMaple/Maple.Result/blob/main/docs/guide/result-pattern.md) — benefits, a comparison with exceptions, and articles
 * [Problem details format](https://github.com/TomMaple/Maple.Result/blob/main/docs/problem-details.md) — how an `Error` is written as an RFC 9457 problem details object and read back
 * [Reference](https://github.com/TomMaple/Maple.Result/blob/main/docs/Reference/namespace.md) — every type and member

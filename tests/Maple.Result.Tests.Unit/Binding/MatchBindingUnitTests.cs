@@ -10,17 +10,16 @@
 
 using Maple.Results.Tests.Unit.TestingInfrastructure.TestData;
 using System;
-using System.Globalization;
 using System.Linq;
 
 namespace Maple.Results.Tests.Unit.Binding;
 
 /// <summary>
 ///     <c>Match</c> and <c>MatchAsync</c> are a fold (#255): two functions and one return type, which the call returns (a task too).
-///     Two actions are a compile error (CS0619) that names <c>Switch</c>; a mixed call (a value and an <see cref="Error" />, or one
-///     synchronous and one asynchronous function) has no common return type, so the compiler rejects it by itself. There is no
-///     <c>MatchAsync</c> on a result: <c>Match</c> returns the task of the function that ran. Each supported shape is assigned to a
-///     variable of the expected type.
+///     Two actions (<c>Switch</c> takes them), and a mixed call (a value and an <see cref="Error" />, or one synchronous and one
+///     asynchronous function), have no common return type, so the compiler rejects them by itself; the library has no overload trap
+///     that names <c>Switch</c> (#223). There is no <c>MatchAsync</c> on a result: <c>Match</c> returns the task of the function that
+///     ran. Each supported shape is assigned to a variable of the expected type.
 /// </summary>
 public class MatchBindingUnitTests
 {
@@ -93,23 +92,23 @@ public class MatchBindingUnitTests
     }
 
     [Theory]
-    [InlineData("ok.Match(x => Show(x), e => Log(e));", "CS0619")]
-    [InlineData("done.Match(() => Show(1), e => Log(e));", "CS0619")]
-    [InlineData("_ = ok.Match(x => Compute(x), e => Log(e));", "CS0619")]
-    [InlineData("ok.Match(x => Show(x), e => LogAsync(e));", "CS0619")]
-    [InlineData("ok.Match(x => throw new InvalidOperationException(), e => throw new InvalidOperationException());", "CS0619")]
-    [InlineData("ok.Match(Show, Log);", "CS0619")]
-    [InlineData("ok.Match(async x => await SaveAsync(x), e => Log(e));", "CS0619")]
-    [InlineData("_ = ok.Match(x => x + 1, e => e);", "CS0201")]
-    [InlineData("_ = ok.Match(x => GetIntAsync(x), e => 0);", "CS0201")]
-    [InlineData("okTask.MatchAsync(x => Show(x), e => Log(e));", "CS0619")]
-    [InlineData("okTask.MatchAsync(x => Show(x), e => LogAsync(e));", "CS0619")]
-    [InlineData("doneTask.MatchAsync(() => Show(1), e => Log(e));", "CS0619")]
-    [InlineData("okVt.MatchAsync(x => Show(x), e => Log(e));", "CS0619")]
-    [InlineData("doneVt.MatchAsync(() => Show(1), e => Log(e));", "CS0619")]
-    [InlineData("_ = okTask.MatchAsync(x => x, e => GetIntAsync(0));", "CS0029,CS0201,CS1662")]
-    [InlineData("_ = okTask.MatchAsync(x => GetIntAsync(x), e => 0);", "CS0029,CS0201,CS1662")]
-    [InlineData("_ = okTask.MatchAsync(x => GetIntAsync(x), e => GetIntVt(0));", "CS0619")]
+    [InlineData("ok.Match(x => Show(x), e => Log(e));", "CS0411")]
+    [InlineData("done.Match(() => Show(1), e => Log(e));", "CS0411")]
+    [InlineData("_ = ok.Match(x => Compute(x), e => Log(e));", "CS0029,CS1662")]
+    [InlineData("ok.Match(x => Show(x), e => LogAsync(e));", "CS0029,CS1662")]
+    [InlineData("ok.Match(x => throw new InvalidOperationException(), e => throw new InvalidOperationException());", "CS0411")]
+    [InlineData("ok.Match(Show, Log);", "CS0411")]
+    [InlineData("ok.Match(async x => await SaveAsync(x), e => Log(e));", "CS0029,CS1662")]
+    [InlineData("_ = ok.Match(x => x + 1, e => e);", "CS1929")]
+    [InlineData("_ = ok.Match(x => GetIntAsync(x), e => 0);", "CS1929")]
+    [InlineData("okTask.MatchAsync(x => Show(x), e => Log(e));", "CS0029,CS1662")]
+    [InlineData("okTask.MatchAsync(x => Show(x), e => LogAsync(e));", "CS0029,CS1662")]
+    [InlineData("doneTask.MatchAsync(() => Show(1), e => Log(e));", "CS0029,CS1662")]
+    [InlineData("okVt.MatchAsync(x => Show(x), e => Log(e));", "CS0029,CS1662")]
+    [InlineData("doneVt.MatchAsync(() => Show(1), e => Log(e));", "CS0029,CS1662")]
+    [InlineData("_ = okTask.MatchAsync(x => x, e => GetIntAsync(0));", "CS0029,CS1662")]
+    [InlineData("_ = okTask.MatchAsync(x => GetIntAsync(x), e => 0);", "CS0029,CS1662")]
+    [InlineData("_ = okTask.MatchAsync(x => GetIntAsync(x), e => GetIntVt(0));", "CS0029,CS1662")]
     [InlineData("_ = ok.MatchAsync(x => GetIntAsync(x), e => GetIntAsync(0));", "CS1929")]
     [InlineData("_ = done.MatchAsync(() => GetIntVt(1), e => GetIntVt(0));", "CS1929")]
     public void Match_UnsupportedShape_ReportsOnlyTheStatedErrors(string statements, string errorIds)
@@ -120,36 +119,5 @@ public class MatchBindingUnitTests
         // Assert
         var reported = string.Join(",", snippet.ErrorIds.Distinct().Order(StringComparer.Ordinal));
         reported.ShouldBe(errorIds, string.Join(Environment.NewLine, snippet.Errors));
-    }
-
-    [Theory]
-    [InlineData("ok.Match(x => Show(x), e => Log(e));")]
-    [InlineData("done.Match(() => Show(1), e => Log(e));")]
-    [InlineData("_ = ok.Match(x => Compute(x), e => Log(e));")]
-    public void Match_TwoActions_MessageNamesSwitchAndThenIfError(string statements)
-    {
-        // Act
-        var snippet = SnippetCompiler.Compile(statements, members: Members);
-
-        // Assert
-        var message = snippet.Errors.Single(d => d.Id == "CS0619").GetMessage(CultureInfo.InvariantCulture);
-        message.ShouldEndWith("is obsolete: 'Match takes two functions that return a value. Use Switch for two side effects, or "
-                              + "Then(…).IfError(…) to transform the value and handle the error.'");
-    }
-
-    [Theory]
-    [InlineData("okTask.MatchAsync(x => Show(x), e => Log(e));")]
-    [InlineData("doneTask.MatchAsync(() => Show(1), e => Log(e));")]
-    [InlineData("okVt.MatchAsync(x => Show(x), e => Log(e));")]
-    [InlineData("doneVt.MatchAsync(() => Show(1), e => Log(e));")]
-    public void MatchAsync_TwoActions_MessageNamesSwitchAsyncAndThenAsyncIfErrorAsync(string statements)
-    {
-        // Act
-        var snippet = SnippetCompiler.Compile(statements, members: Members);
-
-        // Assert
-        var message = snippet.Errors.Single(d => d.Id == "CS0619").GetMessage(CultureInfo.InvariantCulture);
-        message.ShouldEndWith("is obsolete: 'MatchAsync takes two functions that return a value. Use SwitchAsync for two side effects, or "
-                              + "ThenAsync(…).IfErrorAsync(…) to transform the value and handle the error.'");
     }
 }

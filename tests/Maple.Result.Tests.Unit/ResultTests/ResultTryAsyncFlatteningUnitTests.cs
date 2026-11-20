@@ -160,8 +160,8 @@ public class ResultTryAsyncFlatteningUnitTests
     public async Task TryAsyncTyped_TaskOfResultFaultsWithOtherException_Propagates()
     {
         // Act
-        var exception = await Record.ExceptionAsync(() =>
-            Result.TryAsync<FormatException>(() => Task.FromException<Result>(new TimeoutException()), _ => MappedError));
+        var exception = await Record.ExceptionAsync(()
+            => Result.TryAsync<FormatException>(() => Task.FromException<Result>(new TimeoutException()), _ => MappedError));
 
         // Assert
         exception.ShouldBeOfType<TimeoutException>();
@@ -244,8 +244,8 @@ public class ResultTryAsyncFlatteningUnitTests
     public async Task TryAsyncTyped_TaskOfResultOfValueFaultsWithOtherException_Propagates()
     {
         // Act
-        var exception = await Record.ExceptionAsync(() =>
-            Result.TryAsync<int, FormatException>(() => Task.FromException<Result<int>>(new TimeoutException()), _ => MappedError));
+        var exception = await Record.ExceptionAsync(()
+            => Result.TryAsync<int, FormatException>(() => Task.FromException<Result<int>>(new TimeoutException()), _ => MappedError));
 
         // Assert
         exception.ShouldBeOfType<TimeoutException>();
@@ -405,8 +405,8 @@ public class ResultTryAsyncFlatteningUnitTests
     public async Task TryAsyncTyped_ValueTaskOfResultOfValueFaultsWithOtherException_Propagates()
     {
         // Act
-        var exception = await Record.ExceptionAsync(() =>
-            Result.TryAsync<int, FormatException>(() => ValueTask.FromException<Result<int>>(new TimeoutException()), _ => MappedError).AsTask());
+        var exception = await Record.ExceptionAsync(()
+            => Result.TryAsync<int, FormatException>(() => ValueTask.FromException<Result<int>>(new TimeoutException()), _ => MappedError).AsTask());
 
         // Assert
         exception.ShouldBeOfType<TimeoutException>();

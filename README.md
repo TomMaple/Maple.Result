@@ -114,8 +114,9 @@ Result sendResult = await GetContactAsync(id)
 ## Features
 * **[Results](docs/guide/results.md)** — `Result` and `Result<T>`, the implicit conversions, `TryGetValue` and `TryGetError`, and nullable values.
 * **[Errors](docs/guide/errors.md)** — eleven [categories](docs/guide/errors.md#error-categories) (with their default HTTP status codes), type and instance *URI*s, [error details](docs/guide/errors.md#error-details-validation-errors) for validation errors (with JSON Pointers), [metadata](docs/guide/errors.md#metadata), the [ErrorBuilder](docs/guide/errors.md#errorbuilder) and [localization](docs/guide/errors.md#localization).
-* **[Chaining operations](docs/guide/chaining.md)** — `Then`, `Else`, `IfSuccess`, `IfError`, `Match`, `Switch`, their asynchronous versions for `Task` and `ValueTask`, and the LINQ query syntax. A call that would discard a value or a task by mistake is a compile error that names the right method.
+* **[Chaining operations](docs/guide/chaining.md)** — `Then`, `Else`, `IfSuccess`, `IfError`, `Match`, `Switch`, their asynchronous versions for `Task` and `ValueTask`, and the LINQ query syntax.
 * **[Turning exceptions into results](docs/guide/chaining.md#turning-exceptions-into-results)** — `Result.Try()` and `Result.TryAsync()` with a mapper from the exception to the `Error`.
+* **[Analyzer](docs/Analyzers/README.md)** — six rules in the package, with nothing to install, report the calls that compile but lose a task or a failure: e.g., a task that nobody awaits in `Then()`, or a statement that discards a `Result`. Most of them have a code fix.
 * **[Problem details format](docs/problem-details.md)** — how an `Error` is written as an RFC 9457 problem details object and read back by the [related packages](#related-packages).
 * **[UI applications](docs/guide/chaining.md#asynchronous-methods-in-ui-applications)** — `continueOnCapturedContext` and a global default for WPF, Windows Forms, .NET MAUI and Blazor Server.
 
@@ -142,7 +143,7 @@ The problem details that these packages write and read follow one format, descri
 Version 3.0 has breaking changes. The main ones:
 * the namespace is `Maple.Results` (it was `Maple.Result`),
 * `Result`, `Result<T>` and `Error` are immutable: they have no public constructors or setters, `with { … }` no longer changes an error, and `AddDetail()` is replaced by `WithErrorDetail()` and the new `ErrorBuilder`,
-* the transforming `IfSuccess()` and `IfError()` are `Then()` and `Else()`, and the calls that changed meaning are compile errors that name the replacement,
+* the transforming `IfSuccess()` and `IfError()` are `Then()` and `Else()`, and the analyzer of the package reports most of the calls that changed meaning,
 * `IsSuccess` is a property, `IsError` is new, and `Result<T>.Value` throws on a failed result,
 * `IResult` is renamed to `IOperationResult`,
 * the types can no longer be read from JSON without the converter packages,
@@ -176,6 +177,7 @@ This library minimizes the amount of extension methods:
 * [Results](docs/guide/results.md) — returning and reading a `Result` and a `Result<T>`
 * [Errors](docs/guide/errors.md) — categories, properties, *URI*s, error details, metadata, `ErrorBuilder` and localization
 * [Chaining operations](docs/guide/chaining.md) — extension methods, asynchronous operations, the query syntax and `Result.Try()`
+* [Analyzer](docs/Analyzers/README.md) — the rules MR0001 to MR0006, their code fixes and their configuration
 * [The Result pattern](docs/guide/result-pattern.md) — benefits, a comparison with exceptions, and articles
 * [Problem details format](docs/problem-details.md) — how an `Error` is written as an RFC 9457 problem details object and read back
 * [Migration guide from 2.x to 3.0](docs/migration-v2-to-v3.md)

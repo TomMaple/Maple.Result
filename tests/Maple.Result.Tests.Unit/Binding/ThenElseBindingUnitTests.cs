@@ -15,9 +15,10 @@ namespace Maple.Results.Tests.Unit.Binding;
 
 /// <summary>
 ///     The side effects (<c>IfSuccess</c>, <c>IfError</c>) and the transformations (<c>Then</c>, <c>Else</c>) and their asynchronous forms
-///     (#197): a function that returns a value passed to a side effect, or a task that would not be awaited, is a compile error (CS0619)
-///     that names the method to use; an action passed to a transformation is a compile error that the compiler reports by itself (#256);
-///     the rest binds as intended.
+///     (#197): a side effect takes a function that returns a value and ignores the value, and awaits a task with a value; a delegate
+///     that fits no overload (e.g., an action passed to a transformation, #256) is a compile error that the compiler reports by itself;
+///     the rest binds as intended. The library has no overload traps (#223): a task that would not be awaited compiles, and the
+///     analyzer (rules MR0001 to MR0006 of <c>Maple.Result.Analyzers</c>) reports it; those shapes are tested with the analyzer.
 /// </summary>
 public class ThenElseBindingUnitTests
 {
@@ -49,59 +50,42 @@ public class ThenElseBindingUnitTests
         static ValueTask<Result<object>> FailedObjectVt() => new(FailedObject());
         """;
 
+    // A function that returns a value passed to a side effect as a method group or as a value that is not a statement, and a task
+    // without a value passed to Else or ElseAsync on a task of a result: the compiler reports them by itself.
     [Theory]
-    [InlineData("_ = Ok().IfSuccess(x => Set.Add(x));")]
-    [InlineData("_ = Ok().IfSuccess(x => Validate(x));")]
-    [InlineData("_ = Ok().IfSuccess(x => GetError());")]
-    [InlineData("_ = Ok().IfSuccess(Set.Add);")]
-    [InlineData("_ = R().IfSuccess(() => 5);")]
-    [InlineData("_ = Ok().IfSuccess(x => SaveAsync());")]
-    [InlineData("_ = Ok().IfSuccess(async x => await SaveAsync());")]
-    [InlineData("_ = Ok().IfSuccess(x => GetIntVt());")]
-    [InlineData("_ = Ok().Then(x => SaveAsync());")]
-    [InlineData("_ = Ok().Then(async x => await GetIntAsync());")]
-    [InlineData("_ = Failed().IfError(e => Interlocked.Increment(ref Failures));")]
-    [InlineData("_ = FailedBool().IfError(e => Titles.Add(e.Title));")]
-    [InlineData("_ = FailedR().IfError(e => Audit(e));")]
-    [InlineData("_ = Failed().IfError(e => 0);")]
-    [InlineData("_ = Failed().IfError(e => e.WithMetadata(\"k\", 1));")]
-    [InlineData("_ = Failed().IfError(e => LogAsync(e));")]
-    [InlineData("_ = Failed().Else(e => LogAsync(e));")]
-    [InlineData("_ = Ok().IfSuccessAsync(x => SaveChangesAsync());")]
-    [InlineData("_ = Ok().IfSuccessAsync(async x => await GetIntAsync());")]
-    [InlineData("_ = Task.FromResult(Ok()).IfSuccessAsync(x => ValidateAsync(x));")]
-    [InlineData("_ = Failed().IfErrorAsync(async e => await FallbackAsync());")]
-    [InlineData("_ = Task.FromResult(Failed()).ElseAsync(e => LogAsync(e));")]
-    [InlineData("_ = FailedObjectTask().ElseAsync(e => LogAsync(e));")]
-    [InlineData("_ = FailedObjectTask().ElseAsync(async e => { await LogAsync(e); });")]
-    public void TaskBased_DelegateOfTheWrongKind_ReportsOnlyCS0619(string statements)
+    [InlineData("_ = Ok().IfSuccess(Set.Add);", "CS1929")]
+    [InlineData("_ = R().IfSuccess(() => 5);", "CS0201")]
+    [InlineData("_ = Failed().IfError(e => 0);", "CS0201")]
+    [InlineData("_ = Failed().Else(e => LogAsync(e));", "CS0411")]
+    [InlineData("_ = Task.FromResult(Failed()).ElseAsync(e => LogAsync(e));", "CS0029,CS0266,CS1662")]
+    [InlineData("_ = FailedObjectTask().ElseAsync(async e => { await LogAsync(e); });", "CS1643")]
+    public void TaskBased_DelegateOfTheWrongKind_ReportsTheCompilerErrors(string statements, string errorIds)
     {
         // Act
         var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
-        snippet.ErrorIds.ShouldNotBeEmpty();
-        snippet.ErrorIds.ShouldAllBe(id => id == "CS0619", string.Join(Environment.NewLine, snippet.Errors));
+        var reported = string.Join(",", snippet.ErrorIds.Distinct().Order(StringComparer.Ordinal));
+        reported.ShouldBe(errorIds, string.Join(Environment.NewLine, snippet.Errors));
     }
 
     [Theory]
-    [InlineData("_ = Ok().IfSuccessAsync(x => GetIntVt());")]
-    [InlineData("_ = Failed().IfErrorAsync(e => FallbackVt());")]
-    [InlineData("_ = R().IfSuccessAsync(() => GetIntVt());")]
-    [InlineData("_ = FailedObjectVt().ElseAsync(e => LogVt(e));")]
-    [InlineData("_ = FailedObjectVt().ElseAsync(async e => { await LogVt(e); });")]
-    public void ValueTaskBased_DelegateOfTheWrongKind_ReportsOnlyCS0619(string statements)
+    [InlineData("_ = Ok().IfSuccessAsync(x => GetIntVt());", "CS0029,CS1662")]
+    [InlineData("_ = Failed().IfErrorAsync(e => FallbackVt());", "CS0029,CS1662")]
+    [InlineData("_ = R().IfSuccessAsync(() => GetIntVt());", "CS0029,CS1662")]
+    [InlineData("_ = FailedObjectVt().ElseAsync(async e => { await LogVt(e); });", "CS1643")]
+    public void ValueTaskBased_DelegateOfTheWrongKind_ReportsTheCompilerErrors(string statements, string errorIds)
     {
         // Act
         var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
-        snippet.ErrorIds.ShouldNotBeEmpty();
-        snippet.ErrorIds.ShouldAllBe(id => id == "CS0619", string.Join(Environment.NewLine, snippet.Errors));
+        var reported = string.Join(",", snippet.ErrorIds.Distinct().Order(StringComparer.Ordinal));
+        reported.ShouldBe(errorIds, string.Join(Environment.NewLine, snippet.Errors));
     }
 
     // An action, or a function that returns a task without a value, passed to Then, Else, ThenAsync or ElseAsync on a result: the
-    // compiler reports it by itself, so there is no overload trap for it (#256).
+    // compiler reports it by itself (#256).
     [Theory]
     [InlineData("Ok().Then(x => Console.WriteLine(x));", "CS0029,CS1662")]
     [InlineData("Ok().Then(x => Print(x));", "CS0029,CS1662")]
@@ -199,6 +183,12 @@ public class ThenElseBindingUnitTests
     [InlineData("Result<int> r = from x in Ok() select x + 1;")]
     [InlineData("Task<Result<int>> r = (from x in Task.FromResult(Ok()) from y in ValidateAsync(x) select x + y);")]
     [InlineData("int r = Ok().Match(x => x, e => 0);")]
+    // A side effect whose function returns a value, or a task with a value: the value is ignored, and the task is awaited.
+    [InlineData("Result<int> r = Ok().IfSuccess(x => Set.Add(x));")]
+    [InlineData("Result<int> r = Failed().IfError(e => Interlocked.Increment(ref Failures));")]
+    [InlineData("Result<bool> r = FailedBool().IfError(e => Titles.Add(e.Title));")]
+    [InlineData("Task<Result<int>> r = Ok().IfSuccessAsync(x => SaveChangesAsync());")]
+    [InlineData("Task<Result<int>> r = Ok().IfSuccessAsync(async x => await GetIntAsync());")]
     public void TaskBased_SideEffectOrTransformation_CompilesToExpectedType(string statements)
     {
         // Act

@@ -15,7 +15,7 @@ Asynchronously converts the outcome of the asynchronous operation represented by
 The overload on a `Task` of a result returns a `Task`, and the one on a `ValueTask` of a result returns a `ValueTask`.
 
 ## ToResultAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ResultAsyncExtensions.Task.cs#L55" target="_blank">ResultAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ResultAsyncExtensions.Task.cs#L54" target="_blank">ResultAsyncExtensions.Task.cs</a>
 
 Asynchronously converts the outcome of the asynchronous operation represented by the [Result&lt;T&gt;](../ResultT/ResultT.md) to the non-generic [Result](../Result/Result.md).
 

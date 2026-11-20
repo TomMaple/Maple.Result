@@ -28,24 +28,24 @@ public class AsyncExtensionsPriorityUnitTests
     [Theory]
     [InlineData(typeof(ThenAsyncExtensions), 8)]
     [InlineData(typeof(ElseAsyncExtensions), 4)]
-    [InlineData(typeof(IfSuccessAsyncExtensions), 4)]
-    [InlineData(typeof(IfErrorAsyncExtensions), 2)]
-    [InlineData(typeof(LinqAsyncExtensions), 28)]
+    [InlineData(typeof(IfSuccessAsyncExtensions), 2)]
+    [InlineData(typeof(IfErrorAsyncExtensions), 1)]
+    [InlineData(typeof(LinqAsyncExtensions), 16)]
     public void TaskPartOverloadOnAResult_HasPriorityOneAboveItsValueTaskTwin(Type type, int expectedCount)
     {
         // Arrange
-        var valueTaskPart = OverloadTrapHelper.ValueTaskPartMethods(type)
-            .Where(OverloadTrapHelper.HasSynchronousReceiver)
+        var valueTaskPart = OverloadReflectionHelper.ValueTaskPartMethods(type)
+            .Where(OverloadReflectionHelper.HasSynchronousReceiver)
             .ToDictionary(m => Signature(m, withValueTaskFunction: false));
 
-        var taskPart = OverloadTrapHelper.TaskPartMethods(type)
-            .Where(OverloadTrapHelper.HasSynchronousReceiver)
+        var taskPart = OverloadReflectionHelper.TaskPartMethods(type)
+            .Where(OverloadReflectionHelper.HasSynchronousReceiver)
             .ToList();
 
         // Act
         var mismatched = taskPart
             .Where(m => !valueTaskPart.TryGetValue(Signature(m, withValueTaskFunction: true), out var twin)
-                        || OverloadTrapHelper.Priority(m) != OverloadTrapHelper.Priority(twin) + 1)
+                        || OverloadReflectionHelper.Priority(m) != OverloadReflectionHelper.Priority(twin) + 1)
             .Select(m => m.ToString())
             .ToList();
 
@@ -67,18 +67,18 @@ public class AsyncExtensionsPriorityUnitTests
     {
         // Arrange
         var onATask = type.GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Where(m => !OverloadTrapHelper.HasSynchronousReceiver(m))
+            .Where(m => !OverloadReflectionHelper.HasSynchronousReceiver(m))
             .ToList();
 
         // Act
         var mismatched = onATask
-            .Where(m => (Delegates(m).All(OverloadTrapHelper.IsTaskFunction) && OverloadTrapHelper.Priority(m) != 1)
-                        || (Delegates(m).All(OverloadTrapHelper.IsValueTaskFunction) && OverloadTrapHelper.Priority(m) != 0))
+            .Where(m => (Delegates(m).All(OverloadReflectionHelper.IsTaskFunction) && OverloadReflectionHelper.Priority(m) != 1)
+                        || (Delegates(m).All(OverloadReflectionHelper.IsValueTaskFunction) && OverloadReflectionHelper.Priority(m) != 0))
             .Select(m => m.ToString())
             .ToList();
 
         // Assert
-        onATask.Count(m => Delegates(m).All(OverloadTrapHelper.IsValueTaskFunction)).ShouldBeGreaterThan(0);
+        onATask.Count(m => Delegates(m).All(OverloadReflectionHelper.IsValueTaskFunction)).ShouldBeGreaterThan(0);
         mismatched.ShouldBeEmpty();
     }
 
@@ -90,7 +90,7 @@ public class AsyncExtensionsPriorityUnitTests
     {
         // Act
         var onAResult = type.GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Where(OverloadTrapHelper.HasSynchronousReceiver)
+            .Where(OverloadReflectionHelper.HasSynchronousReceiver)
             .ToList();
 
         // Assert

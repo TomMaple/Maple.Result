@@ -9,12 +9,8 @@
  */
 
 using Maple.Results.Extensions;
-using Maple.Results.Tests.Unit.TestingInfrastructure.Helpers;
 using Moq;
 using System;
-using System.ComponentModel;
-using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Maple.Results.Tests.Unit.Extensions;
@@ -575,13 +571,14 @@ public class LinqExtensionsUnitTests
 
     #endregion
 
-    #region LINQ query selecting an Error (overload trap)
+    #region LINQ query selecting an Error
 
     // See issue #119.
 
     private static readonly Error TrapError = Error.Conflict(ErrorUri.Tag("tag:test.com,2024:Trap"), "Trap title");
 
-    private static Result<int> Get(int value) => Result<int>.FromValue(value);
+    private static Result<int> Get(int value)
+        => Result<int>.FromValue(value);
 
     [Fact]
     public void LinqQuerySyntax_SuccessfulResultSelectingError_ReturnsFailedResultWithSelectedError()
@@ -682,63 +679,7 @@ public class LinqExtensionsUnitTests
 
     #endregion
 
-    #region LINQ query selecting a task (overload trap)
-
-    // See issue #126.
-
-    [Fact]
-    public void Select_SelectorReturningTaskOverloads_AreHiddenCompileErrors()
-    {
-        // Arrange
-        var overloads = typeof(LinqExtensions).GetMethods()
-            .Where(m => m.Name == "Select" && OverloadTrapHelper.IsTrap(m, "The selector returns a task"))
-            .ToArray();
-
-        // Act & Assert
-        overloads.Length.ShouldBe(6);
-        overloads.ShouldAllBe(m => m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
-                                   && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
-    }
-
-    [Fact]
-    public void SelectMany_ResultSelectorReturningTaskOverloads_AreHiddenCompileErrors()
-    {
-        // Arrange
-        var overloads = typeof(LinqExtensions).GetMethods()
-            .Where(m => m.Name == "SelectMany" && OverloadTrapHelper.IsTrap(m, "The selector returns a task"))
-            .ToArray();
-
-        // Act & Assert
-        overloads.Length.ShouldBe(12);
-        overloads.ShouldAllBe(m => m.GetCustomAttribute<ObsoleteAttribute>()!.IsError
-                                   && m.GetCustomAttribute<EditorBrowsableAttribute>()!.State == EditorBrowsableState.Never);
-    }
-
-    [Fact]
-    public void SelectAndSelectMany_TrapsConstrainedToTheTaskType_HavePriorityOne()
-    {
-        // Act
-        var traps = typeof(LinqExtensions).GetMethods()
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The selector returns a task") && OverloadTrapHelper.IsConstrainedToATask(m))
-            .ToList();
-
-        // Assert
-        traps.Count.ShouldBe(12);
-        traps.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 1);
-    }
-
-    [Fact]
-    public void SelectAndSelectMany_TrapsForValueTaskOfT_HaveDefaultPriority()
-    {
-        // Act
-        var traps = typeof(LinqExtensions).GetMethods()
-            .Where(m => OverloadTrapHelper.IsTrap(m, "The selector returns a task") && !OverloadTrapHelper.IsConstrainedToATask(m))
-            .ToList();
-
-        // Assert
-        traps.Count.ShouldBe(6);
-        traps.ShouldAllBe(m => OverloadTrapHelper.Priority(m) == 0);
-    }
+    #region LINQ query selecting a task in a result
 
     [Fact]
     public void Select_SuccessfulResultWithSelectorReturningTaskInResult_ReturnsResultWithTaskNotAwaited()

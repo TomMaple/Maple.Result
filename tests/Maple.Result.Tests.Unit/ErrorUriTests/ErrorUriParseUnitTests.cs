@@ -19,7 +19,9 @@ public class ErrorUriParseUnitTests
 {
     #region test data
 
-    /// <summary>Valid values and the error URI that the factory of their kind creates.</summary>
+    /// <summary>
+    ///     Valid values and the error URI that the factory of their kind creates.
+    /// </summary>
     public static readonly TheoryData<string, ErrorUri> ValidValues = new()
     {
         { "about:blank", ErrorUri.None },
@@ -49,7 +51,9 @@ public class ErrorUriParseUnitTests
         { "h2:x", ErrorUri.Other("h2:x") },
     };
 
-    /// <summary>Values that are neither one of the supported kinds nor an absolute URI with another scheme.</summary>
+    /// <summary>
+    ///     Values that are neither one of the supported kinds nor an absolute URI with another scheme.
+    /// </summary>
     public static readonly TheoryData<string> UnknownKinds =
     [
         "about",                    // no colon: a relative path, not the "about" scheme
@@ -62,7 +66,9 @@ public class ErrorUriParseUnitTests
         "1abc:x",                   // a scheme starts with a letter
     ];
 
-    /// <summary>Values of a known kind that its factory rejects.</summary>
+    /// <summary>
+    ///     Values of a known kind that its factory rejects.
+    /// </summary>
     public static readonly TheoryData<string> InvalidValuesOfKnownKind =
     [
         "tag:example.com:x",
@@ -74,7 +80,9 @@ public class ErrorUriParseUnitTests
         "about:blank ",             // a trailing space: not "about:blank", and not a valid URI
     ];
 
-    /// <summary>Values of a known kind that its factory rejects, and the beginning of the factory's message.</summary>
+    /// <summary>
+    ///     Values of a known kind that its factory rejects, and the beginning of the factory's message.
+    /// </summary>
     public static readonly TheoryData<string, string> InvalidValuesOfKnownKindWithMessages = new()
     {
         { "tag:example.com:x", "The URI tag is not valid." },
@@ -86,7 +94,9 @@ public class ErrorUriParseUnitTests
         { "about:blank ", "The URI is not a valid absolute URI." },
     };
 
-    /// <summary>The <c>about</c> URIs other than <c>about:blank</c>, which are kept as they are, like any other scheme (#275).</summary>
+    /// <summary>
+    ///     The <c>about</c> URIs other than <c>about:blank</c>, which are kept as they are, like any other scheme (#275).
+    /// </summary>
     public static readonly TheoryData<string> OtherAboutUris =
     [
         "about:invalid",            // a registered token (the IANA registry of "about" URI tokens)
@@ -99,7 +109,9 @@ public class ErrorUriParseUnitTests
         "about:",                   // an empty token (RFC 6694: about-token = *pchar)
     ];
 
-    /// <summary>Error URIs of every kind, for the round-trip through their value.</summary>
+    /// <summary>
+    ///     Error URIs of every kind, for the round-trip through their value.
+    /// </summary>
     public static readonly TheoryData<ErrorUri> ErrorUris =
     [
         ErrorUri.None,
@@ -374,7 +386,9 @@ public class ErrorUriParseUnitTests
 
     #region helper methods
 
-    /// <summary>Parses through the static members of <see cref="IParsable{TSelf}" />, as generic code (e.g., ASP.NET Core binding) does.</summary>
+    /// <summary>
+    ///     Parses through the static members of <see cref="IParsable{TSelf}" />, as generic code (e.g., ASP.NET Core binding) does.
+    /// </summary>
     private static T ParseAs<T>(string value)
         where T : IParsable<T>
     {

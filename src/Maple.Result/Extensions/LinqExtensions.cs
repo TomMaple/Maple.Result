@@ -20,7 +20,7 @@ namespace Maple.Results.Extensions;
 ///     These methods enable fluent chaining of operations and using LINQ query syntax.
 ///     They help simplify error handling and reduce boilerplate code when working with <see cref="Result{T}" />-based workflows.
 /// </remarks>
-public static partial class LinqExtensions
+public static class LinqExtensions
 {
     /// <summary>
     ///     Projects the value of a successful <see cref="Result{T}" /> into a new <see cref="Result{TNext}" /> by applying the provided

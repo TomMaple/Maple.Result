@@ -15,9 +15,11 @@ namespace Maple.Results.Tests.Unit.Binding;
 
 /// <summary>
 ///     Synchronous delegates on <c>Task</c> results (#214), with only the <c>Task</c>-based namespace imported: the calls bind
-///     as intended (each is assigned to a variable of the expected type); a delegate of the wrong kind, two actions of <c>MatchAsync</c>
-///     (<c>SwitchAsync</c> takes them, #255), or a delegate that returns the other kind of task is awaited (#226); and a
-///     synchronous action passed to <c>ThenAsync</c> or <c>ElseAsync</c> is a compile error that the compiler reports by itself (#256).
+///     as intended (each is assigned to a variable of the expected type); a delegate that returns the other kind of task is awaited
+///     (#226); and a delegate that no overload takes (e.g., a function with an action in <c>MatchAsync</c>, #255, or a synchronous action
+///     passed to <c>ThenAsync</c> or <c>ElseAsync</c>, #256) is a compile error that the compiler reports by itself. The shapes that
+///     compile into something wrong (e.g., a task without a value in <c>ThenAsync</c>) are reported by the analyzer (rules MR0001 to
+///     MR0006 of <c>Maple.Result.Analyzers</c>) and tested with it (#223).
 /// </summary>
 public class SyncDelegatesOnTaskResultsBindingUnitTests
 {
@@ -106,6 +108,11 @@ public class SyncDelegatesOnTaskResultsBindingUnitTests
     [InlineData("Task r = GetOk().MatchAsync(() => SaveOtherAsync(null!), e => LogOtherAsync(e));")]
     [InlineData("Task<string> r = GetUser().MatchAsync(u => GetNameOtherAsync(u), e => ValueTask.FromResult(\"x\"));")]
     [InlineData("Task<Result<User>> r = GetUser().ElseAsync(e => ValueTask.FromResult(Result<User>.FromValue(Guest)));")]
+    // A side effect whose function returns a value, or a task with a value: the value is ignored, and the task is awaited.
+    [InlineData("Task<Result<User>> r = GetUser().IfSuccessAsync(u => set.Add(u.Id));")]
+    [InlineData("Task<Result<User>> r = GetUser().IfErrorAsync(e => titles.Add(e.Title));")]
+    [InlineData("Task<Result<User>> r = GetUser().IfSuccessAsync(u => GetNameAsync(u));")]
+    [InlineData("Task<Result<User>> r = GetUser().IfErrorAsync(e => GetNameAsync(null!));")]
     public void Call_SupportedShape_CompilesToExpectedType(string statements)
     {
         // Act
@@ -115,41 +122,33 @@ public class SyncDelegatesOnTaskResultsBindingUnitTests
         snippet.ErrorIds.ShouldBeEmpty(string.Join(Environment.NewLine, snippet.Errors));
     }
 
+    // A task without a value in ElseAsync, a value that is not a statement or a method group that returns a value in IfSuccessAsync,
+    // and a function with an action in MatchAsync (SwitchAsync takes two actions, #255): the compiler reports them by itself.
     [Theory]
-    [InlineData("_ = GetUser().ThenAsync(u => SaveAsync(u));")]
-    [InlineData("_ = GetUser().ThenAsync(async u => await SaveAsync(u));")]
-    [InlineData("_ = GetOk().ThenAsync(() => SaveAsync(null!));")]
-    [InlineData("_ = GetUser().ElseAsync(e => LogAsync(e));")]
-    [InlineData("_ = GetUser().ElseAsync(async e => { await LogAsync(e); });")]
-    [InlineData("_ = GetUser().ThenAsync(u => SaveOtherAsync(u));")]
-    [InlineData("_ = GetOk().ThenAsync(() => SaveOtherAsync(null!));")]
-    [InlineData("_ = GetUser().ElseAsync(e => LogOtherAsync(e));")]
-    [InlineData("_ = GetUser().IfSuccessAsync(u => set.Add(u.Id));")]
-    [InlineData("_ = GetOk().IfSuccessAsync(() => 5);")]
-    [InlineData("_ = GetUser().IfSuccessAsync(GetName);")]
-    [InlineData("_ = GetUser().IfSuccessAsync(u => GetNameAsync(u));")]
-    [InlineData("_ = GetUser().IfSuccessAsync(u => GetNameOtherAsync(u));")]
-    [InlineData("_ = GetUser().IfErrorAsync(e => titles.Add(e.Title));")]
-    [InlineData("_ = GetUser().IfErrorAsync(e => GetNameAsync(null!));")]
-    [InlineData("_ = GetUser().MatchAsync(u => GetNameAsync(u), e => LogError(e));")]
-    [InlineData("_ = GetUser().MatchAsync(u => SaveAsync(u), e => LogError(e));")]
-    [InlineData("_ = GetUser().MatchAsync(async u => await SaveAsync(u), e => LogError(e));")]
-    [InlineData("_ = GetOk().MatchAsync(() => SaveAsync(null!), e => LogError(e));")]
-    [InlineData("_ = GetUser().MatchAsync(u => Log(u), e => LogAsync(e));")]
-    [InlineData("_ = GetUser().MatchAsync(u => GetNameOtherAsync(u), e => LogOtherAsync(e));")]
-    [InlineData("_ = GetUser().MatchAsync(u => SaveOtherAsync(u), e => LogError(e));")]
-    [InlineData("_ = GetUser().MatchAsync(u => Log(u), e => LogOtherAsync(e));")]
-    public void Call_UnsupportedShape_ReportsOnlyCS0619(string statements)
+    [InlineData("_ = GetUser().ElseAsync(e => LogAsync(e));", "CS0029,CS0266,CS1662")]
+    [InlineData("_ = GetUser().ElseAsync(async e => { await LogAsync(e); });", "CS1643")]
+    [InlineData("_ = GetUser().ElseAsync(e => LogOtherAsync(e));", "CS0029,CS1662")]
+    [InlineData("_ = GetOk().IfSuccessAsync(() => 5);", "CS0029,CS0201,CS1662")]
+    [InlineData("_ = GetUser().IfSuccessAsync(GetName);", "CS1929")]
+    [InlineData("_ = GetUser().MatchAsync(u => GetNameAsync(u), e => LogError(e));", "CS0029,CS1662")]
+    [InlineData("_ = GetUser().MatchAsync(u => SaveAsync(u), e => LogError(e));", "CS0029,CS1662")]
+    [InlineData("_ = GetUser().MatchAsync(async u => await SaveAsync(u), e => LogError(e));", "CS0029,CS1662")]
+    [InlineData("_ = GetOk().MatchAsync(() => SaveAsync(null!), e => LogError(e));", "CS0029,CS1662")]
+    [InlineData("_ = GetUser().MatchAsync(u => Log(u), e => LogAsync(e));", "CS0029,CS1662")]
+    [InlineData("_ = GetUser().MatchAsync(u => GetNameOtherAsync(u), e => LogOtherAsync(e));", "CS0029,CS1662")]
+    [InlineData("_ = GetUser().MatchAsync(u => SaveOtherAsync(u), e => LogError(e));", "CS0029,CS1662")]
+    [InlineData("_ = GetUser().MatchAsync(u => Log(u), e => LogOtherAsync(e));", "CS0029,CS1662")]
+    public void Call_UnsupportedShape_ReportsTheCompilerErrors(string statements, string errorIds)
     {
         // Act
         var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
-        snippet.ErrorIds.ShouldNotBeEmpty();
-        snippet.ErrorIds.ShouldAllBe(id => id == "CS0619", string.Join(Environment.NewLine, snippet.Errors));
+        var reported = string.Join(",", snippet.ErrorIds.Distinct().Order(StringComparer.Ordinal));
+        reported.ShouldBe(errorIds, string.Join(Environment.NewLine, snippet.Errors));
     }
 
-    // A synchronous action passed to ThenAsync or ElseAsync: the compiler reports it by itself, so there is no overload trap for it (#256).
+    // A synchronous action passed to ThenAsync or ElseAsync: the compiler reports it by itself (#256).
     [Theory]
     [InlineData("GetUser().ThenAsync(u => Log(u));", "CS0029,CS1662")]
     [InlineData("GetUser().ThenAsync(Log);", "CS1929")]

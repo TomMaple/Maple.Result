@@ -32,7 +32,6 @@ public class ResultTryExceptionPathsUnitTests
     private static readonly Dictionary<string, MethodInfo> Methods = typeof(Result)
         .GetMethods(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly)
         .Where(m => m.Name is nameof(Result.Try) or nameof(Result.TryAsync))
-        .Where(m => m.GetCustomAttribute<ObsoleteAttribute>() is null)
         .ToDictionary(Describe, Close);
 
     public static TheoryData<string, string> MethodCases()

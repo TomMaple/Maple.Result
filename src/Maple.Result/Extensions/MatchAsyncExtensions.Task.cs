@@ -22,8 +22,8 @@ namespace Maple.Results.Extensions;
 /// <remarks>
 ///     The functions are both synchronous, or both return a <see cref="Task" /> or a <see cref="Task{TResult}" />, which is awaited.
 ///     <c>MatchAsync</c> returns what the function that ran returns, and does not look at it. There is no <c>MatchAsync</c> on a result:
-///     <c>Match</c> returns the task of the function that ran. For two side effects, use <c>SwitchAsync</c>; two actions are a compile error
-///     here (CS0619).
+///     <c>Match</c> returns the task of the function that ran. For two side effects, use <c>SwitchAsync</c>: two actions return no value,
+///     so they do not compile here.
 ///     <para>
 ///         The methods for a <see cref="System.Threading.Tasks.Task" /> and for a <see cref="System.Threading.Tasks.ValueTask" /> of a result
 ///         are in this one class; the kind of the task is kept, and functions that return the other kind of task are awaited.

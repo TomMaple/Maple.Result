@@ -9,15 +9,16 @@
  */
 
 using System;
-using System.Globalization;
 using System.Linq;
 
 namespace Maple.Results.Tests.Unit.Binding;
 
 /// <summary>
-///     A lambda that only throws (#251) converts to every delegate type, so it used to reach the traps for a function that returns a
-///     task. The task traps are generic methods constrained to the task type: a lambda that only throws has no return type to infer,
-///     so it binds to the overload that runs, and a function that returns a task still reports the task trap (CS0619).
+///     A lambda that only throws (#251) converts to every delegate type and has no return type to infer, so it binds to the overload
+///     that runs, also in <c>Result.Try</c>. A function that returns a task or a value, which no overload takes, is a compile error that
+///     the compiler reports by itself; a task that nobody awaits compiles, and the analyzer reports it (rules MR0001 to MR0006 of
+///     <c>Maple.Result.Analyzers</c>), so those shapes are tested with the analyzer (#223). A task is kept on purpose in a result or
+///     with explicit type arguments.
 /// </summary>
 public class ThrowingLambdaBindingUnitTests
 {
@@ -56,6 +57,7 @@ public class ThrowingLambdaBindingUnitTests
     [InlineData("Task r = okTask.SwitchAsync(x => { }, e => throw Fail(e));", "SwitchAsync",
         "Task<Result<int>>.SwitchAsync<int>(Action<int>, Action<Error>, bool?)")]
     [InlineData("var r = ok.Select(x => throw Fail());", "Select", "Result<int>.Select<int>(Func<int, Error>)")]
+    [InlineData("Result r = Result.Try(() => throw new IOException(), ex => err);", "Try", "Result.Try(Func<Error>, Func<Exception, Error?>)")]
     public void LambdaThatOnlyThrows_BindsToTheOverloadThatRuns(string statements, string method, string expectedSignature)
     {
         // Act
@@ -117,60 +119,45 @@ public class ThrowingLambdaBindingUnitTests
         snippet.BoundMethod(method).ShouldBe(expectedSignature);
     }
 
-    // The shapes of the issue that were traps (c01 to c12, without c09), and must still be: a function that returns a task reports
-    // the task trap, a function that returns a value reports the value trap of IfSuccess and IfError (#257).
+    // The shapes of the issue with a function that returns a task or a value (c01 to c12, without c09) that no overload takes: the
+    // compiler reports them by itself. The shapes that compile and leave a task that nobody awaits are tested with the analyzer.
     [Theory]
-    [InlineData("var r = ok.IfError(e => LogAsync(e));", "The error action returns a task, which IfError does not await.")]
-    [InlineData("var r = ok.IfError(async e => { await LogAsync(e); });", "The error action returns a task, which IfError does not await.")]
-    [InlineData("var r = ok.IfError(e => LogValueAsync(e));", "The error action returns a task, which IfError does not await.")]
-    [InlineData("var r = ok.IfError(e => GetCountAsync(e));", "The error action returns a task, which IfError does not await.")]
-    [InlineData("var r = ok.IfError(e => GetCountValueAsync(e));", "The error action returns a task, which IfError does not await.")]
-    [InlineData("var r = ok.IfError(async e => { await Task.Yield(); return 1; });", "The error action returns a task, which IfError does not await.")]
-    [InlineData("var r = ok.IfError(LogAsync);", "The error action returns a task, which IfError does not await.")]
-    [InlineData("var r = ok.IfError(async e => { throw Fail(); });", "The error action returns a task, which IfError does not await.")]
-    [InlineData("var r = ok.IfError(e => e.Title);", "The function returns a value, which IfError discards;")]
-    [InlineData("var r = ok.IfError(e => count++);", "The function returns a value, which IfError discards;")]
-    [InlineData("var r = ok.IfSuccess(x => SaveAsync(x));", "The function returns a task, which IfSuccess does not await.")]
-    [InlineData("var r = ok.IfSuccess(async x => await SaveAsync(x));", "The function returns a task, which IfSuccess does not await.")]
-    [InlineData("var r = ok.IfSuccess(x => GetIntAsync());", "The function returns a task, which IfSuccess does not await.")]
-    [InlineData("var r = ok.IfSuccess(x => GetIntValueTask());", "The function returns a task, which IfSuccess does not await.")]
-    [InlineData("var r = ok.IfSuccess(x => ValueTask.CompletedTask);", "The function returns a task, which IfSuccess does not await.")]
-    [InlineData("var r = ok.IfSuccess(SaveAsync);", "The function returns a task, which IfSuccess does not await.")]
-    [InlineData("var r = done.IfSuccess(() => SaveAsync());", "The function returns a task, which IfSuccess does not await.")]
-    [InlineData("var r = done.IfSuccess(() => GetIntValueTask());", "The function returns a task, which IfSuccess does not await.")]
-    [InlineData("var r = ok.IfSuccess(x => Compute(x));", "The function returns a value, which IfSuccess discards;")]
-    [InlineData("var r = ok.Else(e => LogAsync(e));", "The function returns a task, which Else does not await.")]
-    [InlineData("var r = ok.Else(async e => await GetCountAsync(e));", "The function returns a task, which Else does not await.")]
-    [InlineData("var r = ok.Else(e => LogValueAsync(e));", "The function returns a task, which Else does not await.")]
-    [InlineData("var r = ok.Else(e => GetCountValueAsync(e));", "The function returns a task, which Else does not await.")]
-    [InlineData("var r = ok.Else(LogAsync);", "The function returns a task, which Else does not await.")]
-    [InlineData("var r = ok.Then(x => GetIntAsync());", "The function returns a task, which Then does not await.")]
-    [InlineData("var r = ok.Then(async x => await GetIntAsync());", "The function returns a task, which Then does not await.")]
-    [InlineData("var r = ok.Then(x => SaveAsync(x));", "The function returns a task, which Then does not await.")]
-    [InlineData("var r = ok.Then(x => GetIntValueTask());", "The function returns a task, which Then does not await.")]
-    [InlineData("var r = ok.Then(x => ValueTask.CompletedTask);", "The function returns a task, which Then does not await.")]
-    [InlineData("var r = ok.Then(SaveAsync);", "The function returns a task, which Then does not await.")]
-    [InlineData("var r = done.Then(() => SaveAsync());", "The function returns a task, which Then does not await.")]
-    [InlineData("var r = done.Then(() => GetIntValueTask());", "The function returns a task, which Then does not await.")]
-    [InlineData("ok.Switch(x => { }, e => LogAsync(e));", "An action returns a task, which Switch does not await.")]
-    [InlineData("var r = from x in ok select GetIntAsync();", "The selector returns a task, which the query does not await.")]
-    [InlineData("var r = from x in ok select GetIntValueTask();", "The selector returns a task, which the query does not await.")]
-    [InlineData("var r = from x in ok select SaveAsync(x);", "The selector returns a task, which the query does not await.")]
-    [InlineData("var r = from x in ok from y in GetResultOfInt() select SaveAsync(x + y);", "The selector returns a task, which the query does not await.")]
-    [InlineData("var r = from x in GetResult() select SaveAsync(1);", "The selector returns a task, which the query does not await.")]
-    public void FunctionReturningATaskOrAValue_StillReportsItsTrap(string statements, string message)
+    [InlineData("var r = ok.IfError(async e => { await Task.Yield(); return 1; });", "CS8030")]
+    [InlineData("var r = ok.IfError(LogAsync);", "CS0407")]
+    [InlineData("var r = ok.IfError(e => e.Title);", "CS0201")]
+    [InlineData("var r = ok.IfSuccess(x => ValueTask.CompletedTask);", "CS0201")]
+    [InlineData("var r = ok.IfSuccess(SaveAsync);", "CS1929")]
+    [InlineData("var r = ok.Else(e => LogAsync(e));", "CS0411")]
+    [InlineData("var r = ok.Else(async e => await GetCountAsync(e));", "CS0411")]
+    [InlineData("var r = ok.Else(e => LogValueAsync(e));", "CS0411")]
+    [InlineData("var r = ok.Else(e => GetCountValueAsync(e));", "CS0411")]
+    [InlineData("var r = ok.Else(LogAsync);", "CS0411")]
+    public void FunctionReturningATaskOrAValue_ReportsTheCompilerErrors(string statements, string errorIds)
     {
         // Act
         var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
-        snippet.ErrorIds.ShouldNotBeEmpty();
-        snippet.ErrorIds.ShouldAllBe(id => id == "CS0619", string.Join(Environment.NewLine, snippet.Errors));
-        snippet.Errors.First().GetMessage(CultureInfo.InvariantCulture).ShouldContain(message);
+        var reported = string.Join(",", snippet.ErrorIds.Distinct().Order(StringComparer.Ordinal));
+        reported.ShouldBe(errorIds, string.Join(Environment.NewLine, snippet.Errors));
+    }
+
+    // A side effect takes a function whose body is a call or an increment and ignores the value (#257).
+    [Theory]
+    [InlineData("var r = ok.IfError(e => count++);", "IfError", "Result<int>.IfError<Result<int>>(Action<Error>)")]
+    [InlineData("var r = ok.IfSuccess(x => Compute(x));", "IfSuccess", "Result<int>.IfSuccess<int>(Action<int>)")]
+    public void SideEffect_FunctionReturningAValue_BindsToTheActionOverload(string statements, string method, string expectedSignature)
+    {
+        // Act
+        var snippet = SnippetCompiler.Compile(statements, members: Members);
+
+        // Assert
+        snippet.ErrorIds.ShouldBeEmpty(string.Join(Environment.NewLine, snippet.Errors));
+        snippet.BoundMethod(method).ShouldBe(expectedSignature);
     }
 
     // Limit 1 of the issue, accepted: an async lambda whose expression only throws has no return type to infer either, so it binds
-    // to the action overload as async void. Its block form is still a task trap (see above).
+    // to the action overload as async void, as its block form does; the analyzer reports both.
     [Fact]
     public void IfError_AsyncLambdaWhoseExpressionOnlyThrows_BindsToTheActionOverload()
     {
@@ -197,20 +184,18 @@ public class ThrowingLambdaBindingUnitTests
         reported.ShouldBe("CS0121", string.Join(Environment.NewLine, snippet.Errors));
     }
 
-    // Limit 3 of the issue: explicit type arguments no longer keep a task; a result that holds the task does.
+    // Limit 3 of the issue: explicit type arguments keep a task on purpose, as a result that holds the task does.
     [Theory]
-    [InlineData("var r = ok.Then<int, Task<int>>(x => GetIntAsync());", "The function returns a task, which Then does not await.")]
-    [InlineData("var r = done.Then<Task>(() => SaveAsync(1));", "The function returns a task, which Then does not await.")]
-    [InlineData("var r = ok.Select<int, Task>(x => SaveAsync(x));", "The selector returns a task, which the query does not await.")]
-    public void ExplicitTypeArgumentsForATask_ReportTheTaskTrap(string statements, string message)
+    [InlineData("Result<Task<int>> r = ok.Then<int, Task<int>>(x => GetIntAsync());")]
+    [InlineData("Result<Task> r = done.Then<Task>(() => SaveAsync(1));")]
+    [InlineData("Result<Task> r = ok.Select<int, Task>(x => SaveAsync(x));")]
+    public void ExplicitTypeArgumentsForATask_KeepTheTask(string statements)
     {
         // Act
         var snippet = SnippetCompiler.Compile(statements, members: Members);
 
         // Assert
-        snippet.ErrorIds.ShouldNotBeEmpty();
-        snippet.ErrorIds.ShouldAllBe(id => id == "CS0619", string.Join(Environment.NewLine, snippet.Errors));
-        snippet.Errors.First().GetMessage(CultureInfo.InvariantCulture).ShouldContain(message);
+        snippet.ErrorIds.ShouldBeEmpty(string.Join(Environment.NewLine, snippet.Errors));
     }
 
     [Theory]

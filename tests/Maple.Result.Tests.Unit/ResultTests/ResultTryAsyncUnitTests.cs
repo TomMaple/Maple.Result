@@ -183,8 +183,8 @@ public class ResultTryAsyncUnitTests
     public async Task TryAsyncTyped_RealCancellationAndTimeoutMapper_Rethrows()
     {
         // Act
-        var exception = await Record.ExceptionAsync(() =>
-            Result.TryAsync<OperationCanceledException>(() => Task.FromCanceled(new CancellationToken(true)), MapTimeoutOnly));
+        var exception = await Record.ExceptionAsync(()
+            => Result.TryAsync<OperationCanceledException>(() => Task.FromCanceled(new CancellationToken(true)), MapTimeoutOnly));
 
         // Assert
         exception.ShouldBeAssignableTo<OperationCanceledException>();
@@ -255,8 +255,8 @@ public class ResultTryAsyncUnitTests
     public async Task TryAsyncTyped_TaskFaultsWithOtherException_Propagates()
     {
         // Act
-        var exception = await Record.ExceptionAsync(() =>
-            Result.TryAsync<FormatException>(() => Task.FromException(new TimeoutException()), _ => MappedError));
+        var exception = await Record.ExceptionAsync(()
+            => Result.TryAsync<FormatException>(() => Task.FromException(new TimeoutException()), _ => MappedError));
 
         // Assert
         exception.ShouldBeOfType<TimeoutException>();
@@ -359,8 +359,8 @@ public class ResultTryAsyncUnitTests
     public async Task TryAsyncTyped_TaskOfValueFaultsWithOtherException_Propagates()
     {
         // Act
-        var exception = await Record.ExceptionAsync(() =>
-            Result.TryAsync<int, FormatException>(() => Task.FromException<int>(new TimeoutException()), _ => MappedError));
+        var exception = await Record.ExceptionAsync(()
+            => Result.TryAsync<int, FormatException>(() => Task.FromException<int>(new TimeoutException()), _ => MappedError));
 
         // Assert
         exception.ShouldBeOfType<TimeoutException>();
@@ -370,8 +370,8 @@ public class ResultTryAsyncUnitTests
     public async Task TryAsyncTyped_ExceptionAndTaskOfValueCanceled_Rethrows()
     {
         // Act
-        var exception = await Record.ExceptionAsync(() =>
-            Result.TryAsync<int, Exception>(() => Task.FromCanceled<int>(new CancellationToken(true)), _ => MappedError));
+        var exception = await Record.ExceptionAsync(()
+            => Result.TryAsync<int, Exception>(() => Task.FromCanceled<int>(new CancellationToken(true)), _ => MappedError));
 
         // Assert
         exception.ShouldBeAssignableTo<OperationCanceledException>();
@@ -415,8 +415,8 @@ public class ResultTryAsyncUnitTests
     public async Task TryAsync_ValueTaskCanceled_Rethrows()
     {
         // Act
-        var exception = await Record.ExceptionAsync(() =>
-            Result.TryAsync(() => ValueTask.FromCanceled(new CancellationToken(true)), Map).AsTask());
+        var exception = await Record.ExceptionAsync(()
+            => Result.TryAsync(() => ValueTask.FromCanceled(new CancellationToken(true)), Map).AsTask());
 
         // Assert
         exception.ShouldBeAssignableTo<OperationCanceledException>();
@@ -460,8 +460,8 @@ public class ResultTryAsyncUnitTests
     public async Task TryAsyncTyped_ValueTaskFaultsWithOtherException_Propagates()
     {
         // Act
-        var exception = await Record.ExceptionAsync(() =>
-            Result.TryAsync<FormatException>(() => ValueTask.FromException(new TimeoutException()), _ => MappedError).AsTask());
+        var exception = await Record.ExceptionAsync(()
+            => Result.TryAsync<FormatException>(() => ValueTask.FromException(new TimeoutException()), _ => MappedError).AsTask());
 
         // Assert
         exception.ShouldBeOfType<TimeoutException>();
@@ -495,8 +495,8 @@ public class ResultTryAsyncUnitTests
     public async Task TryAsync_ValueTaskOfValueCanceled_Rethrows()
     {
         // Act
-        var exception = await Record.ExceptionAsync(() =>
-            Result.TryAsync(() => ValueTask.FromCanceled<int>(new CancellationToken(true)), Map).AsTask());
+        var exception = await Record.ExceptionAsync(()
+            => Result.TryAsync(() => ValueTask.FromCanceled<int>(new CancellationToken(true)), Map).AsTask());
 
         // Assert
         exception.ShouldBeAssignableTo<OperationCanceledException>();
@@ -530,8 +530,8 @@ public class ResultTryAsyncUnitTests
     public async Task TryAsyncTyped_ValueTaskOfValueFaultsWithOtherException_Propagates()
     {
         // Act
-        var exception = await Record.ExceptionAsync(() =>
-            Result.TryAsync<int, FormatException>(() => ValueTask.FromException<int>(new TimeoutException()), _ => MappedError).AsTask());
+        var exception = await Record.ExceptionAsync(()
+            => Result.TryAsync<int, FormatException>(() => ValueTask.FromException<int>(new TimeoutException()), _ => MappedError).AsTask());
 
         // Assert
         exception.ShouldBeOfType<TimeoutException>();
