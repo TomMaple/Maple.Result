@@ -118,6 +118,7 @@ internal static class AnalyzerRunner
             : References.RemoveAt(References.Length - 1);
 
         var options = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, nullableContextOptions: NullableContextOptions.Enable)
+            .WithAllowUnsafe(true)
             .WithSpecificDiagnosticOptions(suppressedIds.ToDictionary(id => id, _ => ReportDiagnostic.Suppress));
 
         var compilation = CSharpCompilation.Create("Snippet", [tree], references, options);

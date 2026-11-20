@@ -71,8 +71,21 @@ public class DiscardResultCodeFixProviderUnitTests
     }
 
     [Theory]
+    [InlineData(
+        "{|MR0006:Task.FromResult(Result.Success())|};",
+        "_ = await Task.FromResult(Result.Success());")]
+    public async Task RegisterCodeFixes_TaskThatIsNotAwaitedInTopLevelStatements_AwaitsItAndDiscardsTheResult(string statements, string fixedStatements)
+    {
+        // Act & Assert
+        await CodeFixVerifier<DiscardedResultAnalyzer, DiscardResultCodeFixProvider>.VerifyProgramAsync(statements, fixedStatements);
+    }
+
+    [Theory]
     [InlineData("{|MR0006:GetResultAsync()|};")]
     [InlineData("await Task.Yield(); Action a = () => {|MR0006:GetResultAsync()|};")]
+    [InlineData("await Task.Yield(); lock (ok) { {|MR0006:GetResultAsync()|}; }")]
+    [InlineData("await Task.Yield(); unsafe { {|MR0006:GetResultAsync()|}; }")]
+    [InlineData("await Task.Yield(); {|MR0006:ok?.ThenAsync(x => GetIntAsync())|};")]
     public async Task RegisterCodeFixes_TaskThatCannotBeAwaited_OffersNoFix(string statements)
     {
         // Act & Assert
@@ -107,7 +120,8 @@ public class DiscardResultCodeFixProviderUnitTests
         // Assert: the tree that the fix produced is compiled as it is, not parsed again from its text, as a chained fix would see it.
         var platform = (string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!;
         var references = platform.Split(Path.PathSeparator).Select(path => MetadataReference.CreateFromFile(path));
-        var compilation = CSharpCompilation.Create("Test", [fixedRoot.SyntaxTree], references, new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+        var options = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
+        var compilation = CSharpCompilation.Create("Test", [fixedRoot.SyntaxTree], references, options);
         var assignment = fixedRoot.DescendantNodes().OfType<AssignmentExpressionSyntax>().Single();
         var operation = compilation.GetSemanticModel(fixedRoot.SyntaxTree).GetOperation(assignment, TestContext.Current.CancellationToken);
         operation.ShouldBeAssignableTo<ISimpleAssignmentOperation>()!.Target.ShouldBeAssignableTo<IDiscardOperation>();
