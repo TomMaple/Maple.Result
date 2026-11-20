@@ -9,6 +9,17 @@
  */
 
 using Maple.Results.Analyzers.CodeFixes.Tests.Unit.TestingInfrastructure.Helpers;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeActions;
+using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Operations;
+using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Maple.Results.Analyzers.CodeFixes.Tests.Unit;
@@ -66,5 +77,40 @@ public class DiscardResultCodeFixProviderUnitTests
     {
         // Act & Assert
         await CodeFixVerifier<DiscardedResultAnalyzer, DiscardResultCodeFixProvider>.VerifyAsync(statements, statements);
+    }
+
+    [Fact]
+    public async Task RegisterCodeFixes_ResultThatIsNotUsed_WritesADiscardThatBindsWithoutReparsing()
+    {
+        // Arrange
+        const string Source = "class C { void M() { Save(); } object Save() => new(); }";
+
+        using var workspace = new AdhocWorkspace();
+        var document = workspace.AddProject("Test", LanguageNames.CSharp).AddDocument("Test.cs", Source);
+        var call = (await document.GetSyntaxRootAsync(TestContext.Current.CancellationToken))!
+            .DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .First();
+
+        var descriptor = new DiagnosticDescriptor(Rules.DiscardedResultId, "title", "message", "Usage", DiagnosticSeverity.Warning, true);
+        var properties = ImmutableDictionary<string, string?>.Empty.Add(Rules.DiscardFixProperty, Rules.DiscardFix);
+        var diagnostic = Diagnostic.Create(descriptor, call.GetLocation(), properties);
+        var actions = new List<CodeAction>();
+        var context = new CodeFixContext(document, diagnostic, (action, _) => actions.Add(action), TestContext.Current.CancellationToken);
+
+        // Act
+        await new DiscardResultCodeFixProvider().RegisterCodeFixesAsync(context);
+        var operations = await actions.ShouldHaveSingleItem().GetOperationsAsync(TestContext.Current.CancellationToken);
+        var fixedDocument = operations.OfType<ApplyChangesOperation>().Single().ChangedSolution.GetDocument(document.Id)!;
+        var fixedRoot = (await fixedDocument.GetSyntaxRootAsync(TestContext.Current.CancellationToken))!;
+
+        // Assert: the tree that the fix produced is compiled as it is, not parsed again from its text, as a chained fix would see it.
+        var platform = (string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!;
+        var references = platform.Split(Path.PathSeparator).Select(path => MetadataReference.CreateFromFile(path));
+        var compilation = CSharpCompilation.Create("Test", [fixedRoot.SyntaxTree], references, new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+        var assignment = fixedRoot.DescendantNodes().OfType<AssignmentExpressionSyntax>().Single();
+        var operation = compilation.GetSemanticModel(fixedRoot.SyntaxTree).GetOperation(assignment, TestContext.Current.CancellationToken);
+        operation.ShouldBeAssignableTo<ISimpleAssignmentOperation>()!.Target.ShouldBeAssignableTo<IDiscardOperation>();
+        compilation.GetDiagnostics(TestContext.Current.CancellationToken).Where(d => d.Severity == DiagnosticSeverity.Error).ShouldBeEmpty();
     }
 }

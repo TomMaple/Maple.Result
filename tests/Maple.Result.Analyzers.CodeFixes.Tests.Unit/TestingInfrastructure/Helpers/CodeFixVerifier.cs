@@ -10,6 +10,7 @@
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Testing;
@@ -99,6 +100,14 @@ internal static class CodeFixVerifier<TAnalyzer, TCodeFix>
 
         test.TestState.AdditionalReferences.AddRange(References);
         test.FixedState.AdditionalReferences.AddRange(References);
+
+        // Unsafe code is allowed, so that a test can show what the fix does in an unsafe member.
+        test.SolutionTransforms.Add((solution, projectId) =>
+        {
+            var options = (CSharpCompilationOptions)solution.GetProject(projectId)!.CompilationOptions!;
+
+            return solution.WithProjectCompilationOptions(projectId, options.WithAllowUnsafe(true));
+        });
 
         return test.RunAsync(TestContext.Current.CancellationToken);
     }
