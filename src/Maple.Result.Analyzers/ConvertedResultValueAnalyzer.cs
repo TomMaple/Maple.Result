@@ -55,6 +55,14 @@ public sealed class ConvertedResultValueAnalyzer : ResultAnalyzer
         if (operandType is null || (!types.IsTask(operandType) && !types.IsResultOrError(operandType)))
             return;
 
+        // A type argument written as the type of the operand keeps it on purpose (Result<Task<int>> r = GetAsync();), as written type
+        // arguments do for MR0001.
+        if (conversion.Type is INamedTypeSymbol { TypeArguments.Length: 1 } resultType
+            && SymbolEqualityComparer.Default.Equals(resultType.TypeArguments[0], operandType))
+        {
+            return;
+        }
+
         var location = conversion.Operand.Syntax.GetLocation();
         var operandName = KnownTypes.Display(operandType);
         var resultName = KnownTypes.Display(conversion.Type);

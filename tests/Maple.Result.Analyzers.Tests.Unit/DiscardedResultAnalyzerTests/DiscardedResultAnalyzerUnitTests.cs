@@ -44,6 +44,10 @@ public class DiscardedResultAnalyzerUnitTests
     [InlineData("ok.Else(e => 0);", "ok.Else(e => 0)")]
     [InlineData("await okTask.ThenAsync(x => x + 1);", "await okTask.ThenAsync(x => x + 1)")]
     [InlineData("new List<int> { 1 }.ForEach(x => Load());", "Load()")]
+    [InlineData("ok.IfSuccess(x => { Load(); });", "Load()")]
+    [InlineData("var r = ok.Then(x => { Load(); return x; });", "Load()")]
+    [InlineData("ok.IfError(e => { Save(); });", "Save()")]
+    [InlineData("await okTask.IfSuccessAsync(async x => { await SaveResultAsync(); });", "await SaveResultAsync()")]
     public void Analyze_ResultThatIsNotUsed_ReportsTheStatement(string statements, string markedText)
     {
         // Act
@@ -75,6 +79,8 @@ public class DiscardedResultAnalyzerUnitTests
     [InlineData("ok.Match(x => Load(), e => e);")]
     [InlineData("ok.Switch(x => Console.WriteLine(x), e => Log(e));")]
     [InlineData("_ = ok.IfSuccess(x => Load());")]
+    [InlineData("ok.IfSuccess(x => Save());")]
+    [InlineData("ok.IfSuccess(x => { _ = Save(); });")]
     public void Analyze_ResultThatIsUsedDiscardedOrHandled_ReportsNothing(string statements)
     {
         // Act

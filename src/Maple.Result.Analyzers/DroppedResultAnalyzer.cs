@@ -51,6 +51,10 @@ public sealed class DroppedResultAnalyzer : ResultAnalyzer
             if (!DelegateArgument.TryCreate(argument, context.CancellationToken, out var function) || function.IsAssignment)
                 continue;
 
+            // A task that a delegate without a value discards is MR0002, which also names the method that keeps what the task returns.
+            if (function.Invoke.ReturnsVoid && (function.IsAsyncLambda || types.IsTask(function.ReturnedType)))
+                continue;
+
             // What the delegate drops: the returned value of an action, or the value in the task of an asynchronous action. IfSuccessAsync
             // and IfErrorAsync also take a function that returns a ValueTask with a value, and ignore that value whatever the form of the
             // function (#289); the type argument of the overload names it.

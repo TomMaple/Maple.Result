@@ -32,6 +32,7 @@ public class ConvertedResultValueAnalyzerUnitTests
     [InlineData("Result<object> r = GetResultOfInt();", "GetResultOfInt()",
         "A Result<int> is converted to a successful Result<object> that holds it as its value")]
     [InlineData("Result<object> r = GetResult();", "GetResult()", "A Result is converted to a successful Result<object> that holds it as its value")]
+    [InlineData("Result<Task> r = GetIntAsync();", "GetIntAsync()", "A Task<int> is converted to a successful Result<Task> that holds it as its value")]
     [InlineData("var r = obj.Else(e => GetResultOfInt());", "GetResultOfInt()",
         "A Result<int> is converted to a successful Result<object> that holds it as its value")]
     [InlineData("var r = obj.Else(e => LogAsync(e));", "LogAsync(e)", "A Task is converted to a successful Result<object> that holds it as its value")]
@@ -72,6 +73,22 @@ public class ConvertedResultValueAnalyzerUnitTests
     [InlineData("var r = obj.Else(e => 0);")]
     [InlineData("var r = obj.Else(e => err);")]
     public void Analyze_ValueOrErrorConverted_ReportsNothing(string statements)
+    {
+        // Act
+        var result = AnalyzerRunner.Run<ConvertedResultValueAnalyzer>(statements, Members);
+
+        // Assert
+        result.CompilerErrorIds.ShouldBeEmpty(result.CompilerErrors);
+        result.DiagnosticIds.ShouldBeEmpty();
+    }
+
+    [Theory]
+    [InlineData("Result<Task<int>> r = GetIntAsync();")]
+    [InlineData("Result<Task> r = SaveAsync();")]
+    [InlineData("Result<ValueTask<int>> r = GetIntValueTask();")]
+    [InlineData("Result<Result<int>> r = GetResultOfInt();")]
+    [InlineData("var r = (Result<Task<int>>)GetIntAsync();")]
+    public void Analyze_TypeArgumentWrittenAsTheTypeOfTheOperand_ReportsNothing(string statements)
     {
         // Act
         var result = AnalyzerRunner.Run<ConvertedResultValueAnalyzer>(statements, Members);

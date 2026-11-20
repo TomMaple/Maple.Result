@@ -76,6 +76,19 @@ public abstract class ResultAnalyzer : DiagnosticAnalyzer
         => CalledName(invocation) is GenericNameSyntax;
 
     /// <summary>
+    ///     Whether the value of the <paramref name="call" /> is used: a call that is a statement of its own (also awaited) does not use it.
+    /// </summary>
+    private protected static bool IsResultUsed(SyntaxNode call)
+    {
+        var node = call;
+
+        while (node.Parent is ParenthesizedExpressionSyntax or AwaitExpressionSyntax)
+            node = node.Parent;
+
+        return node.Parent is not ExpressionStatementSyntax;
+    }
+
+    /// <summary>
     ///     Returns the argument of the first parameter of the called method: the receiver of an extension method, in both forms of the call
     ///     (<c>result.Then(…)</c> and <c>ThenExtensions.Then(result, …)</c>). The arguments are in the order they are evaluated, so a named
     ///     argument can put it anywhere.

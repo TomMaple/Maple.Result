@@ -34,11 +34,7 @@ public class IgnoredValueAnalyzerThrowingLambdaUnitTests
         """;
 
     [Theory]
-    [InlineData("var r = ok.IfError(e => GetCountAsync(e));")]
-    [InlineData("var r = ok.IfError(e => GetCountValueAsync(e));")]
     [InlineData("var r = ok.IfError(e => count++);")]
-    [InlineData("var r = ok.IfSuccess(x => GetIntAsync());")]
-    [InlineData("var r = ok.IfSuccess(x => GetIntValueTask());")]
     [InlineData("var r = ok.IfSuccess(x => Compute(x));")]
     public void Analyze_CallNextToThrowingLambda_ReportsTheRule(string statements)
     {
@@ -49,5 +45,21 @@ public class IgnoredValueAnalyzerThrowingLambdaUnitTests
         result.CompilerErrorIds.ShouldBeEmpty(result.CompilerErrors);
         result.DiagnosticIds.ShouldNotBeEmpty();
         result.DiagnosticIds.ShouldAllBe(id => id == Rules.IgnoredValueId);
+    }
+
+    [Theory]
+    [InlineData("var r = ok.IfError(e => GetCountAsync(e));")]
+    [InlineData("var r = ok.IfError(e => GetCountValueAsync(e));")]
+    [InlineData("var r = ok.IfSuccess(x => GetIntAsync());")]
+    [InlineData("var r = ok.IfSuccess(x => GetIntValueTask());")]
+    public void Analyze_FunctionThatReturnsATaskToAnAction_LeavesItToTheUnawaitedTaskRule(string statements)
+    {
+        // Act
+        var result = AnalyzerRunner.Run(statements, Members, AnalyzerRunner.AllAnalyzers);
+
+        // Assert
+        result.CompilerErrorIds.ShouldBeEmpty(result.CompilerErrors);
+        result.DiagnosticIds.ShouldNotBeEmpty();
+        result.DiagnosticIds.ShouldAllBe(id => id == Rules.UnawaitedTaskId);
     }
 }

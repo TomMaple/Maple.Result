@@ -67,6 +67,10 @@ public sealed class IgnoredValueAnalyzer : ResultAnalyzer
         if (valueType is null || lastDelegate is not { IsAssignment: false } function)
             return;
 
+        // A task that a delegate without a value discards is MR0002, which also names the method that keeps what the task returns.
+        if (function.Invoke.ReturnsVoid && (function.IsAsyncLambda || types.IsTask(function.ReturnedType)))
+            return;
+
         // The overloads for a ValueTask with a value name the type of that value, whatever the form of the function (#289). Otherwise
         // it is the type of the expression body, awaited when it is a task; a block body has none.
         var returned = types.AwaitedValue(function.Invoke.ReturnType)
@@ -82,19 +86,4 @@ public sealed class IgnoredValueAnalyzer : ResultAnalyzer
         var diagnostic = Diagnostic.Create(Rules.IgnoredValue, location, nameLocations, RenameTo(invocation, newName), method.Name, newName);
         context.ReportDiagnostic(diagnostic);
     }
-
-    #region helper methods
-
-    // A call that is a statement of its own (also awaited) does not use the result it returns.
-    private static bool IsResultUsed(SyntaxNode call)
-    {
-        var node = call;
-
-        while (node.Parent is ParenthesizedExpressionSyntax or AwaitExpressionSyntax)
-            node = node.Parent;
-
-        return node.Parent is not ExpressionStatementSyntax;
-    }
-
-    #endregion
 }
