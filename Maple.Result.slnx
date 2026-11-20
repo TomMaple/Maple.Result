@@ -78,6 +78,7 @@
     <File Path="docs/Reference/Error/Error_Validation.md" />
     <File Path="docs/Reference/Error/Error_WithErrorDetail.md" />
     <File Path="docs/Reference/Error/Error_WithMetadata.md" />
+    <File Path="docs/Reference/Error/Error_WithoutErrorDetails.md" />
     <File Path="docs/Reference/Error/Error_WithoutMetadata.md" />
   </Folder>
   <Folder Name="/docs/Reference/ErrorBuilder/">
@@ -101,6 +102,7 @@
     <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_WithDetailTemplated.md" />
     <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_WithInstanceUri.md" />
     <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_WithMetadata.md" />
+    <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_WithoutErrorDetails.md" />
     <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_WithoutMetadata.md" />
     <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_WithTitle.md" />
     <File Path="docs/Reference/ErrorBuilder/ErrorBuilder_WithTypeUri.md" />

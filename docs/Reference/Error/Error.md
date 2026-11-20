@@ -43,7 +43,7 @@ It follows the [RFC 9457](https://datatracker.ietf.org/doc/html/rfc9457) standar
 * one of the factory methods named after the categories (e.g., [Validation](Error_Validation.md)), or
 * an [ErrorBuilder](../ErrorBuilder/ErrorBuilder.md), when the error is assembled step by step (e.g., one error detail per invalid field).
 
-Methods such as [WithErrorDetail](Error_WithErrorDetail.md), [WithMetadata](Error_WithMetadata.md) and [WithoutMetadata](Error_WithoutMetadata.md) return a changed copy. To change any other member, or several at once, use [ToBuilder()](Error_ToBuilder.md) and [ErrorBuilder.Build()](../ErrorBuilder/ErrorBuilder_Build.md).
+Methods such as [WithErrorDetail](Error_WithErrorDetail.md), [WithoutErrorDetails()](Error_WithoutErrorDetails.md), [WithMetadata](Error_WithMetadata.md) and [WithoutMetadata](Error_WithoutMetadata.md) return a changed copy. To change any other member, or several at once, use [ToBuilder()](Error_ToBuilder.md) and [ErrorBuilder.Build()](../ErrorBuilder/ErrorBuilder_Build.md).
 
 An [Error](Error.md) is not validated again after it is created: the title is never `null` or blank, and the category is always a defined [ErrorCategory](../ErrorCategory.md) value.
 
@@ -93,6 +93,7 @@ The debugger shows a short form instead: the category, the title and the number 
 | [WithMetadata(IEnumerable&lt;KeyValuePair&lt;String, Object&gt;&gt;)](Error_WithMetadata.md#withmetadataienumerablekeyvaluepairstring-object) | Returns a copy of the error with the specified metadata entries added or replaced. |
 | [WithMetadata(ReadOnlySpan&lt;(String, Object)&gt;)](Error_WithMetadata.md#withmetadatareadonlyspanstring-object) | Returns a copy of the error with the specified metadata entries, given as key-value tuples, added or replaced. |
 | [WithMetadata(String, Object)](Error_WithMetadata.md#withmetadatastring-object) | Returns a copy of the error with the specified metadata entry added or replaced. |
+| [WithoutErrorDetails()](Error_WithoutErrorDetails.md) | Returns a copy of the error without any error details. |
 | [WithoutMetadata()](Error_WithoutMetadata.md#withoutmetadata) | Returns a copy of the error without any metadata. |
 | [WithoutMetadata(String)](Error_WithoutMetadata.md#withoutmetadatastring) | Returns a copy of the error without the metadata entry of the specified key. |
 
