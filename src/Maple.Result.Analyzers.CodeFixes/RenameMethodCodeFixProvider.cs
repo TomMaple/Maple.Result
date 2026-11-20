@@ -70,6 +70,7 @@ public sealed class RenameMethodCodeFixProvider : CodeFixProvider
             var nameLocation = diagnostic.AdditionalLocations.Count > 0
                 ? diagnostic.AdditionalLocations[0]
                 : diagnostic.Location;
+
             var name = root!.FindNode(nameLocation.SourceSpan, getInnermostNodeForTie: true) as SimpleNameSyntax;
 
             if (name is null)
@@ -81,9 +82,11 @@ public sealed class RenameMethodCodeFixProvider : CodeFixProvider
             var awaitedCall = becomesAsynchronous
                 ? AwaitedCall.TryCreate(name, model!, context.CancellationToken)
                 : null;
+
             var title = awaitedCall is null
                 ? "Use " + newName
                 : "Use " + newName + " and await it";
+
             var action = CodeAction.Create(
                 title,
                 cancellationToken => awaitedCall is null
