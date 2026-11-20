@@ -29,7 +29,7 @@ public class ErrorBuilderUnitTests
 
         // Assert
         result.Category.ShouldBe(ErrorCategory.Conflict);
-        result.TypeUri.ShouldBe("tag:test.com,2024:Test");
+        result.TypeUri.ShouldBe(ErrorUri.Tag("tag:test.com,2024:Test"));
         result.Title.ShouldBe("Test title");
         result.Detail.ShouldBeNull();
         result.DetailTemplated.ShouldBeNull();
@@ -45,7 +45,22 @@ public class ErrorBuilderUnitTests
         var result = new Sut(ErrorCategory.Failure, default, "Test title").Build();
 
         // Assert
-        result.TypeUri.ShouldBe("about:blank");
+        result.TypeUri.ShouldBe(ErrorUri.None);
+    }
+
+    [Theory]
+    [MemberData(nameof(ErrorTests.ErrorUnitTests.TypeAndInstanceUris), MemberType = typeof(ErrorTests.ErrorUnitTests))]
+    public void Build_TypeAndInstanceUri_KeepsTheErrorUris(ErrorUri typeUri, ErrorUri? instanceUri)
+    {
+        // Arrange
+        var sut = new Sut(ErrorCategory.Conflict, typeUri, "Test title").WithInstanceUri(instanceUri);
+
+        // Act
+        var result = sut.Build();
+
+        // Assert
+        result.TypeUri.ShouldBe(typeUri);
+        result.InstanceUri.ShouldBe(instanceUri);
     }
 
     [Fact]
@@ -115,7 +130,7 @@ public class ErrorBuilderUnitTests
 
         // Assert
         result.Category.ShouldBe(expectedCategory);
-        result.TypeUri.ShouldBe("tag:test.com,2024:Test");
+        result.TypeUri.ShouldBe(ErrorUri.Tag("tag:test.com,2024:Test"));
         result.Title.ShouldBe("Test title");
     }
 
@@ -154,11 +169,11 @@ public class ErrorBuilderUnitTests
 
         // Assert
         result.Category.ShouldBe(ErrorCategory.NotFound);
-        result.TypeUri.ShouldBe("tag:test.com,2024:Test");
+        result.TypeUri.ShouldBe(ErrorUri.Tag("tag:test.com,2024:Test"));
         result.Title.ShouldBe("Test title");
         result.Detail.ShouldBe("Test description.");
         result.DetailTemplated.ShouldBe(detailTemplated);
-        result.InstanceUri.ShouldBe("http://test.com/instance/1013");
+        result.InstanceUri.ShouldBe(ErrorUri.Locator("http://test.com/instance/1013"));
     }
 
     [Fact]
@@ -221,7 +236,7 @@ public class ErrorBuilderUnitTests
         var argumentException = exception as ArgumentException;
         argumentException.ShouldNotBeNull();
         argumentException.ParamName.ShouldBe("instanceUri");
-        sut.Build().InstanceUri.ShouldBe("/account/12345/msgs/abc");
+        sut.Build().InstanceUri.ShouldBe(ErrorUri.Relative("/account/12345/msgs/abc"));
     }
 
     [Fact]
@@ -250,7 +265,7 @@ public class ErrorBuilderUnitTests
             .Build();
 
         // Assert
-        result.InstanceUri.ShouldBe("urn:uuid:6e8bc430-9c3a-11d9-9669-0800200c9a66");
+        result.InstanceUri.ShouldBe(ErrorUri.Urn("urn:uuid:6e8bc430-9c3a-11d9-9669-0800200c9a66"));
     }
 
     [Fact]

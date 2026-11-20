@@ -161,6 +161,47 @@ public class ErrorEqualityUnitTests
         (first == second).ShouldBeFalse();
     }
 
+    [Fact]
+    public void Equals_UrisFromFactoryAndFromParse_AreEqual()
+    {
+        // Arrange
+        var fromFactory = Sut.Validation(ErrorUri.Tag("tag:test.com,2024:test"), "Title",
+            instanceUri: ErrorUri.Relative("/account/12345/msgs/abc"));
+        var fromParse = Sut.Validation(ErrorUri.Parse("tag:test.com,2024:test"), "Title",
+            instanceUri: ErrorUri.Parse("/account/12345/msgs/abc"));
+
+        // Act & Assert
+        fromFactory.Equals(fromParse).ShouldBeTrue();
+        fromFactory.GetHashCode().ShouldBe(fromParse.GetHashCode());
+    }
+
+    [Fact]
+    public void Equals_ErrorsWithDifferentTypeUri_AreNotEqual()
+    {
+        // Arrange
+        var first = Sut.Validation(ErrorUri.Tag("tag:test.com,2024:test"), "Title");
+        var second = Sut.Validation(ErrorUri.Tag("tag:test.com,2024:other"), "Title");
+
+        // Act & Assert
+        first.Equals(second).ShouldBeFalse();
+        (first == second).ShouldBeFalse();
+    }
+
+    [Theory]
+    [InlineData("/account/12345/msgs/other")]
+    [InlineData(null)]
+    public void Equals_ErrorsWithDifferentInstanceUri_AreNotEqual(string? otherInstanceUri)
+    {
+        // Arrange
+        var first = Sut.Validation(ErrorUri.None, "Title", instanceUri: ErrorUri.Relative("/account/12345/msgs/abc"));
+        var second = Sut.Validation(ErrorUri.None, "Title",
+            instanceUri: otherInstanceUri is null ? null : ErrorUri.Relative(otherInstanceUri));
+
+        // Act & Assert
+        first.Equals(second).ShouldBeFalse();
+        (first == second).ShouldBeFalse();
+    }
+
     #endregion
 
     #region metadata equality

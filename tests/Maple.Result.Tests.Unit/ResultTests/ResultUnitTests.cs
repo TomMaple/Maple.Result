@@ -83,9 +83,9 @@ public class ResultUnitTests
         result.Error.ErrorDetails[0].DetailTemplated!.Params![ExpectedErrorDetail1DetailParam1Key].ShouldBe(ExpectedErrorDetail1DetailParam1Value);
         result.Error.ErrorDetails[0].DetailTemplated!.Params!.Keys.ShouldContain(ExpectedErrorDetail1DetailParam2Key);
         result.Error.ErrorDetails[0].DetailTemplated!.Params![ExpectedErrorDetail1DetailParam2Key].ShouldBe(ExpectedErrorDetail1DetailParam2Value);
-        result.Error.InstanceUri.ShouldBe(ExpectedInstance);
+        result.Error.InstanceUri.ShouldBe(ErrorUri.Parse(ExpectedInstance));
         result.Error.Title.ShouldBe(ExpectedTitle);
-        result.Error.TypeUri.ShouldBe(ExpectedTypeUri);
+        result.Error.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
     }
 
     #endregion
@@ -220,9 +220,9 @@ public class ResultUnitTests
         result.Error.ErrorDetails[0].DetailTemplated!.Params![ExpectedErrorDetail1DetailParam1Key].ShouldBe(ExpectedErrorDetail1DetailParam1Value);
         result.Error.ErrorDetails[0].DetailTemplated!.Params!.Keys.ShouldContain(ExpectedErrorDetail1DetailParam2Key);
         result.Error.ErrorDetails[0].DetailTemplated!.Params![ExpectedErrorDetail1DetailParam2Key].ShouldBe(ExpectedErrorDetail1DetailParam2Value);
-        result.Error.InstanceUri.ShouldBe(ExpectedInstance);
+        result.Error.InstanceUri.ShouldBe(ErrorUri.Parse(ExpectedInstance));
         result.Error.Title.ShouldBe(ExpectedTitle);
-        result.Error.TypeUri.ShouldBe(ExpectedTypeUri);
+        result.Error.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
     }
 
     #endregion
@@ -260,7 +260,7 @@ public class ResultUnitTests
     public void Serialize_AllPropertiesAndMicrosoftSerializer_ReturnsSerializedValueWithAllProperties()
     {
         // Arrange
-        const string ExpectedText = """{"Error":{"Category":3,"TypeUri":"tag:test.com,2024:Test","Title":"Test title","Detail":"Test description.","DetailTemplated":{"TemplateId":"messageId","Params":{"key1":"value1","key2":"value2"}},"InstanceUri":"http://test.com/instance/1013","ErrorDetails":[{"PropertyPointer":"#/property1","Detail":"Property 1 test detail","DetailTemplated":{"TemplateId":"message-property-id","Params":{"pk1":"pv1","pk2":"pv2"}}}],"Metadata":{}},"IsSuccess":false,"IsError":true}""";
+        const string ExpectedText = """{"Error":{"Category":3,"TypeUri":{"Value":"tag:test.com,2024:Test"},"Title":"Test title","Detail":"Test description.","DetailTemplated":{"TemplateId":"messageId","Params":{"key1":"value1","key2":"value2"}},"InstanceUri":{"Value":"http://test.com/instance/1013"},"ErrorDetails":[{"PropertyPointer":"#/property1","Detail":"Property 1 test detail","DetailTemplated":{"TemplateId":"message-property-id","Params":{"pk1":"pv1","pk2":"pv2"}}}],"Metadata":{}},"IsSuccess":false,"IsError":true}""";
 
         var error = Error.NotFound(
             ErrorUri.Tag("tag:test.com,2024:Test"),
@@ -285,7 +285,7 @@ public class ResultUnitTests
     public void Serialize_AllPropertiesAndNewtonsoftSerializer_ReturnsSerializedValueWithAllProperties()
     {
         // Arrange
-        const string ExpectedText = """{"Error":{"Category":3,"TypeUri":"tag:test.com,2024:Test","Title":"Test title","Detail":"Test description.","DetailTemplated":{"TemplateId":"messageId","Params":{"key1":"value1","key2":"value2"}},"InstanceUri":"http://test.com/instance/1013","ErrorDetails":[{"PropertyPointer":"#/property1","Detail":"Property 1 test detail","DetailTemplated":{"TemplateId":"message-property-id","Params":{"pk1":"pv1","pk2":"pv2"}}}],"Metadata":{}},"IsSuccess":false,"IsError":true}""";
+        const string ExpectedText = """{"Error":{"Category":3,"TypeUri":{"Value":"tag:test.com,2024:Test"},"Title":"Test title","Detail":"Test description.","DetailTemplated":{"TemplateId":"messageId","Params":{"key1":"value1","key2":"value2"}},"InstanceUri":{"Value":"http://test.com/instance/1013"},"ErrorDetails":[{"PropertyPointer":"#/property1","Detail":"Property 1 test detail","DetailTemplated":{"TemplateId":"message-property-id","Params":{"pk1":"pv1","pk2":"pv2"}}}],"Metadata":{}},"IsSuccess":false,"IsError":true}""";
 
         var error = Error.NotFound(
             ErrorUri.Tag("tag:test.com,2024:Test"),
@@ -732,9 +732,9 @@ public class ResultUnitTests
         result.Error.ErrorDetails[0].DetailTemplated!.Params![ExpectedErrorDetail1DetailParam1Key].ShouldBe(ExpectedErrorDetail1DetailParam1Value);
         result.Error.ErrorDetails[0].DetailTemplated!.Params!.Keys.ShouldContain(ExpectedErrorDetail1DetailParam2Key);
         result.Error.ErrorDetails[0].DetailTemplated!.Params![ExpectedErrorDetail1DetailParam2Key].ShouldBe(ExpectedErrorDetail1DetailParam2Value);
-        result.Error.InstanceUri.ShouldBe(ExpectedInstance);
+        result.Error.InstanceUri.ShouldBe(ErrorUri.Parse(ExpectedInstance));
         result.Error.Title.ShouldBe(ExpectedTitle);
-        result.Error.TypeUri.ShouldBe(ExpectedTypeUri);
+        result.Error.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
     }
 
     #endregion
@@ -869,9 +869,9 @@ public class ResultUnitTests
         result.Error.ErrorDetails[0].DetailTemplated!.Params![ExpectedErrorDetail1DetailParam1Key].ShouldBe(ExpectedErrorDetail1DetailParam1Value);
         result.Error.ErrorDetails[0].DetailTemplated!.Params!.Keys.ShouldContain(ExpectedErrorDetail1DetailParam2Key);
         result.Error.ErrorDetails[0].DetailTemplated!.Params![ExpectedErrorDetail1DetailParam2Key].ShouldBe(ExpectedErrorDetail1DetailParam2Value);
-        result.Error.InstanceUri.ShouldBe(ExpectedInstance);
+        result.Error.InstanceUri.ShouldBe(ErrorUri.Parse(ExpectedInstance));
         result.Error.Title.ShouldBe(ExpectedTitle);
-        result.Error.TypeUri.ShouldBe(ExpectedTypeUri);
+        result.Error.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
     }
 
     #endregion
