@@ -36,7 +36,7 @@ var error = Error.Validation(
         "Invalid data to create a user.",
         "The user cannot be created because of missing or invalid data. Address the validation errors and try again.",
         ErrorUri.Locator("https://exampleapp.com/errors/7894375839"),
-        "errors.signup.validation")
+        new TemplatedMessage("errors.signup.validation"))
     .WithErrorDetail("/email", "Email is required.", "errors.signup.validation.email.required")
     .WithErrorDetail("/firstName", "At least 3 characters are required.", "errors.signup.validation.firstName.minLength", ("minLength", 3));
 ```
@@ -212,14 +212,15 @@ var error = Error.PermissionDenied(
     ErrorUri.Tag("tag:exampleapp.com,2026:errors:contact:delete:authorization:missing"),
     "User is not authorized to delete a contact.",
     "The ‘contact_delete’ permission is required to delete a contact.",
-    detailTemplateId: "errors.contact.delete.unauthorized",
-    detailNamedValues: [("requiredPermission", "contact_delete")]);
+    detailTemplated: new TemplatedMessage("errors.contact.delete.unauthorized", ("requiredPermission", "contact_delete")));
 ```
 
 It uses:
 * a template with ID: `errors.contact.delete.unauthorized`
 * and named values:
   * `requiredPermission`: `contact_delete`
+
+The factory methods take the template as one [TemplatedMessage](../Reference/TemplatedMessage/TemplatedMessage.md) (`detailTemplated`), so a template ID cannot be passed where the detail goes. The named values can be given inline, as an array or as a dictionary, and the constructor validates them. An error detail takes the template ID and the named values directly: `WithErrorDetail("/email", "Email is required.", "errors.signup.validation.email.required")`.
 
 |   | en\_ca | fr\_ca | es | zh\_cn |
 | - | ------ | ------ | -- | ------ |

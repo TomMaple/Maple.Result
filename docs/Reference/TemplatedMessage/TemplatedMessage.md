@@ -20,8 +20,7 @@ var error = Error.NotFound(
                 "Cannot update the account.",
                 "The account with the provided ID has not been found.",
                 ErrorUri.Locator("https://api.exampleapp.com/errors/8783927589734857/details"),
-                "errors.account.notFound",
-                ("accountId", "D12345"), ("action", "account:update"));
+                new TemplatedMessage("errors.account.notFound", ("accountId", "D12345"), ("action", "account:update")));
 ```
 
 
@@ -35,7 +34,7 @@ It is not a positional record and has no `Deconstruct` method; use a property pa
 `ToString()` writes the contents of [Params](TemplatedMessage_Params.md), e.g., `TemplatedMessage { TemplateId = message-id, Params = { min = 3 } }`.
 
 > [!NOTE]
-> An instance is usually created by the factory methods of the [Error](../Error/Error.md) record (the `detailTemplateId` and `detailNamedValues` parameters, e.g., [NotFound](../Error/Error_NotFound.md)), by [Error.WithErrorDetail](../Error/Error_WithErrorDetail.md), or by the [ErrorBuilder](../ErrorBuilder/ErrorBuilder.md) methods [WithDetailTemplated](../ErrorBuilder/ErrorBuilder_WithDetailTemplated.md) and [AddErrorDetail](../ErrorBuilder/ErrorBuilder_AddErrorDetail.md).
+> An instance is created with a constructor and passed to the factory methods of the [Error](../Error/Error.md) record (the `detailTemplated` parameter, e.g., [NotFound](../Error/Error_NotFound.md)), or created from a template identifier and named values by [Error.WithErrorDetail](../Error/Error_WithErrorDetail.md) and by the [ErrorBuilder](../ErrorBuilder/ErrorBuilder.md) methods [WithDetailTemplated](../ErrorBuilder/ErrorBuilder_WithDetailTemplated.md) and [AddErrorDetail](../ErrorBuilder/ErrorBuilder_AddErrorDetail.md).
 
 
 ## Constructors

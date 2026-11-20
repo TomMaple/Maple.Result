@@ -22,8 +22,7 @@ var error = Error.NotFound(
                 "Cannot update the account.",
                 "The account with the provided ID has not been found.",
                 ErrorUri.Locator("https://api.exampleapp.com/errors/8783927589734857/details"),
-                "errors.account.notFound",
-                ("accountId", "D12345"), ("action", "account:update"));
+                new TemplatedMessage("errors.account.notFound", ("accountId", "D12345"), ("action", "account:update")));
 ```
 
 
@@ -33,7 +32,7 @@ This is an optional property.
 It is a read-only dictionary built from the parameters passed to the [constructor](TemplatedMessage_constructors.md), with keys compared ordinally (case-sensitive). A key (a parameter name) is not empty and does not start or end with white space; white space inside is allowed. Two names never differ only in case (e.g., `Min` and `min`): they would be the same placeholder for a template engine that ignores case, and the same member of `params` once a naming policy changes the case of the keys. It is `null` when the message has no parameters (`null`, an empty collection or no parameters at all were passed), so it is never empty. Later changes to the source are not reflected, and the dictionary cannot be modified, also through a cast. Values can be `null`.
 
 > [!NOTE]
-> An instance is usually created by the factory methods of the [Error](../Error/Error.md) record (the `detailTemplateId` and `detailNamedValues` parameters, e.g., [NotFound](../Error/Error_NotFound.md)), by [Error.WithErrorDetail](../Error/Error_WithErrorDetail.md), or by the [ErrorBuilder](../ErrorBuilder/ErrorBuilder.md) methods [WithDetailTemplated](../ErrorBuilder/ErrorBuilder_WithDetailTemplated.md) and [AddErrorDetail](../ErrorBuilder/ErrorBuilder_AddErrorDetail.md).
+> An instance is created with a constructor and passed to the factory methods of the [Error](../Error/Error.md) record (the `detailTemplated` parameter, e.g., [NotFound](../Error/Error_NotFound.md)), or created from a template identifier and named values by [Error.WithErrorDetail](../Error/Error_WithErrorDetail.md) and by the [ErrorBuilder](../ErrorBuilder/ErrorBuilder.md) methods [WithDetailTemplated](../ErrorBuilder/ErrorBuilder_WithDetailTemplated.md) and [AddErrorDetail](../ErrorBuilder/ErrorBuilder_AddErrorDetail.md).
 
 
 ## See Also

@@ -19,6 +19,7 @@ Version 3.0 makes `Result`, `Result<T>` and `Error` **immutable** and **always v
   * [Stricter validation](#stricter-validation)
   * [Nullable named values](#nullable-named-values)
   * [`TemplatedMessage` constructors](#templatedmessage-constructors)
+  * [The factory methods take a `TemplatedMessage`](#the-factory-methods-take-a-templatedmessage)
   * [Other behaviour changes](#other-behaviour-changes)
   * [`continueOnCapturedContext` is `bool?`](#continueoncapturedcontext-is-bool)
   * [`IResult` renamed to `IOperationResult`](#iresult-renamed-to-ioperationresult)
@@ -59,6 +60,7 @@ Version 3.0 makes `Result`, `Result<T>` and `Error` **immutable** and **always v
 17. Replace `ErrorUri.None()` with `ErrorUri.None` (see [`ErrorUri.None()` is a property](#errorurinone-is-a-property)), read the text of `error.TypeUri` and `error.InstanceUri` with `.Value`, and compare the type of an error with the `ErrorUri` that defines it (see [`Error.TypeUri` and `Error.InstanceUri` are an `ErrorUri`](#errortypeuri-and-errorinstanceuri-are-an-erroruri)).
 18. Replace your own implementations and mocks of `IResult` with `Result` and `Result<T>` (see [`IOperationResult` is closed](#ioperationresult-is-closed)).
 19. Fix every error and warning of the analyzer (MR0001 to MR0006), and do not switch the analyzers off: it reports the 2.x calls that still compile but changed their meaning (see [The analyzer reports the calls that compile but changed](#the-analyzer-reports-the-calls-that-compile-but-changed)).
+20. Pass the template ID and the named values of the `Error` factory methods as one `TemplatedMessage`: `detailTemplated: new("errors.order.notFound", ("orderId", id))` instead of `detailTemplateId: …, detailNamedValues: …` or two positional arguments (see [The factory methods take a `TemplatedMessage`](#the-factory-methods-take-a-templatedmessage)).
 
 ## Breaking changes
 ### Namespace renamed to `Maple.Results`
@@ -266,7 +268,7 @@ In return, every `Error` you receive has a non-blank title, a defined category, 
 
 ### Nullable named values
 The named values of templated messages are now `object?` instead of `object`:
-* the `detailNamedValues` parameters of the `Error` factory methods,
+* the parameters of the `TemplatedMessage` constructors, which the `Error` factory methods now take instead of their `detailNamedValues` (see [The factory methods take a `TemplatedMessage`](#the-factory-methods-take-a-templatedmessage)),
 * the `detailNamedValues` parameter of `WithErrorDetail` (formerly `namedValues` of `AddDetail`),
 * `TemplatedMessage.Params` (`IReadOnlyDictionary<string, object?>?`).
 
@@ -295,10 +297,38 @@ Changes that can break existing code:
 * **`Deconstruct` is gone.** `var (id, parameters) = message;` and positional patterns such as `message is ("errors.length", var p)` no longer compile; use a property pattern instead: `message is { TemplateId: "errors.length", Params: var p }`.
 * **Repeated or `null` parameter names, and names that differ only in case, throw** (see [Stricter validation](#stricter-validation)).
 
-The named values of the factory methods (`detailNamedValues`), `WithErrorDetail`, `ErrorBuilder.AddErrorDetail` and `ErrorBuilder.WithDetailTemplated` are now `params ReadOnlySpan<(string Key, object? Value)>` instead of `params (string Key, object? Value)[]`, so a call no longer allocates an array:
+The named values of `WithErrorDetail`, `ErrorBuilder.AddErrorDetail` and `ErrorBuilder.WithDetailTemplated` are now `params ReadOnlySpan<(string Key, object? Value)>` instead of `params (string Key, object? Value)[]`, so a call no longer allocates an array:
 * inline values, arrays and collection expressions still compile; recompile the calling code (the signatures changed);
 * an explicit `null` is now an empty list (e.g., `WithDetailTemplated("id", null)` no longer throws);
 * a call with named values cannot appear inside an expression tree (e.g., a Moq `Setup(x => …)` or an EF query); build the error outside the expression.
+
+### The factory methods take a `TemplatedMessage`
+Each `Error` factory method (e.g., `Error.NotFound`) had two overloads with a template ID and named values (`detailTemplateId`, and `detailNamedValues` as tuples or as key-value pairs). There is now one per category, which takes the templated detail as one `TemplatedMessage`:
+
+```csharp
+public static Error NotFound(ErrorUri typeUri, string title, string? detail = null,
+    ErrorUri? instanceUri = null, TemplatedMessage? detailTemplated = null)
+```
+
+Two optional strings close together let a template ID silently become the detail: `Error.NotFound(type, "Order not found", "errors.order.notFound")` compiles, and the detail is the template ID. A template ID now has to be wrapped, so it cannot be passed where the detail goes.
+
+```csharp
+// 2.x
+var error = Error.NotFound(type, "Order not found", "The order does not exist.", null,
+    "errors.order.notFound", ("orderId", id));
+var error = Error.NotFound(type, "Order not found",
+    detailTemplateId: "errors.order.notFound", detailNamedValues: new Dictionary<string, object> { ["orderId"] = id });
+
+// 3.0
+var error = Error.NotFound(type, "Order not found", "The order does not exist.", null,
+    new TemplatedMessage("errors.order.notFound", ("orderId", id)));
+var error = Error.NotFound(type, "Order not found",
+    detailTemplated: new("errors.order.notFound", new Dictionary<string, object?> { ["orderId"] = id }));
+```
+
+Calls that pass a template ID or named values to a factory method, by position or by name (`detailTemplateId:`, `detailNamedValues:`), no longer compile. An invalid template ID or named value throws from the `TemplatedMessage` constructor, before the factory method is called, and the `ParamName` of the exception is `templateId` or `parameters` instead of `detailTemplateId` or `detailNamedValues`.
+
+`WithErrorDetail`, `ErrorBuilder.AddErrorDetail` and `ErrorBuilder.WithDetailTemplated` still take a template ID and named values.
 
 ### Other behaviour changes
 * **`Result.Success()`** returns the same, shared instance on every call. It is immutable, so this is safe; only code that relied on reference inequality of two successful results is affected.
@@ -681,6 +711,8 @@ The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an
 | `ValueTask<Result<int>> r = result.ThenAsync(async x => …);` | `ValueTask<Result<int>> r = result.ThenAsync(async ValueTask<int> (int x) => …);` |
 | `ErrorCategory.Unauthorized` | `ErrorCategory.PermissionDenied` |
 | `Error.Unauthorized(…)`, `ErrorBuilder.Unauthorized(…)` | `Error.PermissionDenied(…)`, `ErrorBuilder.PermissionDenied(…)` |
+| `Error.X(…, "template.id", ("name", value))` (a template ID and named values by position) | `Error.X(…, new TemplatedMessage("template.id", ("name", value)))` |
+| `Error.X(…, detailTemplateId: "template.id", detailNamedValues: …)` | `Error.X(…, detailTemplated: new("template.id", …))` |
 | `IResult` (`Maple.Result`) | `IOperationResult` (`Maple.Results`) |
 | `result.IsSuccess()` | `result.IsSuccess` |
 | `!result.IsSuccess()` | `result.IsError` |
