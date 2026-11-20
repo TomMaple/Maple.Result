@@ -56,8 +56,8 @@ public sealed record Error
     ///     The arguments are trusted: they are validated by the <see cref="ErrorBuilder" />, which is the only caller,
     ///     and the collections are read-only instances that are never modified.
     /// </remarks>
-    internal Error(ErrorCategory category, string typeUri, string title, string? detail,
-        TemplatedMessage? detailTemplated, string? instanceUri, ReadOnlyCollection<ErrorDetail> errorDetails,
+    internal Error(ErrorCategory category, ErrorUri typeUri, string title, string? detail,
+        TemplatedMessage? detailTemplated, ErrorUri? instanceUri, ReadOnlyCollection<ErrorDetail> errorDetails,
         ImmutableStringDictionary metadata)
     {
         Category = category;
@@ -78,7 +78,7 @@ public sealed record Error
     public ErrorCategory Category { get; }
 
     /// <summary>
-    ///     The text containing a <i>URI</i> reference that identifies the problem type.
+    ///     The <i>URI</i> reference that identifies the problem type; its text is <see cref="ErrorUri.Value" />.
     /// </summary>
     /// <remarks>
     ///     <para>This is a mandatory property according to the RFC 9457 specification.</para>
@@ -107,12 +107,16 @@ public sealed record Error
     ///     Using a <i>URI</i> to have a unique ID is not recommended especially from the point of view of integration and use of tools for which
     ///     providing further information at the Developer Experience level is a fundamental objective.
     ///     <para>
+    ///         To check the type of an error, compare it with the <see cref="ErrorUri" /> that defines it
+    ///         (e.g., <c>error.TypeUri == OrderErrors.NotFoundType</c>); a pattern compares its text (e.g., <c>error.TypeUri.Value is "tag:example.com,2026:not-found"</c>).
+    ///     </para>
+    ///     <para>
     ///         The scheme is not restricted: a value read from another service can be, e.g., <c>javascript:</c> or <c>file:</c>
     ///         (<see cref="ErrorUri.Other" />). Treat it as untrusted: a consumer that shows it as a link (e.g., in HTML) or opens it has to
     ///         check the scheme first, e.g., allow only <c>http</c> and <c>https</c>.
     ///     </para>
     /// </remarks>
-    public string TypeUri { get; }
+    public ErrorUri TypeUri { get; }
 
     /// <summary>
     ///     The short, human-readable summary of the problem type (never <see langword="null" />, empty or whitespace-only).
@@ -144,7 +148,8 @@ public sealed record Error
     public TemplatedMessage? DetailTemplated { get; }
 
     /// <summary>
-    ///     The <i>URI</i> reference that identifies the specific occurrence of the problem.
+    ///     The <i>URI</i> reference that identifies the specific occurrence of the problem, or <see langword="null" /> when there is none;
+    ///     its text is <see cref="ErrorUri.Value" />.
     /// </summary>
     /// <remarks>
     ///     The value of this attribute can be:
@@ -171,7 +176,7 @@ public sealed record Error
     ///         check the scheme first, e.g., allow only <c>http</c> and <c>https</c>.
     ///     </para>
     /// </remarks>
-    public string? InstanceUri { get; }
+    public ErrorUri? InstanceUri { get; }
 
     /// <summary>
     ///     The collection of individual error occurrences found, with details and a pointer to the location of each (if applicable);
@@ -504,11 +509,11 @@ public sealed record Error
     private bool PrintMembers(StringBuilder builder)
     {
         builder.Append("Category = ").Append(Category);
-        builder.Append(", TypeUri = ").Append(TypeUri);
+        builder.Append(", TypeUri = ").Append(TypeUri.Value);
         builder.Append(", Title = ").Append(Title);
         builder.Append(", Detail = ").Append(Detail);
         builder.Append(", DetailTemplated = ").Append(DetailTemplated);
-        builder.Append(", InstanceUri = ").Append(InstanceUri);
+        builder.Append(", InstanceUri = ").Append(InstanceUri?.Value);
 
         builder.Append(", ErrorDetails = ");
         if (ErrorDetailsCollection.Count == 0)
