@@ -88,6 +88,19 @@ Release notes list only `feat`, `fix`, `perf` and breaking commits. `docs:`, `ch
 `test:`, `ci:`, `build:`, `style:` and `refactor:` commits never appear, and neither do PR merge commits unless they
 are marked breaking. Preview the notes locally with `git cliff --unreleased --strip all`.
 
+The analyzer rules:
+* **Release tracking.** `src/Maple.Result.Analyzers/AnalyzerReleases.Shipped.md` lists the rules of every published
+  version, pre-releases included, and `AnalyzerReleases.Unshipped.md` lists the rules that were added, changed or
+  removed since; the release tracking analyzer (RS2000 and the related rules) fails the build when a rule is in neither.
+  Before *Draft release* of a version that changes rules, a pull request moves the rows of `Unshipped.md` to
+  `Shipped.md` under `## Release X.Y.Z`, with the version that will be drafted (e.g., `3.0.0-rc.1`). The rules of 3.0
+  are listed under `## Release 3.0.0`; if a release candidate is published first, that pull request renames the heading
+  to its version.
+* **Help links.** In a CI or local build, the help link of a rule opens its page in `docs/Analyzers` on `main`. The
+  *Publish* workflow builds with `-p:MapleResultHelpLinkRef=vX.Y.Z` (the property becomes the constant
+  `Rules.HelpLinkRef`), so a published package opens the pages at the tag of its own release. Nothing has to change at
+  a release.
+
 ## C#
 1. Source code
 	* [Framework design guidelines](https://learn.microsoft.com/dotnet/standard/design-guidelines/) (public API) and
