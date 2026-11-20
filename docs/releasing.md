@@ -77,6 +77,8 @@ are marked breaking. Preview the notes locally with `git cliff --unreleased --st
   restore fails with `NU1102`. Until 3.0.0 is published, the project has no baseline and only the package itself is
   validated; the *Prepare* pull request of the first release after 3.0.0 sets it to `3.0.0`.
 * An intended breaking change of the next major version: generate the suppressions with
-  `dotnet pack src/Maple.Result/Maple.Result.csproj -c Release -p:GenerateCompatibilitySuppressionFile=true` and commit
-  `src/Maple.Result/CompatibilitySuppressions.xml` with the change, so that each break is listed and reviewed in its
-  pull request. The *Prepare* pull request that raises the baseline to the new major version deletes the file.
+  `dotnet pack src/Maple.Result/Maple.Result.csproj -c Release -p:Version=X.0.0 -p:GenerateCompatibilitySuppressionFile=true`
+  and commit `src/Maple.Result/CompatibilitySuppressions.xml` with the change, so that each break is listed and reviewed
+  in its pull request. Pass the version of the next major release: without it, the assembly version is `1.0.0.0`, lower
+  than the baseline, and the file gets a false `CP0003` entry (CI always passes the version). The *Prepare* pull
+  request that raises the baseline to the new major version deletes the file.
