@@ -40,11 +40,11 @@
     <File Path="docs/Analyzers/MR0006.md" />
     <File Path="docs/Analyzers/README.md" />
   </Folder>
-  <Folder Name="/docs/guide/">
-    <File Path="docs/guide/chaining.md" />
-    <File Path="docs/guide/errors.md" />
-    <File Path="docs/guide/result-pattern.md" />
-    <File Path="docs/guide/results.md" />
+  <Folder Name="/docs/guides/">
+    <File Path="docs/guides/chaining.md" />
+    <File Path="docs/guides/errors.md" />
+    <File Path="docs/guides/result-pattern.md" />
+    <File Path="docs/guides/results.md" />
   </Folder>
   <Folder Name="/docs/Reference/">
     <File Path="docs/Reference/ErrorCategory.md" />

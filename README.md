@@ -47,7 +47,7 @@ There are many implementations of the *Result* pattern in C#. This one adds a fe
 * support for localization (a message template and named values next to each message),
 * Native AOT and trimming compatibility (checked by the trim and AOT analyzers in every build), and no dependencies.
 
-See [The Result pattern](docs/guide/result-pattern.md) for its benefits, a comparison with exceptions and when to use which.
+See [The Result pattern](docs/guides/result-pattern.md) for its benefits, a comparison with exceptions and when to use which.
 
 ## Installation
 Add the `Maple.Result` package to your project using the Package Manager in your IDE or the *dotnet* tool in the console:
@@ -112,13 +112,13 @@ Result sendResult = await GetContactAsync(id)
 ```
 
 ## Features
-* **[Results](docs/guide/results.md)** — `Result` and `Result<T>`, the implicit conversions, `TryGetValue` and `TryGetError`, and nullable values.
-* **[Errors](docs/guide/errors.md)** — eleven [categories](docs/guide/errors.md#error-categories) (with their default HTTP status codes), type and instance *URI*s, [error details](docs/guide/errors.md#error-details-validation-errors) for validation errors (with JSON Pointers), [metadata](docs/guide/errors.md#metadata), the [ErrorBuilder](docs/guide/errors.md#errorbuilder) and [localization](docs/guide/errors.md#localization).
-* **[Chaining operations](docs/guide/chaining.md)** — `Then`, `Else`, `IfSuccess`, `IfError`, `Match`, `Switch`, their asynchronous versions for `Task` and `ValueTask`, and the LINQ query syntax.
-* **[Turning exceptions into results](docs/guide/chaining.md#turning-exceptions-into-results)** — `Result.Try()` and `Result.TryAsync()` with a mapper from the exception to the `Error`.
+* **[Results](docs/guides/results.md)** — `Result` and `Result<T>`, the implicit conversions, `TryGetValue` and `TryGetError`, and nullable values.
+* **[Errors](docs/guides/errors.md)** — eleven [categories](docs/guides/errors.md#error-categories) (with their default HTTP status codes), type and instance *URI*s, [error details](docs/guides/errors.md#error-details-validation-errors) for validation errors (with JSON Pointers), [metadata](docs/guides/errors.md#metadata), the [ErrorBuilder](docs/guides/errors.md#errorbuilder) and [localization](docs/guides/errors.md#localization).
+* **[Chaining operations](docs/guides/chaining.md)** — `Then`, `Else`, `IfSuccess`, `IfError`, `Match`, `Switch`, their asynchronous versions for `Task` and `ValueTask`, and the LINQ query syntax.
+* **[Turning exceptions into results](docs/guides/chaining.md#turning-exceptions-into-results)** — `Result.Try()` and `Result.TryAsync()` with a mapper from the exception to the `Error`.
 * **[Analyzer](docs/Analyzers/README.md)** — six rules in the package, with nothing to install, report the calls that compile but lose a task or a failure: e.g., a task that nobody awaits in `Then()`, or a statement that discards a `Result`. Most of them have a code fix.
 * **[Problem details format](docs/problem-details.md)** — how an `Error` is written as an RFC 9457 problem details object and read back by the [related packages](#related-packages).
-* **[UI applications](docs/guide/chaining.md#asynchronous-methods-in-ui-applications)** — `continueOnCapturedContext` and a global default for WPF, Windows Forms, .NET MAUI and Blazor Server.
+* **[UI applications](docs/guides/chaining.md#asynchronous-methods-in-ui-applications)** — `continueOnCapturedContext` and a global default for WPF, Windows Forms, .NET MAUI and Blazor Server.
 
 ## Related packages
 The core package (`Maple.Result`) has no dependencies. These packages add the mapping to and from HTTP responses, resilience and JSON serialization:
@@ -153,7 +153,7 @@ The [migration guide from 2.x to 3.0](docs/migration-v2-to-v3.md) has a checklis
 
 ## FAQ
 ### When to use a Result and when an exception?
-Use a *Result* for expected failures that you handle in the normal program flow or return in an API (e.g., validation, a missing resource, authorization), and exceptions for cases that require someone’s attention (e.g., a bug, an unavailable database, an expired API key). See [When to use a Result and when an exception?](docs/guide/result-pattern.md#when-to-use-a-result-and-when-an-exception)
+Use a *Result* for expected failures that you handle in the normal program flow or return in an API (e.g., validation, a missing resource, authorization), and exceptions for cases that require someone’s attention (e.g., a bug, an unavailable database, an expired API key). See [When to use a Result and when an exception?](docs/guides/result-pattern.md#when-to-use-a-result-and-when-an-exception)
 
 ### Why does `Unauthenticated` correspond to the `401` (Unauthorized) HTTP status code?
 By the *HTTP* reference from *Mozilla* [[link](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status)]:
@@ -174,11 +174,11 @@ This library minimizes the amount of extension methods:
 
 ## Documentation
 ### Guides
-* [Results](docs/guide/results.md) — returning and reading a `Result` and a `Result<T>`
-* [Errors](docs/guide/errors.md) — categories, properties, *URI*s, error details, metadata, `ErrorBuilder` and localization
-* [Chaining operations](docs/guide/chaining.md) — extension methods, asynchronous operations, the query syntax and `Result.Try()`
+* [Results](docs/guides/results.md) — returning and reading a `Result` and a `Result<T>`
+* [Errors](docs/guides/errors.md) — categories, properties, *URI*s, error details, metadata, `ErrorBuilder` and localization
+* [Chaining operations](docs/guides/chaining.md) — extension methods, asynchronous operations, the query syntax and `Result.Try()`
 * [Analyzer](docs/Analyzers/README.md) — the rules MR0001 to MR0006, their code fixes and their configuration
-* [The Result pattern](docs/guide/result-pattern.md) — benefits, a comparison with exceptions, and articles
+* [The Result pattern](docs/guides/result-pattern.md) — benefits, a comparison with exceptions, and articles
 * [Problem details format](docs/problem-details.md) — how an `Error` is written as an RFC 9457 problem details object and read back
 * [Migration guide from 2.x to 3.0](docs/migration-v2-to-v3.md)
 
