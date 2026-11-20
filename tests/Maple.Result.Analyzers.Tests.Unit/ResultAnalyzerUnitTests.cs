@@ -203,6 +203,10 @@ public class ResultAnalyzerUnitTests
     [Fact]
     public void SupportedDiagnostics_EveryRule_HasAHelpLinkToItsPage()
     {
+        // Arrange
+        // The documentation at the git reference of the build: main, or the tag of the release that the Publish workflow builds and tests.
+        var expectedStart = "https://github.com/TomMaple/Maple.Result/blob/" + Rules.HelpLinkRef + "/docs/Analyzers/";
+
         // Act
         var links = AnalyzerRunner.AllAnalyzers
             .SelectMany(a => a.SupportedDiagnostics)
@@ -213,12 +217,22 @@ public class ResultAnalyzerUnitTests
         // Assert
         links.ShouldBe(
         [
-            "https://github.com/TomMaple/Maple.Result/blob/main/docs/Analyzers/MR0001.md",
-            "https://github.com/TomMaple/Maple.Result/blob/main/docs/Analyzers/MR0002.md",
-            "https://github.com/TomMaple/Maple.Result/blob/main/docs/Analyzers/MR0003.md",
-            "https://github.com/TomMaple/Maple.Result/blob/main/docs/Analyzers/MR0004.md",
-            "https://github.com/TomMaple/Maple.Result/blob/main/docs/Analyzers/MR0005.md",
-            "https://github.com/TomMaple/Maple.Result/blob/main/docs/Analyzers/MR0006.md",
+            expectedStart + "MR0001.md",
+            expectedStart + "MR0002.md",
+            expectedStart + "MR0003.md",
+            expectedStart + "MR0004.md",
+            expectedStart + "MR0005.md",
+            expectedStart + "MR0006.md",
         ]);
+    }
+
+    [Fact]
+    public void HelpLinkRef_Always_IsMainOrTheTagOfARelease()
+    {
+        // Act
+        var reference = Rules.HelpLinkRef;
+
+        // Assert
+        reference.ShouldMatch(@"^(main|v\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?)$");
     }
 }
