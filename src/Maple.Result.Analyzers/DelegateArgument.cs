@@ -81,6 +81,7 @@ internal readonly struct DelegateArgument
                 var bodyType = body is null
                     ? null
                     : lambda.SemanticModel?.GetTypeInfo(body, cancellationToken).Type;
+
                 delegateArgument = new DelegateArgument(invoke, lambda.Syntax, body, bodyType, lambda.Symbol.IsAsync);
 
                 return true;

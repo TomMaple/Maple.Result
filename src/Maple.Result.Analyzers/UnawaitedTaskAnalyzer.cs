@@ -52,12 +52,15 @@ public sealed class UnawaitedTaskAnalyzer : ResultAnalyzer
             var what = function.IsAsyncLambda
                 ? "this async lambda becomes async void and"
                 : "the task that this function returns";
+
             var location = function.IsAsyncLambda
                 ? function.Syntax.GetLocation()
                 : function.ExpressionBody!.GetLocation();
+
             var newName = KnownTypes.MethodsWithAsyncForm.Contains(method.Name)
                 ? method.Name + "Async"
                 : null;
+
             var nameLocations = ImmutableArray.Create(CalledName(invocation).GetLocation());
             var advice = Advice(method);
             var diagnostic = Diagnostic.Create(Rules.UnawaitedTask, location, nameLocations, RenameTo(invocation, newName), method.Name, what, advice);

@@ -93,6 +93,7 @@ internal static class AnalyzerRunner
         var runStart = statements.Contains("await ", StringComparison.Ordinal)
             ? "\n    static async Task Run()\n    {\n"
             : "\n    static void Run()\n    {\n";
+
         var source = Usings + ClassStart + members + runStart + statements + Postlude;
 
         return RunSource(source, analyzers);
@@ -115,6 +116,7 @@ internal static class AnalyzerRunner
         var references = referenceLibrary
             ? References
             : References.RemoveAt(References.Length - 1);
+
         var options = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, nullableContextOptions: NullableContextOptions.Enable)
             .WithSpecificDiagnosticOptions(suppressedIds.ToDictionary(id => id, _ => ReportDiagnostic.Suppress));
 

@@ -164,6 +164,7 @@ internal sealed class AwaitedCall
         var name = invocation.Expression is MemberAccessExpressionSyntax access
             ? access.Name
             : (SimpleNameSyntax)invocation.Expression;
+
         var newIdentifier = SyntaxFactory.Identifier(newName).WithTriviaFrom(name.Identifier);
         var renamed = invocation.ReplaceToken(name.Identifier, newIdentifier);
         var awaited = Await(renamed);
@@ -184,6 +185,7 @@ internal sealed class AwaitedCall
                 var lambdaBody = lambda.Block is null
                     ? (CSharpSyntaxNode)AwaitReturned(lambda.ExpressionBody!, returnsValue)
                     : ReturnRewriter.Rewrite(lambda.Block, returnsValue);
+
                 var lambdaKeyword = AsyncKeyword(lambda.GetLeadingTrivia());
 
                 return lambda.WithoutLeadingTrivia().WithBody(lambdaBody).WithAsyncKeyword(lambdaKeyword).WithAdditionalAnnotations(Formatter.Annotation);
@@ -192,6 +194,7 @@ internal sealed class AwaitedCall
                 var localFunctionBody = localFunction.Body is null
                     ? null
                     : ReturnRewriter.Rewrite(localFunction.Body, returnsValue);
+
                 var localFunctionExpression = AwaitReturned(localFunction.ExpressionBody, returnsValue);
                 var localFunctionModifiers = WithAsync(localFunction.Modifiers, localFunction.ReturnType, out var localFunctionReturnType);
 
@@ -207,6 +210,7 @@ internal sealed class AwaitedCall
                 var methodBody = method.Body is null
                     ? null
                     : ReturnRewriter.Rewrite(method.Body, returnsValue);
+
                 var methodExpression = AwaitReturned(method.ExpressionBody, returnsValue);
                 var methodModifiers = WithAsync(method.Modifiers, method.ReturnType, out var methodReturnType);
 
