@@ -18,6 +18,8 @@ namespace Maple.Results.Analyzers;
 /// <summary>
 ///     MR0004: reports a function that returns a result or an <c>Error</c> (or a task of one) passed to a parameter of a library method whose
 ///     delegate returns nothing or a task without a value, e.g., <c>result.IfSuccess(x => Validate(x))</c>: a failure of the function is lost.
+///     The same for the overloads of <c>IfSuccessAsync</c> and <c>IfErrorAsync</c> whose delegate returns a <c>ValueTask</c> with a value,
+///     which they ignore.
 /// </summary>
 /// <remarks>
 ///     Not reported: an assignment (<c>e => lastError = e</c>), whose value is stored. The diagnostic names the method that keeps the
@@ -49,13 +51,21 @@ public sealed class DroppedResultAnalyzer : ResultAnalyzer
             if (!DelegateArgument.TryCreate(argument, context.CancellationToken, out var function) || function.IsAssignment)
                 continue;
 
-            // What the delegate drops: the returned value of an action, or the value in the task of an asynchronous action.
+            // What the delegate drops: the returned value of an action, or the value in the task of an asynchronous action. IfSuccessAsync
+            // and IfErrorAsync also take a function that returns a ValueTask with a value, and ignore that value whatever the form of the
+            // function (#289); the type argument of the overload names it.
             var isAsyncAction = types.IsPlainTask(function.Invoke.ReturnType);
-            var dropped = function.Invoke.ReturnsVoid || function.IsAsyncLambda
-                ? function.ReturnedType
-                : types.AwaitedValue(function.ReturnedType);
+            var ignoredTaskValue = method.Name is "IfSuccessAsync" or "IfErrorAsync"
+                ? types.AwaitedValue(function.Invoke.ReturnType)
+                : null;
 
-            if ((!function.Invoke.ReturnsVoid && !isAsyncAction) || dropped is null || !types.IsResultOrError(dropped))
+            var isSideEffect = function.Invoke.ReturnsVoid || isAsyncAction || ignoredTaskValue is not null;
+            var dropped = ignoredTaskValue
+                          ?? (function.Invoke.ReturnsVoid || function.IsAsyncLambda
+                              ? function.ReturnedType
+                              : types.AwaitedValue(function.ReturnedType));
+
+            if (!isSideEffect || dropped is null || !types.IsResultOrError(dropped))
                 continue;
 
             // Else takes a function that returns an Error or the type of the result itself; a result of another type cannot replace it.
@@ -75,7 +85,10 @@ public sealed class DroppedResultAnalyzer : ResultAnalyzer
 
             var location = function.Syntax.GetLocation();
             var nameLocations = ImmutableArray.Create(CalledName(invocation).GetLocation());
-            var droppedName = KnownTypes.Display(function.ReturnedType!);
+
+            // A function with a block body has no type of its own: an async lambda returns what is dropped, another one returns the task.
+            var returnedType = function.ReturnedType ?? (function.IsAsyncLambda ? dropped : function.Invoke.ReturnType);
+            var droppedName = KnownTypes.Display(returnedType);
             var diagnostic = Diagnostic.Create(Rules.DroppedResult, location, nameLocations, RenameTo(invocation, newName), method.Name, droppedName, advice);
             context.ReportDiagnostic(diagnostic);
         }

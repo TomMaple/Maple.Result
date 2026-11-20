@@ -65,6 +65,8 @@ var userResult = await _userService.GetUserAsync(id)
 > The asynchronous extension methods (`ThenAsync()`, `ElseAsync()`, `IfSuccessAsync()`, `IfErrorAsync()`, `MatchAsync()`, `SwitchAsync()`, `ToResultAsync()` and the LINQ `Select()` and `SelectMany()`) support both `Task` and `ValueTask`, so you can chain and `await` results regardless of which one your methods return.
 >
 > On a `Task` or a `ValueTask` of a result, the kind of the task is kept, and a function that returns the other kind of task is awaited (e.g., `await GetUserAsync(id).ThenAsync(user => _cache.GetProfileAsync(user.Id))`, where `GetUserAsync()` returns a `Task` and `GetProfileAsync()` a `ValueTask`). On a `Result` or a `Result<T>`, the function decides it: `result.ThenAsync(x => FindAsync(x))` gives a `ValueTask` when `FindAsync()` returns one, and an `async` lambda gives a `Task`. For a `ValueTask` from an `async` lambda, write its return type: `result.ThenAsync(async ValueTask<int> (int x) => …)`.
+>
+> `IfSuccessAsync()` and `IfErrorAsync()` await a function that returns a task with a value (a `Task<T>` or a `ValueTask<T>`, e.g., `result.IfSuccessAsync(user => _cache.SetAsync(user))` where `SetAsync()` returns a `ValueTask<bool>`) and ignore the value.
 
 ## Query syntax
 The query syntax chains synchronous and asynchronous operations that return a `Result<T>`:

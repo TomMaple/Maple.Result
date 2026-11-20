@@ -24,6 +24,7 @@ public class DroppedResultAnalyzerUnitTests
         static Task<Result<int>> okTask = Task.FromResult(ok);
         static Result<int> Validate(int x) => x;
         static Task<Result<int>> ValidateAsync(int x) => Task.FromResult(Result.FromValue(x));
+        static ValueTask<Result<int>> ValidateVt(int x) => new(Result.FromValue(x));
         static Result Audit(Error e) => Result.Success();
         static void Log(Error e) { }
         """;
@@ -47,6 +48,19 @@ public class DroppedResultAnalyzerUnitTests
         "IfError ignores the Error that this function returns, so a failure is lost. Use Else to continue with it.")]
     [InlineData("_ = ok.IfError(e => Audit(e));", "e => Audit(e)",
         "IfError ignores the Result that this function returns, so a failure is lost. Handle it inside the function.")]
+    // A function that returns a ValueTask with a result: the overload for a ValueTask with a value awaits it and ignores the result (#289).
+    [InlineData("_ = ok.IfSuccessAsync(x => ValidateVt(x));", "x => ValidateVt(x)",
+        "IfSuccessAsync ignores the ValueTask<Result<int>> that this function returns, so a failure is lost. Use ThenAsync to continue with it.")]
+    [InlineData("_ = okTask.IfSuccessAsync(x => ValidateVt(x));", "x => ValidateVt(x)",
+        "IfSuccessAsync ignores the ValueTask<Result<int>> that this function returns, so a failure is lost. Use ThenAsync to continue with it.")]
+    [InlineData("_ = ok.IfSuccessAsync(ValidateVt);", "ValidateVt",
+        "IfSuccessAsync ignores the ValueTask<Result<int>> that this function returns, so a failure is lost. Use ThenAsync to continue with it.")]
+    [InlineData("_ = ok.IfSuccessAsync(async x => { await Task.Yield(); return Validate(x); });", "async x => { await Task.Yield(); return Validate(x); }",
+        "IfSuccessAsync ignores the Result<int> that this function returns, so a failure is lost. Use ThenAsync to continue with it.")]
+    [InlineData("_ = ok.IfSuccessAsync(x => { return ValidateVt(x); });", "x => { return ValidateVt(x); }",
+        "IfSuccessAsync ignores the ValueTask<Result<int>> that this function returns, so a failure is lost. Use ThenAsync to continue with it.")]
+    [InlineData("_ = ok.IfErrorAsync(e => ValidateVt(0));", "e => ValidateVt(0)",
+        "IfErrorAsync ignores the ValueTask<Result<int>> that this function returns, so a failure is lost. Use ElseAsync to continue with it.")]
     [InlineData("ok.Switch(x => Validate(x), e => Log(e));", "x => Validate(x)",
         "Switch ignores the Result<int> that this function returns, so a failure is lost. Handle it inside the function.")]
     public void Analyze_FunctionReturningAResult_MarksTheFunctionAndAdvisesTheFix(string statements, string markedText, string message)
@@ -69,6 +83,8 @@ public class DroppedResultAnalyzerUnitTests
     [InlineData("_ = ok.IfError(e => Validate(0));", "IfError", "Else")]
     [InlineData("_ = ok.IfError(e => GetError());", "IfError", "Else")]
     [InlineData("_ = ok.IfErrorAsync(e => ValidateAsync(0));", "IfErrorAsync", "ElseAsync")]
+    [InlineData("_ = ok.IfSuccessAsync(x => ValidateVt(x));", "IfSuccessAsync", "ThenAsync")]
+    [InlineData("_ = ok.IfErrorAsync(e => ValidateVt(0));", "IfErrorAsync", "ElseAsync")]
     public void Analyze_ResultThatTheOtherMethodKeeps_OffersItAtTheMethodName(string statements, string methodName, string newName)
     {
         // Act
@@ -99,6 +115,8 @@ public class DroppedResultAnalyzerUnitTests
     [InlineData("_ = ok.IfSuccess(x => Compute());")]
     [InlineData("_ = ok.IfSuccessAsync(x => SaveAsync());")]
     [InlineData("_ = ok.IfSuccessAsync(x => GetIntAsync());")]
+    [InlineData("_ = ok.IfSuccessAsync(x => GetIntValueTask());")]
+    [InlineData("_ = ok.IfSuccessAsync(async x => { await Task.Yield(); return x; });")]
     [InlineData("_ = ok.Then(x => Validate(x));")]
     [InlineData("_ = ok.ThenAsync(x => ValidateAsync(x));")]
     [InlineData("new List<int> { 1 }.ForEach(x => Validate(x));")]

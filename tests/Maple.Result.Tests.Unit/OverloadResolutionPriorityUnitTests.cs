@@ -41,9 +41,9 @@ public class OverloadResolutionPriorityUnitTests
     [Theory]
     [InlineData(typeof(ElseAsyncExtensions), 26, 12)]
     [InlineData(typeof(ElseExtensions), 1, 0)]
-    [InlineData(typeof(IfErrorAsyncExtensions), 8, 3)]
+    [InlineData(typeof(IfErrorAsyncExtensions), 11, 3)]
     [InlineData(typeof(IfErrorExtensions), 1, 0)]
-    [InlineData(typeof(IfSuccessAsyncExtensions), 16, 6)]
+    [InlineData(typeof(IfSuccessAsyncExtensions), 22, 6)]
     [InlineData(typeof(IfSuccessExtensions), 2, 0)]
     [InlineData(typeof(LinqAsyncExtensions), 112, 16)]
     [InlineData(typeof(LinqExtensions), 24, 0)]
@@ -70,7 +70,7 @@ public class OverloadResolutionPriorityUnitTests
     }
 
     [Fact]
-    public void Methods_OfTheExtensionClasses_Have69PriorityAttributesOn293Methods()
+    public void Methods_OfTheExtensionClasses_Have69PriorityAttributesOn302Methods()
     {
         // Arrange
         var methods = Methods.Values.Where(m => m.DeclaringType != typeof(Result)).ToList();
@@ -79,7 +79,7 @@ public class OverloadResolutionPriorityUnitTests
         var attributes = methods.Count(m => m.IsDefined(typeof(OverloadResolutionPriorityAttribute)));
 
         // Assert
-        methods.Count.ShouldBe(293);
+        methods.Count.ShouldBe(302);
         attributes.ShouldBe(69);
     }
 

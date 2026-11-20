@@ -70,9 +70,6 @@ public class ThenElseBindingUnitTests
     }
 
     [Theory]
-    [InlineData("_ = Ok().IfSuccessAsync(x => GetIntVt());", "CS0029,CS1662")]
-    [InlineData("_ = Failed().IfErrorAsync(e => FallbackVt());", "CS0029,CS1662")]
-    [InlineData("_ = R().IfSuccessAsync(() => GetIntVt());", "CS0029,CS1662")]
     [InlineData("_ = FailedObjectVt().ElseAsync(async e => { await LogVt(e); });", "CS1643")]
     public void ValueTaskBased_DelegateOfTheWrongKind_ReportsTheCompilerErrors(string statements, string errorIds)
     {
@@ -207,6 +204,10 @@ public class ThenElseBindingUnitTests
     [InlineData("ValueTask<Result<int>> r = Failed().ElseAsync(e => FallbackVt());")]
     [InlineData("ValueTask<Result> r = R().IfSuccessAsync(() => SaveVt());")]
     [InlineData("ValueTask<Result<int>> r = R().ThenAsync(() => GetIntVt());")]
+    // A side effect whose function returns a ValueTask with a value: the task is awaited, and the value is ignored (#289).
+    [InlineData("ValueTask<Result<int>> r = Ok().IfSuccessAsync(x => GetIntVt());")]
+    [InlineData("ValueTask<Result<int>> r = Failed().IfErrorAsync(e => FallbackVt());")]
+    [InlineData("ValueTask<Result> r = R().IfSuccessAsync(() => GetIntVt());")]
     public void ValueTaskBased_SideEffectOrTransformation_CompilesToExpectedType(string statements)
     {
         // Act

@@ -575,7 +575,7 @@ public class IfErrorValueTaskAsyncExtensionsUnitTests
             .ToList();
 
         // Assert
-        priorities.Count.ShouldBe(1);
+        priorities.Count.ShouldBe(2);
         priorities.ShouldAllBe(p => p == 0);
     }
 
@@ -655,6 +655,162 @@ public class IfErrorValueTaskAsyncExtensionsUnitTests
             var sut = new ValueTask<Result<int>>(source.Task);
             _ = await sut.IfErrorAsync(e => { called = true; return Task.CompletedTask; });
         }
+    }
+
+    #endregion
+
+    #region Functions returning a ValueTask with a value
+
+    // See issue #289. A function that returns a ValueTask<TValue> is awaited, and its value is ignored.
+
+    private static readonly Error ValueFunctionError = Error.Failure(ErrorUri.None, "Value function test error");
+
+    [Fact]
+    public async Task IfErrorAsync_FailedResultOfTWithValueFunction_PassesErrorAndReturnsResult()
+    {
+        // Arrange
+        var sut = Result<int>.FromError(ValueFunctionError);
+        Error? passedError = null;
+
+        // Act
+        var result = await sut.IfErrorAsync(e => { passedError = e; return new ValueTask<string>("ignored"); });
+
+        // Assert
+        result.ShouldBeSameAs(sut);
+        passedError.ShouldBeSameAs(ValueFunctionError);
+    }
+
+    [Fact]
+    public async Task IfErrorAsync_SuccessfulResultOfTWithValueFunction_DoesNotCallFunction()
+    {
+        // Arrange
+        var sut = Result.FromValue(5);
+        var calls = 0;
+
+        // Act
+        var result = await sut.IfErrorAsync(e => new ValueTask<int>(++calls));
+
+        // Assert
+        result.ShouldBeSameAs(sut);
+        calls.ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task IfErrorAsync_FailedResultWithValueFunction_PassesErrorAndReturnsResult()
+    {
+        // Arrange
+        var sut = Result.FromError(ValueFunctionError);
+        Error? passedError = null;
+
+        // Act
+        var result = await sut.IfErrorAsync(e => { passedError = e; return new ValueTask<int>(1); });
+
+        // Assert
+        result.ShouldBeSameAs(sut);
+        passedError.ShouldBeSameAs(ValueFunctionError);
+    }
+
+    [Fact]
+    public async Task IfErrorAsync_ResultOfTWithIncompleteValueFunction_CompletesAfterTheFunction()
+    {
+        // Arrange
+        var sut = Result<int>.FromError(ValueFunctionError);
+        var gate = new TaskCompletionSource<int>();
+
+        // Act
+        var task = sut.IfErrorAsync(e => new ValueTask<int>(gate.Task)).AsTask();
+        var completedBeforeTheFunction = task.IsCompleted;
+        gate.SetResult(7);
+        var result = await task;
+
+        // Assert
+        completedBeforeTheFunction.ShouldBeFalse();
+        result.ShouldBeSameAs(sut);
+    }
+
+    [Fact]
+    public async Task IfErrorAsync_ResultOfTWithFailingValueFunction_ThrowsTheException()
+    {
+        // Arrange
+        var sut = Result<int>.FromError(ValueFunctionError);
+
+        // Act
+        var exception = await Record.ExceptionAsync(()
+            => sut.IfErrorAsync(e => ValueTask.FromException<int>(new FormatException("Value function failed"))).AsTask());
+
+        // Assert
+        exception.ShouldBeOfType<FormatException>();
+        var formatException = exception as FormatException;
+        formatException.ShouldNotBeNull();
+        formatException.Message.ShouldBe("Value function failed");
+    }
+
+    [Fact]
+    public async Task IfErrorAsync_FailedResultOfTValueTaskWithValueFunction_PassesErrorAndReturnsResult()
+    {
+        // Arrange
+        var source = Result<int>.FromError(ValueFunctionError);
+        var sut = ValueTask.FromResult(source);
+        Error? passedError = null;
+
+        // Act
+        var result = await sut.IfErrorAsync(e => { passedError = e; return new ValueTask<string>("ignored"); });
+
+        // Assert
+        result.ShouldBeSameAs(source);
+        passedError.ShouldBeSameAs(ValueFunctionError);
+    }
+
+    [Fact]
+    public async Task IfErrorAsync_SuccessfulResultOfTValueTaskWithValueFunction_DoesNotCallFunction()
+    {
+        // Arrange
+        var source = Result.FromValue(5);
+        var sut = ValueTask.FromResult(source);
+        var calls = 0;
+
+        // Act
+        var result = await sut.IfErrorAsync(e => new ValueTask<int>(++calls));
+
+        // Assert
+        result.ShouldBeSameAs(source);
+        calls.ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task IfErrorAsync_ResultOfTValueTaskWithIncompleteValueFunction_CompletesAfterTheFunction()
+    {
+        // Arrange
+        var source = Result<int>.FromError(ValueFunctionError);
+        var sut = ValueTask.FromResult(source);
+        var gate = new TaskCompletionSource<int>();
+
+        // Act
+        var task = sut.IfErrorAsync(e => new ValueTask<int>(gate.Task)).AsTask();
+        var completedBeforeTheFunction = task.IsCompleted;
+        gate.SetResult(7);
+        var result = await task;
+
+        // Assert
+        completedBeforeTheFunction.ShouldBeFalse();
+        result.ShouldBeSameAs(source);
+    }
+
+    [Fact]
+    public async Task IfErrorAsync_ResultOfTValueTaskWithFailingValueFunction_ThrowsTheException()
+    {
+        // Arrange
+        var sut = ValueTask.FromResult(Result<int>.FromError(ValueFunctionError));
+
+        // Act
+        var exception = await Record.ExceptionAsync(()
+            => sut.IfErrorAsync(e => ValueTask.FromException<int>(new FormatException("Value function failed"))).AsTask());
+
+        // Assert
+        exception.ShouldBeOfType<FormatException>();
+        var formatException = exception as FormatException;
+        formatException.ShouldNotBeNull();
+        formatException.Message.ShouldBe("Value function failed");
     }
 
     #endregion

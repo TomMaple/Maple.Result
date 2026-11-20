@@ -105,6 +105,8 @@ public class NoDiagnosticTaskResultUnitTests
     [InlineData("_ = GetUser().IfSuccessAsync(u => GetNameAsync(u));")]
     [InlineData("_ = GetUser().IfErrorAsync(e => titles.Add(e.Title));")]
     [InlineData("_ = GetUser().IfErrorAsync(e => GetNameAsync(null!));")]
+    [InlineData("_ = GetUser().IfSuccessAsync(u => GetNameOtherAsync(u));")]
+    [InlineData("_ = GetUser().IfErrorAsync(e => GetNameOtherAsync(null!));")]
     public void Analyze_CallOnTaskResultThatIsCorrect_ReportsNothing(string statements)
     {
         // Act

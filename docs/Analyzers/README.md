@@ -65,7 +65,6 @@ The analyzer reports what compiles. A delegate that fits no overload is rejected
 | A synchronous function in `ThenAsync` or `ElseAsync` on a result (not on a task of a result): `result.ThenAsync(x => x + 1)` | CS0029, CS1662 | `Then` or `Else` |
 | A synchronous action in `IfSuccessAsync` or `IfErrorAsync` on a result (not on a task of a result): `result.IfSuccessAsync(x => Show(x))` | CS0029, CS1662 | `IfSuccess` or `IfError` |
 | A function that returns a task without a value in `ThenAsync` on a result, or in `ElseAsync`: `result.ThenAsync(x => SaveAsync(x))`, `task.ElseAsync(e => LogAsync(e))` | CS0029, CS1662, and CS0266 for a `Task` | `IfSuccessAsync` or `IfErrorAsync` |
-| A function that returns a `ValueTask<TValue>` in `IfSuccessAsync` or `IfErrorAsync` on a result: `result.IfSuccessAsync(x => GetValueTask(x))` | CS0029, CS1662 | an `async` lambda with a block body that awaits it |
 | A method group that returns a task in `IfError`: `result.IfError(LogAsync)` | CS0407 | `IfErrorAsync` |
 
 ## Configuring the rules

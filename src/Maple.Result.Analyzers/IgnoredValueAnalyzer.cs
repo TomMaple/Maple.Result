@@ -24,7 +24,8 @@ namespace Maple.Results.Analyzers;
 /// </summary>
 /// <remarks>
 ///     Not reported: a side effect that returns another type (<c>x => builder.Append(x)</c>), an assignment, and a call whose result is not
-///     used.
+///     used. A lambda with a block body is reported only where it returns a value: bound to an overload of <c>IfSuccessAsync</c> or
+///     <c>IfErrorAsync</c> whose delegate returns a <c>ValueTask</c> with a value.
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public sealed class IgnoredValueAnalyzer : ResultAnalyzer
@@ -53,22 +54,25 @@ public sealed class IgnoredValueAnalyzer : ResultAnalyzer
 
         // The receiver is a result or a task of one, so the function is the only delegate among the arguments.
         var receiverType = ReceiverArgument(invocation)?.Value.Type;
-        DelegateArgument function = default;
+        DelegateArgument? lastDelegate = null;
 
         foreach (var argument in invocation.Arguments)
         {
             if (DelegateArgument.TryCreate(argument, context.CancellationToken, out var candidate))
-                function = candidate;
+                lastDelegate = candidate;
         }
 
         var valueType = types.ResultValue(types.AwaitedValue(receiverType) ?? receiverType);
 
-        if (valueType is null || function.ReturnedType is null || function.IsAssignment)
+        if (valueType is null || lastDelegate is not { IsAssignment: false } function)
             return;
 
-        var returned = function.IsAsyncLambda
-            ? function.ReturnedType
-            : types.AwaitedValue(function.ReturnedType) ?? function.ReturnedType;
+        // The overloads for a ValueTask with a value name the type of that value, whatever the form of the function (#289). Otherwise
+        // it is the type of the expression body, awaited when it is a task; a block body has none.
+        var returned = types.AwaitedValue(function.Invoke.ReturnType)
+                       ?? (function.IsAsyncLambda
+                           ? function.ReturnedType
+                           : types.AwaitedValue(function.ReturnedType) ?? function.ReturnedType);
 
         if (!SymbolEqualityComparer.Default.Equals(returned, valueType))
             return;

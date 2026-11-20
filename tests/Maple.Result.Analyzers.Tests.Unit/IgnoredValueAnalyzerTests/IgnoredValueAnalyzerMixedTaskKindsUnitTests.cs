@@ -51,6 +51,10 @@ public class IgnoredValueAnalyzerMixedTaskKindsUnitTests
     [InlineData("_ = GetValueTask().IfSuccessAsync(x => DoubleAsync(x));")]
     [InlineData("_ = GetTask().IfErrorAsync(e => RecoverValueAsync(e));")]
     [InlineData("_ = GetValueTask().IfErrorAsync(e => RecoverAsync(e));")]
+    [InlineData("_ = ok.IfSuccessAsync(x => DoubleValueAsync(x));")]
+    [InlineData("_ = ok.IfErrorAsync(e => RecoverValueAsync(e));")]
+    [InlineData("_ = GetValueTask().IfSuccessAsync(x => DoubleValueAsync(x));")]
+    [InlineData("_ = GetValueTask().IfErrorAsync(e => RecoverValueAsync(e));")]
     public void Analyze_CallMixingTaskKinds_ReportsTheRule(string statements)
     {
         // Act

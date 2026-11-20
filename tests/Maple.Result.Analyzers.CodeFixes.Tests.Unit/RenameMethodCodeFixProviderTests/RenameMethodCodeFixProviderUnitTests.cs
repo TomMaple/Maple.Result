@@ -45,6 +45,8 @@ public class RenameMethodCodeFixProviderUnitTests
     [InlineData("_ = ok.IfError({|MR0004:e => GetResultOfInt()|});", "_ = ok.Else(e => GetResultOfInt());")]
     [InlineData("_ = ok.IfError({|MR0004:e => GetError()|});", "_ = ok.Else(e => GetError());")]
     [InlineData("_ = ok.IfErrorAsync({|MR0004:e => GetResultOfIntAsync()|});", "_ = ok.ElseAsync(e => GetResultOfIntAsync());")]
+    // A function that returns a ValueTask with a value binds to an overload of its own (#289).
+    [InlineData("_ = ok.IfSuccessAsync({|MR0004:x => new ValueTask<Result<int>>(ok)|});", "_ = ok.ThenAsync(x => new ValueTask<Result<int>>(ok));")]
     public async Task RegisterCodeFixes_ResultDroppedByASideEffectMethod_CallsTheMethodThatKeepsIt(string statements, string fixedStatements)
     {
         // Act & Assert
@@ -56,6 +58,8 @@ public class RenameMethodCodeFixProviderUnitTests
     [InlineData("var r = ok.IfSuccessAsync(x => {|MR0005:GetIntAsync()|});", "var r = ok.ThenAsync(x => GetIntAsync());")]
     [InlineData("var r = ok.IfError(e => {|MR0005:Compute()|});", "var r = ok.Else(e => Compute());")]
     [InlineData("var r = okTask.IfErrorAsync(e => {|MR0005:Compute()|});", "var r = okTask.ElseAsync(e => Compute());")]
+    // A function that returns a ValueTask with a value binds to an overload of its own (#289).
+    [InlineData("var r = ok.IfSuccessAsync(x => {|MR0005:new ValueTask<int>(x)|});", "var r = ok.ThenAsync(x => new ValueTask<int>(x));")]
     public async Task RegisterCodeFixes_ValueIgnoredByASideEffectMethod_CallsTheTransformingMethod(string statements, string fixedStatements)
     {
         // Act & Assert
