@@ -54,6 +54,24 @@ public static class Rules
     #region properties
 
     /// <summary>
+    ///     The name of the diagnostic property of MR0006 that holds how the code fix keeps the code compiling: <c>Discard</c> writes
+    ///     <c>_ = …</c>, and <c>AwaitAndDiscard</c> writes <c>_ = await …</c> for a task that is not awaited, in an <see langword="async" />
+    ///     function. The property is absent when no fix applies: a task that cannot be awaited where it is.
+    /// </summary>
+    public const string DiscardFixProperty = "DiscardFix";
+
+    /// <summary>
+    ///     The value of <see cref="DiscardFixProperty" /> for a result: the fix writes <c>_ = …</c>.
+    /// </summary>
+    public const string DiscardFix = "Discard";
+
+    /// <summary>
+    ///     The value of <see cref="DiscardFixProperty" /> for a task of a result in an <see langword="async" /> function: the fix writes
+    ///     <c>_ = await …</c>.
+    /// </summary>
+    public const string AwaitAndDiscardFix = "AwaitAndDiscard";
+
+    /// <summary>
     ///     The name of the diagnostic property that holds the method name a code fix renames the call to (e.g., <c>ThenAsync</c>).
     ///     The property is absent when no rename fixes the call.
     /// </summary>
@@ -86,7 +104,9 @@ public static class Rules
     internal static readonly DiagnosticDescriptor DiscardedResult = new(
         DiscardedResultId,
         "A result is discarded",
-        "The {0} returned by {1} is not used, so a failure is lost. Check it, return it, or discard it with ‘_ =’.",
+        // {2} and {3}: "is not used" and "Check it, return it, or discard it with ‘_ =’" for a result; "is not awaited" and "Await it and
+        // check the result, or discard the result with ‘_ = await’" for a task of a result that is not awaited.
+        "The {0} returned by {1} {2}, so a failure is lost. {3}.",
         Category,
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,

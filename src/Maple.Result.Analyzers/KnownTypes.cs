@@ -29,6 +29,7 @@ internal sealed class KnownTypes
     #region read-only fields
 
     private readonly INamedTypeSymbol? _error;
+    private readonly INamedTypeSymbol? _operationResult;
     private readonly INamedTypeSymbol? _result;
     private readonly INamedTypeSymbol? _resultOfT;
     private readonly INamedTypeSymbol? _task;
@@ -45,6 +46,7 @@ internal sealed class KnownTypes
         _result = compilation.GetTypeByMetadataName("Maple.Results.Result");
         _resultOfT = compilation.GetTypeByMetadataName("Maple.Results.Result`1");
         _error = compilation.GetTypeByMetadataName("Maple.Results.Error");
+        _operationResult = compilation.GetTypeByMetadataName("Maple.Results.IOperationResult");
         _task = compilation.GetTypeByMetadataName("System.Threading.Tasks.Task");
         _taskOfT = compilation.GetTypeByMetadataName("System.Threading.Tasks.Task`1");
         _valueTask = compilation.GetTypeByMetadataName("System.Threading.Tasks.ValueTask");
@@ -95,6 +97,12 @@ internal sealed class KnownTypes
     /// </summary>
     public bool IsLibraryMember(ISymbol symbol)
         => Same(symbol.ContainingAssembly, _result?.ContainingAssembly);
+
+    /// <summary>
+    ///     Whether the <paramref name="type" /> is <c>IOperationResult</c>, the interface of <c>Result</c> and <c>Result&lt;T&gt;</c>.
+    /// </summary>
+    public bool IsOperationResult(ITypeSymbol? type)
+        => Same(type, _operationResult);
 
     /// <summary>
     ///     Whether the <paramref name="type" /> is a <c>Task</c> or a <c>ValueTask</c> without a value.
