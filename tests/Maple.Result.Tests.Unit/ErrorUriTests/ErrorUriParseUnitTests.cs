@@ -158,7 +158,10 @@ public class ErrorUriParseUnitTests
         var exception = Record.Exception(() => ErrorUri.Parse(value));
 
         // Assert
-        exception.ShouldBeOfType<UriFormatException>().Message.ShouldStartWith("The error URI is not valid.");
+        exception.ShouldBeOfType<UriFormatException>();
+        var uriFormatException = exception as UriFormatException;
+        uriFormatException.ShouldNotBeNull();
+        uriFormatException.Message.ShouldStartWith("The error URI is not valid.");
     }
 
     [Theory]
@@ -169,7 +172,10 @@ public class ErrorUriParseUnitTests
         var exception = Record.Exception(() => ErrorUri.Parse(value));
 
         // Assert
-        exception.ShouldBeOfType<UriFormatException>().Message.ShouldStartWith(expectedMessageStart);
+        exception.ShouldBeOfType<UriFormatException>();
+        var uriFormatException = exception as UriFormatException;
+        uriFormatException.ShouldNotBeNull();
+        uriFormatException.Message.ShouldStartWith(expectedMessageStart);
     }
 
     [Fact]
@@ -179,7 +185,10 @@ public class ErrorUriParseUnitTests
         var exception = Record.Exception(() => ErrorUri.Parse(null!));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("value");
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("value");
     }
 
     [Theory]

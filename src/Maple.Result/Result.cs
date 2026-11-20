@@ -272,7 +272,7 @@ public sealed record Result<T> : IOperationResult
     /// <remarks>
     ///     <para>
     ///         Check <see cref="IsSuccess" /> or <see cref="IsError" /> before reading the value, or use
-    ///         <see cref="TryGetValue(out T, out Error)" />.
+    ///         <see cref="TryGetValue(out T, out Error?)" />.
     ///         A failed result has no value, so reading it throws instead of returning the default value of <typeparamref name="T" />
     ///         (which, for a value type, would look like a valid value, e.g., <c>0</c> for a <see cref="Result{T}" /> of <see cref="int" />).
     ///     </para>

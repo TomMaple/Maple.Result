@@ -134,7 +134,9 @@ public class JsonPointerValidatorUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentException>();
-        ((ArgumentException)exception).ParamName.ShouldBe("pointer");
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("pointer");
     }
 
     [Fact]

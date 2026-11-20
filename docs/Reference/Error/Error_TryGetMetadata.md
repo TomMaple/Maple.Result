@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L312" target="_blank">Error.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L316" target="_blank">Error.cs</a>
 
 Gets the [Metadata](Error_Metadata.md) value of the specified key if it is of the type `T`.
 
@@ -26,8 +26,13 @@ When this method returns, contains the value if the entry exists and is a `T`; o
 
 `true` if the entry exists and its value is a `T`; otherwise, `false`.
 
+### Exceptions
+[ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+
+The `key` is `null`.
+
 ## Remarks
-This method **never throws**. It returns `false` when the key is `null` or absent, when the value is `null`, or when the value is not a `T`.
+It returns `false` when the key is absent, when the value is `null`, or when the value is not a `T`. A key that could not be stored (e.g., an empty one) is absent too; only a `null` key throws.
 
 The match is **strict**: it is the C# `value is T` test, and no conversion is performed.
 * A value is returned when its runtime type is `T`, derives from `T`, or implements `T` (e.g., a `string` can be read as `string`, `object` or `IComparable`).

@@ -1642,7 +1642,10 @@ public class ThenTaskAsyncExtensionsUnitTests
         var exception = await Record.ExceptionAsync(async () => await sut.ThenAsync(() => Task.FromResult((Error)null!)));
 
         // Assert
-        exception.ShouldBeOfType<InvalidOperationException>().Message.ShouldBe("The function ‘ifSuccessFunction’ returned null.");
+        exception.ShouldBeOfType<InvalidOperationException>();
+        var invalidOperationException = exception as InvalidOperationException;
+        invalidOperationException.ShouldNotBeNull();
+        invalidOperationException.Message.ShouldBe("The function ‘ifSuccessFunction’ returned null.");
     }
 
     [Fact]

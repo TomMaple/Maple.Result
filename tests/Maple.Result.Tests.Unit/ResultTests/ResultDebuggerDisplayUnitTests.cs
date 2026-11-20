@@ -24,7 +24,8 @@ public class ResultDebuggerDisplayUnitTests
         var attribute = typeof(Result).GetCustomAttribute<DebuggerDisplayAttribute>();
 
         // Assert
-        attribute.ShouldNotBeNull().Value.ShouldBe("{DebuggerDisplay,nq}");
+        attribute.ShouldNotBeNull();
+        attribute.Value.ShouldBe("{DebuggerDisplay,nq}");
     }
 
     [Fact]
@@ -66,7 +67,8 @@ public class ResultDebuggerDisplayUnitTests
         var attribute = typeof(Result<>).GetCustomAttribute<DebuggerDisplayAttribute>();
 
         // Assert
-        attribute.ShouldNotBeNull().Value.ShouldBe("{DebuggerDisplay,nq}");
+        attribute.ShouldNotBeNull();
+        attribute.Value.ShouldBe("{DebuggerDisplay,nq}");
     }
 
     [Fact]

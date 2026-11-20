@@ -83,7 +83,10 @@ public class ResultTryAsyncFlatteningUnitTests
         var exception = await Record.ExceptionAsync(() => Result.TryAsync(() => (Task<Result>)null!, Map));
 
         // Assert
-        exception.ShouldBeOfType<InvalidOperationException>().Message.ShouldBe(ExpectedMessage);
+        exception.ShouldBeOfType<InvalidOperationException>();
+        var invalidOperationException = exception as InvalidOperationException;
+        invalidOperationException.ShouldNotBeNull();
+        invalidOperationException.Message.ShouldBe(ExpectedMessage);
     }
 
     // A null result is a bug of the caller, not a failure of the operation, so it is not mapped.
@@ -102,7 +105,10 @@ public class ResultTryAsyncFlatteningUnitTests
         }));
 
         // Assert
-        exception.ShouldBeOfType<InvalidOperationException>().Message.ShouldBe(ExpectedMessage);
+        exception.ShouldBeOfType<InvalidOperationException>();
+        var invalidOperationException = exception as InvalidOperationException;
+        invalidOperationException.ShouldNotBeNull();
+        invalidOperationException.Message.ShouldBe(ExpectedMessage);
         mapperCalls.ShouldBe(0);
     }
 
@@ -113,7 +119,10 @@ public class ResultTryAsyncFlatteningUnitTests
         var exception = Record.Exception(() => { _ = Result.TryAsync((Func<Task<Result>>)null!, Map); });
 
         // Assert
-        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("function");
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("function");
     }
 
     [Fact]
@@ -354,7 +363,10 @@ public class ResultTryAsyncFlatteningUnitTests
         var exception = Record.Exception(() => { _ = Result.TryAsync((Func<ValueTask<Result>>)null!, Map); });
 
         // Assert
-        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("function");
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("function");
     }
 
     [Fact]

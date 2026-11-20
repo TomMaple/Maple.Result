@@ -61,7 +61,14 @@ public class NullCheckUnitTests
         var exception = Record.Exception(() => methodInfo.Invoke(null, arguments));
 
         // Assert
-        exception.ShouldBeOfType<TargetInvocationException>().InnerException.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe(parameter);
+        exception.ShouldBeOfType<TargetInvocationException>();
+        var targetInvocationException = exception as TargetInvocationException;
+        targetInvocationException.ShouldNotBeNull();
+        var innerException = targetInvocationException.InnerException;
+        innerException.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = innerException as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe(parameter);
     }
 
     #endregion
@@ -99,7 +106,10 @@ public class NullCheckUnitTests
         var exception = await Record.ExceptionAsync(() => InvokeAndAwait(methodInfo, arguments));
 
         // Assert
-        exception.ShouldBeOfType<InvalidOperationException>().Message.ShouldBe(expectedMessage);
+        exception.ShouldBeOfType<InvalidOperationException>();
+        var invalidOperationException = exception as InvalidOperationException;
+        invalidOperationException.ShouldNotBeNull();
+        invalidOperationException.Message.ShouldBe(expectedMessage);
     }
 
     [Fact]

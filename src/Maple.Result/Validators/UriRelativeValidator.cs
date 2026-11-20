@@ -13,7 +13,7 @@ using System.Text.RegularExpressions;
 
 namespace Maple.Results.Validators;
 
-internal static partial class UriRelativeValidator
+internal static class UriRelativeValidator
 {
     private const string Message =
         "The relative URI reference is not valid. Check https://datatracker.ietf.org/doc/html/rfc3986#section-4.2 for details.";
@@ -28,22 +28,21 @@ internal static partial class UriRelativeValidator
     // Only a path-absolute ("/a/b") is accepted, as RFC 9457 (sections 3.1.1 and 3.1.5) asks relative URIs to include the full path.
     // A network-path reference ("//host/a") names another server, and a relative path ("a/b") depends on the path of the base URI.
     // NonBacktracking: the value can come from another service (ErrorUri.Parse and TryParse), and this engine runs in linear time
-    // whatever the pattern (#189). The source generator does not generate code for this option; it creates the Regex instead.
-    [GeneratedRegex(
+    // whatever the pattern (#189). [GeneratedRegex] cannot be used with NonBacktracking (SYSLIB1044); revisit in .NET 12.
+    private static readonly Regex RelativePattern = new(
         // path-absolute
         "^/(?:" + PChar + "+(?:/" + PChar + "*)*)?" +
         // query and fragment
-        @"(?:\?(?:" + PChar + @"|[/?])*)?" +
+        @"(?:\?(?:" + PChar + "|[/?])*)?" +
         "(?:#(?:" + PChar + @"|[/?])*)?\z",
-        RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
-    private static partial Regex RelativePattern();
+        RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
 
     /// <summary>
     ///     Whether the value is a relative reference with an absolute path (<i>RFC 3986</i>).
     /// </summary>
     internal static bool IsValid(string relativeReference)
     {
-        return RelativePattern().IsMatch(relativeReference);
+        return RelativePattern.IsMatch(relativeReference);
     }
 
     internal static void Validate(string relativeReference)

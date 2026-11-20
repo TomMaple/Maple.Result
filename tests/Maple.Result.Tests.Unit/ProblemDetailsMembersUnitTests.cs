@@ -58,7 +58,10 @@ public class ProblemDetailsMembersUnitTests
         var exception = Record.Exception(() => sut.WithMetadata(member, 1));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentException>().ParamName.ShouldBe("key");
+        exception.ShouldBeOfType<ArgumentException>();
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("key");
     }
 
     // The names inside an "errors" item or a "detailTemplated" object are not top-level members, so they are valid keys.

@@ -61,8 +61,10 @@ public class ErrorUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentException>();
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
         exception.Message.ShouldContain("must not be ‘about:blank’");
-        ((ArgumentException)exception).ParamName.ShouldBe("instanceUri");
+        argumentException.ParamName.ShouldBe("instanceUri");
     }
 
     [Fact]
@@ -74,7 +76,9 @@ public class ErrorUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentException>();
-        ((ArgumentException)exception).ParamName.ShouldBe("instanceUri");
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("instanceUri");
     }
 
     [Fact]
@@ -154,8 +158,10 @@ public class ErrorUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentException>();
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
         exception.Message.ShouldContain("‘min’ is repeated");
-        ((ArgumentException)exception).ParamName.ShouldBe("detailNamedValues");
+        argumentException.ParamName.ShouldBe("detailNamedValues");
     }
 
     [Fact]
@@ -171,7 +177,9 @@ public class ErrorUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentException>();
-        ((ArgumentException)exception).ParamName.ShouldBe("detailNamedValues");
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("detailNamedValues");
     }
 
     [Fact]
@@ -184,7 +192,9 @@ public class ErrorUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentNullException>();
-        ((ArgumentNullException)exception).ParamName.ShouldBe("detailNamedValues");
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("detailNamedValues");
     }
 
     [Fact]
@@ -197,7 +207,9 @@ public class ErrorUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentException>();
-        ((ArgumentException)exception).ParamName.ShouldBe("detailNamedValues");
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("detailNamedValues");
     }
 
     [Fact]
@@ -213,7 +225,9 @@ public class ErrorUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentException>();
-        ((ArgumentException)exception).ParamName.ShouldBe("detailNamedValues");
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("detailNamedValues");
     }
 
     [Fact]
@@ -380,7 +394,9 @@ public class ErrorUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentException>();
-        ((ArgumentException)exception).ParamName.ShouldBe("detailNamedValues");
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("detailNamedValues");
     }
     [Fact]
     public void WithErrorDetail_NullDetailText_ThrowsArgumentNullException()
@@ -394,6 +410,9 @@ public class ErrorUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("detail");
     }
 
     [Fact]
@@ -408,7 +427,9 @@ public class ErrorUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentException>();
-        ((ArgumentException)exception).ParamName.ShouldBe("PropertyPointer");
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("propertyPointer");
         sut.ErrorDetails.ShouldBeEmpty();
     }
 
@@ -2007,7 +2028,9 @@ public class ErrorUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentException>();
-        ((ArgumentException)exception).ParamName.ShouldBe("detail");
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("detail");
     }
 
     [Fact]
@@ -2045,7 +2068,9 @@ public class ErrorUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentException>();
-        ((ArgumentException)exception).ParamName.ShouldBe("detailNamedValues");
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("detailNamedValues");
     }
 
     [Theory]
@@ -2060,7 +2085,9 @@ public class ErrorUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentException>();
-        ((ArgumentException)exception).ParamName.ShouldBe("detailTemplateId");
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("detailTemplateId");
     }
 
     [Theory]
@@ -2078,7 +2105,9 @@ public class ErrorUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentException>();
-        ((ArgumentException)exception).ParamName.ShouldBe("Detail");
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("detail");
         sut.ErrorDetails.ShouldBeEmpty();
     }
 
@@ -2099,7 +2128,9 @@ public class ErrorUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentException>();
-        ((ArgumentException)exception).ParamName.ShouldBe("detailNamedValues");
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("detailNamedValues");
     }
 
     #endregion

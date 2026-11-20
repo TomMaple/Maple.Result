@@ -37,7 +37,8 @@ public class ErrorUriUnitTests
         var property = typeof(ErrorUri).GetProperty(nameof(ErrorUri.None), BindingFlags.Public | BindingFlags.Static);
 
         // Assert
-        property.ShouldNotBeNull().CanWrite.ShouldBeFalse();
+        property.ShouldNotBeNull();
+        property.CanWrite.ShouldBeFalse();
     }
 
     [Fact]
@@ -173,7 +174,10 @@ public class ErrorUriUnitTests
         var exception = Record.Exception(() => ErrorUri.Locator(null!));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("uriLocator");
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("uriLocator");
     }
 
     [Fact]
@@ -325,7 +329,10 @@ public class ErrorUriUnitTests
         var exception = Record.Exception(() => ErrorUri.Tag(null!));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("uriTag");
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("uriTag");
     }
 
     [Fact]
@@ -476,7 +483,9 @@ public class ErrorUriUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentNullException>();
-        ((ArgumentNullException)exception).ParamName.ShouldBe("urn");
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("urn");
     }
 
     [Theory]
@@ -561,7 +570,9 @@ public class ErrorUriUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentNullException>();
-        ((ArgumentNullException)exception).ParamName.ShouldBe("relativeReference");
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("relativeReference");
     }
 
     [Theory]
@@ -632,7 +643,10 @@ public class ErrorUriUnitTests
         var exception = Record.Exception(() => ErrorUri.Other(value));
 
         // Assert
-        exception.ShouldBeOfType<UriFormatException>().Message.ShouldBe(
+        exception.ShouldBeOfType<UriFormatException>();
+        var uriFormatException = exception as UriFormatException;
+        uriFormatException.ShouldNotBeNull();
+        uriFormatException.Message.ShouldBe(
             "The URI ‘about:blank’ has its own property. Use ErrorUri.None, or ErrorUri.Parse when the kind is not known.");
     }
 
@@ -648,7 +662,10 @@ public class ErrorUriUnitTests
         var exception = Record.Exception(() => ErrorUri.Other(value));
 
         // Assert
-        exception.ShouldBeOfType<UriFormatException>().Message.ShouldContain($"ErrorUri.{factory}");
+        exception.ShouldBeOfType<UriFormatException>();
+        var uriFormatException = exception as UriFormatException;
+        uriFormatException.ShouldNotBeNull();
+        uriFormatException.Message.ShouldContain($"ErrorUri.{factory}");
     }
 
     [Theory]
@@ -673,7 +690,10 @@ public class ErrorUriUnitTests
         var exception = Record.Exception(() => ErrorUri.Other(value));
 
         // Assert
-        exception.ShouldBeOfType<UriFormatException>().Message.ShouldStartWith("The URI is not a valid absolute URI.");
+        exception.ShouldBeOfType<UriFormatException>();
+        var uriFormatException = exception as UriFormatException;
+        uriFormatException.ShouldNotBeNull();
+        uriFormatException.Message.ShouldStartWith("The URI is not a valid absolute URI.");
     }
 
     [Fact]
@@ -683,7 +703,10 @@ public class ErrorUriUnitTests
         var exception = Record.Exception(() => ErrorUri.Other(null!));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("uri");
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("uri");
     }
 
     [Fact]

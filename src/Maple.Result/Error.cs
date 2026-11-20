@@ -9,6 +9,7 @@
  */
 
 using Maple.Results.Helpers;
+using Maple.Results.Validators;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -273,15 +274,18 @@ public sealed record Error
     ///     If the <paramref name="detail" /> or a parameter name in <paramref name="detailNamedValues" /> is <see langword="null" />.
     /// </exception>
     /// <exception cref="ArgumentException">
-    ///     If the <paramref name="propertyPointer" /> is not a JSON Pointer (e.g., <c>Email</c> or <c>Items[0].Name</c>; the parameter name
-    ///     of the exception is <c>PropertyPointer</c>), the <paramref name="detail" /> is empty or whitespace-only (the parameter name of the
-    ///     exception is <c>Detail</c>), the <paramref name="detailTemplateId" /> is empty, whitespace-only or starts or ends with white space, a
-    ///     parameter name is empty, starts or ends with white space, is repeated, or differs only in case from another parameter name,
-    ///     or <paramref name="detailNamedValues" /> are passed without a <paramref name="detailTemplateId" />.
+    ///     If the <paramref name="propertyPointer" /> is not a JSON Pointer (e.g., <c>Email</c> or <c>Items[0].Name</c>), the
+    ///     <paramref name="detail" /> is empty or whitespace-only, the <paramref name="detailTemplateId" /> is empty, whitespace-only or starts
+    ///     or ends with white space, a parameter name is empty, starts or ends with white space, is repeated, or differs only in case from
+    ///     another parameter name, or <paramref name="detailNamedValues" /> are passed without a <paramref name="detailTemplateId" />.
     /// </exception>
     public Error WithErrorDetail(string? propertyPointer, string detail, string? detailTemplateId = null,
         params ReadOnlySpan<(string Key, object? Value)> detailNamedValues)
     {
+        // The constructor of ErrorDetail validates them too, but it names its own parameters (PropertyPointer, Detail) in the exception.
+        JsonPointerValidator.Validate(propertyPointer, nameof(propertyPointer));
+        ErrorDetail.ValidateDetail(detail, nameof(detail));
+
         return ToBuilder()
             .AddErrorDetail(propertyPointer, detail, detailTemplateId, detailNamedValues)
             .Build();
@@ -303,15 +307,17 @@ public sealed record Error
     ///     <see langword="true" /> if the entry exists and its value is a <typeparamref name="T" />; otherwise, <see langword="false" />.
     /// </returns>
     /// <remarks>
-    ///     <para>This method never throws.</para>
     ///     <para>
     ///         The match is strict: no conversion is performed (e.g., a stored <see cref="int" /> is not read as a <see cref="long" />),
     ///         and a <see langword="null" /> value is never a match.
     ///     </para>
     /// </remarks>
+    /// <exception cref="ArgumentNullException">If the <paramref name="key" /> is <see langword="null" />.</exception>
     public bool TryGetMetadata<T>(string key, [MaybeNullWhen(false)] out T value)
     {
-        if (key is not null && MetadataDictionary.TryGetValue(key, out var raw) && raw is T typed)
+        ArgumentNullException.ThrowIfNull(key);
+
+        if (MetadataDictionary.TryGetValue(key, out var raw) && raw is T typed)
         {
             value = typed;
             return true;
@@ -401,11 +407,12 @@ public sealed record Error
     /// <summary>
     ///     Returns a copy of the current error without the metadata entry of the specified key.
     /// </summary>
-    /// <param name="key">The key of the metadata entry to remove.</param>
+    /// <param name="key">
+    ///     The key of the metadata entry to remove; an absent key is not an error, and neither is a key that cannot be stored (e.g., an empty one).
+    /// </param>
     /// <returns>
     ///     A new instance of the <see cref="Error" /> object (equal to the current one if the key is absent); the current instance is not modified.
     /// </returns>
-    /// <exception cref="ArgumentException">If the <paramref name="key" /> is empty or whitespace-only.</exception>
     /// <exception cref="ArgumentNullException">If the <paramref name="key" /> is <see langword="null" />.</exception>
     public Error WithoutMetadata(string key)
     {

@@ -473,11 +473,6 @@ public class IfErrorValueTaskAsyncExtensionsUnitTests
         return Error.Failure(ErrorUri.None, "ff7711a7-c224-4280-816c-1722864177cf", "Error title 2");
     }
 
-    private static Error GetReplacementError()
-    {
-        return Error.Failure(ErrorUri.None, "53e1e02c-3e21-47c9-9e1a-93ba22f03ba8", "Replacement error");
-    }
-
     #endregion
 
     #region ValueTask results with synchronous delegates
@@ -485,7 +480,6 @@ public class IfErrorValueTaskAsyncExtensionsUnitTests
     // See issue #214.
 
     private static readonly Error SyncTestError = Error.Failure(ErrorUri.None, "Synchronous delegate test error");
-    private static readonly Error SyncOtherError = Error.Conflict(ErrorUri.None, "Synchronous delegate other error");
 
     [Fact]
     public async Task IfErrorAsync_FailedResultOfTTaskWithSyncAction_PassesErrorAndReturnsResult()

@@ -18,7 +18,7 @@ It relates to the `408` HTTP status code (Request Timeout) when the client did n
 
 
 ## Timeout(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, String, ReadOnlySpan&lt;(String, Object)&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L841" target="_blank">Error.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L848" target="_blank">Error.cs</a>
 
 Creates a new instance of the [Error](Error.md) object of the *Timeout* category with specified parameters.
 
@@ -82,7 +82,7 @@ var error = Error.Timeout(
 
 
 ## Timeout(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, String, IEnumerable&lt;KeyValuePair&lt;String, Object&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L858" target="_blank">Error.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L865" target="_blank">Error.cs</a>
 
 Creates a new instance of the [Error](Error.md) object of the *Timeout* category with specified parameters.
 

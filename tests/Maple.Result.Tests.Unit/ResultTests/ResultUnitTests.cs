@@ -999,8 +999,10 @@ public class ResultUnitTests
         var exception = Record.Exception(() => SerializationHelper.SerializeWithNewtonsoft(sut));
 
         // Assert
-        exception.ShouldBeOfType<Newtonsoft.Json.JsonSerializationException>()
-            .InnerException.ShouldBeOfType<InvalidOperationException>();
+        exception.ShouldBeOfType<Newtonsoft.Json.JsonSerializationException>();
+        var jsonSerializationException = exception as Newtonsoft.Json.JsonSerializationException;
+        jsonSerializationException.ShouldNotBeNull();
+        jsonSerializationException.InnerException.ShouldBeOfType<InvalidOperationException>();
     }
 
     // The default serializers read every public property, and Value throws on a failed result; a converter package is needed.
@@ -1048,8 +1050,10 @@ public class ResultUnitTests
         var exception = Record.Exception(() => SerializationHelper.SerializeWithNewtonsoft(sut));
 
         // Assert
-        exception.ShouldBeOfType<Newtonsoft.Json.JsonSerializationException>()
-            .InnerException.ShouldBeOfType<InvalidOperationException>();
+        exception.ShouldBeOfType<Newtonsoft.Json.JsonSerializationException>();
+        var jsonSerializationException = exception as Newtonsoft.Json.JsonSerializationException;
+        jsonSerializationException.ShouldNotBeNull();
+        jsonSerializationException.InnerException.ShouldBeOfType<InvalidOperationException>();
     }
 
     #endregion
@@ -1095,7 +1099,8 @@ public class ResultUnitTests
         var exception = Record.Exception(() => sut.Value);
 
         // Assert
-        exception.ShouldNotBeNull().Message.ShouldBe(ExpectedMessage);
+        exception.ShouldNotBeNull();
+        exception.Message.ShouldBe(ExpectedMessage);
     }
 
     [Fact]

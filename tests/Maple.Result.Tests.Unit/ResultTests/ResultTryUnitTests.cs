@@ -144,7 +144,10 @@ public class ResultTryUnitTests
         var exception = Record.Exception(() => Result.Try((Action)null!, Map));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("action");
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("action");
     }
 
     [Fact]
@@ -154,7 +157,10 @@ public class ResultTryUnitTests
         var exception = Record.Exception(() => Result.Try(() => { }, null!));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("mapException");
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("mapException");
     }
 
     // A mapper that returns null declines the exception: it is rethrown as it is (#195).
@@ -179,7 +185,9 @@ public class ResultTryUnitTests
         var exception = Record.Exception(() => Result.Try(() => ThrowFromNamedMethod(new TimeoutException()), _ => null));
 
         // Assert
-        exception.ShouldNotBeNull().StackTrace.ShouldNotBeNull().ShouldContain(nameof(ThrowFromNamedMethod));
+        exception.ShouldNotBeNull();
+        exception.StackTrace.ShouldNotBeNull();
+        exception.StackTrace.ShouldContain(nameof(ThrowFromNamedMethod));
     }
 
     [Fact]
@@ -308,7 +316,10 @@ public class ResultTryUnitTests
         var exception = Record.Exception(() => Result.Try<FormatException>((Action)null!, _ => MappedError));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("action");
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("action");
     }
 
     [Fact]
@@ -318,7 +329,10 @@ public class ResultTryUnitTests
         var exception = Record.Exception(() => Result.Try<FormatException>(() => { }, null!));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("mapException");
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("mapException");
     }
 
     #endregion
@@ -373,7 +387,10 @@ public class ResultTryUnitTests
         var exception = Record.Exception(() => Result.Try((Func<int>)null!, Map));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("function");
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("function");
     }
 
     [Fact]
@@ -383,7 +400,10 @@ public class ResultTryUnitTests
         var exception = Record.Exception(() => Result.Try(() => 42, null!));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("mapException");
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("mapException");
     }
 
     [Fact]
@@ -450,7 +470,10 @@ public class ResultTryUnitTests
         var exception = Record.Exception(() => Result.Try<int, FormatException>((Func<int>)null!, _ => MappedError));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("function");
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("function");
     }
 
     [Fact]
@@ -460,7 +483,10 @@ public class ResultTryUnitTests
         var exception = Record.Exception(() => Result.Try<int, FormatException>(() => 42, null!));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("mapException");
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("mapException");
     }
 
     #endregion

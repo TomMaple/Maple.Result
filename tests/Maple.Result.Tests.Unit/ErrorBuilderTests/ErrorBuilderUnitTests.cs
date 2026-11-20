@@ -57,7 +57,9 @@ public class ErrorBuilderUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentOutOfRangeException>();
-        ((ArgumentOutOfRangeException)exception).ParamName.ShouldBe("category");
+        var argumentOutOfRangeException = exception as ArgumentOutOfRangeException;
+        argumentOutOfRangeException.ShouldNotBeNull();
+        argumentOutOfRangeException.ParamName.ShouldBe("category");
     }
 
     [Fact]
@@ -216,7 +218,9 @@ public class ErrorBuilderUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentException>();
-        ((ArgumentException)exception).ParamName.ShouldBe("instanceUri");
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("instanceUri");
         sut.Build().InstanceUri.ShouldBe("/account/12345/msgs/abc");
     }
 
@@ -232,7 +236,9 @@ public class ErrorBuilderUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentException>();
-        ((ArgumentException)exception).ParamName.ShouldBe("instanceUri");
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("instanceUri");
     }
 
     [Fact]
@@ -408,7 +414,8 @@ public class ErrorBuilderUnitTests
         var result = Sut.Validation(ErrorUri.None, "Test title").AddErrorDetail(detail).Build();
 
         // Assert
-        result.ErrorDetails.ShouldHaveSingleItem().ShouldBeSameAs(detail);
+        var errorDetail = result.ErrorDetails.ShouldHaveSingleItem();
+        errorDetail.ShouldBeSameAs(detail);
     }
 
     [Fact]
@@ -442,7 +449,9 @@ public class ErrorBuilderUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentException>();
-        ((ArgumentException)exception).ParamName.ShouldBe("detailNamedValues");
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("detailNamedValues");
         sut.Build().ErrorDetails.ShouldBeEmpty();
     }
 
@@ -455,7 +464,8 @@ public class ErrorBuilderUnitTests
             .Build();
 
         // Assert
-        result.ErrorDetails.ShouldHaveSingleItem().DetailTemplated.ShouldBeNull();
+        var errorDetail = result.ErrorDetails.ShouldHaveSingleItem();
+        errorDetail.DetailTemplated.ShouldBeNull();
     }
 
     [Fact]
@@ -471,8 +481,10 @@ public class ErrorBuilderUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentException>();
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
         exception.Message.ShouldContain("‘min’ is repeated");
-        ((ArgumentException)exception).ParamName.ShouldBe("detailNamedValues");
+        argumentException.ParamName.ShouldBe("detailNamedValues");
     }
 
     [Fact]
@@ -501,6 +513,9 @@ public class ErrorBuilderUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("detail");
         sut.Build().ErrorDetails.ShouldBeEmpty();
     }
 
@@ -516,7 +531,9 @@ public class ErrorBuilderUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentException>();
-        ((ArgumentException)exception).ParamName.ShouldBe("PropertyPointer");
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("propertyPointer");
         sut.Build().ErrorDetails.ShouldBeEmpty();
     }
 
@@ -649,7 +666,8 @@ public class ErrorBuilderUnitTests
             .Build();
 
         // Assert
-        result.Metadata.ShouldHaveSingleItem().Value.ShouldBe(200);
+        var entry = result.Metadata.ShouldHaveSingleItem();
+        entry.Value.ShouldBe(200);
     }
 
     [Fact]
@@ -693,7 +711,8 @@ public class ErrorBuilderUnitTests
         var result = sut.WithMetadata([]).Build();
 
         // Assert
-        result.Metadata.ShouldHaveSingleItem().Key.ShouldBe("limit");
+        var entry = result.Metadata.ShouldHaveSingleItem();
+        entry.Key.ShouldBe("limit");
     }
 
     [Fact]
@@ -706,7 +725,8 @@ public class ErrorBuilderUnitTests
         var result = sut.WithMetadata().Build();
 
         // Assert
-        result.Metadata.ShouldHaveSingleItem().Key.ShouldBe("limit");
+        var entry = result.Metadata.ShouldHaveSingleItem();
+        entry.Key.ShouldBe("limit");
     }
 
     [Fact]
@@ -725,21 +745,39 @@ public class ErrorBuilderUnitTests
         result.Metadata.ShouldContainKey("remaining");
     }
 
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData(" ")]
-    public void WithoutMetadata_NullOrBlankKey_ThrowsArgumentException(string? key)
+    [Fact]
+    public void WithoutMetadata_NullKey_ThrowsArgumentNullException()
     {
         // Arrange
         var sut = Sut.LimitExceeded(ErrorUri.None, "Test title");
 
         // Act
-        var exception = Record.Exception(() => sut.WithoutMetadata(key!));
+        var exception = Record.Exception(() => sut.WithoutMetadata(null!));
 
         // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeAssignableTo<ArgumentException>();
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("key");
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
+    [InlineData(" limit ")]
+    [InlineData("LIMIT")]
+    [InlineData("type")]
+    public void WithoutMetadata_KeyThatCannotBeStored_RemovesNothing(string key)
+    {
+        // Arrange
+        var sut = Sut.LimitExceeded(ErrorUri.None, "Test title").WithMetadata("limit", 100);
+
+        // Act
+        var result = sut.WithoutMetadata(key).Build();
+
+        // Assert
+        result.Metadata.Count.ShouldBe(1);
+        result.Metadata.ShouldContainKey("limit");
     }
 
     [Fact]
@@ -909,7 +947,9 @@ public class ErrorBuilderUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentException>();
-        ((ArgumentException)exception).ParamName.ShouldBe("detail");
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("detail");
         sut.Build().Detail.ShouldBe("Previous detail.");
     }
 
@@ -964,7 +1004,9 @@ public class ErrorBuilderUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentException>();
-        ((ArgumentException)exception).ParamName.ShouldBe("namedValues");
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("namedValues");
     }
 
     [Theory]
@@ -982,7 +1024,9 @@ public class ErrorBuilderUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentException>();
-        ((ArgumentException)exception).ParamName.ShouldBe("templateId");
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("templateId");
     }
 
     [Theory]
@@ -1000,7 +1044,9 @@ public class ErrorBuilderUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentException>();
-        ((ArgumentException)exception).ParamName.ShouldBe("Detail");
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("detail");
         sut.Build().ErrorDetails.ShouldBeEmpty();
     }
 
@@ -1021,7 +1067,9 @@ public class ErrorBuilderUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentException>();
-        ((ArgumentException)exception).ParamName.ShouldBe("detailNamedValues");
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("detailNamedValues");
         sut.Build().ErrorDetails.ShouldBeEmpty();
     }
 
@@ -1040,7 +1088,9 @@ public class ErrorBuilderUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentException>();
-        ((ArgumentException)exception).ParamName.ShouldBe("detailTemplateId");
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("detailTemplateId");
         sut.Build().ErrorDetails.ShouldBeEmpty();
     }
 
@@ -1060,7 +1110,9 @@ public class ErrorBuilderUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentException>();
-        ((ArgumentException)exception).ParamName.ShouldBe("key");
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("key");
         sut.Build().Metadata.Keys.ShouldBe(["limit"]);
     }
 

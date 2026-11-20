@@ -13,7 +13,7 @@ using System.Text.RegularExpressions;
 
 namespace Maple.Results.Validators;
 
-internal static partial class UriTagValidator
+internal static class UriTagValidator
 {
     private const string Message =
         "The URI tag is not valid. Check https://datatracker.ietf.org/doc/html/rfc4151#section-2.1 for details.";
@@ -29,18 +29,17 @@ internal static partial class UriTagValidator
     // The scheme is case-insensitive (RFC 3986 section 3.1; the "tag:" literal of the ABNF matches any case); the value is stored as passed,
     // and tags are compared character by character (RFC 4151 section 2.4), so "TAG:…" and "tag:…" are different tags.
     // NonBacktracking: the value can come from another service (ErrorUri.Parse and TryParse), and this engine runs in linear time
-    // whatever the pattern (#189). The source generator does not generate code for this option; it creates the Regex instead.
-    [GeneratedRegex(
+    // whatever the pattern (#189). [GeneratedRegex] cannot be used with NonBacktracking (SYSLIB1044); revisit in .NET 12.
+    private static readonly Regex TagPattern = new(
         "^(?i:tag):" +
         // authorityName = DNSname / emailAddress
         @"(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)*" +
         @"|[A-Za-z0-9._-]+@[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)*)" +
         // "," date
-        @",[12][0-9]{3}(?:-(?:0[1-9]|1[0-2])(?:-(?:0[1-9]|[12][0-9]|3[01]))?)?" +
+        ",[12][0-9]{3}(?:-(?:0[1-9]|1[0-2])(?:-(?:0[1-9]|[12][0-9]|3[01]))?)?" +
         // ":" specific [ "#" fragment ]
         @":(?:[A-Za-z0-9\-._~!$&'()*+,;=:@/?]|%[0-9A-Fa-f]{2})*(?:#(?:[A-Za-z0-9\-._~!$&'()*+,;=:@/?]|%[0-9A-Fa-f]{2})*)?\z",
-        RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
-    private static partial Regex TagPattern();
+        RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
 
     /// <summary>
     ///     Whether the value matches the <i>RFC 4151</i> grammar. The pattern is the full grammar, including the <c>tag:</c> scheme, so the value
@@ -48,7 +47,7 @@ internal static partial class UriTagValidator
     /// </summary>
     internal static bool IsValid(string uriTag)
     {
-        return TagPattern().IsMatch(uriTag);
+        return TagPattern.IsMatch(uriTag);
     }
 
     internal static void Validate(string uriTag)

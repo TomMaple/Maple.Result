@@ -83,9 +83,9 @@ internal sealed class AwaitedCall
     public static AwaitedCall? TryCreate(SimpleNameSyntax name, SemanticModel model, CancellationToken cancellationToken)
     {
         // result.Then(…) or Then(…); after a null-conditional access (result?.Then(…)) the task could be null.
-        var callee = name.Parent is MemberAccessExpressionSyntax access && access.Name == name
+        ExpressionSyntax callee = name.Parent is MemberAccessExpressionSyntax access && access.Name == name
             ? access
-            : (ExpressionSyntax)name;
+            : name;
 
         if (callee.Parent is not InvocationExpressionSyntax invocation || invocation.Expression != callee)
             return null;
@@ -335,7 +335,7 @@ internal sealed class AwaitedCall
         public override SyntaxNode VisitParenthesizedLambdaExpression(ParenthesizedLambdaExpressionSyntax node)
             => node;
 
-        public override SyntaxNode? VisitReturnStatement(ReturnStatementSyntax node)
+        public override SyntaxNode VisitReturnStatement(ReturnStatementSyntax node)
         {
             if (node.Expression is null)
                 return node;

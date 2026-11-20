@@ -57,6 +57,7 @@ public sealed class InferredResultValueAnalyzer : ResultAnalyzer
         var consequence = isTaskOfTask
             ? "so the call returns a task of a task"
             : "which becomes the value of the result";
+
         var location = CalledName(invocation).GetLocation();
         var typeName = KnownTypes.Display(inferred);
         var advice = Advice(method, asyncForm, isTaskOfTask);

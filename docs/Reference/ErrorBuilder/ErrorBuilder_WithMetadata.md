@@ -19,7 +19,7 @@ A key that already exists is never an error: its value is replaced. When the bui
 
 
 ## WithMetadata(String, Object)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L419" target="_blank">ErrorBuilder.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L422" target="_blank">ErrorBuilder.cs</a>
 
 Adds the specified metadata entry, or replaces its value if the key already exists.
 
@@ -60,7 +60,7 @@ var error = ErrorBuilder.LimitExceeded(
 
 
 ## WithMetadata(IEnumerable&lt;KeyValuePair&lt;String, Object&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L447" target="_blank">ErrorBuilder.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L450" target="_blank">ErrorBuilder.cs</a>
 
 Adds the specified metadata entries. Entries with existing keys are replaced; the other existing entries are kept.
 
@@ -100,7 +100,7 @@ var error = ErrorBuilder.LimitExceeded(
 ```
 
 ## WithMetadata(ReadOnlySpan&lt;(String, Object)&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L489" target="_blank">ErrorBuilder.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L492" target="_blank">ErrorBuilder.cs</a>
 
 Adds the specified metadata entries, given as key-value tuples. Entries with existing keys are replaced; the other existing entries are kept.
 
