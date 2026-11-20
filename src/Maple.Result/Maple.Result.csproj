@@ -21,8 +21,9 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageReleaseNotes>https://github.com/TomMaple/Maple.Result/releases</PackageReleaseNotes>
 
-    <!-- Checks the package when it is packed. The baseline (PackageValidationBaselineVersion = 3.0.0, the API that later versions must
-         keep) is set once 3.0.0 is on nuget.org: the restore downloads it and fails before (#334). -->
+    <!-- Checks the package when it is packed. The baseline (PackageValidationBaselineVersion, the API that this version must keep) is the
+         latest published release that is not a pre-release, raised at every release; it is set once 3.0.0 is on nuget.org, as the restore
+         downloads it and fails before. See "Package validation" in docs/releasing.md. -->
     <EnablePackageValidation>true</EnablePackageValidation>
 
     <IncludeSymbols>true</IncludeSymbols>

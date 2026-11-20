@@ -84,7 +84,7 @@ jobs:
         BUMPED: ${{ steps.git_cliff.outputs.content }}
 
     # The source links of the reference pages have to open the tag of this release, which the pull request that prepares
-    # it pins (docs/conventions.md, "Releasing"): a release is not drafted with links to main or to an earlier release.
+    # it pins (docs/releasing.md): a release is not drafted with links to main or to an earlier release.
     - name: Check the source links of the reference pages
       run: python3 -I .github/scripts/check_reference_docs.py --release "${VERSION}"
       env:
