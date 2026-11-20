@@ -18,7 +18,7 @@ It relates to `403` HTTP status code (Forbidden), but can also be used in other 
 
 
 ## PermissionDenied(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, String, ReadOnlySpan&lt;(String, Object)&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L809" target="_blank">Error.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L816" target="_blank">Error.cs</a>
 
 Creates a new instance of the [Error](Error.md) object of the *PermissionDenied* category with specified parameters.
 
@@ -82,7 +82,7 @@ var error = Error.PermissionDenied(
 
 
 ## PermissionDenied(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, String, IEnumerable&lt;KeyValuePair&lt;String, Object&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L825" target="_blank">Error.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L832" target="_blank">Error.cs</a>
 
 Creates a new instance of the [Error](Error.md) object of the *PermissionDenied* category with specified parameters.
 

@@ -13,7 +13,7 @@ Removes some or all entries of the [Metadata](../Error/Error_Metadata.md) of the
 
 
 ## WithoutMetadata()
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L536" target="_blank">ErrorBuilder.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L540" target="_blank">ErrorBuilder.cs</a>
 
 Removes all entries from the metadata.
 
@@ -37,7 +37,7 @@ var publicError = error.ToBuilder()
 
 
 ## WithoutMetadata(String)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L516" target="_blank">ErrorBuilder.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L520" target="_blank">ErrorBuilder.cs</a>
 
 Removes the entry of the specified key from the metadata.
 
@@ -47,7 +47,7 @@ public ErrorBuilder WithoutMetadata(string key);
 
 ### Parameters
 #### `key` [String](https://learn.microsoft.com/dotnet/api/system.string)
-A mandatory key of the metadata entry to remove. An absent key is not an error.
+A mandatory key of the metadata entry to remove. An absent key is not an error, and neither is a key that cannot be stored (e.g., an empty one or `type`): only a `null` key throws.
 
 ### Returns
 [ErrorBuilder](ErrorBuilder.md)
@@ -58,10 +58,6 @@ The current instance of the [ErrorBuilder](ErrorBuilder.md) class.
 [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
 
 The `key` is `null`.
-
-[ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception)
-
-The `key` is empty or consists only of white-space characters.
 
 ### Examples
 ```csharp

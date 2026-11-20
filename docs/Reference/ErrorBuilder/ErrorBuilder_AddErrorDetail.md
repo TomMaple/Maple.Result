@@ -48,7 +48,7 @@ foreach (var errorDetail in validationResult.ErrorDetails)
 
 
 ## AddErrorDetail(String, String, String, ReadOnlySpan&lt;(String, Object)&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L394" target="_blank">ErrorBuilder.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L393" target="_blank">ErrorBuilder.cs</a>
 
 Appends a new individual error occurrence.
 
@@ -85,7 +85,7 @@ The `detail` or a name in `detailNamedValues` is `null`.
 
 [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception)
 
-The `propertyPointer` is not a *JSON Pointer* (e.g., `Email` or `Items[0].Name`; the parameter name of the exception is `PropertyPointer`), the `detail` is empty or consists only of white-space characters (the parameter name of the exception is `Detail`), the `detailTemplateId` is empty, consists only of white-space characters or starts or ends with white space, a name in `detailNamedValues` is empty, starts or ends with white space, is repeated, or differs only in case from another name (e.g., `Min` and `min`), or `detailNamedValues` are passed without a `detailTemplateId`.
+The `propertyPointer` is not a *JSON Pointer* (e.g., `Email` or `Items[0].Name`), the `detail` is empty or consists only of white-space characters, the `detailTemplateId` is empty, consists only of white-space characters or starts or ends with white space, a name in `detailNamedValues` is empty, starts or ends with white space, is repeated, or differs only in case from another name (e.g., `Min` and `min`), or `detailNamedValues` are passed without a `detailTemplateId`.
 
 In both cases nothing is appended.
 

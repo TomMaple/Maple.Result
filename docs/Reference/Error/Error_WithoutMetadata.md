@@ -16,7 +16,7 @@ These methods **do not modify** the current instance; they return a new [Error](
 
 
 ## WithoutMetadata()
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L394" target="_blank">Error.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L400" target="_blank">Error.cs</a>
 
 Returns a copy of the current error without any metadata.
 
@@ -37,7 +37,7 @@ var publicError = error.WithoutMetadata();
 
 
 ## WithoutMetadata(String)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L410" target="_blank">Error.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L417" target="_blank">Error.cs</a>
 
 Returns a copy of the current error without the [Metadata](Error_Metadata.md) entry of the specified key.
 
@@ -59,12 +59,8 @@ A new instance of the [Error](Error.md) record without the entry. If the key is 
 
 The `key` is `null`.
 
-[ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception)
-
-The `key` is empty or consists only of white-space characters.
-
 ### Remarks
-Keys are compared ordinally (case-sensitive). An absent key is not an error.
+Keys are compared ordinally (case-sensitive). An absent key is not an error, and neither is a key that cannot be stored (e.g., an empty one or `type`): only a `null` key throws.
 
 ### Examples
 ```csharp
