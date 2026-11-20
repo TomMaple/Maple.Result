@@ -137,7 +137,7 @@ public class ErrorUnitTests
     #region WithErrorDetail
 
     [Fact]
-    public void WithErrorDetail_TemplateIdWithoutNamedValues_AddsDetailWithNullParameters()
+    public void WithErrorDetail_TemplateIdWithoutParameters_AddsDetailWithNullParameters()
     {
         // Arrange
         var sut = Sut.Validation(ErrorUri.None, "Test title");
@@ -251,7 +251,7 @@ public class ErrorUnitTests
     }
 
     [Fact]
-    public void WithErrorDetail_NamedValuesWithoutTemplateId_ThrowsArgumentException()
+    public void WithErrorDetail_ParametersWithoutTemplateId_ThrowsArgumentException()
     {
         // Arrange
         var sut = Sut.Validation(ErrorUri.None, "Test title");
@@ -264,7 +264,7 @@ public class ErrorUnitTests
         exception.ShouldBeOfType<ArgumentException>();
         var argumentException = exception as ArgumentException;
         argumentException.ShouldNotBeNull();
-        argumentException.ParamName.ShouldBe("detailNamedValues");
+        argumentException.ParamName.ShouldBe("detailParameters");
     }
     [Fact]
     public void WithErrorDetail_NullDetailText_ThrowsArgumentNullException()
@@ -2183,7 +2183,7 @@ public class ErrorUnitTests
         exception.ShouldBeOfType<ArgumentException>();
         var argumentException = exception as ArgumentException;
         argumentException.ShouldNotBeNull();
-        argumentException.ParamName.ShouldBe("detailNamedValues");
+        argumentException.ParamName.ShouldBe("detailParameters");
     }
 
     #endregion

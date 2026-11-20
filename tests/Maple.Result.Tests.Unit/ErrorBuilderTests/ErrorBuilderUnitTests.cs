@@ -303,7 +303,7 @@ public class ErrorBuilderUnitTests
     }
 
     [Fact]
-    public void WithDetailTemplated_TemplateIdAndNamedValues_BuildsTemplatedMessage()
+    public void WithDetailTemplated_TemplateIdAndParameters_BuildsTemplatedMessage()
     {
         // Act
         var result = Sut.Validation(ErrorUri.None, "Test title")
@@ -389,7 +389,7 @@ public class ErrorBuilderUnitTests
     #region AddErrorDetail
 
     [Fact]
-    public void AddErrorDetail_TemplateIdWithoutNamedValues_BuildsDetailWithNullParameters()
+    public void AddErrorDetail_TemplateIdWithoutParameters_BuildsDetailWithNullParameters()
     {
         // Act
         var result = Sut.Validation(ErrorUri.None, "Test title")
@@ -435,7 +435,7 @@ public class ErrorBuilderUnitTests
     }
 
     [Fact]
-    public void AddErrorDetail_MessageIdAndNamedValues_BuildsTemplatedDetail()
+    public void AddErrorDetail_MessageIdAndParameters_BuildsTemplatedDetail()
     {
         // Act
         var result = Sut.Validation(ErrorUri.None, "Test title")
@@ -454,7 +454,7 @@ public class ErrorBuilderUnitTests
     }
 
     [Fact]
-    public void AddErrorDetail_NamedValuesWithoutTemplateId_ThrowsArgumentExceptionAndAddsNothing()
+    public void AddErrorDetail_ParametersWithoutTemplateId_ThrowsArgumentExceptionAndAddsNothing()
     {
         // Arrange
         var sut = Sut.Validation(ErrorUri.None, "Test title");
@@ -467,12 +467,12 @@ public class ErrorBuilderUnitTests
         exception.ShouldBeOfType<ArgumentException>();
         var argumentException = exception as ArgumentException;
         argumentException.ShouldNotBeNull();
-        argumentException.ParamName.ShouldBe("detailNamedValues");
+        argumentException.ParamName.ShouldBe("detailParameters");
         sut.Build().ErrorDetails.ShouldBeEmpty();
     }
 
     [Fact]
-    public void AddErrorDetail_NoTemplateIdAndNoNamedValues_AddsDetailWithoutTemplate()
+    public void AddErrorDetail_NoTemplateIdAndNoParameters_AddsDetailWithoutTemplate()
     {
         // Act
         var result = Sut.Validation(ErrorUri.None, "Test title")
@@ -500,7 +500,7 @@ public class ErrorBuilderUnitTests
         var argumentException = exception as ArgumentException;
         argumentException.ShouldNotBeNull();
         exception.Message.ShouldContain("‘min’ is repeated");
-        argumentException.ParamName.ShouldBe("detailNamedValues");
+        argumentException.ParamName.ShouldBe("detailParameters");
     }
 
     [Fact]
@@ -1091,7 +1091,7 @@ public class ErrorBuilderUnitTests
         exception.ShouldBeOfType<ArgumentException>();
         var argumentException = exception as ArgumentException;
         argumentException.ShouldNotBeNull();
-        argumentException.ParamName.ShouldBe("namedValues");
+        argumentException.ParamName.ShouldBe("parameters");
     }
 
     [Theory]
@@ -1154,7 +1154,7 @@ public class ErrorBuilderUnitTests
         exception.ShouldBeOfType<ArgumentException>();
         var argumentException = exception as ArgumentException;
         argumentException.ShouldNotBeNull();
-        argumentException.ParamName.ShouldBe("detailNamedValues");
+        argumentException.ParamName.ShouldBe("detailParameters");
         sut.Build().ErrorDetails.ShouldBeEmpty();
     }
 

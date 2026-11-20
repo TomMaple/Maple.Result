@@ -218,7 +218,7 @@ public class TemplatedMessageParamNameCaseUnitTests
     #region the methods that create a templated message
 
     [Fact]
-    public void ErrorWithErrorDetail_NamedValuesDifferingOnlyInCase_ThrowsArgumentException()
+    public void ErrorWithErrorDetail_ParametersDifferingOnlyInCase_ThrowsArgumentException()
     {
         // Arrange
         var sut = Error.Validation(ErrorUri.None, "Invalid");
@@ -230,11 +230,11 @@ public class TemplatedMessageParamNameCaseUnitTests
         exception.ShouldBeOfType<ArgumentException>();
         var argumentException = exception as ArgumentException;
         argumentException.ShouldNotBeNull();
-        argumentException.ParamName.ShouldBe("detailNamedValues");
+        argumentException.ParamName.ShouldBe("detailParameters");
     }
 
     [Fact]
-    public void ErrorBuilderWithDetailTemplated_NamedValuesDifferingOnlyInCase_ThrowsArgumentException()
+    public void ErrorBuilderWithDetailTemplated_ParametersDifferingOnlyInCase_ThrowsArgumentException()
     {
         // Arrange
         var sut = ErrorBuilder.Validation(ErrorUri.None, "Invalid");
@@ -246,11 +246,11 @@ public class TemplatedMessageParamNameCaseUnitTests
         exception.ShouldBeOfType<ArgumentException>();
         var argumentException = exception as ArgumentException;
         argumentException.ShouldNotBeNull();
-        argumentException.ParamName.ShouldBe("namedValues");
+        argumentException.ParamName.ShouldBe("parameters");
     }
 
     [Fact]
-    public void ErrorBuilderAddErrorDetail_NamedValuesDifferingOnlyInCase_ThrowsArgumentException()
+    public void ErrorBuilderAddErrorDetail_ParametersDifferingOnlyInCase_ThrowsArgumentException()
     {
         // Arrange
         var sut = ErrorBuilder.Validation(ErrorUri.None, "Invalid");
@@ -262,7 +262,7 @@ public class TemplatedMessageParamNameCaseUnitTests
         exception.ShouldBeOfType<ArgumentException>();
         var argumentException = exception as ArgumentException;
         argumentException.ShouldNotBeNull();
-        argumentException.ParamName.ShouldBe("detailNamedValues");
+        argumentException.ParamName.ShouldBe("detailParameters");
     }
 
     #endregion
