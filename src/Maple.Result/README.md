@@ -69,11 +69,11 @@ Result sendResult = await GetContactAsync(id)
 ```
 
 ## Additional documentation
-* [Results](https://github.com/TomMaple/Maple.Result/blob/main/docs/guide/results.md) — returning and reading a `Result` and a `Result<T>`
-* [Errors](https://github.com/TomMaple/Maple.Result/blob/main/docs/guide/errors.md) — categories, properties, *URI*s, error details, metadata, `ErrorBuilder` and localization
-* [Chaining operations](https://github.com/TomMaple/Maple.Result/blob/main/docs/guide/chaining.md) — extension methods, asynchronous operations, the query syntax and `Result.Try()`
+* [Results](https://github.com/TomMaple/Maple.Result/blob/main/docs/guides/results.md) — returning and reading a `Result` and a `Result<T>`
+* [Errors](https://github.com/TomMaple/Maple.Result/blob/main/docs/guides/errors.md) — categories, properties, *URI*s, error details, metadata, `ErrorBuilder` and localization
+* [Chaining operations](https://github.com/TomMaple/Maple.Result/blob/main/docs/guides/chaining.md) — extension methods, asynchronous operations, the query syntax and `Result.Try()`
 * [Analyzer](https://github.com/TomMaple/Maple.Result/blob/main/docs/Analyzers/README.md) — the rules MR0001 to MR0006, their code fixes and their configuration
-* [The Result pattern](https://github.com/TomMaple/Maple.Result/blob/main/docs/guide/result-pattern.md) — benefits, a comparison with exceptions, and articles
+* [The Result pattern](https://github.com/TomMaple/Maple.Result/blob/main/docs/guides/result-pattern.md) — benefits, a comparison with exceptions, and articles
 * [Problem details format](https://github.com/TomMaple/Maple.Result/blob/main/docs/problem-details.md) — how an `Error` is written as an RFC 9457 problem details object and read back
 * [Reference](https://github.com/TomMaple/Maple.Result/blob/main/docs/Reference/namespace.md) — every type and member
 
