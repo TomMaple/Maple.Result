@@ -66,6 +66,8 @@ Pushes to `main` never publish. The CI workflow only builds, tests and uploads a
 	  link to an earlier release opens a declaration that changed (link that member to `main` first);
 	* check the result: `python .github/scripts/check_reference_docs.py --release X.Y.Z`;
 	* when the release changes analyzer rules, move them in the same pull request (see *The analyzer rules* below);
+	* when a release that is not a pre-release was published since the baseline of the package validation, raise
+	  `PackageValidationBaselineVersion` to it in the same pull request (see *Package validation* below);
 	* title: `docs: Pinned the source links of the reference pages to vX.Y.Z`.
 
 	Until the release is published, the links name a tag that does not exist yet, so they do not open on GitHub: draft
@@ -113,6 +115,24 @@ The analyzer rules:
   *Publish* workflow builds with `-p:MapleResultHelpLinkRef=vX.Y.Z` (the property becomes the constant
   `Rules.HelpLinkRef`), so a published package opens the pages at the tag of its own release. Nothing has to change at
   a release.
+
+Package validation:
+* `dotnet pack` validates the package (`EnablePackageValidation` in `src/Maple.Result/Maple.Result.csproj`) and
+  compares its public API with the package of the baseline version (`PackageValidationBaselineVersion`): a removed
+  member or a changed signature fails the pack, in CI and in *Publish*. It catches a breaking change that was committed
+  without `!`, which would otherwise be released as a minor or a patch version.
+* The baseline is the latest published release that is not a pre-release. The *Prepare* pull request raises it after
+  every such release (e.g., to `3.1.0` when preparing `3.1.1` or `3.2.0-rc.1`), so that each release keeps the API of
+  the one before it, not only that of the first release of its major version: a member added in 3.1 and removed in 3.2
+  is caught too. A pre-release is never the baseline, as the API of a release candidate may still change before the
+  release.
+* The baseline package is restored from nuget.org, so a version that is not published yet cannot be the baseline: the
+  restore fails with `NU1102`. Until 3.0.0 is published, the project has no baseline and only the package itself is
+  validated; the *Prepare* pull request of the first release after 3.0.0 sets it to `3.0.0`.
+* An intended breaking change of the next major version: generate the suppressions with
+  `dotnet pack src/Maple.Result/Maple.Result.csproj -c Release -p:GenerateCompatibilitySuppressionFile=true` and commit
+  `src/Maple.Result/CompatibilitySuppressions.xml` with the change, so that each break is listed and reviewed in its
+  pull request. The *Prepare* pull request that raises the baseline to the new major version deletes the file.
 
 ## C#
 1. Source code
