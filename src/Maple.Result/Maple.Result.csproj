@@ -12,12 +12,18 @@
 
     <PackageId>Maple.Result</PackageId>
     <Title>Maple.Result — Result pattern with RFC 9457 errors</Title>
-    <Description>An abstraction which contains the value or the error of the operation. It can be mapped to the HTTP response if needed.</Description>
+    <Description>Result pattern for .NET: Result and Result&lt;T&gt; with RFC 9457 problem details errors, chaining (synchronous, asynchronous and LINQ), localization and a built-in analyzer. No dependencies; Native AOT and trimming compatible.</Description>
     <Authors>Tom Maple</Authors>
+    <Copyright>Copyright (c) Tom Maple</Copyright>
     <PackageIcon>icon.png</PackageIcon>
-    <PackageTags>Result;Error;RFC-9457;RFC-7807</PackageTags>
+    <PackageTags>result;result-pattern;error;error-handling;problem-details;rfc9457;rfc7807;railway-oriented-programming;functional;validation;aot</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReleaseNotes>https://github.com/TomMaple/Maple.Result/releases</PackageReleaseNotes>
+
+    <!-- Checks the package when it is packed. The baseline (PackageValidationBaselineVersion = 3.0.0, the API that later versions must
+         keep) is set once 3.0.0 is on nuget.org: the restore downloads it and fails before (#334). -->
+    <EnablePackageValidation>true</EnablePackageValidation>
 
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
