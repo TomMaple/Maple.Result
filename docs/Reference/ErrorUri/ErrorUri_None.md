@@ -27,7 +27,7 @@ var error = Error.Failure(ErrorUri.None, "The operation could not be completed."
 ```
 
 ```csharp
-if (error.TypeUri == ErrorUri.None.Value)
+if (error.TypeUri == ErrorUri.None)
 {
     // A problem without a specific type: the HTTP status code says it all.
 }

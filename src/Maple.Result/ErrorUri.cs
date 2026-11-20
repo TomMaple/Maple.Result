@@ -68,8 +68,8 @@ public readonly record struct ErrorUri : IParsable<ErrorUri>
     ///     Initializes a new instance of the <see cref="ErrorUri" /> record with the provided value, without validating it.
     /// </summary>
     /// <remarks>
-    ///     Used by the factory methods (<see cref="None" />, <see cref="Locator" />, <see cref="Tag" />, <see cref="Urn" />, <see cref="Relative" />)
-    ///     after validation, and for values taken from an existing <see cref="Error" />, which were validated when it was created.
+    ///     Used by the factory methods (<see cref="None" />, <see cref="Locator" />, <see cref="Tag" />, <see cref="Urn" />, <see cref="Relative" />,
+    ///     <see cref="Other" />) and by <see cref="TryParse" />, after validation.
     /// </remarks>
     internal ErrorUri(string value)
     {

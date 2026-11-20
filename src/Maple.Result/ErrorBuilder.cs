@@ -90,13 +90,11 @@ public sealed class ErrorBuilder
     internal ErrorBuilder(Error error)
     {
         _category = error.Category;
-        _typeUri = new ErrorUri(error.TypeUri);
+        _typeUri = error.TypeUri;
         _title = error.Title;
         _detail = error.Detail;
         _detailTemplated = error.DetailTemplated;
-        _instanceUri = error.InstanceUri is null
-            ? null
-            : new ErrorUri(error.InstanceUri);
+        _instanceUri = error.InstanceUri;
 
         _builtErrorDetails = error.ErrorDetailsCollection;
         _builtMetadata = error.MetadataDictionary;
@@ -577,7 +575,7 @@ public sealed class ErrorBuilder
             _pendingMetadata = null;
         }
 
-        return new Error(_category, _typeUri.Value, _title, _detail, _detailTemplated, _instanceUri?.Value, _builtErrorDetails, _builtMetadata);
+        return new Error(_category, _typeUri, _title, _detail, _detailTemplated, _instanceUri, _builtErrorDetails, _builtMetadata);
     }
 
     #region helper methods

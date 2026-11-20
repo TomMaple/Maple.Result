@@ -69,11 +69,11 @@ See more: [ErrorCategory](../Reference/ErrorCategory.md)
 | Property | Type | Description | Required | Example |
 | -------- | ---- | ----------- | -------- | ------- |
 | `Category` | `ErrorCategory` | A category of the error (one of predefined). | Yes | `ErrorCategory.Validation` |
-| `TypeUri` | `string` | A *URI* that identifies the type of the problem. When dereferenced, provides human-readable documentation about the problem. | Yes | `https://app.example.com/errors/user/invalid-email` |
+| `TypeUri` | `ErrorUri` | A *URI* that identifies the type of the problem. When dereferenced, provides human-readable documentation about the problem. | Yes | `https://app.example.com/errors/user/invalid-email` |
 | `Title` | `string` | A short, human-readable summary of the problem type. It stays the same for the same type of error. | Yes | The provided value is not a valid email. |
 | `Detail` | `string` | The human-readable explanation specific to this occurrence of the problem. | No | Special character `/` is not allowed in the email address. |
 | `DetailTemplated` | `TemplatedMessage` | A structure to generate a localized detail message. | No | `{ "templateId": "errors.signup.email.specialcharacters", "params": { "invalidCharacter": "/" }}` |
-| `InstanceUri` | `string` | A *URI* that identifies the specific occurrence of the problem. | No | `https://api.exampleapp.com/errors/8783927589734857/details` |
+| `InstanceUri` | `ErrorUri?` | A *URI* that identifies the specific occurrence of the problem. | No | `https://api.exampleapp.com/errors/8783927589734857/details` |
 | `ErrorDetails` | `IReadOnlyList<ErrorDetail>` | The collection of additional error details. | No | `[{ "propertyPointer": "/email", "detail": "Invalid format", "detailTemplated": { "templateId": "errors.signup.email.invalidFormat" }}]` |
 | `Metadata` | `IReadOnlyDictionary<string, object?>` | Additional, machine-readable members of the problem (RFC 9457 *extension members*). | No | `{ "limit": 100, "resetAt": "2026-12-01T00:00:00Z" }` |
 
@@ -88,6 +88,20 @@ It is a mandatory URI that identifies the type of the problem. It can be:
 * relative reference (`ErrorUri.Relative(…)`) — a full path resolved against the base URI of the response (e.g., `/errors/signup/email-required`); RFC 9457 recommends absolute URIs when possible.
 
 When the kind is not known in advance (e.g., a type URI read from another service), `ErrorUri.Parse(…)` and `ErrorUri.TryParse(…)` detect it from the value and apply the same validation. A URI with any other scheme (e.g., `mailto:`, which RFC 9457 allows) becomes `ErrorUri.Other(…)`.
+
+The error keeps the `ErrorUri` it was created with, so define each type once and compare an error with it; the text of the URI is its `Value`:
+
+```csharp
+public static class OrderErrors
+{
+    public static readonly ErrorUri NotFoundType = ErrorUri.Tag("tag:exampleapp.com,2026:errors:order:not-found");
+}
+
+if (error.TypeUri == OrderErrors.NotFoundType)
+{
+    logger.LogWarning("Order not found ({Type})", error.TypeUri.Value);
+}
+```
 
 See more: [ErrorUri](../Reference/ErrorUri/ErrorUri.md)
 

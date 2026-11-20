@@ -29,7 +29,7 @@ public class ErrorUnitTests
         var sut = Sut.Validation(default, "Test title");
 
         // Assert
-        sut.TypeUri.ShouldBe(ExpectedTypeUri);
+        sut.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
     }
 
     [Fact]
@@ -39,7 +39,7 @@ public class ErrorUnitTests
         var sut = Sut.Validation(ErrorUri.Urn("urn:example:errors:out-of-credit"), "Test title");
 
         // Assert
-        sut.TypeUri.ShouldBe("urn:example:errors:out-of-credit");
+        sut.TypeUri.ShouldBe(ErrorUri.Urn("urn:example:errors:out-of-credit"));
     }
 
     [Fact]
@@ -49,7 +49,7 @@ public class ErrorUnitTests
         var sut = Sut.Validation(ErrorUri.None, "Test title", instanceUri: ErrorUri.Relative("/account/12345/msgs/abc"));
 
         // Assert
-        sut.InstanceUri.ShouldBe("/account/12345/msgs/abc");
+        sut.InstanceUri.ShouldBe(ErrorUri.Relative("/account/12345/msgs/abc"));
     }
 
     [Fact]
@@ -557,6 +557,118 @@ public class ErrorUnitTests
         result.ShouldBe(Expected);
     }
 
+    [Fact]
+    public void ToString_TypeAndInstanceUri_WritesTheirValues()
+    {
+        // Arrange
+        const string Expected = "Error { Category = NotFound, TypeUri = tag:test.com,2024:Test, Title = Missing, Detail = , "
+            + "DetailTemplated = , InstanceUri = /account/12345/msgs/abc, ErrorDetails = [], Metadata = {} }";
+
+        var sut = Sut.NotFound(ErrorUri.Tag("tag:test.com,2024:Test"), "Missing",
+            instanceUri: ErrorUri.Relative("/account/12345/msgs/abc"));
+
+        // Act
+        var result = sut.ToString();
+
+        // Assert
+        result.ShouldBe(Expected);
+    }
+
+    #endregion
+
+    #region TypeUri and InstanceUri
+
+    /// <summary>
+    ///     A type <i>URI</i> and an instance <i>URI</i> of each kind, and an error without an instance <i>URI</i>.
+    /// </summary>
+    public static readonly TheoryData<ErrorUri, ErrorUri?> TypeAndInstanceUris = new()
+    {
+        { ErrorUri.Tag("tag:test.com,2024:Test"), ErrorUri.Locator("http://test.com/instance/1013") },
+        { ErrorUri.Urn("urn:example:errors:out-of-credit"), ErrorUri.Relative("/account/12345/msgs/abc") },
+        { ErrorUri.Locator("https://example.com/probs/out-of-credit"), ErrorUri.Other("mailto:support@example.com") },
+        { ErrorUri.Relative("/errors/out-of-credit"), ErrorUri.Urn("urn:uuid:6e8bc430-9c3a-11d9-9669-0800200c9a66") },
+        { ErrorUri.None, null },
+    };
+
+    [Theory]
+    [InlineData(nameof(Sut.TypeUri), typeof(ErrorUri))]
+    [InlineData(nameof(Sut.InstanceUri), typeof(ErrorUri?))]
+    public void UriProperty_Always_IsAnErrorUri(string propertyName, Type expectedType)
+    {
+        // Act
+        var property = typeof(Sut).GetProperty(propertyName);
+
+        // Assert
+        property.ShouldNotBeNull();
+        property.PropertyType.ShouldBe(expectedType);
+    }
+
+    [Theory]
+    [MemberData(nameof(TypeAndInstanceUris))]
+    public void Factory_TypeAndInstanceUri_KeepsTheErrorUris(ErrorUri typeUri, ErrorUri? instanceUri)
+    {
+        // Act
+        var sut = Sut.Conflict(typeUri, "Test title", instanceUri: instanceUri);
+
+        // Assert
+        sut.TypeUri.ShouldBe(typeUri);
+        sut.InstanceUri.ShouldBe(instanceUri);
+    }
+
+    [Theory]
+    [MemberData(nameof(TypeAndInstanceUris))]
+    public void ToBuilder_BuildWithoutChanges_KeepsTheErrorUris(ErrorUri typeUri, ErrorUri? instanceUri)
+    {
+        // Arrange
+        var sut = Sut.Conflict(typeUri, "Test title", instanceUri: instanceUri);
+
+        // Act
+        var result = sut.ToBuilder().Build();
+
+        // Assert
+        result.TypeUri.ShouldBe(typeUri);
+        result.InstanceUri.ShouldBe(instanceUri);
+    }
+
+    [Theory]
+    [InlineData(nameof(Sut.WithErrorDetail))]
+    [InlineData(nameof(Sut.WithMetadata))]
+    [InlineData(nameof(Sut.WithoutMetadata))]
+    public void Copy_AnyChange_KeepsTheErrorUris(string copyMethod)
+    {
+        // Arrange
+        var typeUri = ErrorUri.Tag("tag:test.com,2024:Test");
+        var instanceUri = ErrorUri.Locator("http://test.com/instance/1013");
+        var sut = Sut.Conflict(typeUri, "Test title", instanceUri: instanceUri).WithMetadata("key", "value");
+
+        // Act
+        var result = copyMethod switch
+        {
+            nameof(Sut.WithErrorDetail) => sut.WithErrorDetail("#/property", "Detail"),
+            nameof(Sut.WithMetadata) => sut.WithMetadata("retryAfter", 30),
+            _ => sut.WithoutMetadata()
+        };
+
+        // Assert
+        result.ShouldNotBe(sut);
+        result.TypeUri.ShouldBe(typeUri);
+        result.InstanceUri.ShouldBe(instanceUri);
+    }
+
+    [Fact]
+    public void TypeUri_ComparedWithTheDefinedType_IsEqual()
+    {
+        // Arrange
+        var notFoundType = ErrorUri.Tag("tag:test.com,2024:NotFound");
+        var sut = Sut.NotFound(notFoundType, "Not found");
+
+        // Act
+        var result = sut.TypeUri == notFoundType;
+
+        // Assert
+        result.ShouldBeTrue();
+    }
+
     #endregion
 
     #region factory methods
@@ -586,7 +698,7 @@ public class ErrorUnitTests
         sut.ErrorDetails.Count.ShouldBe(ExpectedErrorDetailsCount);
         sut.InstanceUri.ShouldBeNull();
         sut.Title.ShouldBe(ExpectedTitle);
-        sut.TypeUri.ShouldBe(ExpectedTypeUri);
+        sut.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
     }
 
     [Fact]
@@ -629,9 +741,9 @@ public class ErrorUnitTests
         sut.DetailTemplated.Params[ExpectedDetailParam2Key].ShouldBe(ExpectedDetailParam2Value);
         sut.ErrorDetails.ShouldNotBeNull();
         sut.ErrorDetails.Count.ShouldBe(ExpectedErrorDetailsCount);
-        sut.InstanceUri.ShouldBe(ExpectedInstance);
+        sut.InstanceUri.ShouldBe(ErrorUri.Parse(ExpectedInstance));
         sut.Title.ShouldBe(ExpectedTitle);
-        sut.TypeUri.ShouldBe(ExpectedTypeUri);
+        sut.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
     }
 
     [Fact]
@@ -678,9 +790,9 @@ public class ErrorUnitTests
         sut.DetailTemplated.Params[ExpectedDetailParam2Key].ShouldBe(ExpectedDetailParam2Value);
         sut.ErrorDetails.ShouldNotBeNull();
         sut.ErrorDetails.Count.ShouldBe(ExpectedErrorDetailsCount);
-        sut.InstanceUri.ShouldBe(ExpectedInstance);
+        sut.InstanceUri.ShouldBe(ErrorUri.Parse(ExpectedInstance));
         sut.Title.ShouldBe(ExpectedTitle);
-        sut.TypeUri.ShouldBe(ExpectedTypeUri);
+        sut.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
     }
 
     #endregion
@@ -710,7 +822,7 @@ public class ErrorUnitTests
         sut.ErrorDetails.Count.ShouldBe(ExpectedErrorDetailsCount);
         sut.InstanceUri.ShouldBeNull();
         sut.Title.ShouldBe(ExpectedTitle);
-        sut.TypeUri.ShouldBe(ExpectedTypeUri);
+        sut.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
     }
 
     [Fact]
@@ -753,9 +865,9 @@ public class ErrorUnitTests
         sut.DetailTemplated.Params[ExpectedDetailParam2Key].ShouldBe(ExpectedDetailParam2Value);
         sut.ErrorDetails.ShouldNotBeNull();
         sut.ErrorDetails.Count.ShouldBe(ExpectedErrorDetailsCount);
-        sut.InstanceUri.ShouldBe(ExpectedInstance);
+        sut.InstanceUri.ShouldBe(ErrorUri.Parse(ExpectedInstance));
         sut.Title.ShouldBe(ExpectedTitle);
-        sut.TypeUri.ShouldBe(ExpectedTypeUri);
+        sut.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
     }
 
     [Fact]
@@ -802,9 +914,9 @@ public class ErrorUnitTests
         sut.DetailTemplated.Params[ExpectedDetailParam2Key].ShouldBe(ExpectedDetailParam2Value);
         sut.ErrorDetails.ShouldNotBeNull();
         sut.ErrorDetails.Count.ShouldBe(ExpectedErrorDetailsCount);
-        sut.InstanceUri.ShouldBe(ExpectedInstance);
+        sut.InstanceUri.ShouldBe(ErrorUri.Parse(ExpectedInstance));
         sut.Title.ShouldBe(ExpectedTitle);
-        sut.TypeUri.ShouldBe(ExpectedTypeUri);
+        sut.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
     }
 
     #endregion
@@ -834,7 +946,7 @@ public class ErrorUnitTests
         sut.ErrorDetails.Count.ShouldBe(ExpectedErrorDetailsCount);
         sut.InstanceUri.ShouldBeNull();
         sut.Title.ShouldBe(ExpectedTitle);
-        sut.TypeUri.ShouldBe(ExpectedTypeUri);
+        sut.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
     }
 
     [Fact]
@@ -877,9 +989,9 @@ public class ErrorUnitTests
         sut.DetailTemplated.Params[ExpectedDetailParam2Key].ShouldBe(ExpectedDetailParam2Value);
         sut.ErrorDetails.ShouldNotBeNull();
         sut.ErrorDetails.Count.ShouldBe(ExpectedErrorDetailsCount);
-        sut.InstanceUri.ShouldBe(ExpectedInstance);
+        sut.InstanceUri.ShouldBe(ErrorUri.Parse(ExpectedInstance));
         sut.Title.ShouldBe(ExpectedTitle);
-        sut.TypeUri.ShouldBe(ExpectedTypeUri);
+        sut.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
     }
 
     [Fact]
@@ -926,9 +1038,9 @@ public class ErrorUnitTests
         sut.DetailTemplated.Params[ExpectedDetailParam2Key].ShouldBe(ExpectedDetailParam2Value);
         sut.ErrorDetails.ShouldNotBeNull();
         sut.ErrorDetails.Count.ShouldBe(ExpectedErrorDetailsCount);
-        sut.InstanceUri.ShouldBe(ExpectedInstance);
+        sut.InstanceUri.ShouldBe(ErrorUri.Parse(ExpectedInstance));
         sut.Title.ShouldBe(ExpectedTitle);
-        sut.TypeUri.ShouldBe(ExpectedTypeUri);
+        sut.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
     }
 
     #endregion
@@ -958,7 +1070,7 @@ public class ErrorUnitTests
         sut.ErrorDetails.Count.ShouldBe(ExpectedErrorDetailsCount);
         sut.InstanceUri.ShouldBeNull();
         sut.Title.ShouldBe(ExpectedTitle);
-        sut.TypeUri.ShouldBe(ExpectedTypeUri);
+        sut.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
     }
 
     [Fact]
@@ -1001,9 +1113,9 @@ public class ErrorUnitTests
         sut.DetailTemplated.Params[ExpectedDetailParam2Key].ShouldBe(ExpectedDetailParam2Value);
         sut.ErrorDetails.ShouldNotBeNull();
         sut.ErrorDetails.Count.ShouldBe(ExpectedErrorDetailsCount);
-        sut.InstanceUri.ShouldBe(ExpectedInstance);
+        sut.InstanceUri.ShouldBe(ErrorUri.Parse(ExpectedInstance));
         sut.Title.ShouldBe(ExpectedTitle);
-        sut.TypeUri.ShouldBe(ExpectedTypeUri);
+        sut.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
     }
 
     [Fact]
@@ -1050,9 +1162,9 @@ public class ErrorUnitTests
         sut.DetailTemplated.Params[ExpectedDetailParam2Key].ShouldBe(ExpectedDetailParam2Value);
         sut.ErrorDetails.ShouldNotBeNull();
         sut.ErrorDetails.Count.ShouldBe(ExpectedErrorDetailsCount);
-        sut.InstanceUri.ShouldBe(ExpectedInstance);
+        sut.InstanceUri.ShouldBe(ErrorUri.Parse(ExpectedInstance));
         sut.Title.ShouldBe(ExpectedTitle);
-        sut.TypeUri.ShouldBe(ExpectedTypeUri);
+        sut.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
     }
 
     #endregion
@@ -1082,7 +1194,7 @@ public class ErrorUnitTests
         sut.ErrorDetails.Count.ShouldBe(ExpectedErrorDetailsCount);
         sut.InstanceUri.ShouldBeNull();
         sut.Title.ShouldBe(ExpectedTitle);
-        sut.TypeUri.ShouldBe(ExpectedTypeUri);
+        sut.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
     }
 
     [Fact]
@@ -1125,9 +1237,9 @@ public class ErrorUnitTests
         sut.DetailTemplated.Params[ExpectedDetailParam2Key].ShouldBe(ExpectedDetailParam2Value);
         sut.ErrorDetails.ShouldNotBeNull();
         sut.ErrorDetails.Count.ShouldBe(ExpectedErrorDetailsCount);
-        sut.InstanceUri.ShouldBe(ExpectedInstance);
+        sut.InstanceUri.ShouldBe(ErrorUri.Parse(ExpectedInstance));
         sut.Title.ShouldBe(ExpectedTitle);
-        sut.TypeUri.ShouldBe(ExpectedTypeUri);
+        sut.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
     }
 
     [Fact]
@@ -1174,9 +1286,9 @@ public class ErrorUnitTests
         sut.DetailTemplated.Params[ExpectedDetailParam2Key].ShouldBe(ExpectedDetailParam2Value);
         sut.ErrorDetails.ShouldNotBeNull();
         sut.ErrorDetails.Count.ShouldBe(ExpectedErrorDetailsCount);
-        sut.InstanceUri.ShouldBe(ExpectedInstance);
+        sut.InstanceUri.ShouldBe(ErrorUri.Parse(ExpectedInstance));
         sut.Title.ShouldBe(ExpectedTitle);
-        sut.TypeUri.ShouldBe(ExpectedTypeUri);
+        sut.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
     }
 
     #endregion
@@ -1206,7 +1318,7 @@ public class ErrorUnitTests
         sut.ErrorDetails.Count.ShouldBe(ExpectedErrorDetailsCount);
         sut.InstanceUri.ShouldBeNull();
         sut.Title.ShouldBe(ExpectedTitle);
-        sut.TypeUri.ShouldBe(ExpectedTypeUri);
+        sut.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
     }
 
     [Fact]
@@ -1249,9 +1361,9 @@ public class ErrorUnitTests
         sut.DetailTemplated.Params[ExpectedDetailParam2Key].ShouldBe(ExpectedDetailParam2Value);
         sut.ErrorDetails.ShouldNotBeNull();
         sut.ErrorDetails.Count.ShouldBe(ExpectedErrorDetailsCount);
-        sut.InstanceUri.ShouldBe(ExpectedInstance);
+        sut.InstanceUri.ShouldBe(ErrorUri.Parse(ExpectedInstance));
         sut.Title.ShouldBe(ExpectedTitle);
-        sut.TypeUri.ShouldBe(ExpectedTypeUri);
+        sut.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
     }
 
     [Fact]
@@ -1298,9 +1410,9 @@ public class ErrorUnitTests
         sut.DetailTemplated.Params[ExpectedDetailParam2Key].ShouldBe(ExpectedDetailParam2Value);
         sut.ErrorDetails.ShouldNotBeNull();
         sut.ErrorDetails.Count.ShouldBe(ExpectedErrorDetailsCount);
-        sut.InstanceUri.ShouldBe(ExpectedInstance);
+        sut.InstanceUri.ShouldBe(ErrorUri.Parse(ExpectedInstance));
         sut.Title.ShouldBe(ExpectedTitle);
-        sut.TypeUri.ShouldBe(ExpectedTypeUri);
+        sut.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
     }
 
     #endregion
@@ -1330,7 +1442,7 @@ public class ErrorUnitTests
         sut.ErrorDetails.Count.ShouldBe(ExpectedErrorDetailsCount);
         sut.InstanceUri.ShouldBeNull();
         sut.Title.ShouldBe(ExpectedTitle);
-        sut.TypeUri.ShouldBe(ExpectedTypeUri);
+        sut.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
     }
 
     [Fact]
@@ -1373,9 +1485,9 @@ public class ErrorUnitTests
         sut.DetailTemplated.Params[ExpectedDetailParam2Key].ShouldBe(ExpectedDetailParam2Value);
         sut.ErrorDetails.ShouldNotBeNull();
         sut.ErrorDetails.Count.ShouldBe(ExpectedErrorDetailsCount);
-        sut.InstanceUri.ShouldBe(ExpectedInstance);
+        sut.InstanceUri.ShouldBe(ErrorUri.Parse(ExpectedInstance));
         sut.Title.ShouldBe(ExpectedTitle);
-        sut.TypeUri.ShouldBe(ExpectedTypeUri);
+        sut.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
     }
 
     [Fact]
@@ -1422,9 +1534,9 @@ public class ErrorUnitTests
         sut.DetailTemplated.Params[ExpectedDetailParam2Key].ShouldBe(ExpectedDetailParam2Value);
         sut.ErrorDetails.ShouldNotBeNull();
         sut.ErrorDetails.Count.ShouldBe(ExpectedErrorDetailsCount);
-        sut.InstanceUri.ShouldBe(ExpectedInstance);
+        sut.InstanceUri.ShouldBe(ErrorUri.Parse(ExpectedInstance));
         sut.Title.ShouldBe(ExpectedTitle);
-        sut.TypeUri.ShouldBe(ExpectedTypeUri);
+        sut.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
     }
 
     #endregion
@@ -1454,7 +1566,7 @@ public class ErrorUnitTests
         sut.ErrorDetails.Count.ShouldBe(ExpectedErrorDetailsCount);
         sut.InstanceUri.ShouldBeNull();
         sut.Title.ShouldBe(ExpectedTitle);
-        sut.TypeUri.ShouldBe(ExpectedTypeUri);
+        sut.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
     }
 
     [Fact]
@@ -1497,9 +1609,9 @@ public class ErrorUnitTests
         sut.DetailTemplated.Params[ExpectedDetailParam2Key].ShouldBe(ExpectedDetailParam2Value);
         sut.ErrorDetails.ShouldNotBeNull();
         sut.ErrorDetails.Count.ShouldBe(ExpectedErrorDetailsCount);
-        sut.InstanceUri.ShouldBe(ExpectedInstance);
+        sut.InstanceUri.ShouldBe(ErrorUri.Parse(ExpectedInstance));
         sut.Title.ShouldBe(ExpectedTitle);
-        sut.TypeUri.ShouldBe(ExpectedTypeUri);
+        sut.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
     }
 
     [Fact]
@@ -1546,9 +1658,9 @@ public class ErrorUnitTests
         sut.DetailTemplated.Params[ExpectedDetailParam2Key].ShouldBe(ExpectedDetailParam2Value);
         sut.ErrorDetails.ShouldNotBeNull();
         sut.ErrorDetails.Count.ShouldBe(ExpectedErrorDetailsCount);
-        sut.InstanceUri.ShouldBe(ExpectedInstance);
+        sut.InstanceUri.ShouldBe(ErrorUri.Parse(ExpectedInstance));
         sut.Title.ShouldBe(ExpectedTitle);
-        sut.TypeUri.ShouldBe(ExpectedTypeUri);
+        sut.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
     }
 
     #endregion
@@ -1578,7 +1690,7 @@ public class ErrorUnitTests
         sut.ErrorDetails.Count.ShouldBe(ExpectedErrorDetailsCount);
         sut.InstanceUri.ShouldBeNull();
         sut.Title.ShouldBe(ExpectedTitle);
-        sut.TypeUri.ShouldBe(ExpectedTypeUri);
+        sut.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
     }
 
     [Fact]
@@ -1621,9 +1733,9 @@ public class ErrorUnitTests
         sut.DetailTemplated.Params[ExpectedDetailParam2Key].ShouldBe(ExpectedDetailParam2Value);
         sut.ErrorDetails.ShouldNotBeNull();
         sut.ErrorDetails.Count.ShouldBe(ExpectedErrorDetailsCount);
-        sut.InstanceUri.ShouldBe(ExpectedInstance);
+        sut.InstanceUri.ShouldBe(ErrorUri.Parse(ExpectedInstance));
         sut.Title.ShouldBe(ExpectedTitle);
-        sut.TypeUri.ShouldBe(ExpectedTypeUri);
+        sut.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
     }
 
     [Fact]
@@ -1670,9 +1782,9 @@ public class ErrorUnitTests
         sut.DetailTemplated.Params[ExpectedDetailParam2Key].ShouldBe(ExpectedDetailParam2Value);
         sut.ErrorDetails.ShouldNotBeNull();
         sut.ErrorDetails.Count.ShouldBe(ExpectedErrorDetailsCount);
-        sut.InstanceUri.ShouldBe(ExpectedInstance);
+        sut.InstanceUri.ShouldBe(ErrorUri.Parse(ExpectedInstance));
         sut.Title.ShouldBe(ExpectedTitle);
-        sut.TypeUri.ShouldBe(ExpectedTypeUri);
+        sut.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
     }
 
     #endregion
@@ -1702,7 +1814,7 @@ public class ErrorUnitTests
         sut.ErrorDetails.Count.ShouldBe(ExpectedErrorDetailsCount);
         sut.InstanceUri.ShouldBeNull();
         sut.Title.ShouldBe(ExpectedTitle);
-        sut.TypeUri.ShouldBe(ExpectedTypeUri);
+        sut.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
     }
 
     [Fact]
@@ -1745,9 +1857,9 @@ public class ErrorUnitTests
         sut.DetailTemplated.Params[ExpectedDetailParam2Key].ShouldBe(ExpectedDetailParam2Value);
         sut.ErrorDetails.ShouldNotBeNull();
         sut.ErrorDetails.Count.ShouldBe(ExpectedErrorDetailsCount);
-        sut.InstanceUri.ShouldBe(ExpectedInstance);
+        sut.InstanceUri.ShouldBe(ErrorUri.Parse(ExpectedInstance));
         sut.Title.ShouldBe(ExpectedTitle);
-        sut.TypeUri.ShouldBe(ExpectedTypeUri);
+        sut.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
     }
 
     [Fact]
@@ -1794,9 +1906,9 @@ public class ErrorUnitTests
         sut.DetailTemplated.Params[ExpectedDetailParam2Key].ShouldBe(ExpectedDetailParam2Value);
         sut.ErrorDetails.ShouldNotBeNull();
         sut.ErrorDetails.Count.ShouldBe(ExpectedErrorDetailsCount);
-        sut.InstanceUri.ShouldBe(ExpectedInstance);
+        sut.InstanceUri.ShouldBe(ErrorUri.Parse(ExpectedInstance));
         sut.Title.ShouldBe(ExpectedTitle);
-        sut.TypeUri.ShouldBe(ExpectedTypeUri);
+        sut.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
     }
 
     #endregion
@@ -1826,7 +1938,7 @@ public class ErrorUnitTests
         sut.ErrorDetails.Count.ShouldBe(ExpectedErrorDetailsCount);
         sut.InstanceUri.ShouldBeNull();
         sut.Title.ShouldBe(ExpectedTitle);
-        sut.TypeUri.ShouldBe(ExpectedTypeUri);
+        sut.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
     }
 
     [Fact]
@@ -1869,9 +1981,9 @@ public class ErrorUnitTests
         sut.DetailTemplated.Params[ExpectedDetailParam2Key].ShouldBe(ExpectedDetailParam2Value);
         sut.ErrorDetails.ShouldNotBeNull();
         sut.ErrorDetails.Count.ShouldBe(ExpectedErrorDetailsCount);
-        sut.InstanceUri.ShouldBe(ExpectedInstance);
+        sut.InstanceUri.ShouldBe(ErrorUri.Parse(ExpectedInstance));
         sut.Title.ShouldBe(ExpectedTitle);
-        sut.TypeUri.ShouldBe(ExpectedTypeUri);
+        sut.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
     }
 
     [Fact]
@@ -1918,9 +2030,9 @@ public class ErrorUnitTests
         sut.DetailTemplated.Params[ExpectedDetailParam2Key].ShouldBe(ExpectedDetailParam2Value);
         sut.ErrorDetails.ShouldNotBeNull();
         sut.ErrorDetails.Count.ShouldBe(ExpectedErrorDetailsCount);
-        sut.InstanceUri.ShouldBe(ExpectedInstance);
+        sut.InstanceUri.ShouldBe(ErrorUri.Parse(ExpectedInstance));
         sut.Title.ShouldBe(ExpectedTitle);
-        sut.TypeUri.ShouldBe(ExpectedTypeUri);
+        sut.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
     }
 
     #endregion
@@ -1968,7 +2080,7 @@ public class ErrorUnitTests
     public void Serialize_AllPropertiesAndMicrosoftSerializer_ReturnsSerializedValueWithAllProperties()
     {
         // Arrange
-        const string ExpectedText = """{"Category":3,"TypeUri":"tag:test.com,2024:Test","Title":"Test title","Detail":"Test description.","DetailTemplated":{"TemplateId":"messageId","Params":{"key1":"value1","key2":"value2"}},"InstanceUri":"http://test.com/instance/1013","ErrorDetails":[{"PropertyPointer":"#/property1","Detail":"Property 1 test detail","DetailTemplated":{"TemplateId":"message-property-id","Params":{"pk1":"pv1","pk2":"pv2"}}}],"Metadata":{}}""";
+        const string ExpectedText = """{"Category":3,"TypeUri":{"Value":"tag:test.com,2024:Test"},"Title":"Test title","Detail":"Test description.","DetailTemplated":{"TemplateId":"messageId","Params":{"key1":"value1","key2":"value2"}},"InstanceUri":{"Value":"http://test.com/instance/1013"},"ErrorDetails":[{"PropertyPointer":"#/property1","Detail":"Property 1 test detail","DetailTemplated":{"TemplateId":"message-property-id","Params":{"pk1":"pv1","pk2":"pv2"}}}],"Metadata":{}}""";
 
         var sut = Sut.NotFound(
             ErrorUri.Tag("tag:test.com,2024:Test"),
@@ -1991,7 +2103,7 @@ public class ErrorUnitTests
     public void Serialize_AllPropertiesAndNewtonsoftSerializer_ReturnsSerializedValueWithAllProperties()
     {
         // Arrange
-        const string ExpectedText = """{"Category":3,"TypeUri":"tag:test.com,2024:Test","Title":"Test title","Detail":"Test description.","DetailTemplated":{"TemplateId":"messageId","Params":{"key1":"value1","key2":"value2"}},"InstanceUri":"http://test.com/instance/1013","ErrorDetails":[{"PropertyPointer":"#/property1","Detail":"Property 1 test detail","DetailTemplated":{"TemplateId":"message-property-id","Params":{"pk1":"pv1","pk2":"pv2"}}}],"Metadata":{}}""";
+        const string ExpectedText = """{"Category":3,"TypeUri":{"Value":"tag:test.com,2024:Test"},"Title":"Test title","Detail":"Test description.","DetailTemplated":{"TemplateId":"messageId","Params":{"key1":"value1","key2":"value2"}},"InstanceUri":{"Value":"http://test.com/instance/1013"},"ErrorDetails":[{"PropertyPointer":"#/property1","Detail":"Property 1 test detail","DetailTemplated":{"TemplateId":"message-property-id","Params":{"pk1":"pv1","pk2":"pv2"}}}],"Metadata":{}}""";
 
         var sut = Sut.NotFound(
             ErrorUri.Tag("tag:test.com,2024:Test"),
