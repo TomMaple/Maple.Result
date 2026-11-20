@@ -8,6 +8,7 @@
     <File Path=".github/scripts/check_reference_docs.py" />
     <File Path=".github/scripts/conventional_commit.py" />
     <File Path=".github/scripts/filter_sarif.py" />
+    <File Path=".github/scripts/pin_reference_links.py" />
     <File Path=".github/scripts/release_state.py" />
     <File Path=".github/scripts/version.py" />
   </Folder>
