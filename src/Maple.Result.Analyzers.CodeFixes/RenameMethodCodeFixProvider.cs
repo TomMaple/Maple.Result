@@ -44,6 +44,9 @@ public sealed class RenameMethodCodeFixProvider : CodeFixProvider
 
     private const string AsyncSuffix = "Async";
 
+    // One key for every rename, so that Fix All applies the fix of each diagnostic: the title names the method, which differs.
+    private const string EquivalenceKey = nameof(RenameMethodCodeFixProvider);
+
     #endregion
 
     /// <inheritdoc />
@@ -92,7 +95,7 @@ public sealed class RenameMethodCodeFixProvider : CodeFixProvider
                 cancellationToken => awaitedCall is null
                     ? RenameAsync(context.Document, name, newName, cancellationToken)
                     : Task.FromResult(context.Document.WithSyntaxRoot(awaitedCall.Apply(root, newName))),
-                equivalenceKey: title);
+                equivalenceKey: EquivalenceKey);
             context.RegisterCodeFix(action, diagnostic);
         }
     }
