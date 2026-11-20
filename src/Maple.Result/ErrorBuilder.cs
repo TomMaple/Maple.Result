@@ -401,6 +401,18 @@ public sealed class ErrorBuilder
         return AddErrorDetail(errorDetail);
     }
 
+    /// <summary>
+    ///     Removes all individual error occurrences from the <see cref="Error.ErrorDetails" />.
+    /// </summary>
+    /// <returns>The current <see cref="ErrorBuilder" /> instance.</returns>
+    public ErrorBuilder WithoutErrorDetails()
+    {
+        _builtErrorDetails = Error.EmptyErrorDetails;
+        _pendingErrorDetails = null;
+
+        return this;
+    }
+
     #endregion
 
     #region metadata

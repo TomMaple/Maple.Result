@@ -230,7 +230,7 @@ The analyzer rules:
    Code, identifiers, code spans and string values that are part of an API or a format (e.g., JSON) keep the ASCII
    characters.
 1. The `README.md` of the repository is an overview for GitHub (relative links, GitHub alerts); the guides are in
-   `docs/guide`. The package README, `src/Maple.Result/README.md`, is shown on nuget.org, which renders CommonMark:
+   `docs/guides`. The package README, `src/Maple.Result/README.md`, is shown on nuget.org, which renders CommonMark:
    it uses absolute links only, no GitHub alerts, and images only from the hosts that nuget.org allows. Keep the quick
    start of both in sync.
 1. The reference pages in `docs/Reference` are written by hand, in the layout of the

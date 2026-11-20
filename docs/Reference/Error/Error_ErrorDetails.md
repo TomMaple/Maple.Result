@@ -26,6 +26,8 @@ The collection is read-only and cannot be modified, also through a cast (modifyi
 * use [WithErrorDetail](Error_WithErrorDetail.md), which returns a copy of the error with the detail appended, or
 * use an [ErrorBuilder](../ErrorBuilder/ErrorBuilder.md) and its [AddErrorDetail](../ErrorBuilder/ErrorBuilder_AddErrorDetail.md) method to add several details without copying the error for each one.
 
+To remove all details, use [WithoutErrorDetails()](Error_WithoutErrorDetails.md), which returns a copy of the error without them, or [ErrorBuilder.WithoutErrorDetails()](../ErrorBuilder/ErrorBuilder_WithoutErrorDetails.md).
+
 > [!NOTE]
 > This collection participates in the value-based equality of [Error](Error.md): it is compared **by content** (order-sensitive), so two errors with identically-built details are considered equal. See [Equals(Error)](Error_Equals.md).
 
@@ -55,6 +57,7 @@ foreach (var errorDetail in error.ErrorDetails)
 ## See Also
 * [ErrorDetail](../ErrorDetail/ErrorDetail.md)
 * [WithErrorDetail](Error_WithErrorDetail.md)
+* [WithoutErrorDetails()](Error_WithoutErrorDetails.md)
 * [ErrorBuilder](../ErrorBuilder/ErrorBuilder.md)
 * [RFC 9457: Problem Details for HTTP APIs](https://datatracker.ietf.org/doc/html/rfc9457)
 * [Tag URI scheme](https://en.wikipedia.org/wiki/Tag_URI_scheme)

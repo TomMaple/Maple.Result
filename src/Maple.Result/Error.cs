@@ -185,7 +185,8 @@ public sealed record Error
     /// </summary>
     /// <remarks>
     ///     The collection is read-only and cannot be modified, also through a cast. Use <see cref="WithErrorDetail(ErrorDetail)" /> to obtain a copy with
-    ///     an added occurrence, or <see cref="ErrorBuilder.AddErrorDetail(ErrorDetail)" /> to add several.
+    ///     an added occurrence, <see cref="WithoutErrorDetails" /> to obtain a copy without any, or <see cref="ErrorBuilder.AddErrorDetail(ErrorDetail)" />
+    ///     to add several.
     /// </remarks>
     public IReadOnlyList<ErrorDetail> ErrorDetails => ErrorDetailsCollection;
 
@@ -294,6 +295,22 @@ public sealed record Error
 
         return ToBuilder()
             .AddErrorDetail(propertyPointer, detail, detailTemplateId, detailNamedValues)
+            .Build();
+    }
+
+    /// <summary>
+    ///     Returns a copy of the current error without any individual error occurrences.
+    /// </summary>
+    /// <returns>
+    ///     A new instance of the <see cref="Error" /> object with an empty <see cref="ErrorDetails" /> collection; the current instance is not modified.
+    /// </returns>
+    /// <remarks>
+    ///     Use it to clean an error before it is passed on, e.g., one read from another service, without building it again member by member.
+    /// </remarks>
+    public Error WithoutErrorDetails()
+    {
+        return ToBuilder()
+            .WithoutErrorDetails()
             .Build();
     }
 

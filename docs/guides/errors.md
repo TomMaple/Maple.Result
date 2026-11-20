@@ -149,7 +149,7 @@ where the parameters are:
 | `detailTemplateId` | `string` | A message template ID. | no | `errors.signup.validation.firstName.minLength` |
 | `detailNamedValues` | `(string, object?)[]` | The named values for the message template; names must be unique and must not differ only in case (e.g., `Min` and `min`), and values require `detailTemplateId`. | no | `("minLength", 5)` |
 
-To add a single detail to an existing error, use `error.WithErrorDetail(…)`, which returns a copy.
+To add a single detail to an existing error, use `error.WithErrorDetail(…)`, which returns a copy. To remove all details, e.g., from an error read from another service before it is passed on, use `error.WithoutErrorDetails()`, which returns a copy too, or `WithoutErrorDetails()` of an `ErrorBuilder`.
 
 The `propertyPointer` is a JSON Pointer. For a name taken from the input (a dictionary key, a form field), build it with `ErrorDetail.Pointer("items", 0, name)`: it escapes `~` and `/` in the names, so the pointer is always valid.
 

@@ -192,6 +192,7 @@ public class ErrorBuilderUnitTests
         sut.WithInstanceUri(null).ShouldBeSameAs(sut);
         sut.AddErrorDetail(null, "Detail").ShouldBeSameAs(sut);
         sut.AddErrorDetail(new ErrorDetail(null, "Detail")).ShouldBeSameAs(sut);
+        sut.WithoutErrorDetails().ShouldBeSameAs(sut);
         sut.WithMetadata("limit", 1).ShouldBeSameAs(sut);
         sut.WithMetadata([new KeyValuePair<string, object?>("other", 2)]).ShouldBeSameAs(sut);
         sut.WithoutMetadata("limit").ShouldBeSameAs(sut);
@@ -550,6 +551,75 @@ public class ErrorBuilderUnitTests
         argumentException.ShouldNotBeNull();
         argumentException.ParamName.ShouldBe("propertyPointer");
         sut.Build().ErrorDetails.ShouldBeEmpty();
+    }
+
+    #endregion
+
+    #region WithoutErrorDetails
+
+    [Fact]
+    public void WithoutErrorDetails_BuiltAndPendingDetails_RemovesAllDetails()
+    {
+        // Arrange
+        var error = Error.Validation(ErrorUri.None, "Test title")
+            .WithErrorDetail("#/first", "First detail");
+
+        // Act
+        var result = error.ToBuilder()
+            .AddErrorDetail("#/second", "Second detail")
+            .WithoutErrorDetails()
+            .Build();
+
+        // Assert
+        result.ErrorDetails.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void WithoutErrorDetails_ThenAddErrorDetail_KeepsOnlyNewDetails()
+    {
+        // Act
+        var result = Sut.Validation(ErrorUri.None, "Test title")
+            .AddErrorDetail("#/first", "First detail")
+            .WithoutErrorDetails()
+            .AddErrorDetail("#/second", "Second detail")
+            .Build();
+
+        // Assert
+        var errorDetail = result.ErrorDetails.ShouldHaveSingleItem();
+        errorDetail.PropertyPointer.ShouldBe("#/second");
+    }
+
+    [Fact]
+    public void WithoutErrorDetails_AfterBuild_LeavesBuiltErrorUnchanged()
+    {
+        // Arrange
+        var sut = Sut.Validation(ErrorUri.None, "Test title")
+            .AddErrorDetail("#/first", "First detail");
+        var built = sut.Build();
+
+        // Act
+        var result = sut.WithoutErrorDetails().Build();
+
+        // Assert
+        result.ErrorDetails.ShouldBeEmpty();
+        built.ErrorDetails.Count.ShouldBe(1);
+    }
+
+    [Fact]
+    public void WithoutErrorDetails_ToBuilderOfErrorWithDetails_LeavesSourceErrorUnchanged()
+    {
+        // Arrange
+        var error = Error.Validation(ErrorUri.None, "Test title")
+            .WithErrorDetail("#/first", "First detail");
+
+        // Act
+        var result = error.ToBuilder()
+            .WithoutErrorDetails()
+            .Build();
+
+        // Assert
+        result.ErrorDetails.ShouldBeEmpty();
+        error.ErrorDetails.Count.ShouldBe(1);
     }
 
     #endregion
