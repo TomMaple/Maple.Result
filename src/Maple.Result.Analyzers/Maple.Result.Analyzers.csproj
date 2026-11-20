@@ -31,4 +31,34 @@
     <InternalsVisibleTo Include="Maple.Result.Analyzers.Tests.Unit" />
   </ItemGroup>
 
+  <!-- The git reference whose documentation the help links of the rules open: main, or the tag of the release that the Publish
+       workflow builds (-p:MapleResultHelpLinkRef=vX.Y.Z), so that a published package opens the pages of its own version. It becomes
+       the constant Rules.HelpLinkRef of a generated file. -->
+  <PropertyGroup>
+    <MapleResultHelpLinkRef Condition="'$(MapleResultHelpLinkRef)' == ''">main</MapleResultHelpLinkRef>
+  </PropertyGroup>
+
+  <Target Name="MapleResultGenerateHelpLinkRef" BeforeTargets="BeforeCompile">
+    <!-- Set here, as the intermediate output path is known only when the targets run. -->
+    <PropertyGroup>
+      <MapleResultHelpLinkFile>$(IntermediateOutputPath)Rules.HelpLinkRef.g.cs</MapleResultHelpLinkFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <_MapleResultHelpLinkLine Include="// &lt;auto-generated /&gt;" />
+      <_MapleResultHelpLinkLine Include="namespace Maple.Results.Analyzers%3B" />
+      <_MapleResultHelpLinkLine Include="public static partial class Rules" />
+      <_MapleResultHelpLinkLine Include="{" />
+      <_MapleResultHelpLinkLine Include="    internal const string HelpLinkRef = &quot;$(MapleResultHelpLinkRef)&quot;%3B" />
+      <_MapleResultHelpLinkLine Include="}" />
+    </ItemGroup>
+
+    <WriteLinesToFile File="$(MapleResultHelpLinkFile)" Lines="@(_MapleResultHelpLinkLine)" Overwrite="true" WriteOnlyWhenDifferent="true" />
+
+    <ItemGroup>
+      <Compile Include="$(MapleResultHelpLinkFile)" />
+      <FileWrites Include="$(MapleResultHelpLinkFile)" />
+    </ItemGroup>
+  </Target>
+
 </Project>
