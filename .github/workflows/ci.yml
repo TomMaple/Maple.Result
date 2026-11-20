@@ -1,5 +1,5 @@
 # Builds, tests and packs the library on pushes to main and on pull requests. Nothing is published from here:
-# releases go through the "Draft release" and "Publish" workflows (see docs/conventions.md, "Releasing").
+# releases go through the "Draft release" and "Publish" workflows (see docs/releasing.md).
 # The job id "build" is a required status check: keep the name, and never add a "paths" filter. On pull requests
 # that change no code (e.g. only docs/), "build" is skipped, which counts as passed. The job "reference" checks the
 # reference pages against the sources; it always runs, because a change of the documentation alone can break them.

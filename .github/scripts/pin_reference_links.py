@@ -7,7 +7,7 @@ Usage:
 Rewrites every source link of docs/Reference (`…/blob/<ref>/src/…`) to the tag of the release, `vVERSION`, with the
 line of the declaration in the working tree: a link to `main` keeps its line, and a link to an earlier release gets
 the line where the same declaration is now. Run it in the pull request that prepares a release, before Draft release
-(docs/conventions.md, "Releasing"); then `check_reference_docs.py --release VERSION` checks the result.
+(docs/releasing.md); then `check_reference_docs.py --release VERSION` checks the result.
 
 It refuses a version whose tag exists already, and a link whose declaration is not in the code any more: the check
 reports those, and they are fixed first.

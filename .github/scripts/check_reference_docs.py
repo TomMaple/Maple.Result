@@ -11,7 +11,7 @@ docs/conventions.md, "Documentation":
   without `partial`.
 - Every other `Source:` link opens the line of the declaration that the page documents, and is labelled with the
   file name.
-- A source link opens `main` or the tag of a release (docs/conventions.md, "Releasing"):
+- A source link opens `main` or the tag of a release (docs/releasing.md):
   - a link to `main` is checked against the working tree;
   - a link to a tag that exists is checked against the file at that tag (`git show`), and the declaration that it
     opens has to be in the working tree unchanged: a member that changed since the release links to `main`;
