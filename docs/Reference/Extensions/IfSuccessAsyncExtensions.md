@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Results.Extensions](namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/IfSuccessAsyncExtensions.Task.cs" target="_blank">IfSuccessAsyncExtensions.Task.cs</a>, <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/IfSuccessAsyncExtensions.ValueTask.cs" target="_blank">IfSuccessAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/IfSuccessAsyncExtensions.Task.cs" target="_blank">IfSuccessAsyncExtensions.Task.cs</a>, <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/IfSuccessAsyncExtensions.ValueTask.cs" target="_blank">IfSuccessAsyncExtensions.ValueTask.cs</a>
 
 Provides asynchronous extension methods, represented by [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) or [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask), for the [Result](../Result/Result.md) and [Result&lt;T&gt;](../ResultT/ResultT.md) records that run a side effect on a successful result and return it unchanged.
 

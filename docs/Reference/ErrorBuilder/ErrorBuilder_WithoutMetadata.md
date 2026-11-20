@@ -13,7 +13,7 @@ Removes some or all entries of the [Metadata](../Error/Error_Metadata.md) of the
 
 
 ## WithoutMetadata()
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L538" target="_blank">ErrorBuilder.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/ErrorBuilder.cs#L538" target="_blank">ErrorBuilder.cs</a>
 
 Removes all entries from the metadata.
 
@@ -37,7 +37,7 @@ var publicError = error.ToBuilder()
 
 
 ## WithoutMetadata(String)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L518" target="_blank">ErrorBuilder.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/ErrorBuilder.cs#L518" target="_blank">ErrorBuilder.cs</a>
 
 Removes the entry of the specified key from the metadata.
 

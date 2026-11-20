@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L74" target="_blank">ErrorBuilder.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/ErrorBuilder.cs#L74" target="_blank">ErrorBuilder.cs</a>
 
 Initializes a new instance of the [ErrorBuilder](ErrorBuilder.md) class with the mandatory members of an [Error](../Error/Error.md).
 
