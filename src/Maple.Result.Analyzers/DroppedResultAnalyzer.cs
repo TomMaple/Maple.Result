@@ -68,9 +68,11 @@ public sealed class DroppedResultAnalyzer : ResultAnalyzer
                 "IfErrorAsync" when canReplaceTheResult => "ElseAsync",
                 _ => null,
             };
+
             var advice = newName is null
                 ? "Handle it inside the function"
                 : "Use " + newName + " to continue with it";
+
             var location = function.Syntax.GetLocation();
             var nameLocations = ImmutableArray.Create(CalledName(invocation).GetLocation());
             var droppedName = KnownTypes.Display(function.ReturnedType!);
