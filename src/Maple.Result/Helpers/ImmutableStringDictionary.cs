@@ -18,7 +18,7 @@ namespace Maple.Results.Helpers;
 ///     holds, so the content never changes and an instance can be shared.
 /// </summary>
 /// <remarks>
-///     Used for <see cref="TemplatedMessage.Params" /> and <see cref="Error.Metadata" />. The copy is exposed internally as <see cref="Items" />,
+///     Used for <see cref="TemplatedMessage.Parameters" /> and <see cref="Error.Metadata" />. The copy is exposed internally as <see cref="Items" />,
 ///     so that equality, hashing and the text output can enumerate it without allocating.
 /// </remarks>
 internal sealed class ImmutableStringDictionary : ReadOnlyDictionary<string, object?>

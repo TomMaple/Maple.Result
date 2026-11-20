@@ -78,7 +78,7 @@ public class ErrorEqualityUnitTests
     }
 
     [Fact]
-    public void Equals_ErrorsWithTemplatedDetailParamsInDifferentOrder_AreEqual()
+    public void Equals_ErrorsWithTemplatedDetailParametersInDifferentOrder_AreEqual()
     {
         // Arrange
         var first = CreateError()

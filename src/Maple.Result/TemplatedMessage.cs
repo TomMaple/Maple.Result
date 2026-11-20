@@ -25,7 +25,7 @@ namespace Maple.Results;
 ///     <para>The purpose of this structure is to provide a way to generate client-side localized messages.</para>
 ///     <para>
 ///         The record is immutable: its properties are get-only, and the parameters are copied into a read-only dictionary when the instance is created,
-///         so later changes to the source are not reflected. The <see cref="Params" /> of another message cannot change, so they are shared, not copied.
+///         so later changes to the source are not reflected. The <see cref="Parameters" /> of another message cannot change, so they are shared, not copied.
 ///     </para>
 /// </remarks>
 public sealed record TemplatedMessage
@@ -38,7 +38,7 @@ public sealed record TemplatedMessage
     /// <param name="templateId">The identifier of the message template.</param>
     /// <param name="parameters">
     ///     The optional parameters (names and values) that might be required to generate a message from the template; values can be <see langword="null" />.
-    ///     When <see langword="null" /> or empty, <see cref="Params" /> is <see langword="null" />.
+    ///     When <see langword="null" /> or empty, <see cref="Parameters" /> is <see langword="null" />.
     /// </param>
     /// <exception cref="ArgumentNullException">
     ///     If the <paramref name="templateId" /> or a parameter name is <see langword="null" />.
@@ -63,7 +63,7 @@ public sealed record TemplatedMessage
     /// <param name="templateId">The identifier of the message template.</param>
     /// <param name="parameters">
     ///     The parameters (names and values) that might be required to generate a message from the template; values can be <see langword="null" />.
-    ///     When none are passed, <see cref="Params" /> is <see langword="null" />.
+    ///     When none are passed, <see cref="Parameters" /> is <see langword="null" />.
     /// </param>
     /// <exception cref="ArgumentNullException">
     ///     If the <paramref name="templateId" /> or a parameter name is <see langword="null" />.
@@ -80,7 +80,7 @@ public sealed record TemplatedMessage
     private TemplatedMessage(Validated validated)
     {
         TemplateId = validated.TemplateId;
-        ParamsDictionary = validated.Params;
+        ParametersDictionary = validated.Parameters;
     }
 
     #endregion
@@ -99,9 +99,9 @@ public sealed record TemplatedMessage
     ///     Two names never differ only in case (e.g., <c>Min</c> and <c>min</c>): they would be the same placeholder for a template engine that
     ///     ignores case, and the same member of <c>params</c> once a naming policy changes the case of the keys.
     /// </remarks>
-    public IReadOnlyDictionary<string, object?>? Params => ParamsDictionary;
+    public IReadOnlyDictionary<string, object?>? Parameters => ParametersDictionary;
 
-    internal ImmutableStringDictionary? ParamsDictionary { get; }
+    internal ImmutableStringDictionary? ParametersDictionary { get; }
 
     #region internal factory methods
 
@@ -138,7 +138,7 @@ public sealed record TemplatedMessage
 
     /// <summary>
     ///     Determines whether the specified <see cref="TemplatedMessage" /> is equal to the current one,
-    ///     comparing the <see cref="Params" /> collection by its content rather than by reference.
+    ///     comparing the <see cref="Parameters" /> collection by its content rather than by reference.
     /// </summary>
     /// <param name="other">The <see cref="TemplatedMessage" /> to compare with the current instance.</param>
     /// <returns>
@@ -149,12 +149,12 @@ public sealed record TemplatedMessage
         return other is not null
                && EqualityContract == other.EqualityContract
                && TemplateId == other.TemplateId
-               && DictionaryHelper.Equal(ParamsDictionary, other.ParamsDictionary);
+               && DictionaryHelper.Equal(ParametersDictionary, other.ParametersDictionary);
     }
 
     /// <summary>
     ///     Returns a hash code that is consistent with <see cref="Equals(TemplatedMessage)" />,
-    ///     incorporating the content of the <see cref="Params" /> collection.
+    ///     incorporating the content of the <see cref="Parameters" /> collection.
     /// </summary>
     /// <returns>A hash code for the current <see cref="TemplatedMessage" />.</returns>
     public override int GetHashCode()
@@ -164,10 +164,10 @@ public sealed record TemplatedMessage
         hashCode.Add(EqualityContract);
         hashCode.Add(TemplateId);
 
-        if (ParamsDictionary is not null)
+        if (ParametersDictionary is not null)
         {
-            var paramsHashCode = DictionaryHelper.GetHashCode(ParamsDictionary);
-            hashCode.Add(paramsHashCode);
+            var parametersHashCode = DictionaryHelper.GetHashCode(ParametersDictionary);
+            hashCode.Add(parametersHashCode);
         }
 
         return hashCode.ToHashCode();
@@ -177,15 +177,15 @@ public sealed record TemplatedMessage
 
     /// <summary>
     ///     Appends the members of the message to the <see cref="ToString" /> output,
-    ///     writing the content of the <see cref="Params" /> dictionary instead of its type name.
+    ///     writing the content of the <see cref="Parameters" /> dictionary instead of its type name.
     /// </summary>
     private bool PrintMembers(StringBuilder builder)
     {
         builder.Append("TemplateId = ").Append(TemplateId);
-        builder.Append(", Params = ");
+        builder.Append(", Parameters = ");
 
-        if (ParamsDictionary is not null)
-            DictionaryHelper.Append(builder, ParamsDictionary);
+        if (ParametersDictionary is not null)
+            DictionaryHelper.Append(builder, ParametersDictionary);
 
         return true;
     }
@@ -200,14 +200,14 @@ public sealed record TemplatedMessage
         if (parameters is null)
             return new Validated(templateId, null);
 
-        // The Params of another message (or the Metadata of an error) never change, so they are shared instead of copied.
+        // The Parameters of another message (or the Metadata of an error) never change, so they are shared instead of copied.
         if (parameters is ImmutableStringDictionary shared)
         {
-            var sharedParams = shared.Count == 0
+            var sharedParameters = shared.Count == 0
                 ? null
                 : shared;
 
-            return new Validated(templateId, sharedParams);
+            return new Validated(templateId, sharedParameters);
         }
 
         // No dictionary for an empty collection; the size is known up front for most collections.
@@ -303,7 +303,7 @@ public sealed record TemplatedMessage
             parametersParameterName);
     }
 
-    private readonly record struct Validated(string TemplateId, ImmutableStringDictionary? Params);
+    private readonly record struct Validated(string TemplateId, ImmutableStringDictionary? Parameters);
 
     #endregion
 }

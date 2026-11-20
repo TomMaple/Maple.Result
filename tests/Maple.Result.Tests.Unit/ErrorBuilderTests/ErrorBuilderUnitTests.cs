@@ -313,10 +313,10 @@ public class ErrorBuilderUnitTests
         // Assert
         result.DetailTemplated.ShouldNotBeNull();
         result.DetailTemplated.TemplateId.ShouldBe("message-id");
-        result.DetailTemplated.Params.ShouldNotBeNull();
-        result.DetailTemplated.Params.Count.ShouldBe(2);
-        result.DetailTemplated.Params["min"].ShouldBe(3);
-        result.DetailTemplated.Params["name"].ShouldBeNull();
+        result.DetailTemplated.Parameters.ShouldNotBeNull();
+        result.DetailTemplated.Parameters.Count.ShouldBe(2);
+        result.DetailTemplated.Parameters["min"].ShouldBe(3);
+        result.DetailTemplated.Parameters["name"].ShouldBeNull();
     }
 
     [Fact]
@@ -332,7 +332,7 @@ public class ErrorBuilderUnitTests
         result.DetailTemplated.ShouldBeNull();
     }
     [Fact]
-    public void WithDetailTemplated_TemplateIdAndNullValues_BuildsNullParams()
+    public void WithDetailTemplated_TemplateIdAndNullValues_BuildsNullParameters()
     {
         // Act
         var result = Sut.Validation(ErrorUri.None, "Test title")
@@ -341,11 +341,11 @@ public class ErrorBuilderUnitTests
 
         // Assert
         result.DetailTemplated.ShouldNotBeNull();
-        result.DetailTemplated.Params.ShouldBeNull();
+        result.DetailTemplated.Parameters.ShouldBeNull();
     }
 
     [Fact]
-    public void WithDetailTemplated_TemplateIdOnly_BuildsNullParams()
+    public void WithDetailTemplated_TemplateIdOnly_BuildsNullParameters()
     {
         // Act
         var result = Sut.Validation(ErrorUri.None, "Test title")
@@ -354,7 +354,7 @@ public class ErrorBuilderUnitTests
 
         // Assert
         result.DetailTemplated.ShouldNotBeNull();
-        result.DetailTemplated.Params.ShouldBeNull();
+        result.DetailTemplated.Parameters.ShouldBeNull();
     }
     [Fact]
     public void WithDetailTemplated_DuplicateName_ThrowsArgumentException()
@@ -389,7 +389,7 @@ public class ErrorBuilderUnitTests
     #region AddErrorDetail
 
     [Fact]
-    public void AddErrorDetail_TemplateIdWithoutNamedValues_BuildsDetailWithNullParams()
+    public void AddErrorDetail_TemplateIdWithoutNamedValues_BuildsDetailWithNullParameters()
     {
         // Act
         var result = Sut.Validation(ErrorUri.None, "Test title")
@@ -398,7 +398,7 @@ public class ErrorBuilderUnitTests
 
         // Assert
         result.ErrorDetails[0].DetailTemplated.ShouldNotBeNull();
-        result.ErrorDetails[0].DetailTemplated!.Params.ShouldBeNull();
+        result.ErrorDetails[0].DetailTemplated!.Parameters.ShouldBeNull();
     }
 
     [Fact]
@@ -448,9 +448,9 @@ public class ErrorBuilderUnitTests
         detail.Detail.ShouldBe("Too short.");
         detail.DetailTemplated.ShouldNotBeNull();
         detail.DetailTemplated.TemplateId.ShouldBe("errors.name.length");
-        detail.DetailTemplated.Params.ShouldNotBeNull();
-        detail.DetailTemplated.Params["min"].ShouldBe(3);
-        detail.DetailTemplated.Params["max"].ShouldBeNull();
+        detail.DetailTemplated.Parameters.ShouldNotBeNull();
+        detail.DetailTemplated.Parameters["min"].ShouldBe(3);
+        detail.DetailTemplated.Parameters["max"].ShouldBeNull();
     }
 
     [Fact]

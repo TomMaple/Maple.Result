@@ -138,18 +138,18 @@ public class TemplatedMessageParamNameCaseUnitTests
         var result = new TemplatedMessage("errors.length", ("Min", 3), ("Max", 20), ("minLength", 1));
 
         // Assert
-        result.Params.ShouldNotBeNull();
-        result.Params.Count.ShouldBe(3);
+        result.Parameters.ShouldNotBeNull();
+        result.Parameters.Count.ShouldBe(3);
     }
 
     [Fact]
-    public void Params_Lookup_StaysOrdinal()
+    public void Parameters_Lookup_StaysOrdinal()
     {
         // Arrange
         var sut = new TemplatedMessage("errors.length", ("Min", 3));
 
         // Act
-        var result = sut.Params.ShouldNotBeNull();
+        var result = sut.Parameters.ShouldNotBeNull();
 
         // Assert
         result.ContainsKey("Min").ShouldBeTrue();
@@ -157,16 +157,16 @@ public class TemplatedMessageParamNameCaseUnitTests
     }
 
     [Fact]
-    public void Ctor_ParamsOfAnotherMessage_AreAccepted()
+    public void Ctor_ParametersOfAnotherMessage_AreAccepted()
     {
         // Arrange
         var other = new TemplatedMessage("errors.length", ("Min", 3), ("Max", 20));
 
         // Act
-        var result = new TemplatedMessage("errors.size", other.Params);
+        var result = new TemplatedMessage("errors.size", other.Parameters);
 
         // Assert
-        result.Params.ShouldBeSameAs(other.Params);
+        result.Parameters.ShouldBeSameAs(other.Parameters);
     }
 
     #endregion
@@ -190,8 +190,8 @@ public class TemplatedMessageParamNameCaseUnitTests
 
         // Assert
         stopwatch.Elapsed.ShouldBeLessThan(maximum);
-        result.Params.ShouldNotBeNull();
-        result.Params.Count.ShouldBe(40_000);
+        result.Parameters.ShouldNotBeNull();
+        result.Parameters.Count.ShouldBe(40_000);
     }
 
     [Fact]
@@ -209,8 +209,8 @@ public class TemplatedMessageParamNameCaseUnitTests
 
         // Assert
         stopwatch.Elapsed.ShouldBeLessThan(maximum);
-        result.Params.ShouldNotBeNull();
-        result.Params.Count.ShouldBe(40_000);
+        result.Parameters.ShouldNotBeNull();
+        result.Parameters.Count.ShouldBe(40_000);
     }
 
     #endregion
