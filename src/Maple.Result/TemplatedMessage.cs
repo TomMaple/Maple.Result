@@ -132,23 +132,6 @@ public sealed record TemplatedMessage
         return null;
     }
 
-    /// <inheritdoc cref="CreateOptional(string?, ReadOnlySpan{ValueTuple{string, object?}}, string, string)" />
-    internal static TemplatedMessage? CreateOptional(string? templateId,
-        IEnumerable<KeyValuePair<string, object?>>? parameters, string templateIdParameterName,
-        string parametersParameterName)
-    {
-        if (templateId is not null)
-        {
-            var validated = Validate(templateId, parameters, templateIdParameterName, parametersParameterName);
-            return new TemplatedMessage(validated);
-        }
-
-        if (parameters is not null && parameters.Any())
-            throw ParametersWithoutTemplateId(templateIdParameterName, parametersParameterName);
-
-        return null;
-    }
-
     #endregion
 
     #region equality
