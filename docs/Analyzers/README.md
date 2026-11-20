@@ -12,7 +12,7 @@ The `Maple.Result` package contains a Roslyn analyzer, `Maple.Result.Analyzers`.
 * [Without the analyzer](#without-the-analyzer)
 
 ## Installation
-There is nothing to install. The analyzer is part of the `Maple.Result` package: a project that references the package gets the analyzer too, with no second package to reference.
+There is nothing to install. The analyzer is part of the `Maple.Result` package: a project that references the package gets the analyzer too, with no second package to reference. It also reaches a project that references the package through another package. The analyzer is for C#: a Visual Basic project does not get it.
 
 ## Rules
 | Rule | Severity | Title | Example |
@@ -74,10 +74,11 @@ The analyzer reports what compiles. A delegate that fits no overload is rejected
 * not in an `.editorconfig` file (`dotnet_diagnostic.MR0001.severity`, or a line for the category or for all rules),
 * not with `#pragma warning disable`.
 
-A call that is meant as it is written says so in the code, and is then not reported: explicit type arguments or `Result.FromValue` keep a task as a value (MR0001), and a block body discards a task (e.g., `e => { _ = LogAsync(e); }`, MR0002). The page of each rule has its way. Two things still silence the errors:
+A call that is meant as it is written says so in the code, and is then not reported: explicit type arguments or `Result.FromValue` keep a task as a value (MR0001), and so does a type argument written as the type of the value (`Result<Task<int>> r = GetAsync();`, MR0003); a discard keeps a task that is not awaited (e.g., `e => _ = LogAsync(e)` or `e => { _ = LogAsync(e); }`, MR0002). The page of each rule has its way. Two things still silence the errors:
 
 * `[SuppressMessage]` on the member or on the assembly;
-* switching the analyzers off as a whole: the MSBuild property `RunAnalyzers` set to `false` (or `RunAnalyzersDuringBuild`, for builds only), or `ExcludeAssets="analyzers"` on the `PackageReference`.
+* switching the analyzers off as a whole: the MSBuild property `RunAnalyzers` set to `false` (or `RunAnalyzersDuringBuild`, for builds only), which switches off every analyzer of the project;
+* switching off only the analyzers of this package: the MSBuild property `MapleResultAnalyzers` set to `false` (`<MapleResultAnalyzers>false</MapleResultAnalyzers>` in the project file, or in a `Directory.Build.props` file for several projects). `ExcludeAssets="analyzers"` on the `PackageReference` is not enough: the package adds its analyzers to the C# projects that reference it, also through another package.
 
 **The warnings (MR0005 and MR0006) are ordinary rules.** Their severity is set as for any other analyzer:
 
