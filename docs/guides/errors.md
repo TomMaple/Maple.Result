@@ -147,7 +147,7 @@ where the parameters are:
 | `propertyPointer` | `string` | JSON Pointer to the input data. | no | `/firstName` |
 | `detail` | `string` | A human-readable explanation of this error detail. | yes | `Minimum 5 characters are required.` |
 | `detailTemplateId` | `string` | A message template ID. | no | `errors.signup.validation.firstName.minLength` |
-| `detailNamedValues` | `(string, object?)[]` | The named values for the message template; names must be unique and must not differ only in case (e.g., `Min` and `min`), and values require `detailTemplateId`. | no | `("minLength", 5)` |
+| `detailParameters` | `(string, object?)[]` | The parameters for the message template; names must be unique and must not differ only in case (e.g., `Min` and `min`), and values require `detailTemplateId`. | no | `("minLength", 5)` |
 
 To add a single detail to an existing error, use `error.WithErrorDetail(…)`, which returns a copy. To remove all details, e.g., from an error read from another service before it is passed on, use `error.WithoutErrorDetails()`, which returns a copy too, or `WithoutErrorDetails()` of an `ErrorBuilder`.
 
@@ -206,7 +206,7 @@ var publicError = error.ToBuilder()
 See more: [ErrorBuilder](../Reference/ErrorBuilder/ErrorBuilder.md)
 
 ## Localization
-An error carries a message template ID and named values next to the message, so a client can generate the message in its own language:
+An error carries a message template ID and parameters next to the message, so a client can generate the message in its own language:
 ```csharp
 var error = Error.PermissionDenied(
     ErrorUri.Tag("tag:exampleapp.com,2026:errors:contact:delete:authorization:missing"),
@@ -217,10 +217,10 @@ var error = Error.PermissionDenied(
 
 It uses:
 * a template with ID: `errors.contact.delete.unauthorized`
-* and named values:
+* and parameters:
   * `requiredPermission`: `contact_delete`
 
-The factory methods take the template as one [TemplatedMessage](../Reference/TemplatedMessage/TemplatedMessage.md) (`detailTemplated`), so a template ID cannot be passed where the detail goes. The named values can be given inline, as an array or as a dictionary, and the constructor validates them. An error detail takes the template ID and the named values directly: `WithErrorDetail("/email", "Email is required.", "errors.signup.validation.email.required")`.
+The factory methods take the template as one [TemplatedMessage](../Reference/TemplatedMessage/TemplatedMessage.md) (`detailTemplated`), so a template ID cannot be passed where the detail goes. The parameters can be given inline, as an array or as a dictionary, and the constructor validates them. An error detail takes the template ID and the parameters directly: `WithErrorDetail("/email", "Email is required.", "errors.signup.validation.email.required")`.
 
 |   | en\_ca | fr\_ca | es | zh\_cn |
 | - | ------ | ------ | -- | ------ |

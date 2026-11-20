@@ -210,7 +210,7 @@
     <File Path="docs/Reference/TemplatedMessage/TemplatedMessage_constructors.md" />
     <File Path="docs/Reference/TemplatedMessage/TemplatedMessage_Equals.md" />
     <File Path="docs/Reference/TemplatedMessage/TemplatedMessage_GetHashCode.md" />
-    <File Path="docs/Reference/TemplatedMessage/TemplatedMessage_Params.md" />
+    <File Path="docs/Reference/TemplatedMessage/TemplatedMessage_Parameters.md" />
     <File Path="docs/Reference/TemplatedMessage/TemplatedMessage_TemplateId.md" />
   </Folder>
   <Folder Name="/root/">

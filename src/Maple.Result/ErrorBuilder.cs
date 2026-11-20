@@ -301,7 +301,7 @@ public sealed class ErrorBuilder
     ///     Sets the <see cref="Error.DetailTemplated" /> to a new <see cref="TemplatedMessage" />.
     /// </summary>
     /// <param name="templateId">The identifier of the message template.</param>
-    /// <param name="namedValues">
+    /// <param name="parameters">
     ///     The parameters (names and values) that might be required to generate a localized message; values can be <see langword="null" />.
     /// </param>
     /// <returns>The current <see cref="ErrorBuilder" /> instance.</returns>
@@ -312,9 +312,9 @@ public sealed class ErrorBuilder
     ///     If the <paramref name="templateId" /> is empty, whitespace-only or starts or ends with white space, or a parameter name is empty,
     ///     starts or ends with white space, is repeated, or differs only in case from another parameter name.
     /// </exception>
-    public ErrorBuilder WithDetailTemplated(string templateId, params ReadOnlySpan<(string Key, object? Value)> namedValues)
+    public ErrorBuilder WithDetailTemplated(string templateId, params ReadOnlySpan<(string Key, object? Value)> parameters)
     {
-        _detailTemplated = TemplatedMessage.Create(templateId, namedValues, nameof(templateId), nameof(namedValues));
+        _detailTemplated = TemplatedMessage.Create(templateId, parameters, nameof(templateId), nameof(parameters));
         return this;
     }
 
@@ -371,7 +371,7 @@ public sealed class ErrorBuilder
     /// <param name="detailTemplateId">
     ///     The identifier of the message template; when <see langword="null" />, no <see cref="ErrorDetail.DetailTemplated" /> is set.
     /// </param>
-    /// <param name="detailNamedValues">
+    /// <param name="detailParameters">
     ///     The optional parameters (names and values) that might be required to generate a localized message;
     ///     they require <paramref name="detailTemplateId" />.
     /// </param>
@@ -380,22 +380,22 @@ public sealed class ErrorBuilder
     ///     For more details about JSON Pointers, see: <see href="https://datatracker.ietf.org/doc/html/rfc6901" />.
     /// </remarks>
     /// <exception cref="ArgumentNullException">
-    ///     If the <paramref name="detail" /> or a parameter name in <paramref name="detailNamedValues" /> is <see langword="null" />.
+    ///     If the <paramref name="detail" /> or a parameter name in <paramref name="detailParameters" /> is <see langword="null" />.
     /// </exception>
     /// <exception cref="ArgumentException">
     ///     If the <paramref name="propertyPointer" /> is not a JSON Pointer (e.g., <c>Email</c> or <c>Items[0].Name</c>), the
     ///     <paramref name="detail" /> is empty or whitespace-only, the <paramref name="detailTemplateId" /> is empty, whitespace-only or starts
     ///     or ends with white space, a parameter name is empty, starts or ends with white space, is repeated, or differs only in case from
-    ///     another parameter name, or <paramref name="detailNamedValues" /> are passed without a <paramref name="detailTemplateId" />.
+    ///     another parameter name, or <paramref name="detailParameters" /> are passed without a <paramref name="detailTemplateId" />.
     /// </exception>
     public ErrorBuilder AddErrorDetail(string? propertyPointer, string detail, string? detailTemplateId = null,
-        params ReadOnlySpan<(string Key, object? Value)> detailNamedValues)
+        params ReadOnlySpan<(string Key, object? Value)> detailParameters)
     {
         // The constructor of ErrorDetail validates them too, but it names its own parameters (PropertyPointer, Detail) in the exception.
         JsonPointerValidator.Validate(propertyPointer, nameof(propertyPointer));
         ErrorDetail.ValidateDetail(detail, nameof(detail));
 
-        var detailTemplated = TemplatedMessage.CreateOptional(detailTemplateId, detailNamedValues, nameof(detailTemplateId), nameof(detailNamedValues));
+        var detailTemplated = TemplatedMessage.CreateOptional(detailTemplateId, detailParameters, nameof(detailTemplateId), nameof(detailParameters));
         var errorDetail = new ErrorDetail(propertyPointer, detail, detailTemplated);
 
         return AddErrorDetail(errorDetail);

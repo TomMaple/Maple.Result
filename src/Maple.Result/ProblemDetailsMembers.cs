@@ -91,7 +91,7 @@ public static class ProblemDetailsMembers
     public const string TemplateId = "templateId";
 
     /// <summary>
-    ///     The <c>params</c> member of a templated message: the <see cref="TemplatedMessage.Params" />, omitted when there are none.
+    ///     The <c>params</c> member of a templated message: the <see cref="TemplatedMessage.Parameters" />, omitted when there are none.
     /// </summary>
     public const string TemplateParams = "params";
 }

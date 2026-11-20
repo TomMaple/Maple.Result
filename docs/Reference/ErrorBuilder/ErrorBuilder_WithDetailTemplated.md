@@ -9,7 +9,7 @@ Sets the [DetailTemplated](../Error/Error_DetailTemplated.md) of the error to bu
 | Name | Description |
 | ---- | ----------- |
 | [WithDetailTemplated(TemplatedMessage)](#withdetailtemplatedtemplatedmessage) | Sets the templated explanation of the problem occurrence. |
-| [WithDetailTemplated(String, ReadOnlySpan&lt;(String, Object)&gt;)](#withdetailtemplatedstring-readonlyspanstring-object) | Sets the templated explanation from a template identifier and named values. |
+| [WithDetailTemplated(String, ReadOnlySpan&lt;(String, Object)&gt;)](#withdetailtemplatedstring-readonlyspanstring-object) | Sets the templated explanation from a template identifier and parameters. |
 
 ## Remarks
 `WithDetailTemplated(null)` binds to [WithDetailTemplated(TemplatedMessage)](#withdetailtemplatedtemplatedmessage) and clears the value.
@@ -43,20 +43,20 @@ var withoutTemplate = error.ToBuilder()
 
 
 ## WithDetailTemplated(String, ReadOnlySpan&lt;(String, Object)&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/ErrorBuilder.cs#L315" target="_blank">ErrorBuilder.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/ErrorBuilder.cs#L315" target="_blank">ErrorBuilder.cs</a>
 
 Sets the [DetailTemplated](../Error/Error_DetailTemplated.md) of the error to build to a new [TemplatedMessage](../TemplatedMessage/TemplatedMessage.md).
 
 ```csharp
-public ErrorBuilder WithDetailTemplated(string templateId, params ReadOnlySpan<(string Key, object? Value)> namedValues);
+public ErrorBuilder WithDetailTemplated(string templateId, params ReadOnlySpan<(string Key, object? Value)> parameters);
 ```
 
 ### Parameters
 #### `templateId` [String](https://learn.microsoft.com/dotnet/api/system.string)
 A mandatory identifier of the message template.
 
-#### `namedValues` [ReadOnlySpan](https://learn.microsoft.com/dotnet/api/system.readonlyspan-1)&lt;([String](https://learn.microsoft.com/dotnet/api/system.string), [Object](https://learn.microsoft.com/dotnet/api/system.object))&gt;
-Optional named values (inline, an array or a collection expression) to be used when rendering the templated message. Values can be `null`.
+#### `parameters` [ReadOnlySpan](https://learn.microsoft.com/dotnet/api/system.readonlyspan-1)&lt;([String](https://learn.microsoft.com/dotnet/api/system.string), [Object](https://learn.microsoft.com/dotnet/api/system.object))&gt;
+Optional parameters (inline, an array or a collection expression) to be used when rendering the templated message. Values can be `null`.
 
 ### Returns
 [ErrorBuilder](ErrorBuilder.md)

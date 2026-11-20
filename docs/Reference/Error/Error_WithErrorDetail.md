@@ -52,7 +52,7 @@ var error = Error.Validation(
 
 
 ## WithErrorDetail(String, String, String, ReadOnlySpan&lt;(String, Object)&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Error.cs#L288" target="_blank">Error.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L289" target="_blank">Error.cs</a>
 
 Returns a copy of the current error with a new individual error occurrence appended to the [ErrorDetails](Error_ErrorDetails.md).
 
@@ -61,7 +61,7 @@ public Error WithErrorDetail(
         string? propertyPointer,
         string detail,
         string? detailTemplateId = null,
-        params ReadOnlySpan<(string Key, object? Value)> detailNamedValues);
+        params ReadOnlySpan<(string Key, object? Value)> detailParameters);
 ```
 
 ### Parameters
@@ -74,8 +74,8 @@ A mandatory human-readable message that describes the specific error occurrence.
 #### `detailTemplateId` [String](https://learn.microsoft.com/dotnet/api/system.string)
 An optional identifier of the message template to generate localized message. When it is `null`, no [DetailTemplated](../ErrorDetail/ErrorDetail_DetailTemplated.md) is set.
 
-#### `detailNamedValues` [ReadOnlySpan](https://learn.microsoft.com/dotnet/api/system.readonlyspan-1)&lt;([String](https://learn.microsoft.com/dotnet/api/system.string), [Object](https://learn.microsoft.com/dotnet/api/system.object))&gt;
-Optional named values (inline, an array or a collection expression) to be used when rendering the templated message. Values can be `null`; names must be unique. Requires `detailTemplateId`.
+#### `detailParameters` [ReadOnlySpan](https://learn.microsoft.com/dotnet/api/system.readonlyspan-1)&lt;([String](https://learn.microsoft.com/dotnet/api/system.string), [Object](https://learn.microsoft.com/dotnet/api/system.object))&gt;
+Optional parameters (inline, an array or a collection expression) to be used when rendering the templated message. Values can be `null`; names must be unique. Requires `detailTemplateId`.
 
 ### Returns
 [Error](Error.md)
@@ -85,11 +85,11 @@ A new instance of the [Error](Error.md) record with the error detail appended. T
 ### Exceptions
 [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
 
-The `detail` or a name in `detailNamedValues` is `null`.
+The `detail` or a name in `detailParameters` is `null`.
 
 [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception)
 
-The `propertyPointer` is not a *JSON Pointer* (e.g., `Email` or `Items[0].Name`), the `detail` is empty or consists only of white-space characters, the `detailTemplateId` is empty, consists only of white-space characters or starts or ends with white space, a name in `detailNamedValues` is empty, starts or ends with white space, is repeated, or differs only in case from another name (e.g., `Min` and `min`), or `detailNamedValues` are passed without a `detailTemplateId`.
+The `propertyPointer` is not a *JSON Pointer* (e.g., `Email` or `Items[0].Name`), the `detail` is empty or consists only of white-space characters, the `detailTemplateId` is empty, consists only of white-space characters or starts or ends with white space, a name in `detailParameters` is empty, starts or ends with white space, is repeated, or differs only in case from another name (e.g., `Min` and `min`), or `detailParameters` are passed without a `detailTemplateId`.
 
 ### Examples
 ```csharp

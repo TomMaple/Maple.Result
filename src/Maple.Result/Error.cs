@@ -262,7 +262,7 @@ public sealed record Error
     /// <param name="detailTemplateId">
     ///     The identifier of the message template; when <see langword="null" />, no <see cref="ErrorDetail.DetailTemplated" /> is set.
     /// </param>
-    /// <param name="detailNamedValues">
+    /// <param name="detailParameters">
     ///     The optional parameters (names and values) that might be required to generate a localized message;
     ///     they require <paramref name="detailTemplateId" />.
     /// </param>
@@ -278,23 +278,23 @@ public sealed record Error
     ///     </para>
     /// </remarks>
     /// <exception cref="ArgumentNullException">
-    ///     If the <paramref name="detail" /> or a parameter name in <paramref name="detailNamedValues" /> is <see langword="null" />.
+    ///     If the <paramref name="detail" /> or a parameter name in <paramref name="detailParameters" /> is <see langword="null" />.
     /// </exception>
     /// <exception cref="ArgumentException">
     ///     If the <paramref name="propertyPointer" /> is not a JSON Pointer (e.g., <c>Email</c> or <c>Items[0].Name</c>), the
     ///     <paramref name="detail" /> is empty or whitespace-only, the <paramref name="detailTemplateId" /> is empty, whitespace-only or starts
     ///     or ends with white space, a parameter name is empty, starts or ends with white space, is repeated, or differs only in case from
-    ///     another parameter name, or <paramref name="detailNamedValues" /> are passed without a <paramref name="detailTemplateId" />.
+    ///     another parameter name, or <paramref name="detailParameters" /> are passed without a <paramref name="detailTemplateId" />.
     /// </exception>
     public Error WithErrorDetail(string? propertyPointer, string detail, string? detailTemplateId = null,
-        params ReadOnlySpan<(string Key, object? Value)> detailNamedValues)
+        params ReadOnlySpan<(string Key, object? Value)> detailParameters)
     {
         // The constructor of ErrorDetail validates them too, but it names its own parameters (PropertyPointer, Detail) in the exception.
         JsonPointerValidator.Validate(propertyPointer, nameof(propertyPointer));
         ErrorDetail.ValidateDetail(detail, nameof(detail));
 
         return ToBuilder()
-            .AddErrorDetail(propertyPointer, detail, detailTemplateId, detailNamedValues)
+            .AddErrorDetail(propertyPointer, detail, detailTemplateId, detailParameters)
             .Build();
     }
 

@@ -115,9 +115,9 @@ A `TemplatedMessage` (of the error or of an error detail) is an object:
 | Member       | JSON type | `TemplatedMessage` property | Present          | Constant |
 | ------------ | --------- | --------------------------- | ---------------- | -------- |
 | `templateId` | string    | `TemplateId`                | always           | `ProblemDetailsMembers.TemplateId` |
-| `params`     | object    | `Params`                    | when not `null`  | `ProblemDetailsMembers.TemplateParams` |
+| `params`     | object    | `Parameters`                | when not `null`  | `ProblemDetailsMembers.TemplateParams` |
 
-`params` has one member per parameter. `Params` is `null` when there are no parameters, so an empty `params` object is never written.
+`params` has one member per parameter. `Parameters` is `null` when there are no parameters, so an empty `params` object is never written.
 
 Two parameter names of one message never differ only in case (e.g., `Min` and `min`), as two metadata keys of one error: they would be the same placeholder for a template engine that ignores case, and the same member of `params` once a naming policy changes the case of the keys (e.g., `DictionaryKeyPolicy` of *System.Text.Json*). `TemplatedMessage` throws an `ArgumentException` for them. Like the other rules of the names, this is a rule of this library, not of an RFC: JSON allows any string as a member name (RFC 8259, section 4).
 

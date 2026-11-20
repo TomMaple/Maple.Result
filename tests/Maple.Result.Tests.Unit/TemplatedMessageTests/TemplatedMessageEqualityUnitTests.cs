@@ -18,7 +18,7 @@ public class TemplatedMessageEqualityUnitTests
     #region value equality
 
     [Fact]
-    public void Equals_TwoMessagesWithoutParams_AreEqual()
+    public void Equals_TwoMessagesWithoutParameters_AreEqual()
     {
         // Arrange
         var first = new Sut("template.id");
@@ -31,7 +31,7 @@ public class TemplatedMessageEqualityUnitTests
     }
 
     [Fact]
-    public void Equals_TwoMessagesWithEqualParams_AreEqual()
+    public void Equals_TwoMessagesWithEqualParameters_AreEqual()
     {
         // Arrange
         var first = new Sut("template.id", new Dictionary<string, object?>
@@ -52,7 +52,7 @@ public class TemplatedMessageEqualityUnitTests
     }
 
     [Fact]
-    public void Equals_MessagesWithParamsInDifferentOrder_AreEqual()
+    public void Equals_MessagesWithParametersInDifferentOrder_AreEqual()
     {
         // Arrange
         var first = new Sut("template.id", new Dictionary<string, object?>
@@ -125,16 +125,16 @@ public class TemplatedMessageEqualityUnitTests
     }
 
     [Fact]
-    public void Equals_MessageWithoutParamsVsEmptyParams_AreEqual()
+    public void Equals_MessageWithoutParametersVsEmptyParameters_AreEqual()
     {
         // Arrange
-        var withoutParams = new Sut("template.id");
-        var withEmptyParams = new Sut("template.id", new Dictionary<string, object?>());
+        var withoutParameters = new Sut("template.id");
+        var withEmptyParameters = new Sut("template.id", new Dictionary<string, object?>());
 
         // Act & Assert
-        withoutParams.Equals(withEmptyParams).ShouldBeTrue();
-        (withoutParams == withEmptyParams).ShouldBeTrue();
-        withoutParams.GetHashCode().ShouldBe(withEmptyParams.GetHashCode());
+        withoutParameters.Equals(withEmptyParameters).ShouldBeTrue();
+        (withoutParameters == withEmptyParameters).ShouldBeTrue();
+        withoutParameters.GetHashCode().ShouldBe(withEmptyParameters.GetHashCode());
     }
 
     #endregion
@@ -142,13 +142,13 @@ public class TemplatedMessageEqualityUnitTests
     #region read-only collection
 
     [Fact]
-    public void Params_ExposedAsReadOnly()
+    public void Parameters_ExposedAsReadOnly()
     {
         // Arrange
         var sut = new Sut("template.id", new Dictionary<string, object?> { ["userName"] = "johnny" });
 
         // Act & Assert
-        sut.Params.ShouldBeAssignableTo<IReadOnlyDictionary<string, object?>>();
+        sut.Parameters.ShouldBeAssignableTo<IReadOnlyDictionary<string, object?>>();
     }
 
     #endregion

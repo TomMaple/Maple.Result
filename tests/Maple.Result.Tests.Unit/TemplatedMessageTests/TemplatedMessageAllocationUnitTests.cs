@@ -55,7 +55,7 @@ public class TemplatedMessageAllocationUnitTests
     // See issue #128.
 
     [Fact]
-    public void Equals_MessagesWithParams_AllocatesNothing()
+    public void Equals_MessagesWithParameters_AllocatesNothing()
     {
         // Arrange
         var first = new TemplatedMessage("errors.length", ("min", 3), ("max", 10));
@@ -69,7 +69,7 @@ public class TemplatedMessageAllocationUnitTests
     }
 
     [Fact]
-    public void GetHashCode_MessageWithParams_AllocatesNothing()
+    public void GetHashCode_MessageWithParameters_AllocatesNothing()
     {
         // Arrange
         var sut = new TemplatedMessage("errors.length", ("min", 3), ("max", 10));
@@ -88,34 +88,34 @@ public class TemplatedMessageAllocationUnitTests
     // See issue #128.
 
     [Fact]
-    public void Ctor_ParamsOfAnotherMessage_SharesTheDictionary()
+    public void Ctor_ParametersOfAnotherMessage_SharesTheDictionary()
     {
         // Arrange
         var source = new TemplatedMessage("errors.length", ("min", 3), ("max", 10));
 
         // Act
-        var sut = new TemplatedMessage("errors.range", source.Params);
+        var sut = new TemplatedMessage("errors.range", source.Parameters);
 
         // Assert
-        sut.Params.ShouldBeSameAs(source.Params);
+        sut.Parameters.ShouldBeSameAs(source.Parameters);
     }
 
     [Fact]
-    public void Ctor_ParamsOfAnotherMessage_AllocatesOnlyTheMessage()
+    public void Ctor_ParametersOfAnotherMessage_AllocatesOnlyTheMessage()
     {
         // Arrange
         var source = new TemplatedMessage("errors.length", ("min", 3), ("max", 10));
         var expected = AllocationHelper.AllocatedBytes(() => _ = new TemplatedMessage("errors.range"));
 
         // Act
-        var allocated = AllocationHelper.AllocatedBytes(() => _ = new TemplatedMessage("errors.range", source.Params));
+        var allocated = AllocationHelper.AllocatedBytes(() => _ = new TemplatedMessage("errors.range", source.Parameters));
 
         // Assert
         allocated.ShouldBe(expected);
     }
 
     [Fact]
-    public void Ctor_DictionaryWithSameContentAsParams_CopiesIt()
+    public void Ctor_DictionaryWithSameContentAsParameters_CopiesIt()
     {
         // Arrange
         var parameters = new Dictionary<string, object?> { ["min"] = 3, ["max"] = 10 };
@@ -124,8 +124,8 @@ public class TemplatedMessageAllocationUnitTests
         var sut = new TemplatedMessage("errors.length", parameters);
 
         // Assert
-        sut.Params.ShouldNotBeSameAs(parameters);
-        sut.Params.ShouldBe(parameters, ignoreOrder: true);
+        sut.Parameters.ShouldNotBeSameAs(parameters);
+        sut.Parameters.ShouldBe(parameters, ignoreOrder: true);
     }
 
     #endregion

@@ -3,7 +3,7 @@ The *Result* pattern for .NET: an operation returns a `Result` or a `Result<T>`,
 
 * Consistent error categories (e.g., `Validation`, `NotFound`, `Conflict`), with a default HTTP status code for each category.
 * Precise errors: a type *URI*, a title, a detail, an instance *URI*, error details (e.g., one per invalid field) and machine-readable metadata.
-* Localization: a message template and named values next to each message.
+* Localization: a message template and its parameters next to each message.
 * Chaining with `Then`, `Else`, `IfSuccess`, `IfError`, `Match`, `Switch`, their asynchronous versions for `Task` and `ValueTask`, and the LINQ query syntax.
 * An [analyzer](https://github.com/TomMaple/Maple.Result/blob/main/docs/Analyzers/README.md) in the package, with nothing to install: it reports the calls that compile but lose a task or a failure (e.g., a task that nobody awaits in `Then`, or a statement that discards a `Result`).
 * Native AOT and trimming compatible, with no dependencies.

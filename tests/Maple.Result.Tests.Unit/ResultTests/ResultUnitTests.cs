@@ -25,7 +25,7 @@ public class ResultUnitTests
         const ErrorCategory ExpectedCategory = ErrorCategory.NotFound;
         const string ExpectedDetail = "Test description.";
         const string ExpectedDetailTemplateId = "message-id";
-        const int ExpectedDetailParamsCount = 2;
+        const int ExpectedDetailParametersCount = 2;
         const string ExpectedDetailParam1Key = "key1";
         const string ExpectedDetailParam1Value = "value1";
         const string ExpectedDetailParam2Key = "key2";
@@ -34,7 +34,7 @@ public class ResultUnitTests
         const string ExpectedErrorDetail1PropertyPointer = "#/property1";
         const string ExpectedErrorDetail1Detail = "Property 1 test detail";
         const string ExpectedErrorDetail1DetailTemplateId = "message-property-id";
-        const int ExpectedErrorDetail1DetailParamsCount = 2;
+        const int ExpectedErrorDetail1DetailParametersCount = 2;
         const string ExpectedErrorDetail1DetailParam1Key = "pk1";
         const string ExpectedErrorDetail1DetailParam1Value = "pv1";
         const string ExpectedErrorDetail1DetailParam2Key = "pk2";
@@ -64,24 +64,24 @@ public class ResultUnitTests
         result.Error.Detail.ShouldBe(ExpectedDetail);
         result.Error.DetailTemplated.ShouldNotBeNull();
         result.Error.DetailTemplated.TemplateId.ShouldBe(ExpectedDetailTemplateId);
-        result.Error.DetailTemplated.Params.ShouldNotBeNull();
-        result.Error.DetailTemplated.Params.Count.ShouldBe(ExpectedDetailParamsCount);
-        result.Error.DetailTemplated.Params.Keys.ShouldContain(ExpectedDetailParam1Key);
-        result.Error.DetailTemplated.Params[ExpectedDetailParam1Key].ShouldBe(ExpectedDetailParam1Value);
-        result.Error.DetailTemplated.Params.Keys.ShouldContain(ExpectedDetailParam2Key);
-        result.Error.DetailTemplated.Params[ExpectedDetailParam2Key].ShouldBe(ExpectedDetailParam2Value);
+        result.Error.DetailTemplated.Parameters.ShouldNotBeNull();
+        result.Error.DetailTemplated.Parameters.Count.ShouldBe(ExpectedDetailParametersCount);
+        result.Error.DetailTemplated.Parameters.Keys.ShouldContain(ExpectedDetailParam1Key);
+        result.Error.DetailTemplated.Parameters[ExpectedDetailParam1Key].ShouldBe(ExpectedDetailParam1Value);
+        result.Error.DetailTemplated.Parameters.Keys.ShouldContain(ExpectedDetailParam2Key);
+        result.Error.DetailTemplated.Parameters[ExpectedDetailParam2Key].ShouldBe(ExpectedDetailParam2Value);
         result.Error.ErrorDetails.ShouldNotBeNull();
         result.Error.ErrorDetails.Count.ShouldBe(ExpectedErrorDetailsCount);
         result.Error.ErrorDetails[0].PropertyPointer.ShouldBe(ExpectedErrorDetail1PropertyPointer);
         result.Error.ErrorDetails[0].Detail.ShouldBe(ExpectedErrorDetail1Detail);
         result.Error.ErrorDetails[0].DetailTemplated.ShouldNotBeNull();
         result.Error.ErrorDetails[0].DetailTemplated!.TemplateId.ShouldBe(ExpectedErrorDetail1DetailTemplateId);
-        result.Error.ErrorDetails[0].DetailTemplated!.Params.ShouldNotBeNull();
-        result.Error.ErrorDetails[0].DetailTemplated!.Params!.Count.ShouldBe(ExpectedErrorDetail1DetailParamsCount);
-        result.Error.ErrorDetails[0].DetailTemplated!.Params!.Keys.ShouldContain(ExpectedErrorDetail1DetailParam1Key);
-        result.Error.ErrorDetails[0].DetailTemplated!.Params![ExpectedErrorDetail1DetailParam1Key].ShouldBe(ExpectedErrorDetail1DetailParam1Value);
-        result.Error.ErrorDetails[0].DetailTemplated!.Params!.Keys.ShouldContain(ExpectedErrorDetail1DetailParam2Key);
-        result.Error.ErrorDetails[0].DetailTemplated!.Params![ExpectedErrorDetail1DetailParam2Key].ShouldBe(ExpectedErrorDetail1DetailParam2Value);
+        result.Error.ErrorDetails[0].DetailTemplated!.Parameters.ShouldNotBeNull();
+        result.Error.ErrorDetails[0].DetailTemplated!.Parameters!.Count.ShouldBe(ExpectedErrorDetail1DetailParametersCount);
+        result.Error.ErrorDetails[0].DetailTemplated!.Parameters!.Keys.ShouldContain(ExpectedErrorDetail1DetailParam1Key);
+        result.Error.ErrorDetails[0].DetailTemplated!.Parameters![ExpectedErrorDetail1DetailParam1Key].ShouldBe(ExpectedErrorDetail1DetailParam1Value);
+        result.Error.ErrorDetails[0].DetailTemplated!.Parameters!.Keys.ShouldContain(ExpectedErrorDetail1DetailParam2Key);
+        result.Error.ErrorDetails[0].DetailTemplated!.Parameters![ExpectedErrorDetail1DetailParam2Key].ShouldBe(ExpectedErrorDetail1DetailParam2Value);
         result.Error.InstanceUri.ShouldBe(ErrorUri.Parse(ExpectedInstance));
         result.Error.Title.ShouldBe(ExpectedTitle);
         result.Error.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
@@ -161,7 +161,7 @@ public class ResultUnitTests
         const ErrorCategory ExpectedCategory = ErrorCategory.NotFound;
         const string ExpectedDetail = "Test description.";
         const string ExpectedDetailTemplateId = "message-id";
-        const int ExpectedDetailParamsCount = 2;
+        const int ExpectedDetailParametersCount = 2;
         const string ExpectedDetailParam1Key = "key1";
         const string ExpectedDetailParam1Value = "value1";
         const string ExpectedDetailParam2Key = "key2";
@@ -170,7 +170,7 @@ public class ResultUnitTests
         const string ExpectedErrorDetail1PropertyPointer = "#/property1";
         const string ExpectedErrorDetail1Detail = "Property 1 test detail";
         const string ExpectedErrorDetail1DetailTemplateId = "message-property-id";
-        const int ExpectedErrorDetail1DetailParamsCount = 2;
+        const int ExpectedErrorDetail1DetailParametersCount = 2;
         const string ExpectedErrorDetail1DetailParam1Key = "pk1";
         const string ExpectedErrorDetail1DetailParam1Value = "pv1";
         const string ExpectedErrorDetail1DetailParam2Key = "pk2";
@@ -200,24 +200,24 @@ public class ResultUnitTests
         result.Error.Detail.ShouldBe(ExpectedDetail);
         result.Error.DetailTemplated.ShouldNotBeNull();
         result.Error.DetailTemplated.TemplateId.ShouldBe(ExpectedDetailTemplateId);
-        result.Error.DetailTemplated.Params.ShouldNotBeNull();
-        result.Error.DetailTemplated.Params.Count.ShouldBe(ExpectedDetailParamsCount);
-        result.Error.DetailTemplated.Params.Keys.ShouldContain(ExpectedDetailParam1Key);
-        result.Error.DetailTemplated.Params[ExpectedDetailParam1Key].ShouldBe(ExpectedDetailParam1Value);
-        result.Error.DetailTemplated.Params.Keys.ShouldContain(ExpectedDetailParam2Key);
-        result.Error.DetailTemplated.Params[ExpectedDetailParam2Key].ShouldBe(ExpectedDetailParam2Value);
+        result.Error.DetailTemplated.Parameters.ShouldNotBeNull();
+        result.Error.DetailTemplated.Parameters.Count.ShouldBe(ExpectedDetailParametersCount);
+        result.Error.DetailTemplated.Parameters.Keys.ShouldContain(ExpectedDetailParam1Key);
+        result.Error.DetailTemplated.Parameters[ExpectedDetailParam1Key].ShouldBe(ExpectedDetailParam1Value);
+        result.Error.DetailTemplated.Parameters.Keys.ShouldContain(ExpectedDetailParam2Key);
+        result.Error.DetailTemplated.Parameters[ExpectedDetailParam2Key].ShouldBe(ExpectedDetailParam2Value);
         result.Error.ErrorDetails.ShouldNotBeNull();
         result.Error.ErrorDetails.Count.ShouldBe(ExpectedErrorDetailsCount);
         result.Error.ErrorDetails[0].PropertyPointer.ShouldBe(ExpectedErrorDetail1PropertyPointer);
         result.Error.ErrorDetails[0].Detail.ShouldBe(ExpectedErrorDetail1Detail);
         result.Error.ErrorDetails[0].DetailTemplated.ShouldNotBeNull();
         result.Error.ErrorDetails[0].DetailTemplated!.TemplateId.ShouldBe(ExpectedErrorDetail1DetailTemplateId);
-        result.Error.ErrorDetails[0].DetailTemplated!.Params.ShouldNotBeNull();
-        result.Error.ErrorDetails[0].DetailTemplated!.Params!.Count.ShouldBe(ExpectedErrorDetail1DetailParamsCount);
-        result.Error.ErrorDetails[0].DetailTemplated!.Params!.Keys.ShouldContain(ExpectedErrorDetail1DetailParam1Key);
-        result.Error.ErrorDetails[0].DetailTemplated!.Params![ExpectedErrorDetail1DetailParam1Key].ShouldBe(ExpectedErrorDetail1DetailParam1Value);
-        result.Error.ErrorDetails[0].DetailTemplated!.Params!.Keys.ShouldContain(ExpectedErrorDetail1DetailParam2Key);
-        result.Error.ErrorDetails[0].DetailTemplated!.Params![ExpectedErrorDetail1DetailParam2Key].ShouldBe(ExpectedErrorDetail1DetailParam2Value);
+        result.Error.ErrorDetails[0].DetailTemplated!.Parameters.ShouldNotBeNull();
+        result.Error.ErrorDetails[0].DetailTemplated!.Parameters!.Count.ShouldBe(ExpectedErrorDetail1DetailParametersCount);
+        result.Error.ErrorDetails[0].DetailTemplated!.Parameters!.Keys.ShouldContain(ExpectedErrorDetail1DetailParam1Key);
+        result.Error.ErrorDetails[0].DetailTemplated!.Parameters![ExpectedErrorDetail1DetailParam1Key].ShouldBe(ExpectedErrorDetail1DetailParam1Value);
+        result.Error.ErrorDetails[0].DetailTemplated!.Parameters!.Keys.ShouldContain(ExpectedErrorDetail1DetailParam2Key);
+        result.Error.ErrorDetails[0].DetailTemplated!.Parameters![ExpectedErrorDetail1DetailParam2Key].ShouldBe(ExpectedErrorDetail1DetailParam2Value);
         result.Error.InstanceUri.ShouldBe(ErrorUri.Parse(ExpectedInstance));
         result.Error.Title.ShouldBe(ExpectedTitle);
         result.Error.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
@@ -258,7 +258,7 @@ public class ResultUnitTests
     public void Serialize_AllPropertiesAndMicrosoftSerializer_ReturnsSerializedValueWithAllProperties()
     {
         // Arrange
-        const string ExpectedText = """{"Error":{"Category":3,"TypeUri":{"Value":"tag:test.com,2024:Test"},"Title":"Test title","Detail":"Test description.","DetailTemplated":{"TemplateId":"messageId","Params":{"key1":"value1","key2":"value2"}},"InstanceUri":{"Value":"http://test.com/instance/1013"},"ErrorDetails":[{"PropertyPointer":"#/property1","Detail":"Property 1 test detail","DetailTemplated":{"TemplateId":"message-property-id","Params":{"pk1":"pv1","pk2":"pv2"}}}],"Metadata":{}},"IsSuccess":false,"IsError":true}""";
+        const string ExpectedText = """{"Error":{"Category":3,"TypeUri":{"Value":"tag:test.com,2024:Test"},"Title":"Test title","Detail":"Test description.","DetailTemplated":{"TemplateId":"messageId","Parameters":{"key1":"value1","key2":"value2"}},"InstanceUri":{"Value":"http://test.com/instance/1013"},"ErrorDetails":[{"PropertyPointer":"#/property1","Detail":"Property 1 test detail","DetailTemplated":{"TemplateId":"message-property-id","Parameters":{"pk1":"pv1","pk2":"pv2"}}}],"Metadata":{}},"IsSuccess":false,"IsError":true}""";
 
         var error = Error.NotFound(
             ErrorUri.Tag("tag:test.com,2024:Test"),
@@ -282,7 +282,7 @@ public class ResultUnitTests
     public void Serialize_AllPropertiesAndNewtonsoftSerializer_ReturnsSerializedValueWithAllProperties()
     {
         // Arrange
-        const string ExpectedText = """{"Error":{"Category":3,"TypeUri":{"Value":"tag:test.com,2024:Test"},"Title":"Test title","Detail":"Test description.","DetailTemplated":{"TemplateId":"messageId","Params":{"key1":"value1","key2":"value2"}},"InstanceUri":{"Value":"http://test.com/instance/1013"},"ErrorDetails":[{"PropertyPointer":"#/property1","Detail":"Property 1 test detail","DetailTemplated":{"TemplateId":"message-property-id","Params":{"pk1":"pv1","pk2":"pv2"}}}],"Metadata":{}},"IsSuccess":false,"IsError":true}""";
+        const string ExpectedText = """{"Error":{"Category":3,"TypeUri":{"Value":"tag:test.com,2024:Test"},"Title":"Test title","Detail":"Test description.","DetailTemplated":{"TemplateId":"messageId","Parameters":{"key1":"value1","key2":"value2"}},"InstanceUri":{"Value":"http://test.com/instance/1013"},"ErrorDetails":[{"PropertyPointer":"#/property1","Detail":"Property 1 test detail","DetailTemplated":{"TemplateId":"message-property-id","Parameters":{"pk1":"pv1","pk2":"pv2"}}}],"Metadata":{}},"IsSuccess":false,"IsError":true}""";
 
         var error = Error.NotFound(
             ErrorUri.Tag("tag:test.com,2024:Test"),
@@ -670,7 +670,7 @@ public class ResultUnitTests
         const ErrorCategory ExpectedCategory = ErrorCategory.NotFound;
         const string ExpectedDetail = "Test description.";
         const string ExpectedDetailTemplateId = "message-id";
-        const int ExpectedDetailParamsCount = 2;
+        const int ExpectedDetailParametersCount = 2;
         const string ExpectedDetailParam1Key = "key1";
         const string ExpectedDetailParam1Value = "value1";
         const string ExpectedDetailParam2Key = "key2";
@@ -679,7 +679,7 @@ public class ResultUnitTests
         const string ExpectedErrorDetail1PropertyPointer = "#/property1";
         const string ExpectedErrorDetail1Detail = "Property 1 test detail";
         const string ExpectedErrorDetail1DetailTemplateId = "message-property-id";
-        const int ExpectedErrorDetail1DetailParamsCount = 2;
+        const int ExpectedErrorDetail1DetailParametersCount = 2;
         const string ExpectedErrorDetail1DetailParam1Key = "pk1";
         const string ExpectedErrorDetail1DetailParam1Value = "pv1";
         const string ExpectedErrorDetail1DetailParam2Key = "pk2";
@@ -709,24 +709,24 @@ public class ResultUnitTests
         result.Error.Detail.ShouldBe(ExpectedDetail);
         result.Error.DetailTemplated.ShouldNotBeNull();
         result.Error.DetailTemplated.TemplateId.ShouldBe(ExpectedDetailTemplateId);
-        result.Error.DetailTemplated.Params.ShouldNotBeNull();
-        result.Error.DetailTemplated.Params.Count.ShouldBe(ExpectedDetailParamsCount);
-        result.Error.DetailTemplated.Params.Keys.ShouldContain(ExpectedDetailParam1Key);
-        result.Error.DetailTemplated.Params[ExpectedDetailParam1Key].ShouldBe(ExpectedDetailParam1Value);
-        result.Error.DetailTemplated.Params.Keys.ShouldContain(ExpectedDetailParam2Key);
-        result.Error.DetailTemplated.Params[ExpectedDetailParam2Key].ShouldBe(ExpectedDetailParam2Value);
+        result.Error.DetailTemplated.Parameters.ShouldNotBeNull();
+        result.Error.DetailTemplated.Parameters.Count.ShouldBe(ExpectedDetailParametersCount);
+        result.Error.DetailTemplated.Parameters.Keys.ShouldContain(ExpectedDetailParam1Key);
+        result.Error.DetailTemplated.Parameters[ExpectedDetailParam1Key].ShouldBe(ExpectedDetailParam1Value);
+        result.Error.DetailTemplated.Parameters.Keys.ShouldContain(ExpectedDetailParam2Key);
+        result.Error.DetailTemplated.Parameters[ExpectedDetailParam2Key].ShouldBe(ExpectedDetailParam2Value);
         result.Error.ErrorDetails.ShouldNotBeNull();
         result.Error.ErrorDetails.Count.ShouldBe(ExpectedErrorDetailsCount);
         result.Error.ErrorDetails[0].PropertyPointer.ShouldBe(ExpectedErrorDetail1PropertyPointer);
         result.Error.ErrorDetails[0].Detail.ShouldBe(ExpectedErrorDetail1Detail);
         result.Error.ErrorDetails[0].DetailTemplated.ShouldNotBeNull();
         result.Error.ErrorDetails[0].DetailTemplated!.TemplateId.ShouldBe(ExpectedErrorDetail1DetailTemplateId);
-        result.Error.ErrorDetails[0].DetailTemplated!.Params.ShouldNotBeNull();
-        result.Error.ErrorDetails[0].DetailTemplated!.Params!.Count.ShouldBe(ExpectedErrorDetail1DetailParamsCount);
-        result.Error.ErrorDetails[0].DetailTemplated!.Params!.Keys.ShouldContain(ExpectedErrorDetail1DetailParam1Key);
-        result.Error.ErrorDetails[0].DetailTemplated!.Params![ExpectedErrorDetail1DetailParam1Key].ShouldBe(ExpectedErrorDetail1DetailParam1Value);
-        result.Error.ErrorDetails[0].DetailTemplated!.Params!.Keys.ShouldContain(ExpectedErrorDetail1DetailParam2Key);
-        result.Error.ErrorDetails[0].DetailTemplated!.Params![ExpectedErrorDetail1DetailParam2Key].ShouldBe(ExpectedErrorDetail1DetailParam2Value);
+        result.Error.ErrorDetails[0].DetailTemplated!.Parameters.ShouldNotBeNull();
+        result.Error.ErrorDetails[0].DetailTemplated!.Parameters!.Count.ShouldBe(ExpectedErrorDetail1DetailParametersCount);
+        result.Error.ErrorDetails[0].DetailTemplated!.Parameters!.Keys.ShouldContain(ExpectedErrorDetail1DetailParam1Key);
+        result.Error.ErrorDetails[0].DetailTemplated!.Parameters![ExpectedErrorDetail1DetailParam1Key].ShouldBe(ExpectedErrorDetail1DetailParam1Value);
+        result.Error.ErrorDetails[0].DetailTemplated!.Parameters!.Keys.ShouldContain(ExpectedErrorDetail1DetailParam2Key);
+        result.Error.ErrorDetails[0].DetailTemplated!.Parameters![ExpectedErrorDetail1DetailParam2Key].ShouldBe(ExpectedErrorDetail1DetailParam2Value);
         result.Error.InstanceUri.ShouldBe(ErrorUri.Parse(ExpectedInstance));
         result.Error.Title.ShouldBe(ExpectedTitle);
         result.Error.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));
@@ -806,7 +806,7 @@ public class ResultUnitTests
         const ErrorCategory ExpectedCategory = ErrorCategory.NotFound;
         const string ExpectedDetail = "Test description.";
         const string ExpectedDetailTemplateId = "message-id";
-        const int ExpectedDetailParamsCount = 2;
+        const int ExpectedDetailParametersCount = 2;
         const string ExpectedDetailParam1Key = "key1";
         const string ExpectedDetailParam1Value = "value1";
         const string ExpectedDetailParam2Key = "key2";
@@ -815,7 +815,7 @@ public class ResultUnitTests
         const string ExpectedErrorDetail1PropertyPointer = "#/property1";
         const string ExpectedErrorDetail1Detail = "Property 1 test detail";
         const string ExpectedErrorDetail1DetailTemplateId = "message-property-id";
-        const int ExpectedErrorDetail1DetailParamsCount = 2;
+        const int ExpectedErrorDetail1DetailParametersCount = 2;
         const string ExpectedErrorDetail1DetailParam1Key = "pk1";
         const string ExpectedErrorDetail1DetailParam1Value = "pv1";
         const string ExpectedErrorDetail1DetailParam2Key = "pk2";
@@ -845,24 +845,24 @@ public class ResultUnitTests
         result.Error.Detail.ShouldBe(ExpectedDetail);
         result.Error.DetailTemplated.ShouldNotBeNull();
         result.Error.DetailTemplated.TemplateId.ShouldBe(ExpectedDetailTemplateId);
-        result.Error.DetailTemplated.Params.ShouldNotBeNull();
-        result.Error.DetailTemplated.Params.Count.ShouldBe(ExpectedDetailParamsCount);
-        result.Error.DetailTemplated.Params.Keys.ShouldContain(ExpectedDetailParam1Key);
-        result.Error.DetailTemplated.Params[ExpectedDetailParam1Key].ShouldBe(ExpectedDetailParam1Value);
-        result.Error.DetailTemplated.Params.Keys.ShouldContain(ExpectedDetailParam2Key);
-        result.Error.DetailTemplated.Params[ExpectedDetailParam2Key].ShouldBe(ExpectedDetailParam2Value);
+        result.Error.DetailTemplated.Parameters.ShouldNotBeNull();
+        result.Error.DetailTemplated.Parameters.Count.ShouldBe(ExpectedDetailParametersCount);
+        result.Error.DetailTemplated.Parameters.Keys.ShouldContain(ExpectedDetailParam1Key);
+        result.Error.DetailTemplated.Parameters[ExpectedDetailParam1Key].ShouldBe(ExpectedDetailParam1Value);
+        result.Error.DetailTemplated.Parameters.Keys.ShouldContain(ExpectedDetailParam2Key);
+        result.Error.DetailTemplated.Parameters[ExpectedDetailParam2Key].ShouldBe(ExpectedDetailParam2Value);
         result.Error.ErrorDetails.ShouldNotBeNull();
         result.Error.ErrorDetails.Count.ShouldBe(ExpectedErrorDetailsCount);
         result.Error.ErrorDetails[0].PropertyPointer.ShouldBe(ExpectedErrorDetail1PropertyPointer);
         result.Error.ErrorDetails[0].Detail.ShouldBe(ExpectedErrorDetail1Detail);
         result.Error.ErrorDetails[0].DetailTemplated.ShouldNotBeNull();
         result.Error.ErrorDetails[0].DetailTemplated!.TemplateId.ShouldBe(ExpectedErrorDetail1DetailTemplateId);
-        result.Error.ErrorDetails[0].DetailTemplated!.Params.ShouldNotBeNull();
-        result.Error.ErrorDetails[0].DetailTemplated!.Params!.Count.ShouldBe(ExpectedErrorDetail1DetailParamsCount);
-        result.Error.ErrorDetails[0].DetailTemplated!.Params!.Keys.ShouldContain(ExpectedErrorDetail1DetailParam1Key);
-        result.Error.ErrorDetails[0].DetailTemplated!.Params![ExpectedErrorDetail1DetailParam1Key].ShouldBe(ExpectedErrorDetail1DetailParam1Value);
-        result.Error.ErrorDetails[0].DetailTemplated!.Params!.Keys.ShouldContain(ExpectedErrorDetail1DetailParam2Key);
-        result.Error.ErrorDetails[0].DetailTemplated!.Params![ExpectedErrorDetail1DetailParam2Key].ShouldBe(ExpectedErrorDetail1DetailParam2Value);
+        result.Error.ErrorDetails[0].DetailTemplated!.Parameters.ShouldNotBeNull();
+        result.Error.ErrorDetails[0].DetailTemplated!.Parameters!.Count.ShouldBe(ExpectedErrorDetail1DetailParametersCount);
+        result.Error.ErrorDetails[0].DetailTemplated!.Parameters!.Keys.ShouldContain(ExpectedErrorDetail1DetailParam1Key);
+        result.Error.ErrorDetails[0].DetailTemplated!.Parameters![ExpectedErrorDetail1DetailParam1Key].ShouldBe(ExpectedErrorDetail1DetailParam1Value);
+        result.Error.ErrorDetails[0].DetailTemplated!.Parameters!.Keys.ShouldContain(ExpectedErrorDetail1DetailParam2Key);
+        result.Error.ErrorDetails[0].DetailTemplated!.Parameters![ExpectedErrorDetail1DetailParam2Key].ShouldBe(ExpectedErrorDetail1DetailParam2Value);
         result.Error.InstanceUri.ShouldBe(ErrorUri.Parse(ExpectedInstance));
         result.Error.Title.ShouldBe(ExpectedTitle);
         result.Error.TypeUri.ShouldBe(ErrorUri.Parse(ExpectedTypeUri));

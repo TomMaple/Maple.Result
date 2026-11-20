@@ -44,7 +44,7 @@ There are many implementations of the *Result* pattern in C#. This one adds a fe
 * consistent error categorization (e.g., `Validation`, `NotFound`, `Conflict`), with a default HTTP status code for each category,
 * precise error description: a type *URI*, a title, a detail, an instance *URI*, error details (e.g., one per invalid field) and machine-readable metadata,
 * following standards ([RFC 9457](https://datatracker.ietf.org/doc/html/rfc9457)),
-* support for localization (a message template and named values next to each message),
+* support for localization (a message template and its parameters next to each message),
 * Native AOT and trimming compatibility (checked by the trim and AOT analyzers in every build), and no dependencies.
 
 See [The Result pattern](docs/guides/result-pattern.md) for its benefits, a comparison with exceptions and when to use which.

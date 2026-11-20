@@ -62,18 +62,18 @@ public class TemplatedMessageUnitTests
     }
 
     [Fact]
-    public void Ctor_NullParams_KeepsNullParams()
+    public void Ctor_NullParameters_KeepsNullParameters()
     {
         // Act
         var sut = new TemplatedMessage("message-id");
 
         // Assert
         sut.TemplateId.ShouldBe("message-id");
-        sut.Params.ShouldBeNull();
+        sut.Parameters.ShouldBeNull();
     }
 
     [Fact]
-    public void Ctor_SourceDictionaryChangedLater_ParamsAreNotAffected()
+    public void Ctor_SourceDictionaryChangedLater_ParametersAreNotAffected()
     {
         // Arrange
         var source = new Dictionary<string, object?> { ["min"] = 3 };
@@ -84,10 +84,10 @@ public class TemplatedMessageUnitTests
         source["max"] = 10;
 
         // Assert
-        sut.Params.ShouldNotBeNull();
-        sut.Params.Count.ShouldBe(1);
-        sut.Params["min"].ShouldBe(3);
-        sut.Params.ShouldNotBeSameAs(source);
+        sut.Parameters.ShouldNotBeNull();
+        sut.Parameters.Count.ShouldBe(1);
+        sut.Parameters["min"].ShouldBe(3);
+        sut.Parameters.ShouldNotBeSameAs(source);
     }
 
     [Fact]
@@ -97,27 +97,27 @@ public class TemplatedMessageUnitTests
         var sut = new TemplatedMessage("message-id", new Dictionary<string, object?> { ["name"] = null });
 
         // Assert
-        sut.Params.ShouldNotBeNull();
-        sut.Params.ShouldContainKey("name");
-        sut.Params["name"].ShouldBeNull();
+        sut.Parameters.ShouldNotBeNull();
+        sut.Parameters.ShouldContainKey("name");
+        sut.Parameters["name"].ShouldBeNull();
     }
 
     [Fact]
-    public void Params_CastToMutableDictionary_CannotBeModified()
+    public void Parameters_CastToMutableDictionary_CannotBeModified()
     {
         // Arrange
         var sut = new TemplatedMessage("message-id", new Dictionary<string, object?> { ["min"] = 3 });
 
         // Act & Assert
-        var dictionary = sut.Params.ShouldBeAssignableTo<IDictionary<string, object?>>();
+        var dictionary = sut.Parameters.ShouldBeAssignableTo<IDictionary<string, object?>>();
         dictionary.ShouldNotBeNull();
         dictionary.IsReadOnly.ShouldBeTrue();
         Should.Throw<NotSupportedException>(() => dictionary["min"] = 5);
-        sut.Params!["min"].ShouldBe(3);
+        sut.Parameters!["min"].ShouldBe(3);
     }
 
     [Fact]
-    public void Params_Keys_AreCaseSensitive()
+    public void Parameters_Keys_AreCaseSensitive()
     {
         // Arrange
         var source = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase) { ["min"] = 3 };
@@ -126,9 +126,9 @@ public class TemplatedMessageUnitTests
         var sut = new TemplatedMessage("message-id", source);
 
         // Assert
-        sut.Params.ShouldNotBeNull();
-        sut.Params.ContainsKey("min").ShouldBeTrue();
-        sut.Params.ContainsKey("MIN").ShouldBeFalse();
+        sut.Parameters.ShouldNotBeNull();
+        sut.Parameters.ContainsKey("min").ShouldBeTrue();
+        sut.Parameters.ContainsKey("MIN").ShouldBeFalse();
     }
 
     #endregion
@@ -136,20 +136,20 @@ public class TemplatedMessageUnitTests
     #region parameters
 
     [Fact]
-    public void Ctor_InlineTuples_BuildsParams()
+    public void Ctor_InlineTuples_BuildsParameters()
     {
         // Act
         var sut = new TemplatedMessage("errors.length", ("min", 3), ("max", null));
 
         // Assert
-        sut.Params.ShouldNotBeNull();
-        sut.Params.Count.ShouldBe(2);
-        sut.Params["min"].ShouldBe(3);
-        sut.Params["max"].ShouldBeNull();
+        sut.Parameters.ShouldNotBeNull();
+        sut.Parameters.Count.ShouldBe(2);
+        sut.Parameters["min"].ShouldBe(3);
+        sut.Parameters["max"].ShouldBeNull();
     }
 
     [Fact]
-    public void Ctor_TupleArray_BuildsParams()
+    public void Ctor_TupleArray_BuildsParameters()
     {
         // Arrange
         (string Key, object? Value)[] parameters = [("min", 3), ("max", 10)];
@@ -158,13 +158,13 @@ public class TemplatedMessageUnitTests
         var sut = new TemplatedMessage("errors.length", parameters);
 
         // Assert
-        sut.Params.ShouldNotBeNull();
-        sut.Params.Count.ShouldBe(2);
-        sut.Params["max"].ShouldBe(10);
+        sut.Parameters.ShouldNotBeNull();
+        sut.Parameters.Count.ShouldBe(2);
+        sut.Parameters["max"].ShouldBe(10);
     }
 
     [Fact]
-    public void Ctor_ListOfPairs_BuildsParams()
+    public void Ctor_ListOfPairs_BuildsParameters()
     {
         // Arrange
         var parameters = new List<KeyValuePair<string, object?>> { new("min", 3) };
@@ -173,52 +173,52 @@ public class TemplatedMessageUnitTests
         var sut = new TemplatedMessage("errors.length", parameters);
 
         // Assert
-        sut.Params.ShouldNotBeNull();
-        sut.Params["min"].ShouldBe(3);
+        sut.Parameters.ShouldNotBeNull();
+        sut.Parameters["min"].ShouldBe(3);
     }
 
     [Fact]
-    public void Ctor_NullSecondArgument_KeepsNullParams()
+    public void Ctor_NullSecondArgument_KeepsNullParameters()
     {
         // Act
         var sut = new TemplatedMessage("errors.length", null);
 
         // Assert
-        sut.Params.ShouldBeNull();
+        sut.Parameters.ShouldBeNull();
     }
 
     [Fact]
-    public void Ctor_EmptyCollectionExpression_BuildsNullParams()
+    public void Ctor_EmptyCollectionExpression_BuildsNullParameters()
     {
         // Act
         var sut = new TemplatedMessage("errors.length", []);
 
         // Assert
-        sut.Params.ShouldBeNull();
+        sut.Parameters.ShouldBeNull();
     }
 
     [Fact]
-    public void Ctor_EmptyTupleArray_BuildsNullParams()
+    public void Ctor_EmptyTupleArray_BuildsNullParameters()
     {
         // Act
         var sut = new TemplatedMessage("errors.length", Array.Empty<(string Key, object? Value)>());
 
         // Assert
-        sut.Params.ShouldBeNull();
+        sut.Parameters.ShouldBeNull();
     }
 
     [Fact]
-    public void Ctor_EmptyDictionary_BuildsNullParams()
+    public void Ctor_EmptyDictionary_BuildsNullParameters()
     {
         // Act
         var sut = new TemplatedMessage("errors.length", new Dictionary<string, object?>());
 
         // Assert
-        sut.Params.ShouldBeNull();
+        sut.Parameters.ShouldBeNull();
     }
 
     [Fact]
-    public void Ctor_EmptySequenceOfUnknownLength_BuildsNullParams()
+    public void Ctor_EmptySequenceOfUnknownLength_BuildsNullParameters()
     {
         // Arrange
         var parameters = NoParameters();
@@ -227,11 +227,11 @@ public class TemplatedMessageUnitTests
         var sut = new TemplatedMessage("errors.length", parameters);
 
         // Assert
-        sut.Params.ShouldBeNull();
+        sut.Parameters.ShouldBeNull();
     }
 
     [Fact]
-    public void Ctor_EmptyMetadataOfAnError_BuildsNullParams()
+    public void Ctor_EmptyMetadataOfAnError_BuildsNullParameters()
     {
         // Arrange
         var error = Error.NotFound(ErrorUri.None, "Missing");
@@ -240,7 +240,7 @@ public class TemplatedMessageUnitTests
         var sut = new TemplatedMessage("errors.length", error.Metadata);
 
         // Assert
-        sut.Params.ShouldBeNull();
+        sut.Parameters.ShouldBeNull();
     }
 
     [Fact]
@@ -307,7 +307,7 @@ public class TemplatedMessageUnitTests
     }
 
     [Fact]
-    public void Equals_SameParamsFromTuplesAndDictionary_AreEqual()
+    public void Equals_SameParametersFromTuplesAndDictionary_AreEqual()
     {
         // Arrange
         var fromTuples = new TemplatedMessage("errors.length", ("min", 3), ("max", 10));
@@ -324,7 +324,7 @@ public class TemplatedMessageUnitTests
     #region ToString
 
     [Fact]
-    public void ToString_WithParams_WritesTheirContent()
+    public void ToString_WithParameters_WritesTheirContent()
     {
         // Arrange
         var sut = new TemplatedMessage("message-id", new Dictionary<string, object?> { ["min"] = 3 });
@@ -333,11 +333,11 @@ public class TemplatedMessageUnitTests
         var result = sut.ToString();
 
         // Assert
-        result.ShouldBe("TemplatedMessage { TemplateId = message-id, Params = { min = 3 } }");
+        result.ShouldBe("TemplatedMessage { TemplateId = message-id, Parameters = { min = 3 } }");
     }
 
     [Fact]
-    public void ToString_SeveralParams_SeparatesThemWithCommas()
+    public void ToString_SeveralParameters_SeparatesThemWithCommas()
     {
         // Arrange
         var sut = new TemplatedMessage("message-id", ("min", 3), ("max", 5));
@@ -346,11 +346,11 @@ public class TemplatedMessageUnitTests
         var result = sut.ToString();
 
         // Assert
-        result.ShouldBe("TemplatedMessage { TemplateId = message-id, Params = { min = 3, max = 5 } }");
+        result.ShouldBe("TemplatedMessage { TemplateId = message-id, Parameters = { min = 3, max = 5 } }");
     }
 
     [Fact]
-    public void ToString_EmptyParams_WritesNothingForParams()
+    public void ToString_EmptyParameters_WritesNothingForParameters()
     {
         // Arrange
         var sut = new TemplatedMessage("message-id", new Dictionary<string, object?>());
@@ -359,11 +359,11 @@ public class TemplatedMessageUnitTests
         var result = sut.ToString();
 
         // Assert
-        result.ShouldBe("TemplatedMessage { TemplateId = message-id, Params =  }");
+        result.ShouldBe("TemplatedMessage { TemplateId = message-id, Parameters =  }");
     }
 
     [Fact]
-    public void ToString_NullParams_WritesNothingForParams()
+    public void ToString_NullParameters_WritesNothingForParameters()
     {
         // Arrange
         var sut = new TemplatedMessage("message-id");
@@ -372,7 +372,7 @@ public class TemplatedMessageUnitTests
         var result = sut.ToString();
 
         // Assert
-        result.ShouldBe("TemplatedMessage { TemplateId = message-id, Params =  }");
+        result.ShouldBe("TemplatedMessage { TemplateId = message-id, Parameters =  }");
     }
 
     #endregion
@@ -380,7 +380,7 @@ public class TemplatedMessageUnitTests
     #region Serialize
 
     [Fact]
-    public void Serialize_OnlyTemplateId_ReturnsSerializedValueWithoutParams()
+    public void Serialize_OnlyTemplateId_ReturnsSerializedValueWithoutParameters()
     {
         // Arrange
         const string ExpectedText = "{\"templateId\":\"user.account.activated\"}";
@@ -396,7 +396,7 @@ public class TemplatedMessageUnitTests
     }
 
     [Fact]
-    public void Serialize_EmptyParams_ReturnsSerializedValueWithoutParams()
+    public void Serialize_EmptyParameters_ReturnsSerializedValueWithoutParameters()
     {
         // Arrange
         const string ExpectedText = "{\"templateId\":\"user.account.activated\"}";
@@ -412,11 +412,11 @@ public class TemplatedMessageUnitTests
     }
 
     [Fact]
-    public void Serialize_NotEmptyParams_ReturnsSerializedValueWithParams()
+    public void Serialize_NotEmptyParameters_ReturnsSerializedValueWithParameters()
     {
         // Arrange
         const string ExpectedText =
-            "{\"templateId\":\"user.account.activated\",\"params\":{\"userName\":\"johnny\",\"isSuccessful\":true,\"bonusPoints\":100," +
+            "{\"templateId\":\"user.account.activated\",\"parameters\":{\"userName\":\"johnny\",\"isSuccessful\":true,\"bonusPoints\":100," +
             "\"weight\":78.3,\"dob\":\"1980-04-19\",\"registered\":\"2022-04-15T12:17:58-05:00\"}}";
 
         const string TemplateId = "user.account.activated";
@@ -514,14 +514,14 @@ public class TemplatedMessageUnitTests
     }
 
     [Fact]
-    public void Ctor_NameWithWhiteSpaceInside_BuildsParams()
+    public void Ctor_NameWithWhiteSpaceInside_BuildsParameters()
     {
         // Act
         var sut = new TemplatedMessage("errors.length", ("min length", 3));
 
         // Assert
-        sut.Params.ShouldNotBeNull();
-        sut.Params["min length"].ShouldBe(3);
+        sut.Parameters.ShouldNotBeNull();
+        sut.Parameters["min length"].ShouldBe(3);
     }
 
     [Theory]

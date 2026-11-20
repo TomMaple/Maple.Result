@@ -27,14 +27,14 @@ var error = Error.NotFound(
 ## Remarks
 The [TemplatedMessage](TemplatedMessage.md) record is used by the [Error](../Error/Error.md) and [ErrorDetail](../ErrorDetail/ErrorDetail.md) records to store the data required for generating **localized** error messages.
 
-The record is immutable: its properties are get-only, and `with` expressions cannot change them. The [TemplateId](TemplatedMessage_TemplateId.md) must not be `null`, empty or white-space only. The parameters are copied into one read-only dictionary ([Params](TemplatedMessage_Params.md)) when the instance is created; their names must be unique and not `null`. The `Params` of another message cannot change, so passing them to a new message shares them instead of copying them.
+The record is immutable: its properties are get-only, and `with` expressions cannot change them. The [TemplateId](TemplatedMessage_TemplateId.md) must not be `null`, empty or white-space only. The parameters are copied into one read-only dictionary ([Parameters](TemplatedMessage_Parameters.md)) when the instance is created; their names must be unique and not `null`. The `Parameters` of another message cannot change, so passing them to a new message shares them instead of copying them.
 
-It is not a positional record and has no `Deconstruct` method; use a property pattern instead, e.g., `message is { TemplateId: "errors.email.required", Params: var parameters }`.
+It is not a positional record and has no `Deconstruct` method; use a property pattern instead, e.g., `message is { TemplateId: "errors.email.required", Parameters: var parameters }`.
 
-`ToString()` writes the contents of [Params](TemplatedMessage_Params.md), e.g., `TemplatedMessage { TemplateId = message-id, Params = { min = 3 } }`.
+`ToString()` writes the contents of [Parameters](TemplatedMessage_Parameters.md), e.g., `TemplatedMessage { TemplateId = message-id, Parameters = { min = 3 } }`.
 
 > [!NOTE]
-> An instance is created with a constructor and passed to the factory methods of the [Error](../Error/Error.md) record (the `detailTemplated` parameter, e.g., [NotFound](../Error/Error_NotFound.md)), or created from a template identifier and named values by [Error.WithErrorDetail](../Error/Error_WithErrorDetail.md) and by the [ErrorBuilder](../ErrorBuilder/ErrorBuilder.md) methods [WithDetailTemplated](../ErrorBuilder/ErrorBuilder_WithDetailTemplated.md) and [AddErrorDetail](../ErrorBuilder/ErrorBuilder_AddErrorDetail.md).
+> An instance is created with a constructor and passed to the factory methods of the [Error](../Error/Error.md) record (the `detailTemplated` parameter, e.g., [NotFound](../Error/Error_NotFound.md)), or created from a template identifier and parameters by [Error.WithErrorDetail](../Error/Error_WithErrorDetail.md) and by the [ErrorBuilder](../ErrorBuilder/ErrorBuilder.md) methods [WithDetailTemplated](../ErrorBuilder/ErrorBuilder_WithDetailTemplated.md) and [AddErrorDetail](../ErrorBuilder/ErrorBuilder_AddErrorDetail.md).
 
 
 ## Constructors
@@ -47,7 +47,7 @@ It is not a positional record and has no `Deconstruct` method; use a property pa
 ## Properties
 | Name | Description |
 | ---- | ----------- |
-| [Params](TemplatedMessage_Params.md) | Gets a read-only dictionary of named values to be used when rendering the templated message. |
+| [Parameters](TemplatedMessage_Parameters.md) | Gets a read-only dictionary of parameters to be used when rendering the templated message. |
 | [TemplateId](TemplatedMessage_TemplateId.md) | Gets the template identifier to be used to generate an error message. |
 
 
