@@ -87,6 +87,7 @@ public abstract class ResultAnalyzer : DiagnosticAnalyzer
     /// </summary>
     private protected static bool IsResultUsed(IOperation call)
     {
+        // The tree has one node per operation, so a node is found in the role of its parent by reference.
         var operation = call;
 
         while (true)
@@ -98,12 +99,12 @@ public abstract class ResultAnalyzer : DiagnosticAnalyzer
                 case IExpressionStatementOperation:
                     return false;
 
-                case ISimpleAssignmentOperation { Target: IDiscardOperation } discard when discard.Value == operation:
+                case ISimpleAssignmentOperation { Target: IDiscardOperation } discard when ReferenceEquals(discard.Value, operation):
                     return false;
 
                 case IAwaitOperation:
-                case IConditionalAccessOperation access when access.WhenNotNull == operation:
-                case IInvocationOperation configured when configured.Instance == operation && IsConfigureAwait(configured):
+                case IConditionalAccessOperation access when ReferenceEquals(access.WhenNotNull, operation):
+                case IInvocationOperation configured when ReferenceEquals(configured.Instance, operation) && IsConfigureAwait(configured):
                     operation = parent;
 
                     continue;
