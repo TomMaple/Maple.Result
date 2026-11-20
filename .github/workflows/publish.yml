@@ -73,8 +73,11 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore --locked-mode
 
+    # The help links of the analyzer rules open the documentation at the tag of this release (the default is main).
     - name: Build
-      run: dotnet build --no-restore --configuration Release "-p:Version=${PACKAGE_VERSION}" "-p:InformationalVersion=${INFORMATIONAL_VERSION}"
+      run: >-
+        dotnet build --no-restore --configuration Release "-p:Version=${PACKAGE_VERSION}" "-p:InformationalVersion=${INFORMATIONAL_VERSION}"
+        "-p:MapleResultHelpLinkRef=${TAG}"
       env:
         PACKAGE_VERSION: ${{ steps.calculate_version.outputs.package_version }}
         INFORMATIONAL_VERSION: ${{ steps.calculate_version.outputs.informational_version }}
