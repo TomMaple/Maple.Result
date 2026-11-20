@@ -14,6 +14,11 @@ The `Maple.Result` package contains a Roslyn analyzer, `Maple.Result.Analyzers`.
 ## Installation
 There is nothing to install. The analyzer is part of the `Maple.Result` package: a project that references the package gets the analyzer too, with no second package to reference. It also reaches a project that references the package through another package. The analyzer is for C#: a Visual Basic project does not get it.
 
+The analyzer needs **Roslyn 5.0** (the C# 14 compiler) or newer, which is what every tool that targets `net10.0` uses: the .NET 10 SDK, Visual Studio 2026 (18.0) or newer, and JetBrains Rider 2025.3 or newer. Microsoft supports targeting `net10.0` only from Visual Studio 18.0, and makes that version the floor for analyzers of the .NET 10 SDK ([.NET SDK, MSBuild, and Visual Studio versioning](https://learn.microsoft.com/dotnet/core/porting/versioning-sdk-msbuild-vs)).
+
+> [!WARNING]
+> An older compiler cannot load the analyzer. It reports warning **CS9057** (“Analyzer assembly … cannot be used because it references version 5.0.0.0 of the compiler”), and then MR0001 to MR0006 are not reported at all: the calls that they report compile without a message. That happens with Visual Studio 2022, or with a project that pins an older compiler (`Microsoft.Net.Compilers.Toolset` before 5.0). Use a tool from the list above, and do not ignore CS9057.
+
 ## Rules
 | Rule | Severity | Title | Example |
 | ---- | -------- | ----- | ------- |
