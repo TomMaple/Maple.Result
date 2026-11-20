@@ -48,8 +48,7 @@ public class ResultUnitTests
             "Test title",
             "Test description.",
             ErrorUri.Locator("http://test.com/instance/1013"),
-            "message-id",
-            ("key1", "value1"), ("key2", "value2"));
+            new TemplatedMessage("message-id", ("key1", "value1"), ("key2", "value2")));
 
         error = error.WithErrorDetail("#/property1", "Property 1 test detail", "message-property-id", ("pk1", "pv1"), ("pk2", "pv2"));
 
@@ -185,8 +184,7 @@ public class ResultUnitTests
             "Test title",
             "Test description.",
             ErrorUri.Locator("http://test.com/instance/1013"),
-            "message-id",
-            ("key1", "value1"), ("key2", "value2"));
+            new TemplatedMessage("message-id", ("key1", "value1"), ("key2", "value2")));
 
         error = error.WithErrorDetail("#/property1", "Property 1 test detail", "message-property-id", ("pk1", "pv1"), ("pk2", "pv2"));
 
@@ -267,8 +265,7 @@ public class ResultUnitTests
             "Test title",
             "Test description.",
             ErrorUri.Locator("http://test.com/instance/1013"),
-            "messageId",
-            ("key1", "value1"), ("key2", "value2"));
+            new TemplatedMessage("messageId", ("key1", "value1"), ("key2", "value2")));
 
         error = error.WithErrorDetail("#/property1", "Property 1 test detail", "message-property-id", ("pk1", "pv1"), ("pk2", "pv2"));
 
@@ -292,8 +289,7 @@ public class ResultUnitTests
             "Test title",
             "Test description.",
             ErrorUri.Locator("http://test.com/instance/1013"),
-            "messageId",
-            ("key1", "value1"), ("key2", "value2"));
+            new TemplatedMessage("messageId", ("key1", "value1"), ("key2", "value2")));
 
         error = error.WithErrorDetail("#/property1", "Property 1 test detail", "message-property-id", ("pk1", "pv1"), ("pk2", "pv2"));
 
@@ -697,8 +693,7 @@ public class ResultUnitTests
             "Test title",
             "Test description.",
             ErrorUri.Locator("http://test.com/instance/1013"),
-            "message-id",
-            ("key1", "value1"), ("key2", "value2"));
+            new TemplatedMessage("message-id", ("key1", "value1"), ("key2", "value2")));
 
         error = error.WithErrorDetail("#/property1", "Property 1 test detail", "message-property-id", ("pk1", "pv1"), ("pk2", "pv2"));
 
@@ -834,8 +829,7 @@ public class ResultUnitTests
             "Test title",
             "Test description.",
             ErrorUri.Locator("http://test.com/instance/1013"),
-            "message-id",
-            ("key1", "value1"), ("key2", "value2"));
+            new TemplatedMessage("message-id", ("key1", "value1"), ("key2", "value2")));
 
         error = error.WithErrorDetail("#/property1", "Property 1 test detail", "message-property-id", ("pk1", "pv1"), ("pk2", "pv2"));
 
@@ -964,8 +958,7 @@ public class ResultUnitTests
             "Test title",
             "Test description.",
             ErrorUri.Locator("http://test.com/instance/1013"),
-            "messageId",
-            ("key1", "value1"), ("key2", "value2"));
+            new TemplatedMessage("messageId", ("key1", "value1"), ("key2", "value2")));
 
         error = error.WithErrorDetail("#/property1", "Property 1 test detail", "message-property-id", ("pk1", "pv1"), ("pk2", "pv2"));
 
@@ -988,8 +981,7 @@ public class ResultUnitTests
             "Test title",
             "Test description.",
             ErrorUri.Locator("http://test.com/instance/1013"),
-            "messageId",
-            ("key1", "value1"), ("key2", "value2"));
+            new TemplatedMessage("messageId", ("key1", "value1"), ("key2", "value2")));
 
         error = error.WithErrorDetail("#/property1", "Property 1 test detail", "message-property-id", ("pk1", "pv1"), ("pk2", "pv2"));
 
@@ -1015,8 +1007,7 @@ public class ResultUnitTests
             "Test title",
             "Test description.",
             ErrorUri.Locator("http://test.com/instance/1013"),
-            "messageId",
-            ("key1", "value1"), ("key2", "value2"));
+            new TemplatedMessage("messageId", ("key1", "value1"), ("key2", "value2")));
 
         error = error.WithErrorDetail("#/property1", "Property 1 test detail", "message-property-id", ("pk1", "pv1"), ("pk2", "pv2"));
 
@@ -1039,8 +1030,7 @@ public class ResultUnitTests
             "Test title",
             "Test description.",
             ErrorUri.Locator("http://test.com/instance/1013"),
-            "messageId",
-            ("key1", "value1"), ("key2", "value2"));
+            new TemplatedMessage("messageId", ("key1", "value1"), ("key2", "value2")));
 
         error = error.WithErrorDetail("#/property1", "Property 1 test detail", "message-property-id", ("pk1", "pv1"), ("pk2", "pv2"));
 
