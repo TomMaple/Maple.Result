@@ -9,7 +9,7 @@ Provides records and interfaces with the types to use as a returned value of an 
 | [ErrorUri](ErrorUri/ErrorUri.md) | Represents a URI used to identify the type or instance of an error. |
 | [Result](Result/Result.md) | Represents the result of an operation without a value that can either be successful or failed. |
 | [Result&lt;T&gt;](ResultT/ResultT.md) | Represents the result of an operation with a value that can either be successful (with the value) or failed (with an error). |
-| [TemplatedMessage](TemplatedMessage/TemplatedMessage.md) | Represents a message template with named values to be used for rendering a localized message. |
+| [TemplatedMessage](TemplatedMessage/TemplatedMessage.md) | Represents a message template with parameters to be used for rendering a localized message. |
 
 ## Classes
 | Name | Description |

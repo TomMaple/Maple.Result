@@ -40,7 +40,7 @@ The top-level members (`Type`, `Title`, `Status`, `Detail`, `Instance`, `Errors`
 | Name            | Value               | Description |
 | --------------- | ------------------- | ----------- |
 | <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/ProblemDetailsMembers.cs#L91" target="_blank">TemplateId</a> | `"templateId"` | The [TemplateId](TemplatedMessage/TemplatedMessage_TemplateId.md). |
-| <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/ProblemDetailsMembers.cs#L96" target="_blank">TemplateParams</a> | `"params"` | The [Params](TemplatedMessage/TemplatedMessage_Parameters.md), omitted when there are none. |
+| <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/ProblemDetailsMembers.cs#L96" target="_blank">TemplateParams</a> | `"params"` | The [Parameters](TemplatedMessage/TemplatedMessage_Parameters.md), omitted when there are none. |
 
 ## See Also
 * [Problem Details Format](../problem-details.md)

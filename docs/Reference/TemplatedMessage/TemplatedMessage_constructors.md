@@ -12,10 +12,10 @@ Initializes a new instance of the [TemplatedMessage](TemplatedMessage.md) record
 | [TemplatedMessage(String, ReadOnlySpan&lt;(String, Object)&gt;)](#templatedmessagestring-readonlyspanstring-object) | Initializes a new instance with the parameters given as name-value tuples. |
 
 ## Remarks
-Both constructors copy the parameters into one read-only dictionary with an ordinal (case-sensitive) comparer, so later changes to the source are not reflected. The [Params](TemplatedMessage_Parameters.md) of another message are shared instead of copied, since they cannot change. Parameter values can be `null`; parameter names must be unique and not `null`.
+Both constructors copy the parameters into one read-only dictionary with an ordinal (case-sensitive) comparer, so later changes to the source are not reflected. The [Parameters](TemplatedMessage_Parameters.md) of another message are shared instead of copied, since they cannot change. Parameter values can be `null`; parameter names must be unique and not `null`.
 
 > [!NOTE]
-> An instance is created with a constructor and passed to the factory methods of the [Error](../Error/Error.md) record (the `detailTemplated` parameter, e.g., [NotFound](../Error/Error_NotFound.md)), or created from a template identifier and named values by [Error.WithErrorDetail](../Error/Error_WithErrorDetail.md) and by the [ErrorBuilder](../ErrorBuilder/ErrorBuilder.md) methods [WithDetailTemplated](../ErrorBuilder/ErrorBuilder_WithDetailTemplated.md) and [AddErrorDetail](../ErrorBuilder/ErrorBuilder_AddErrorDetail.md).
+> An instance is created with a constructor and passed to the factory methods of the [Error](../Error/Error.md) record (the `detailTemplated` parameter, e.g., [NotFound](../Error/Error_NotFound.md)), or created from a template identifier and parameters by [Error.WithErrorDetail](../Error/Error_WithErrorDetail.md) and by the [ErrorBuilder](../ErrorBuilder/ErrorBuilder.md) methods [WithDetailTemplated](../ErrorBuilder/ErrorBuilder_WithDetailTemplated.md) and [AddErrorDetail](../ErrorBuilder/ErrorBuilder_AddErrorDetail.md).
 
 
 ## TemplatedMessage(String, IEnumerable&lt;KeyValuePair&lt;String, Object&gt;&gt;)
@@ -33,7 +33,7 @@ public TemplatedMessage(string templateId, IEnumerable<KeyValuePair<string, obje
 A mandatory identifier of the message template.
 
 #### `parameters` [IEnumerable](https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1)&lt;[KeyValuePair](https://learn.microsoft.com/dotnet/api/system.collections.generic.keyvaluepair-2)&lt;[String](https://learn.microsoft.com/dotnet/api/system.string), [Object](https://learn.microsoft.com/dotnet/api/system.object)&gt;&gt;
-The optional parameters (names and values); values can be `null`. When `null` or empty, [Params](TemplatedMessage_Parameters.md) is `null`.
+The optional parameters (names and values); values can be `null`. When `null` or empty, [Parameters](TemplatedMessage_Parameters.md) is `null`.
 
 ### Exceptions
 [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
@@ -69,7 +69,7 @@ public TemplatedMessage(string templateId, params ReadOnlySpan<(string Key, obje
 A mandatory identifier of the message template.
 
 #### `parameters` [ReadOnlySpan](https://learn.microsoft.com/dotnet/api/system.readonlyspan-1)&lt;([String](https://learn.microsoft.com/dotnet/api/system.string), [Object](https://learn.microsoft.com/dotnet/api/system.object))&gt;
-The parameters (names and values), given inline, as an array or as a collection expression; values can be `null`. When none are passed, [Params](TemplatedMessage_Parameters.md) is `null`.
+The parameters (names and values), given inline, as an array or as a collection expression; values can be `null`. When none are passed, [Parameters](TemplatedMessage_Parameters.md) is `null`.
 
 ### Exceptions
 [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
