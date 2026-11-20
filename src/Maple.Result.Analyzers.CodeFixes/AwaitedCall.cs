@@ -98,21 +98,21 @@ internal sealed class AwaitedCall
         {
             case AnonymousFunctionExpressionSyntax lambda:
                 var isAsyncLambda = lambda.AsyncKeyword.IsKind(SyntaxKind.AsyncKeyword);
-                var lambdaType = model.GetTypeInfo(lambda, cancellationToken).ConvertedType as INamedTypeSymbol;
+                var lambdaSymbol = model.GetSymbolInfo(lambda, cancellationToken).Symbol as IMethodSymbol;
 
-                return Create(invocation, lambda, isAsyncLambda, lambdaType?.DelegateInvokeMethod?.ReturnType);
+                return Create(invocation, lambda, isAsyncLambda, lambdaSymbol, model, cancellationToken);
 
             case LocalFunctionStatementSyntax localFunction:
                 var isAsyncLocalFunction = localFunction.Modifiers.Any(SyntaxKind.AsyncKeyword);
                 var localFunctionSymbol = model.GetDeclaredSymbol(localFunction, cancellationToken);
 
-                return Create(invocation, localFunction, isAsyncLocalFunction, localFunctionSymbol?.ReturnType);
+                return Create(invocation, localFunction, isAsyncLocalFunction, localFunctionSymbol, model, cancellationToken);
 
             case MethodDeclarationSyntax method:
                 var isAsyncMethod = method.Modifiers.Any(SyntaxKind.AsyncKeyword);
                 var methodSymbol = model.GetDeclaredSymbol(method, cancellationToken);
 
-                return Create(invocation, method, isAsyncMethod, methodSymbol?.ReturnType);
+                return Create(invocation, method, isAsyncMethod, methodSymbol, model, cancellationToken);
 
             // Top-level statements can await.
             case GlobalStatementSyntax:
@@ -126,23 +126,54 @@ internal sealed class AwaitedCall
 
     #region helper methods
 
-    private static AwaitedCall? Create(InvocationExpressionSyntax invocation, SyntaxNode function, bool isAsync, ITypeSymbol? returnType)
+    private static AwaitedCall? Create(InvocationExpressionSyntax invocation, SyntaxNode function, bool isAsync, IMethodSymbol? symbol,
+        SemanticModel model, CancellationToken cancellationToken)
     {
+        // An await is not allowed in an unsafe context: an unsafe member or type, whose functions are unsafe too.
+        if (IsUnsafe(function))
+            return null;
+
         if (isAsync)
             return new AwaitedCall(invocation, function: null, functionReturnsValue: false);
 
-        // Making the function asynchronous keeps its signature only when it returns a task already.
-        var isTask = returnType is INamedTypeSymbol
+        // Making the function asynchronous keeps its signature only when it returns a task already. (A lambda that becomes an expression
+        // tree has no delegate type, so no task.)
+        if (symbol?.ReturnType is not INamedTypeSymbol
+            {
+                Name: "Task" or "ValueTask",
+                ContainingNamespace: { Name: "Tasks", ContainingNamespace: { Name: "Threading", ContainingNamespace.Name: "System" } }
+            } taskType)
         {
-            Name: "Task" or "ValueTask",
-            ContainingNamespace: { Name: "Tasks", ContainingNamespace: { Name: "Threading", ContainingNamespace.Name: "System" } }
-        };
+            return null;
+        }
 
-        // A returned task cannot be awaited inside a lock. (A lambda that becomes an expression tree has no delegate type, so no task.)
-        if (!isTask || ReturnsInsideUnawaitableStatement(function))
+        // An async function takes no ref, out or in parameter, and no parameter of a ref struct (e.g., Span<T>).
+        var hasByReferenceParameter = symbol.Parameters.Any(static parameter => parameter.RefKind != RefKind.None || parameter.Type.IsRefLikeType);
+
+        if (hasByReferenceParameter || !CanAwaitReturnedTasks(function, model, cancellationToken))
             return null;
 
-        return new AwaitedCall(invocation, function, ((INamedTypeSymbol)returnType!).IsGenericType);
+        return new AwaitedCall(invocation, function, taskType.IsGenericType);
+    }
+
+    // Whether every task that the function returns can be awaited: none is returned inside a lock, unsafe or fixed statement, and none is
+    // a Task that is null (null or default), on which an await would throw.
+    private static bool CanAwaitReturnedTasks(SyntaxNode function, SemanticModel model, CancellationToken cancellationToken)
+    {
+        foreach (var statement in function.DescendantNodes(node => node == function || !IsFunction(node)).OfType<ReturnStatementSyntax>())
+        {
+            if (statement.Expression is not { } returned)
+                continue;
+
+            var isInsideUnawaitableStatement = statement.Ancestors()
+                .TakeWhile(ancestor => ancestor != function)
+                .Any(ancestor => ancestor is LockStatementSyntax or UnsafeStatementSyntax or FixedStatementSyntax);
+
+            if (isInsideUnawaitableStatement || IsNullTask(returned, model, cancellationToken))
+                return false;
+        }
+
+        return true;
     }
 
     private static bool IsContainer(SyntaxNode node)
@@ -230,6 +261,10 @@ internal sealed class AwaitedCall
     // for Task.FromResult(value).
     private static ExpressionSyntax AwaitReturned(ExpressionSyntax returned, bool returnsValue)
     {
+        // The default of a ValueTask<TValue> holds the default of the value, which an async function returns as it is: return default;.
+        if (returnsValue && IsDefault(returned))
+            return SyntaxFactory.LiteralExpression(SyntaxKind.DefaultLiteralExpression).WithTriviaFrom(returned);
+
         var isFromResult = returnsValue
                            && returned is InvocationExpressionSyntax
                            {
@@ -242,24 +277,48 @@ internal sealed class AwaitedCall
             : Await(returned);
     }
 
-    private static bool ReturnsInsideUnawaitableStatement(SyntaxNode function)
+    // A task that is complete already, which an async function leaves out instead of awaiting it: Task.CompletedTask, ValueTask.CompletedTask,
+    // or the default of a ValueTask. (A default that is a Task is null, and the function is then not made async: see IsNullTask.)
+    private static bool IsCompletedTask(ExpressionSyntax returned)
     {
-        foreach (var statement in function.DescendantNodes(node => node == function || !IsFunction(node)).OfType<ReturnStatementSyntax>())
+        var isCompletedTaskProperty = WithoutSuppression(returned) is MemberAccessExpressionSyntax
         {
-            var isInside = statement.Expression is not null
-                           && statement.Ancestors()
-                               .TakeWhile(ancestor => ancestor != function)
-                               .Any(ancestor => ancestor is LockStatementSyntax or UnsafeStatementSyntax or FixedStatementSyntax);
+            Name.Identifier.ValueText: "CompletedTask",
+            Expression: IdentifierNameSyntax { Identifier.ValueText: "Task" or "ValueTask" }
+        };
 
-            if (isInside)
-                return true;
-        }
-
-        return false;
+        return isCompletedTaskProperty || IsDefault(returned);
     }
+
+    // A default literal or expression (default, default(ValueTask)), also with the null-forgiving operator.
+    private static bool IsDefault(ExpressionSyntax returned)
+        => WithoutSuppression(returned) is LiteralExpressionSyntax { RawKind: (int)SyntaxKind.DefaultLiteralExpression } or DefaultExpressionSyntax;
 
     private static bool IsFunction(SyntaxNode node)
         => node is AnonymousFunctionExpressionSyntax or LocalFunctionStatementSyntax;
+
+    // A Task that is null: null, or the default of a reference type, also with the null-forgiving operator.
+    private static bool IsNullTask(ExpressionSyntax returned, SemanticModel model, CancellationToken cancellationToken)
+    {
+        var value = WithoutSuppression(returned);
+
+        return value.IsKind(SyntaxKind.NullLiteralExpression)
+               || (IsDefault(value) && model.GetTypeInfo(value, cancellationToken).ConvertedType is { IsReferenceType: true });
+    }
+
+    // Whether the node is in an unsafe context: an unsafe member, local function or type around it.
+    private static bool IsUnsafe(SyntaxNode node)
+        => node.AncestorsAndSelf().Any(static ancestor => ancestor switch
+        {
+            MemberDeclarationSyntax member => member.Modifiers.Any(SyntaxKind.UnsafeKeyword),
+            LocalFunctionStatementSyntax localFunction => localFunction.Modifiers.Any(SyntaxKind.UnsafeKeyword),
+            _ => false,
+        });
+
+    private static ExpressionSyntax WithoutSuppression(ExpressionSyntax expression)
+        => expression is PostfixUnaryExpressionSyntax { RawKind: (int)SyntaxKind.SuppressNullableWarningExpression } suppressed
+            ? suppressed.Operand
+            : expression;
 
     // The async modifier goes after the other modifiers but before partial; without modifiers it takes the place, and the leading trivia,
     // of the return type.
@@ -322,7 +381,12 @@ internal sealed class AwaitedCall
                 if (statement is ReturnStatementSyntax { Expression: { } returned } returnStatement)
                 {
                     var isLastOfTheFunction = node == _body && index == node.Statements.Count - 1;
-                    statements.AddRange(AwaitThenReturn(returnStatement, returned, withReturn: !isLastOfTheFunction));
+
+                    // A completed task is left out: at the end of the function nothing is left, unless a comment is kept with "return;".
+                    if (!IsCompletedTask(returned))
+                        statements.AddRange(AwaitThenReturn(returnStatement, returned, withReturn: !isLastOfTheFunction));
+                    else if (!isLastOfTheFunction || HasComment(returnStatement))
+                        statements.Add(WithoutExpression(returnStatement));
                 }
                 else
                 {
@@ -346,6 +410,9 @@ internal sealed class AwaitedCall
 
             if (_returnsValue)
                 return node.WithExpression(AwaitReturned(node.Expression, returnsValue: true));
+
+            if (IsCompletedTask(node.Expression))
+                return WithoutExpression(node);
 
             // A return that is not a statement of a block (e.g., the statement of an if) becomes a block of its own, on one line:
             // "{ await task; return; }".
@@ -389,11 +456,19 @@ internal sealed class AwaitedCall
             }
         }
 
+        private static bool HasComment(StatementSyntax statement)
+            => statement.GetLeadingTrivia()
+                .Any(static trivia => trivia.IsKind(SyntaxKind.SingleLineCommentTrivia) || trivia.IsKind(SyntaxKind.MultiLineCommentTrivia));
+
         private static SyntaxToken Keyword(SyntaxKind kind)
             => SyntaxFactory.Token(SyntaxFactory.TriviaList(), kind, SyntaxFactory.TriviaList());
 
         private static SyntaxToken Semicolon(SyntaxTriviaList trailingTrivia)
             => SyntaxFactory.Token(SyntaxFactory.TriviaList(), SyntaxKind.SemicolonToken, trailingTrivia);
+
+        // "return task;" as "return;", with the trivia of the statement.
+        private static ReturnStatementSyntax WithoutExpression(ReturnStatementSyntax statement)
+            => statement.WithReturnKeyword(statement.ReturnKeyword.WithTrailingTrivia()).WithExpression(null);
     }
 
     #endregion
