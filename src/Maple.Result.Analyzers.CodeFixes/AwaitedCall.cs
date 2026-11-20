@@ -90,13 +90,13 @@ internal sealed class AwaitedCall
         if (callee.Parent is not InvocationExpressionSyntax invocation || invocation.Expression != callee)
             return null;
 
-        // The first thing around the call that decides whether an await is possible: a statement or clause that forbids it, the function
-        // that contains the call, or the member (every call is inside one of them).
-        var container = invocation.Ancestors().First(IsContainer);
+        // The first thing around the call that decides whether an await is possible (AwaitContext, shared with MR0006).
+        var container = AwaitContext.Container(invocation);
 
         switch (container)
         {
-            case AnonymousFunctionExpressionSyntax lambda:
+            // A lambda converted to an expression tree cannot be async (CS1989), so the call is only renamed there.
+            case AnonymousFunctionExpressionSyntax lambda when model.GetTypeInfo(lambda, cancellationToken).ConvertedType is { TypeKind: TypeKind.Delegate }:
                 var isAsyncLambda = lambda.AsyncKeyword.IsKind(SyntaxKind.AsyncKeyword);
                 var lambdaSymbol = model.GetSymbolInfo(lambda, cancellationToken).Symbol as IMethodSymbol;
 
@@ -118,7 +118,8 @@ internal sealed class AwaitedCall
             case GlobalStatementSyntax:
                 return new AwaitedCall(invocation, function: null, functionReturnsValue: false);
 
-            // A lock, unsafe or fixed statement, a query, a catch filter; a constructor, an accessor, an operator, an initializer.
+            // A lock, unsafe or fixed statement, a query, a catch filter; a lambda converted to an expression tree; a constructor, an
+            // accessor, an operator, an initializer.
             default:
                 return null;
         }
@@ -130,14 +131,13 @@ internal sealed class AwaitedCall
         SemanticModel model, CancellationToken cancellationToken)
     {
         // An await is not allowed in an unsafe context: an unsafe member or type, whose functions are unsafe too.
-        if (IsUnsafe(function))
+        if (AwaitContext.IsUnsafe(function))
             return null;
 
         if (isAsync)
             return new AwaitedCall(invocation, function: null, functionReturnsValue: false);
 
-        // Making the function asynchronous keeps its signature only when it returns a task already. (A lambda that becomes an expression
-        // tree has no delegate type, so no task.)
+        // Making the function asynchronous keeps its signature only when it returns a task already.
         if (symbol?.ReturnType is not INamedTypeSymbol
             {
                 Name: "Task" or "ValueTask",
@@ -175,10 +175,6 @@ internal sealed class AwaitedCall
 
         return true;
     }
-
-    private static bool IsContainer(SyntaxNode node)
-        => node is LockStatementSyntax or UnsafeStatementSyntax or FixedStatementSyntax or QueryExpressionSyntax or CatchFilterClauseSyntax
-            or AnonymousFunctionExpressionSyntax or LocalFunctionStatementSyntax or MemberDeclarationSyntax or AccessorDeclarationSyntax;
 
     private static SyntaxToken AsyncKeyword(SyntaxTriviaList leadingTrivia)
         => SyntaxFactory.Token(leadingTrivia, SyntaxKind.AsyncKeyword, SyntaxFactory.TriviaList(SyntaxFactory.Space));
@@ -305,15 +301,6 @@ internal sealed class AwaitedCall
         return value.IsKind(SyntaxKind.NullLiteralExpression)
                || (IsDefault(value) && model.GetTypeInfo(value, cancellationToken).ConvertedType is { IsReferenceType: true });
     }
-
-    // Whether the node is in an unsafe context: an unsafe member, local function or type around it.
-    private static bool IsUnsafe(SyntaxNode node)
-        => node.AncestorsAndSelf().Any(static ancestor => ancestor switch
-        {
-            MemberDeclarationSyntax member => member.Modifiers.Any(SyntaxKind.UnsafeKeyword),
-            LocalFunctionStatementSyntax localFunction => localFunction.Modifiers.Any(SyntaxKind.UnsafeKeyword),
-            _ => false,
-        });
 
     private static ExpressionSyntax WithoutSuppression(ExpressionSyntax expression)
         => expression is PostfixUnaryExpressionSyntax { RawKind: (int)SyntaxKind.SuppressNullableWarningExpression } suppressed

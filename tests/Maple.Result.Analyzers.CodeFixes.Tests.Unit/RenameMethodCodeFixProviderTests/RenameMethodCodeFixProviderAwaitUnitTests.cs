@@ -233,6 +233,11 @@ public class RenameMethodCodeFixProviderAwaitUnitTests
     [InlineData(
         "    static Task M()\n    {\n        ok.IfSuccess(x => {|MR0002:SaveAsync()|});\n        lock (ok) { return SaveAsync(); }\n    }",
         "    static Task M()\n    {\n        ok.IfSuccessAsync(x => SaveAsync());\n        lock (ok) { return SaveAsync(); }\n    }")]
+    [InlineData(
+        "    static Task Run(object value) => Task.CompletedTask;\n"
+        + "    static System.Linq.Expressions.Expression<Func<Task>> e = () => Run(ok.IfSuccess(x => {|MR0002:SaveAsync()|}));",
+        "    static Task Run(object value) => Task.CompletedTask;\n"
+        + "    static System.Linq.Expressions.Expression<Func<Task>> e = () => Run(ok.IfSuccessAsync(x => SaveAsync()));")]
     public async Task RegisterCodeFixes_CallWhereAnAwaitIsNotAllowed_OnlyRenamesIt(string members, string fixedMembers)
     {
         // Act & Assert

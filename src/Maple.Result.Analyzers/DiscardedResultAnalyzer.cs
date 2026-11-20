@@ -9,6 +9,7 @@
  */
 
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
@@ -62,7 +63,7 @@ public sealed class DiscardedResultAnalyzer : ResultAnalyzer
         var source = invocation?.TargetMethod.Name ?? awaited!.Operation.Syntax.ToString();
         // A task can be awaited only in an async function; elsewhere no fix keeps the code compiling and the failure visible.
         var fix = isTask
-            ? CanAwait(statement, context) ? Rules.AwaitAndDiscardFix : null
+            ? CanAwait(statement) ? Rules.AwaitAndDiscardFix : null
             : Rules.DiscardFix;
 
         var (state, advice) = isTask
@@ -116,22 +117,28 @@ public sealed class DiscardedResultAnalyzer : ResultAnalyzer
         }
     }
 
-    // Whether the statement is in an async method, local function or lambda, where the task can be awaited.
-    private static bool CanAwait(IExpressionStatementOperation statement, OperationAnalysisContext context)
+    // Whether the task can be awaited where the statement is: in an async method, local function or lambda, or in top-level statements,
+    // and not in a lock, unsafe or fixed statement, a query, a catch filter or an unsafe context (AwaitContext, shared with the code fix
+    // that renames and awaits a call). After a null-conditional access the task can be null: awaiting it would throw where the call did
+    // nothing.
+    private static bool CanAwait(IExpressionStatementOperation statement)
     {
-        for (var operation = statement.Parent; operation is not null; operation = operation.Parent)
+        if (statement.Operation is IConditionalAccessOperation)
+            return false;
+
+        var container = AwaitContext.Container(statement.Syntax);
+
+        if (AwaitContext.IsUnsafe(container))
+            return false;
+
+        return container switch
         {
-            switch (operation)
-            {
-                case IAnonymousFunctionOperation function:
-                    return function.Symbol.IsAsync;
-
-                case ILocalFunctionOperation function:
-                    return function.Symbol.IsAsync;
-            }
-        }
-
-        return context.ContainingSymbol is IMethodSymbol { IsAsync: true };
+            AnonymousFunctionExpressionSyntax function => function.AsyncKeyword.IsKind(SyntaxKind.AsyncKeyword),
+            LocalFunctionStatementSyntax function => function.Modifiers.Any(SyntaxKind.AsyncKeyword),
+            MethodDeclarationSyntax method => method.Modifiers.Any(SyntaxKind.AsyncKeyword),
+            GlobalStatementSyntax => true,
+            _ => false,
+        };
     }
 
     // Whether the statement that ends with this call drops a result that nothing else holds.

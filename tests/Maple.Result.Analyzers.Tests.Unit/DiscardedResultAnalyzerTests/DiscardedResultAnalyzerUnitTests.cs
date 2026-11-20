@@ -108,7 +108,8 @@ public class DiscardedResultAnalyzerUnitTests
         "The Result<int> returned by LoadValueTask is not used, so a failure is lost. Check it, return it, or discard it with ‘_ =’.")]
     [InlineData(
         "SaveResultAsync();",
-        "The Task<Result> returned by SaveResultAsync is not awaited, so a failure is lost. Await it and check the result, or discard the result with ‘_ = await’.")]
+        "The Task<Result> returned by SaveResultAsync is not awaited, so a failure is lost. "
+        + "Await it and check the result, or discard the result with ‘_ = await’.")]
     [InlineData(
         "var t = SaveResultAsync(); await t;",
         "The Result returned by t is not used, so a failure is lost. Check it, return it, or discard it with ‘_ =’.")]
@@ -132,6 +133,11 @@ public class DiscardedResultAnalyzerUnitTests
     [InlineData("await Task.Yield(); Action a = () => SaveResultAsync();", null)]
     [InlineData("async Task LocalAsync() { await Task.Yield(); SaveResultAsync(); } await LocalAsync();", "AwaitAndDiscard")]
     [InlineData("void Local() { SaveResultAsync(); } Local();", null)]
+    [InlineData("await Task.Yield(); lock (okTask) { SaveResultAsync(); }", null)]
+    [InlineData("await Task.Yield(); unsafe { SaveResultAsync(); }", null)]
+    [InlineData("await Task.Yield(); ok?.ThenAsync(x => GetIntAsync());", null)]
+    [InlineData("unsafe async Task LocalAsync() { SaveResultAsync(); } await LocalAsync();", null)]
+    [InlineData("await Task.Yield(); Func<Task> f = async () => { lock (okTask) { SaveResultAsync(); } };", null)]
     public void Analyze_ResultOrTaskThatIsNotUsed_NamesTheFixThatFitsTheFunction(string statements, string? fix)
     {
         // Act
@@ -142,5 +148,17 @@ public class DiscardedResultAnalyzerUnitTests
         var diagnostic = result.Diagnostics.ShouldHaveSingleItem();
         var hasFix = diagnostic.Properties.TryGetValue(Rules.DiscardFixProperty, out var value);
         (hasFix ? value : null).ShouldBe(fix);
+    }
+
+    [Fact]
+    public void Analyze_TaskInAConstructor_NamesNoFix()
+    {
+        // Act
+        var result = AnalyzerRunner.Run<DiscardedResultAnalyzer>("", Members + "\n    static Snippet() { SaveResultAsync(); }");
+
+        // Assert
+        result.CompilerErrorIds.ShouldBeEmpty(result.CompilerErrors);
+        var diagnostic = result.Diagnostics.ShouldHaveSingleItem();
+        diagnostic.Properties.ShouldNotContainKey(Rules.DiscardFixProperty);
     }
 }
