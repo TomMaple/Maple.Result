@@ -13,8 +13,9 @@ using Maple.Results.Analyzers.Tests.Unit.TestingInfrastructure.Helpers;
 namespace Maple.Results.Analyzers.Tests.Unit.IgnoredValueAnalyzerTests;
 
 /// <summary>
-///     Tests that the <see cref="IgnoredValueAnalyzer" /> (MR0005) reports a value that <c>IfSuccess</c> or <c>IfError</c> ignores,
-///     on call shapes that compile without a diagnostic of the compiler: chained calls.
+///     Tests that the <see cref="IgnoredValueAnalyzer" /> (MR0005) leaves a function that returns a task to an action of <c>IfSuccess</c> or
+///     <c>IfError</c> to the <see cref="UnawaitedTaskAnalyzer" /> (MR0002), on call shapes that compile without a diagnostic of the compiler:
+///     chained calls.
 /// </summary>
 public class IgnoredValueAnalyzerChainUnitTests
 {
@@ -30,14 +31,14 @@ public class IgnoredValueAnalyzerChainUnitTests
     [Theory]
     [InlineData("Result<int> r = ok.IfSuccess(x => GetIntValueTask());")]
     [InlineData("var r = ok.IfSuccess(x => GetIntAsync()).Value;")]
-    public void Analyze_ChainedCall_ReportsTheRule(string statements)
+    public void Analyze_FunctionThatReturnsATaskToAnAction_LeavesItToTheUnawaitedTaskRule(string statements)
     {
         // Act
-        var result = AnalyzerRunner.Run<IgnoredValueAnalyzer>(statements, Members);
+        var result = AnalyzerRunner.Run(statements, Members, AnalyzerRunner.AllAnalyzers);
 
         // Assert
         result.CompilerErrorIds.ShouldBeEmpty(result.CompilerErrors);
         result.DiagnosticIds.ShouldNotBeEmpty();
-        result.DiagnosticIds.ShouldAllBe(id => id == Rules.IgnoredValueId);
+        result.DiagnosticIds.ShouldAllBe(id => id == Rules.UnawaitedTaskId);
     }
 }

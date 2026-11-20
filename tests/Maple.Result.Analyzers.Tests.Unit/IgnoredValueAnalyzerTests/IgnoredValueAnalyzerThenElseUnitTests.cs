@@ -47,7 +47,6 @@ public class IgnoredValueAnalyzerThenElseUnitTests
         """;
 
     [Theory]
-    [InlineData("_ = Ok().IfSuccess(x => GetIntVt());")]
     [InlineData("_ = Failed().IfError(e => Interlocked.Increment(ref Failures));")]
     [InlineData("_ = FailedBool().IfError(e => Titles.Add(e.Title));")]
     [InlineData("_ = Ok().IfSuccessAsync(x => SaveChangesAsync());")]
@@ -61,5 +60,18 @@ public class IgnoredValueAnalyzerThenElseUnitTests
         result.CompilerErrorIds.ShouldBeEmpty(result.CompilerErrors);
         result.DiagnosticIds.ShouldNotBeEmpty();
         result.DiagnosticIds.ShouldAllBe(id => id == Rules.IgnoredValueId);
+    }
+
+    [Theory]
+    [InlineData("_ = Ok().IfSuccess(x => GetIntVt());")]
+    public void Analyze_FunctionThatReturnsATaskToAnAction_LeavesItToTheUnawaitedTaskRule(string statements)
+    {
+        // Act
+        var result = AnalyzerRunner.Run(statements, Members, AnalyzerRunner.AllAnalyzers);
+
+        // Assert
+        result.CompilerErrorIds.ShouldBeEmpty(result.CompilerErrors);
+        result.DiagnosticIds.ShouldNotBeEmpty();
+        result.DiagnosticIds.ShouldAllBe(id => id == Rules.UnawaitedTaskId);
     }
 }
