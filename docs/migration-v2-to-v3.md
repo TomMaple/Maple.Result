@@ -17,8 +17,9 @@ Version 3.0 makes `Result`, `Result<T>` and `Error` **immutable** and **always v
   * [No JSON deserialization without converters](#no-json-deserialization-without-converters)
   * [Changed JSON output](#changed-json-output)
   * [Stricter validation](#stricter-validation)
-  * [Nullable named values](#nullable-named-values)
+  * [Nullable parameters](#nullable-parameters)
   * [`TemplatedMessage` constructors](#templatedmessage-constructors)
+  * [`TemplatedMessage.Params` renamed to `Parameters`](#templatedmessageparams-renamed-to-parameters)
   * [The factory methods take a `TemplatedMessage`](#the-factory-methods-take-a-templatedmessage)
   * [Other behaviour changes](#other-behaviour-changes)
   * [`continueOnCapturedContext` is `bool?`](#continueoncapturedcontext-is-bool)
@@ -60,7 +61,8 @@ Version 3.0 makes `Result`, `Result<T>` and `Error` **immutable** and **always v
 17. Replace `ErrorUri.None()` with `ErrorUri.None` (see [`ErrorUri.None()` is a property](#errorurinone-is-a-property)), read the text of `error.TypeUri` and `error.InstanceUri` with `.Value`, and compare the type of an error with the `ErrorUri` that defines it (see [`Error.TypeUri` and `Error.InstanceUri` are an `ErrorUri`](#errortypeuri-and-errorinstanceuri-are-an-erroruri)).
 18. Replace your own implementations and mocks of `IResult` with `Result` and `Result<T>` (see [`IOperationResult` is closed](#ioperationresult-is-closed)).
 19. Fix every error and warning of the analyzer (MR0001 to MR0006), and do not switch the analyzers off: it reports the 2.x calls that still compile but changed their meaning (see [The analyzer reports the calls that compile but changed](#the-analyzer-reports-the-calls-that-compile-but-changed)).
-20. Pass the template ID and the named values of the `Error` factory methods as one `TemplatedMessage`: `detailTemplated: new("errors.order.notFound", ("orderId", id))` instead of `detailTemplateId: …, detailNamedValues: …` or two positional arguments (see [The factory methods take a `TemplatedMessage`](#the-factory-methods-take-a-templatedmessage)).
+20. Pass the template ID and the parameters of the `Error` factory methods as one `TemplatedMessage`: `detailTemplated: new("errors.order.notFound", ("orderId", id))` instead of `detailTemplateId: …, detailNamedValues: …` or two positional arguments (see [The factory methods take a `TemplatedMessage`](#the-factory-methods-take-a-templatedmessage)).
+21. Replace `TemplatedMessage.Params` with `Parameters`, and the named argument `namedValues:` of `AddDetail` with `detailParameters:` of `WithErrorDetail` (see [`TemplatedMessage.Params` renamed to `Parameters`](#templatedmessageparams-renamed-to-parameters)).
 
 ## Breaking changes
 ### Namespace renamed to `Maple.Results`
@@ -154,7 +156,7 @@ The types can only be created through their factory methods, which always produc
 In 2.x, `AddDetail()` **changed the error it was called on** and returned the same instance. That was easy to misuse: adding a detail to an error kept in a `static readonly` field changed it for every caller, and the hash code of the error changed after it was used as a dictionary key.
 
 In 3.0, `Error` is immutable. Use one of:
-* `WithErrorDetail(...)`, which takes the same arguments in the same order and **returns a copy** with the detail appended (the parameters `messageId` and `namedValues` are renamed to `detailTemplateId` and `detailNamedValues`, so update calls that use named arguments),
+* `WithErrorDetail(...)`, which takes the same arguments in the same order and **returns a copy** with the detail appended (the parameters `messageId` and `namedValues` are renamed to `detailTemplateId` and `detailParameters`, so update calls that use named arguments),
 * an `ErrorBuilder` with `AddErrorDetail(...)`, to add several details without copying the error each time.
 
 ```csharp
@@ -235,6 +237,7 @@ The JSON written by the default serializers changed as follows, and a failed `Re
 | Failed `Result<T>` | `{"Error":{…}}` | throws (`Value` throws on a failed result) |
 | `Error` | no `Metadata` member | always has `"Metadata":{…}` (`{}` when empty) |
 | `TypeUri` and `InstanceUri` of an `Error` | a string, e.g., `"TypeUri":"tag:example.com,2026:errors:not-found"` | an object, e.g., `"TypeUri":{"Value":"tag:example.com,2026:errors:not-found"}`; `"InstanceUri":null` when there is none |
+| `DetailTemplated` of an `Error`, and a `TemplatedMessage` | `"Params":{…}` | `"Parameters":{…}` (see [`TemplatedMessage.Params` renamed to `Parameters`](#templatedmessageparams-renamed-to-parameters)) |
 | `Result` and `Result<T>` | no `IsSuccess` member | always has `"IsSuccess":…,"IsError":…`, e.g., `{"Value":128,"Error":null,"IsSuccess":true,"IsError":false}` |
 
 Writing a failed `Result<T>` needs a dedicated converter, or a DTO of your own; see [`Result<T>.Value` throws on a failed result](#resulttvalue-throws-on-a-failed-result). Update any snapshot tests or contract tests that compare the JSON.
@@ -266,17 +269,17 @@ In return, every `Error` you receive has a non-blank title, a defined category, 
 
 `about:blank` has a meaning only as a type (*RFC 9457*, section 4.2.1). A default `ErrorUri` is `about:blank` too, so `instanceUri: default` throws as well.
 
-### Nullable named values
-The named values of templated messages are now `object?` instead of `object`:
+### Nullable parameters
+The parameters of templated messages are now `object?` instead of `object`:
 * the parameters of the `TemplatedMessage` constructors, which the `Error` factory methods now take instead of their `detailNamedValues` (see [The factory methods take a `TemplatedMessage`](#the-factory-methods-take-a-templatedmessage)),
-* the `detailNamedValues` parameter of `WithErrorDetail` (formerly `namedValues` of `AddDetail`),
-* `TemplatedMessage.Params` (`IReadOnlyDictionary<string, object?>?`).
+* the `detailParameters` parameter of `WithErrorDetail` (formerly `namedValues` of `AddDetail`),
+* `TemplatedMessage.Parameters`, formerly `Params` (`IReadOnlyDictionary<string, object?>?`).
 
-Existing calls still compile. With nullable reference types enabled, passing a `Dictionary<string, object>` produces warning CS8620; declare it as `Dictionary<string, object?>` instead. Code that reads `Params[...]` may get nullable warnings (CS8602) and should handle `null` values.
+Existing calls still compile. With nullable reference types enabled, passing a `Dictionary<string, object>` produces warning CS8620; declare it as `Dictionary<string, object?>` instead. Code that reads `Parameters[...]` may get nullable warnings (CS8602) and should handle `null` values.
 
-`TemplatedMessage` now copies `Params` into its own read-only dictionary with an ordinal (case-sensitive) comparer, so changing the source dictionary later no longer changes the message.
+`TemplatedMessage` now copies the parameters into its own read-only dictionary with an ordinal (case-sensitive) comparer, so changing the source dictionary later no longer changes the message.
 
-`Params` is `null` whenever a message has no parameters: an empty dictionary, an empty collection (`[]`) or no parameters at all. In 2.x an empty dictionary was kept, so a message with an empty dictionary did not equal the same message without parameters; now they are equal. Code that told an empty `Params` apart from `null` only needs the `null` check.
+`Parameters` is `null` whenever a message has no parameters: an empty dictionary, an empty collection (`[]`) or no parameters at all. In 2.x an empty dictionary was kept, so a message with an empty dictionary did not equal the same message without parameters; now they are equal. Code that told an empty dictionary apart from `null` only needs the `null` check.
 
 ### `TemplatedMessage` constructors
 `TemplatedMessage` is no longer a positional record. It has two constructors:
@@ -294,16 +297,35 @@ var message = new TemplatedMessage("errors.length", ("min", 3));
 
 Changes that can break existing code:
 * **The parameter names** changed from `TemplateId` / `Params` to `templateId` / `parameters`. Update calls that use named arguments.
-* **`Deconstruct` is gone.** `var (id, parameters) = message;` and positional patterns such as `message is ("errors.length", var p)` no longer compile; use a property pattern instead: `message is { TemplateId: "errors.length", Params: var p }`.
+* **`Deconstruct` is gone.** `var (id, parameters) = message;` and positional patterns such as `message is ("errors.length", var p)` no longer compile; use a property pattern instead: `message is { TemplateId: "errors.length", Parameters: var p }`.
 * **Repeated or `null` parameter names, and names that differ only in case, throw** (see [Stricter validation](#stricter-validation)).
 
-The named values of `WithErrorDetail`, `ErrorBuilder.AddErrorDetail` and `ErrorBuilder.WithDetailTemplated` are now `params ReadOnlySpan<(string Key, object? Value)>` instead of `params (string Key, object? Value)[]`, so a call no longer allocates an array:
+The parameters of `WithErrorDetail`, `ErrorBuilder.AddErrorDetail` and `ErrorBuilder.WithDetailTemplated` are now `params ReadOnlySpan<(string Key, object? Value)>` instead of `params (string Key, object? Value)[]`, so a call no longer allocates an array:
 * inline values, arrays and collection expressions still compile; recompile the calling code (the signatures changed);
 * an explicit `null` is now an empty list (e.g., `WithDetailTemplated("id", null)` no longer throws);
-* a call with named values cannot appear inside an expression tree (e.g., a Moq `Setup(x => …)` or an EF query); build the error outside the expression.
+* a call with parameters cannot appear inside an expression tree (e.g., a Moq `Setup(x => …)` or an EF query); build the error outside the expression.
+
+### `TemplatedMessage.Params` renamed to `Parameters`
+The values of a message template have one name in 3.0, *parameters*, in the property and in the parameters of the methods:
+* `TemplatedMessage.Params` is now `TemplatedMessage.Parameters`. Code that reads `Params`, and property patterns such as `message is { Params: var p }`, no longer compile; rename them.
+* The named argument for the values of `WithErrorDetail` (formerly `namedValues` of `AddDetail`) is `detailParameters:`.
+* Without the converters of the related packages, the default serializers write the member as `"Parameters"` (or `"parameters"` with a camel-case naming policy) instead of `"Params"`, and `ToString()` writes `Parameters = { … }`. The problem details format of the related packages keeps the member `params`.
+
+```csharp
+// 2.x
+if (error.DetailTemplated?.Params is { } values) { … }
+error.AddDetail("/name", "Too short.", messageId: "errors.length", namedValues: ("min", 3));
+
+// 3.0
+if (error.DetailTemplated?.Parameters is { } values) { … }
+error = error.WithErrorDetail("/name", "Too short.", detailTemplateId: "errors.length", detailParameters: ("min", 3));
+```
+
+> [!NOTE]
+> Code written against 3.0.0-rc.1: the parameters `namedValues` of `ErrorBuilder.WithDetailTemplated(String, ReadOnlySpan<(String, Object)>)`, and `detailNamedValues` of `WithErrorDetail` and `ErrorBuilder.AddErrorDetail`, are renamed to `parameters` and `detailParameters`. Only calls with named arguments are affected.
 
 ### The factory methods take a `TemplatedMessage`
-Each `Error` factory method (e.g., `Error.NotFound`) had two overloads with a template ID and named values (`detailTemplateId`, and `detailNamedValues` as tuples or as key-value pairs). There is now one per category, which takes the templated detail as one `TemplatedMessage`:
+Each `Error` factory method (e.g., `Error.NotFound`) had two overloads with a template ID and parameters (`detailTemplateId`, and `detailNamedValues` as tuples or as key-value pairs). There is now one per category, which takes the templated detail as one `TemplatedMessage`:
 
 ```csharp
 public static Error NotFound(ErrorUri typeUri, string title, string? detail = null,
@@ -326,14 +348,14 @@ var error = Error.NotFound(type, "Order not found",
     detailTemplated: new("errors.order.notFound", new Dictionary<string, object?> { ["orderId"] = id }));
 ```
 
-Calls that pass a template ID or named values to a factory method, by position or by name (`detailTemplateId:`, `detailNamedValues:`), no longer compile. An invalid template ID or named value throws from the `TemplatedMessage` constructor, before the factory method is called, and the `ParamName` of the exception is `templateId` or `parameters` instead of `detailTemplateId` or `detailNamedValues`.
+Calls that pass a template ID or parameters to a factory method, by position or by name (`detailTemplateId:`, `detailNamedValues:`), no longer compile. An invalid template ID or parameter throws from the `TemplatedMessage` constructor, before the factory method is called, and the `ParamName` of the exception is `templateId` or `parameters` instead of `detailTemplateId` or `detailNamedValues`.
 
-`WithErrorDetail`, `ErrorBuilder.AddErrorDetail` and `ErrorBuilder.WithDetailTemplated` still take a template ID and named values.
+`WithErrorDetail`, `ErrorBuilder.AddErrorDetail` and `ErrorBuilder.WithDetailTemplated` still take a template ID and parameters (`detailParameters` and `parameters`).
 
 ### Other behaviour changes
 * **`Result.Success()`** returns the same, shared instance on every call. It is immutable, so this is safe; only code that relied on reference inequality of two successful results is affected.
 * **`ToString()`** of `Result` and `Result<T>` prints only the `Value` of a successful result or the `Error` of a failed one (e.g., `Result { Value = 42 }`, `Result { Error = Error { … } }`); 2.x printed every property, including the default `Value` of a failed result.
-* **`ToString()`** of `Error` and `TemplatedMessage` now prints the contents of `ErrorDetails`, `Metadata` and `Params` (instead of their type names), and `ErrorUri.ToString()` returns just the *URI* (instead of `ErrorUri { Value = … }`). Update tests or log parsers that depend on the old text.
+* **`ToString()`** of `Error` and `TemplatedMessage` now prints the contents of `ErrorDetails`, `Metadata` and `Parameters` (instead of their type names), and `ErrorUri.ToString()` returns just the *URI* (instead of `ErrorUri { Value = … }`). Update tests or log parsers that depend on the old text.
 * **`GetHashCode()`** of an `Error` never changes, because the error cannot change. An `Error` can be used safely as a dictionary key or in a `HashSet<T>`.
 * **`ErrorDetails`** is a read-only collection; casting it to `IList<ErrorDetail>` and modifying it throws a `NotSupportedException`.
 * **`ErrorCategory.Timeout`** is now documented as `408` (Request Timeout) when the client did not send the complete request in time, or `504` (Gateway Timeout) when an upstream server or a dependency did not respond in time; 2.x documented only `408`. The `ErrorCategory` members now have explicit values, equal to the 2.x ones, so stored and serialized values do not change.
@@ -703,7 +725,7 @@ The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an
 | `await result.MatchAsync(x => …Async(x), e => …Async(e))` (`MatchAsync` on a result) | `await result.Match(x => …Async(x), e => …Async(e))` |
 | `result.Match<T, TNext>(…)` (functions returning a `Result<TNext>`) | `result.Match<T, Result<TNext>>(…)` |
 | `WithErrorDetail("Email", …)` / `AddErrorDetail(nameof(request.Email), …)` (a pointer that is not a JSON Pointer) | `WithErrorDetail("/email", …)` / `AddErrorDetail("/email", …)` |
-| `Dictionary<string, object>` passed as named values | `Dictionary<string, object?>` |
+| `Dictionary<string, object>` passed as the parameters of a template | `Dictionary<string, object?>` |
 | `using Maple.Result;` | `using Maple.Results;` |
 | `using Maple.Result.Extensions;` | `using Maple.Results.Extensions;` |
 | `using Maple.Result.Extensions.ValueTasks;` | `using Maple.Results.Extensions;` (one namespace for both kinds of task) |
@@ -711,14 +733,15 @@ The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an
 | `ValueTask<Result<int>> r = result.ThenAsync(async x => …);` | `ValueTask<Result<int>> r = result.ThenAsync(async ValueTask<int> (int x) => …);` |
 | `ErrorCategory.Unauthorized` | `ErrorCategory.PermissionDenied` |
 | `Error.Unauthorized(…)`, `ErrorBuilder.Unauthorized(…)` | `Error.PermissionDenied(…)`, `ErrorBuilder.PermissionDenied(…)` |
-| `Error.X(…, "template.id", ("name", value))` (a template ID and named values by position) | `Error.X(…, new TemplatedMessage("template.id", ("name", value)))` |
+| `Error.X(…, "template.id", ("name", value))` (a template ID and parameters by position) | `Error.X(…, new TemplatedMessage("template.id", ("name", value)))` |
 | `Error.X(…, detailTemplateId: "template.id", detailNamedValues: …)` | `Error.X(…, detailTemplated: new("template.id", …))` |
 | `IResult` (`Maple.Result`) | `IOperationResult` (`Maple.Results`) |
 | `result.IsSuccess()` | `result.IsSuccess` |
 | `!result.IsSuccess()` | `result.IsError` |
 | `result.Value` relied on as the default value of a failed result | `result.TryGetValue(out var value) ? value : default` or a check of `result.IsSuccess` |
-| `WithErrorDetail(…, messageId: …, namedValues: …)` (named arguments) | `WithErrorDetail(…, detailTemplateId: …, detailNamedValues: …)` |
-| `var (id, parameters) = templatedMessage;` | `templatedMessage is { TemplateId: var id, Params: var parameters }` |
+| `WithErrorDetail(…, messageId: …, namedValues: …)` (named arguments) | `WithErrorDetail(…, detailTemplateId: …, detailParameters: …)` |
+| `var (id, parameters) = templatedMessage;` | `templatedMessage is { TemplateId: var id, Parameters: var parameters }` |
+| `templatedMessage.Params`, `error.DetailTemplated?.Params` | `templatedMessage.Parameters`, `error.DetailTemplated?.Parameters` |
 | `JsonSerializer.Deserialize<Result<T>>(…)` / `Deserialize<Error>(…)` | your own DTO, or the converter packages (coming soon) |
 
 ## See Also
