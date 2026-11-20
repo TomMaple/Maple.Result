@@ -34,8 +34,6 @@ jobs:
       previous: ${{ steps.version.outputs.previous }}
       prerelease: ${{ steps.version.outputs.prerelease }}
       consumer_facing: ${{ steps.notes.outputs.consumer_facing }}
-    env:
-      NOTES: ${{ github.workspace }}/../notes/notes.md
     steps:
     - name: Check branch
       if: github.ref != 'refs/heads/main'
@@ -108,11 +106,13 @@ jobs:
     - name: Test
       run: dotnet test --no-build --configuration Release
 
+    # The notes go to the temporary folder of the runner, which exists (git-cliff does not create the folder of its
+    # output). The runner context is available in the steps, not in the env of the job.
     - name: Generate release notes
       uses: orhun/git-cliff-action@a9a95522b26fe6403f7bb24031f21fb573d0f5ff # v4.9.1
       with:
         version: v2.14.2
-        args: --unreleased --tag v${{ steps.version.outputs.version }} --strip all -o ${{ env.NOTES }}
+        args: --unreleased --tag v${{ steps.version.outputs.version }} --strip all -o ${{ runner.temp }}/notes.md
 
     # cliff.toml already renders a fallback text when every commit is filtered out. This also covers
     # git-cliff omitting the release entirely.
@@ -133,6 +133,7 @@ jobs:
         fi
         cat "$NOTES"
       env:
+        NOTES: ${{ runner.temp }}/notes.md
         VERSION: ${{ steps.version.outputs.version }}
         PREVIOUS: ${{ steps.version.outputs.previous }}
 
@@ -140,7 +141,7 @@ jobs:
       uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
       with:
         name: release-notes
-        path: ${{ env.NOTES }}
+        path: ${{ runner.temp }}/notes.md
         retention-days: 1
         if-no-files-found: error
 
