@@ -49,7 +49,7 @@ public sealed class IgnoredValueAnalyzer : ResultAnalyzer
             _ => null,
         };
 
-        if (newName is null || !types.IsLibraryMember(method) || !IsResultUsed(invocation.Syntax))
+        if (newName is null || !types.IsLibraryMember(method) || !IsResultUsed(invocation))
             return;
 
         // The receiver is a result or a task of one, so the function is the only delegate among the arguments.
