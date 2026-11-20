@@ -9,6 +9,7 @@
  */
 
 using Maple.Results.Analyzers.CodeFixes.Tests.Unit.TestingInfrastructure.Helpers;
+using System;
 using System.Threading.Tasks;
 
 namespace Maple.Results.Analyzers.CodeFixes.Tests.Unit.RenameMethodCodeFixProviderTests;
@@ -120,20 +121,18 @@ public class RenameMethodCodeFixProviderAwaitUnitTests
         "    static Task M(bool early)\n    {\n        ok.IfSuccess(x => {|MR0002:SaveAsync()|});\n"
         + "        if (early)\n        {\n            return SaveAsync();\n        }\n\n        return Task.CompletedTask;\n    }",
         "    static async Task M(bool early)\n    {\n        await ok.IfSuccessAsync(x => SaveAsync());\n"
-        + "        if (early)\n        {\n            await SaveAsync();\n            return;\n        }\n\n"
-        + "        await Task.CompletedTask;\n    }")]
+        + "        if (early)\n        {\n            await SaveAsync();\n            return;\n        }\n    }")]
     [InlineData(
         "    static Task M(bool early)\n    {\n        ok.IfSuccess(x => {|MR0002:SaveAsync()|});\n"
         + "        if (early) return SaveAsync();\n        return Task.CompletedTask;\n    }",
         "    static async Task M(bool early)\n    {\n        await ok.IfSuccessAsync(x => SaveAsync());\n"
-        + "        if (early) { await SaveAsync(); return; }\n        await Task.CompletedTask;\n    }")]
+        + "        if (early) { await SaveAsync(); return; }\n    }")]
     [InlineData(
         "    static Task M(bool early)\n    {\n        ok.IfSuccess(x => {|MR0002:SaveAsync()|});\n"
         + "        if (early)\n        {\n            // nothing else to do\n\n            return SaveAsync();\n        }\n\n"
         + "        return Task.CompletedTask;\n    }",
         "    static async Task M(bool early)\n    {\n        await ok.IfSuccessAsync(x => SaveAsync());\n"
-        + "        if (early)\n        {\n            // nothing else to do\n\n            await SaveAsync();\n            return;\n        }\n\n"
-        + "        await Task.CompletedTask;\n    }")]
+        + "        if (early)\n        {\n            // nothing else to do\n\n            await SaveAsync();\n            return;\n        }\n    }")]
     public async Task RegisterCodeFixes_EarlyReturnInAMethodThatReturnsATask_AwaitsTheTaskAndReturns(string members, string fixedMembers)
     {
         // Act & Assert
@@ -238,5 +237,89 @@ public class RenameMethodCodeFixProviderAwaitUnitTests
     {
         // Act & Assert
         await CodeFixVerifier<UnawaitedTaskAnalyzer, RenameMethodCodeFixProvider>.VerifyMembersAsync(members, fixedMembers);
+    }
+
+    [Theory]
+    [InlineData(
+        "    static Task M(bool early)\n    {\n        ok.IfSuccess(x => {|MR0002:SaveAsync()|});\n"
+        + "        if (early) return Task.CompletedTask;\n        return SaveAsync();\n    }",
+        "    static async Task M(bool early)\n    {\n        await ok.IfSuccessAsync(x => SaveAsync());\n"
+        + "        if (early) return;\n        await SaveAsync();\n    }")]
+    [InlineData(
+        "    static ValueTask M()\n    {\n        ok.IfSuccess(x => {|MR0002:SaveAsync()|});\n        return ValueTask.CompletedTask;\n    }",
+        "    static async ValueTask M()\n    {\n        await ok.IfSuccessAsync(x => SaveAsync());\n    }")]
+    [InlineData(
+        "    static ValueTask M()\n    {\n        ok.IfSuccess(x => {|MR0002:SaveAsync()|});\n        return default;\n    }",
+        "    static async ValueTask M()\n    {\n        await ok.IfSuccessAsync(x => SaveAsync());\n    }")]
+    [InlineData(
+        "    static ValueTask M()\n    {\n        ok.IfSuccess(x => {|MR0002:SaveAsync()|});\n        return default(ValueTask);\n    }",
+        "    static async ValueTask M()\n    {\n        await ok.IfSuccessAsync(x => SaveAsync());\n    }")]
+    [InlineData(
+        "    static ValueTask<int> M()\n    {\n        ok.IfSuccess(x => {|MR0002:SaveAsync()|});\n        return default;\n    }",
+        "    static async ValueTask<int> M()\n    {\n        await ok.IfSuccessAsync(x => SaveAsync());\n        return default;\n    }")]
+    [InlineData(
+        "    static Task M()\n    {\n        ok.IfSuccess(x => {|MR0002:SaveAsync()|});\n"
+        + "        // nothing else to do\n        return Task.CompletedTask;\n    }",
+        "    static async Task M()\n    {\n        await ok.IfSuccessAsync(x => SaveAsync());\n        // nothing else to do\n        return;\n    }")]
+    public async Task RegisterCodeFixes_CompletedTaskReturnedByTheFunction_LeavesItOut(string members, string fixedMembers)
+    {
+        // Act & Assert
+        await CodeFixVerifier<UnawaitedTaskAnalyzer, RenameMethodCodeFixProvider>.VerifyMembersAsync(members, fixedMembers);
+    }
+
+    [Theory]
+    [InlineData("out int n", "n = 0; ")]
+    [InlineData("ref int n", "")]
+    [InlineData("in int n", "")]
+    [InlineData("Span<int> span", "")]
+    [InlineData("int* pointer", "")]
+    public async Task RegisterCodeFixes_CallInAMethodThatCannotBeAsync_OnlyRenamesIt(string parameter, string assignment)
+    {
+        // Arrange
+        var modifiers = parameter.Contains('*', StringComparison.Ordinal)
+            ? "static unsafe"
+            : "static";
+
+        var members = "    " + modifiers + " Task M(" + parameter + ") { " + assignment + "ok.IfSuccess(x => {|MR0002:SaveAsync()|}); return SaveAsync(); }";
+        var fixedMembers = "    " + modifiers + " Task M(" + parameter + ") { " + assignment + "ok.IfSuccessAsync(x => SaveAsync()); return SaveAsync(); }";
+
+        // Act & Assert
+        await CodeFixVerifier<UnawaitedTaskAnalyzer, RenameMethodCodeFixProvider>.VerifyMembersAsync(members, fixedMembers);
+    }
+
+    [Theory]
+    [InlineData(
+        "    static unsafe Task M() { ok.IfSuccess(x => {|MR0002:SaveAsync()|}); return SaveAsync(); }",
+        "    static unsafe Task M() { ok.IfSuccessAsync(x => SaveAsync()); return SaveAsync(); }")]
+    [InlineData(
+        "    delegate Task RefFunction(ref int n);\n"
+        + "    static RefFunction f = (ref int n) => { ok.IfSuccess(x => {|MR0002:SaveAsync()|}); return SaveAsync(); };",
+        "    delegate Task RefFunction(ref int n);\n"
+        + "    static RefFunction f = (ref int n) => { ok.IfSuccessAsync(x => SaveAsync()); return SaveAsync(); };")]
+    [InlineData(
+        "    static Task M(bool early) { ok.IfSuccess(x => {|MR0002:SaveAsync()|}); if (early) return default!; return SaveAsync(); }",
+        "    static Task M(bool early) { ok.IfSuccessAsync(x => SaveAsync()); if (early) return default!; return SaveAsync(); }")]
+    [InlineData(
+        "    static Task M(bool early) { ok.IfSuccess(x => {|MR0002:SaveAsync()|}); if (early) return null!; return SaveAsync(); }",
+        "    static Task M(bool early) { ok.IfSuccessAsync(x => SaveAsync()); if (early) return null!; return SaveAsync(); }")]
+    [InlineData(
+        "    static Task<int> M(bool early) { ok.IfSuccess(x => {|MR0002:SaveAsync()|}); if (early) return default!; return GetIntAsync(); }",
+        "    static Task<int> M(bool early) { ok.IfSuccessAsync(x => SaveAsync()); if (early) return default!; return GetIntAsync(); }")]
+    public async Task RegisterCodeFixes_CallInAFunctionThatCannotBecomeAsync_OnlyRenamesIt(string members, string fixedMembers)
+    {
+        // Act & Assert
+        await CodeFixVerifier<UnawaitedTaskAnalyzer, RenameMethodCodeFixProvider>.VerifyMembersAsync(members, fixedMembers);
+    }
+
+    [Theory]
+    [InlineData(
+        "    static readonly object gate = new();\n"
+        + Start + "var a = ok.{|MR0001:Then|}(x => GetIntAsync()); lock (gate) { var b = ok.{|MR0001:Then|}(x => GetIntAsync()); } }",
+        "    static readonly object gate = new();\n"
+        + Start + "var a = await ok.ThenAsync(x => GetIntAsync()); lock (gate) { var b = ok.ThenAsync(x => GetIntAsync()); } }")]
+    public async Task RegisterCodeFixes_RenamedAndAwaitedCalls_FixesAll(string members, string fixedMembers)
+    {
+        // Act & Assert
+        await CodeFixVerifier<InferredResultValueAnalyzer, RenameMethodCodeFixProvider>.VerifyMembersAsync(members, fixedMembers);
     }
 }

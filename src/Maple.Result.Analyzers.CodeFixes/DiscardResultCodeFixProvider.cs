@@ -83,7 +83,8 @@ public sealed class DiscardResultCodeFixProvider : CodeFixProvider
         // The discard takes the leading trivia (indentation, comments) of the expression that it now precedes. The tokens get their
         // trivia explicitly: the elastic trivia of the factory defaults would let the formatter move the statement to a new line.
         var space = SyntaxFactory.TriviaList(SyntaxFactory.Space);
-        var underscore = SyntaxFactory.Identifier(expression.GetLeadingTrivia(), "_", space);
+        // The discard token, as the parser makes it: an identifier "_" that is not a discard binds as a name in a tree that is not parsed again.
+        var underscore = SyntaxFactory.Identifier(expression.GetLeadingTrivia(), SyntaxKind.UnderscoreToken, "_", "_", space);
         var discard = SyntaxFactory.IdentifierName(underscore);
         var equals = SyntaxFactory.Token(SyntaxFactory.TriviaList(), SyntaxKind.EqualsToken, space);
         var awaitKeyword = SyntaxFactory.Token(SyntaxFactory.TriviaList(), SyntaxKind.AwaitKeyword, space);

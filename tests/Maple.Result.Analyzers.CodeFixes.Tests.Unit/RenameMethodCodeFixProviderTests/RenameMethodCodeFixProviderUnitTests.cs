@@ -80,6 +80,9 @@ public class RenameMethodCodeFixProviderUnitTests
     [InlineData(
         "_ = ok.IfSuccess(x => {|MR0002:SaveAsync()|}); _ = ok.IfSuccess(x => {|MR0002:GetIntAsync()|});",
         "_ = ok.IfSuccessAsync(x => SaveAsync()); _ = ok.IfSuccessAsync(x => GetIntAsync());")]
+    [InlineData(
+        "_ = ok.IfSuccess(x => {|MR0002:SaveAsync()|}); _ = ok.IfError(e => {|MR0002:LogAsync(e)|});",
+        "_ = ok.IfSuccessAsync(x => SaveAsync()); _ = ok.IfErrorAsync(e => LogAsync(e));")]
     public async Task RegisterCodeFixes_SeveralDiagnosticsThatMarkTheFunction_FixesAllAtTheMethodNames(string statements, string fixedStatements)
     {
         // Act & Assert
