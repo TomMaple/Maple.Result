@@ -16,7 +16,7 @@ These methods **do not modify** the current instance; they return a new [Error](
 
 
 ## WithoutMetadata()
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L406" target="_blank">Error.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Error.cs#L406" target="_blank">Error.cs</a>
 
 Returns a copy of the current error without any metadata.
 
@@ -37,7 +37,7 @@ var publicError = error.WithoutMetadata();
 
 
 ## WithoutMetadata(String)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L423" target="_blank">Error.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Error.cs#L423" target="_blank">Error.cs</a>
 
 Returns a copy of the current error without the [Metadata](Error_Metadata.md) entry of the specified key.
 

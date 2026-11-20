@@ -15,7 +15,7 @@ Asynchronously converts the outcome of the asynchronous operation represented by
 The overload on a `Task` of a result returns a `Task`, and the one on a `ValueTask` of a result returns a `ValueTask`.
 
 ## ToResultAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ResultAsyncExtensions.Task.cs#L54" target="_blank">ResultAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ResultAsyncExtensions.Task.cs#L54" target="_blank">ResultAsyncExtensions.Task.cs</a>
 
 Asynchronously converts the outcome of the asynchronous operation represented by the [Result&lt;T&gt;](../ResultT/ResultT.md) to the non-generic [Result](../Result/Result.md).
 
@@ -58,7 +58,7 @@ var result = await _userService.CreateUserAsync(addUser)
 ```
 
 ## ToResultAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/ResultAsyncExtensions.ValueTask.cs#L41" target="_blank">ResultAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ResultAsyncExtensions.ValueTask.cs#L41" target="_blank">ResultAsyncExtensions.ValueTask.cs</a>
 
 Asynchronously converts the outcome of the asynchronous operation represented by the [Result&lt;T&gt;](../ResultT/ResultT.md) to the non-generic [Result](../Result/Result.md).
 

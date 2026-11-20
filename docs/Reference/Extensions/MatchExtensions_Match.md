@@ -27,7 +27,7 @@ A call whose functions have no common return type is rejected by the compiler (e
 With explicit type arguments, `TOut` is the whole return type: `Match<int, Result<int>>(x => x + 1, e => e)`.
 
 ## Match&lt;TOut&gt;(Result, Func&lt;TOut&gt;, Func&lt;Error, TOut&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchExtensions.cs#L50" target="_blank">MatchExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/MatchExtensions.cs#L50" target="_blank">MatchExtensions.cs</a>
 
 Invokes the provided `ifSuccessFunction` if the instance of [Result](../Result/Result.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), or the provided `ifErrorFunction` otherwise, and returns the value that the invoked function returns.
 
@@ -76,7 +76,7 @@ await _userService.DeleteUser(id).Match(
 
 
 ## Match&lt;T, TOut&gt;(Result&lt;T&gt;, Func&lt;T, TOut&gt;, Func&lt;Error, TOut&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Extensions/MatchExtensions.cs#L88" target="_blank">MatchExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/MatchExtensions.cs#L88" target="_blank">MatchExtensions.cs</a>
 
 Invokes the provided `ifSuccessFunction` with the value if the instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), or the provided `ifErrorFunction` otherwise, and returns the value that the invoked function returns.
 
