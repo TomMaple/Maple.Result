@@ -1,14 +1,21 @@
 <Project>
 
-  <!-- NuGet adds the analyzers of a package to the projects that reference it, also through another project or package
-       (NuGet/Home#6279). This target is the insurance for a NuGet version that stops doing so for transitive references:
-       it adds the analyzer assemblies only when they are not among the analyzers already, so that they are never passed
-       to the compiler twice. -->
-  <Target Name="MapleResultAddAnalyzers" BeforeTargets="CoreCompile">
+  <!-- NuGet adds the analyzers of a package to the C# projects that reference it, but a package that depends on this one excludes them
+       for its own consumers by default (PrivateAssets), while this file still reaches them (buildTransitive). This target adds the
+       analyzers there, and only when they are not among the analyzers already, so that they are never passed to the compiler twice.
+
+       It runs only for C#, as the analyzers are written for C#. The property MapleResultAnalyzers set to false removes the analyzers
+       of this package, also the ones that NuGet added; ExcludeAssets="analyzers" alone cannot, as this target would add them back. -->
+  <Target Name="MapleResultAddAnalyzers" BeforeTargets="CoreCompile" Condition="'$(Language)' == 'C#'">
     <ItemGroup>
-      <_MapleResultAnalyzer Include="@(Analyzer)" Condition="'%(Filename)%(Extension)' == 'Maple.Result.Analyzers.dll'" />
+      <_MapleResultAnalyzer Include="@(Analyzer)"
+                            Condition="'%(Filename)%(Extension)' == 'Maple.Result.Analyzers.dll'
+                                       or '%(Filename)%(Extension)' == 'Maple.Result.Analyzers.CodeFixes.dll'" />
     </ItemGroup>
-    <ItemGroup Condition="'@(_MapleResultAnalyzer)' == ''">
+    <ItemGroup Condition="'$(MapleResultAnalyzers)' == 'false'">
+      <Analyzer Remove="@(_MapleResultAnalyzer)" />
+    </ItemGroup>
+    <ItemGroup Condition="'$(MapleResultAnalyzers)' != 'false' and '@(_MapleResultAnalyzer)' == ''">
       <Analyzer Include="$(MSBuildThisFileDirectory)..\analyzers\dotnet\cs\Maple.Result.Analyzers.dll" />
       <Analyzer Include="$(MSBuildThisFileDirectory)..\analyzers\dotnet\cs\Maple.Result.Analyzers.CodeFixes.dll" />
     </ItemGroup>

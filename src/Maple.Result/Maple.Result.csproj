@@ -44,12 +44,28 @@
        second reference. The two projects are built before this one (CI packs with no-build) but the library does not reference
        them: the package gets no dependency, and the library stays trimmable. The code-fix assembly is loaded by the IDE only. -->
   <ItemGroup>
-    <ProjectReference Include="..\Maple.Result.Analyzers\Maple.Result.Analyzers.csproj" ReferenceOutputAssembly="false" PrivateAssets="all" />
-    <ProjectReference Include="..\Maple.Result.Analyzers.CodeFixes\Maple.Result.Analyzers.CodeFixes.csproj" ReferenceOutputAssembly="false" PrivateAssets="all" />
-    <None Include="..\Maple.Result.Analyzers\bin\$(Configuration)\netstandard2.0\Maple.Result.Analyzers.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-    <None Include="..\Maple.Result.Analyzers.CodeFixes\bin\$(Configuration)\netstandard2.0\Maple.Result.Analyzers.CodeFixes.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <ProjectReference Include="..\Maple.Result.Analyzers\Maple.Result.Analyzers.csproj"
+                      ReferenceOutputAssembly="false" PrivateAssets="all" PackAsAnalyzer="true" />
+    <ProjectReference Include="..\Maple.Result.Analyzers.CodeFixes\Maple.Result.Analyzers.CodeFixes.csproj"
+                      ReferenceOutputAssembly="false" PrivateAssets="all" PackAsAnalyzer="true" />
     <None Include="buildTransitive\Maple.Result.targets" Pack="true" PackagePath="buildTransitive" />
   </ItemGroup>
+
+  <!-- Packs each analyzer assembly from the output path of its project (GetTargetPath), so that a custom output path or the artifacts
+       layout (UseArtifactsOutput) packs the assemblies that were built, not the files of a fixed bin folder. -->
+  <PropertyGroup>
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);MapleResultPackAnalyzers</TargetsForTfmSpecificContentInPackage>
+  </PropertyGroup>
+
+  <Target Name="MapleResultPackAnalyzers">
+    <MSBuild Projects="@(ProjectReference->WithMetadataValue('PackAsAnalyzer', 'true'))" Targets="GetTargetPath"
+             RemoveProperties="TargetFramework;RuntimeIdentifier;SelfContained">
+      <Output TaskParameter="TargetOutputs" ItemName="_MapleResultAnalyzerAssembly" />
+    </MSBuild>
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="@(_MapleResultAnalyzerAssembly)" PackagePath="analyzers/dotnet/cs" />
+    </ItemGroup>
+  </Target>
 
   <ItemGroup>
     <None Include="..\..\.resources\icon.png" Pack="true" PackagePath="" />
