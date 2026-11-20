@@ -160,6 +160,14 @@ public class MergedAsyncClassesBindingUnitTests
     [InlineData("Task<Result<int>> r = ok.IfErrorAsync(e => RecoverAsync(e));")]
     [InlineData("ValueTask<Result<int>> r = GetValueTask().IfSuccessAsync(x => DoubleAsync(x));")]
     [InlineData("ValueTask<Result<int>> r = GetValueTask().IfErrorAsync(e => RecoverAsync(e));")]
+    // A ValueTask with a value does not convert to a ValueTask without one: an overload of its own awaits it and ignores the value (#289).
+    // An async lambda with a block body that returns a value binds to that overload too.
+    [InlineData("ValueTask<Result<int>> r = ok.IfSuccessAsync(x => DoubleValueAsync(x));")]
+    [InlineData("ValueTask<Result<int>> r = ok.IfErrorAsync(e => RecoverValueAsync(e));")]
+    [InlineData("Task<Result<int>> r = GetTask().IfSuccessAsync(x => DoubleValueAsync(x));")]
+    [InlineData("ValueTask<Result<int>> r = GetValueTask().IfErrorAsync(e => RecoverValueAsync(e));")]
+    [InlineData("ValueTask<Result<int>> r = ok.IfSuccessAsync(async x => { await Task.Yield(); return 1; });")]
+    [InlineData("ValueTask<Result<int>> r = ok.IfErrorAsync(async e => { await Task.Yield(); return 1; });")]
     public void Call_OneNamespace_CompilesToExpectedType(string statements)
     {
         // Act
@@ -170,12 +178,6 @@ public class MergedAsyncClassesBindingUnitTests
     }
 
     [Theory]
-    // A synchronous result: a value in a task in IfSuccessAsync or IfErrorAsync, from an async lambda with a block body or in a
-    // ValueTask, which does not convert to a task without a value (#257).
-    [InlineData("_ = ok.IfSuccessAsync(async x => { await Task.Yield(); return 1; });", "CS8031")]
-    [InlineData("_ = ok.IfErrorAsync(async e => { await Task.Yield(); return 1; });", "CS8031")]
-    [InlineData("_ = ok.IfSuccessAsync(x => DoubleValueAsync(x));", "CS0029,CS1662")]
-    [InlineData("_ = ok.IfErrorAsync(e => RecoverValueAsync(e));", "CS0029,CS1662")]
     // A synchronous result: a task without a value in ThenAsync or ElseAsync; the compiler reports it (#256).
     [InlineData("_ = ok.ThenAsync(async x => { await Task.Yield(); });", "CS1643")]
     [InlineData("_ = done.ThenAsync(async () => { await Task.Yield(); });", "CS1643")]

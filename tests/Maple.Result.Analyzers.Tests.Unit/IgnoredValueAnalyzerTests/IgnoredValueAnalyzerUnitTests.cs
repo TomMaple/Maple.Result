@@ -27,6 +27,8 @@ public class IgnoredValueAnalyzerUnitTests
         static Task<Result<int>> okTask = Task.FromResult(ok);
         static int Normalize(int x) => x;
         static Task<int> NormalizeAsync(int x) => Task.FromResult(x);
+        static ValueTask<int> NormalizeVt(int x) => new(x);
+        static ValueTask<bool> FlushVt() => new(true);
         static int Fallback(Error e) => 0;
         """;
 
@@ -44,6 +46,17 @@ public class IgnoredValueAnalyzerUnitTests
         "IfSuccessAsync runs this function as a side effect and keeps the original result; in version 2 it transformed the result. "
         + "Use ThenAsync to continue with the returned value.")]
     [InlineData("var r = await okTask.IfSuccessAsync(x => Normalize(x));", "Normalize(x)",
+        "IfSuccessAsync runs this function as a side effect and keeps the original result; in version 2 it transformed the result. "
+        + "Use ThenAsync to continue with the returned value.")]
+    // A function that returns a ValueTask with a value, and an async lambda with a block body that returns one: the overload for a
+    // ValueTask with a value awaits it and ignores the value (#289).
+    [InlineData("var r = await ok.IfSuccessAsync(x => NormalizeVt(x));", "NormalizeVt(x)",
+        "IfSuccessAsync runs this function as a side effect and keeps the original result; in version 2 it transformed the result. "
+        + "Use ThenAsync to continue with the returned value.")]
+    [InlineData("var r = await okTask.IfSuccessAsync(x => NormalizeVt(x));", "NormalizeVt(x)",
+        "IfSuccessAsync runs this function as a side effect and keeps the original result; in version 2 it transformed the result. "
+        + "Use ThenAsync to continue with the returned value.")]
+    [InlineData("var r = await ok.IfSuccessAsync(async x => { await Task.Yield(); return x + 1; });", "async x => { await Task.Yield(); return x + 1; }",
         "IfSuccessAsync runs this function as a side effect and keeps the original result; in version 2 it transformed the result. "
         + "Use ThenAsync to continue with the returned value.")]
     [InlineData("var r = ok.IfError(e => Fallback(e));", "Fallback(e)",
@@ -70,6 +83,7 @@ public class IgnoredValueAnalyzerUnitTests
     [InlineData("var r = ok.IfSuccessAsync(x => NormalizeAsync(x));", "IfSuccessAsync", "ThenAsync")]
     [InlineData("var r = ok.IfError(e => Fallback(e));", "IfError", "Else")]
     [InlineData("var r = okTask.IfErrorAsync(e => Fallback(e));", "IfErrorAsync", "ElseAsync")]
+    [InlineData("var r = ok.IfSuccessAsync(x => NormalizeVt(x));", "IfSuccessAsync", "ThenAsync")]
     public void Analyze_FunctionReturningTheValueType_OffersTheTransformingMethodAtTheMethodName(string statements, string methodName, string newName)
     {
         // Act
@@ -85,6 +99,9 @@ public class IgnoredValueAnalyzerUnitTests
     [Theory]
     [InlineData("ok.IfSuccess(x => Normalize(x));")]
     [InlineData("await ok.IfSuccessAsync(x => NormalizeAsync(x));")]
+    [InlineData("await ok.IfSuccessAsync(x => NormalizeVt(x));")]
+    [InlineData("var r = ok.IfSuccessAsync(x => FlushVt());")]
+    [InlineData("var r = ok.IfSuccessAsync(async x => { await Task.Yield(); return true; });")]
     [InlineData("var r = ok.IfSuccess(x => builder.Append(x));")]
     [InlineData("var r = ok.IfSuccess(x => set.Add(x));")]
     [InlineData("var r = ok.IfSuccess(x => last = x);")]

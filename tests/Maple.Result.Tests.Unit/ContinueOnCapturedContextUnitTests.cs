@@ -55,7 +55,7 @@ public sealed class ContinueOnCapturedContextUnitTests : IDisposable
     public void Methods_WithContinueOnCapturedContext_AreFound()
     {
         // Act & Assert
-        Methods.Count.ShouldBe(160);
+        Methods.Count.ShouldBe(169);
     }
 
     [Theory]

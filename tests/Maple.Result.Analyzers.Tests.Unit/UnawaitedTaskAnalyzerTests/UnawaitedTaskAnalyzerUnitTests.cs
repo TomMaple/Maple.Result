@@ -34,7 +34,8 @@ public class UnawaitedTaskAnalyzerUnitTests
         "IfError takes an action here, so this async lambda becomes async void and is not awaited. Use IfErrorAsync.")]
     [InlineData("ok.Switch(x => Console.WriteLine(x), e => LogAsync(e));", "LogAsync(e)",
         "Switch takes an action here, so the task that this function returns is not awaited. Use Match or MatchAsync with two functions that return a task.")]
-    [InlineData("_ = okTask.IfSuccessAsync(x => GetIntValueTask());", "GetIntValueTask()",
+    // With its type argument written, the call cannot bind to the overload for a ValueTask with a value (#289), and takes the action.
+    [InlineData("_ = okTask.IfSuccessAsync<int>(x => GetIntValueTask());", "GetIntValueTask()",
         "IfSuccessAsync takes an action here, so the task that this function returns is not awaited. "
         + "Pass a function that returns a Task or a ValueTask without a value, e.g., an async lambda that awaits it.")]
     public void Analyze_TaskPassedAsAnAction_MarksTheFunctionAndAdvisesTheFix(string statements, string markedText, string message)
@@ -83,6 +84,10 @@ public class UnawaitedTaskAnalyzerUnitTests
     [InlineData("_ = ok.IfSuccessAsync(x => SaveAsync());")]
     [InlineData("_ = ok.IfErrorAsync(async e => await LogAsync(e));")]
     [InlineData("_ = okTask.IfErrorAsync(e => Log(e));")]
+    // A ValueTask with a value is awaited by an overload of its own (#289).
+    [InlineData("_ = okTask.IfSuccessAsync(x => GetIntValueTask());")]
+    [InlineData("_ = ok.IfSuccessAsync(x => GetIntValueTask());")]
+    [InlineData("_ = okTask.IfErrorAsync(e => GetIntValueTask());")]
     [InlineData("_ = ok.IfError(e => throw new InvalidOperationException(e.Title));")]
     [InlineData("new List<int> { 1 }.ForEach(x => SaveAsync());")]
     public void Analyze_ActionOrAwaitedFunction_ReportsNothing(string statements)
