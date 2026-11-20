@@ -929,7 +929,7 @@ public class ErrorBuilderUnitTests
     {
         // Arrange
         var error = Error.Conflict(ErrorUri.Tag("tag:test.com,2024:Test"), "Test title", "Test description.",
-                ErrorUri.Locator("http://test.com/instance/1013"), "message-id", ("key", "value"))
+                ErrorUri.Locator("http://test.com/instance/1013"), new TemplatedMessage("message-id", ("key", "value")))
             .WithErrorDetail("#/property", "Detail", "errors.property", ("min", 3))
             .WithMetadata("retryAfter", 30);
 

@@ -72,8 +72,7 @@ public async Task<Result<User>> GetUserAsync(int userId)
                 "Invalid user ID.",
                 "The user account with the provided ID has not been found.",
                 ErrorUri.Locator("https://api.exampleapp.com/errors/8783927589734857/details"),
-                "errors.user.account.notFound",
-                ("accountId", userId), ("action", "account:retrieve"));
+                new TemplatedMessage("errors.user.account.notFound", ("accountId", userId), ("action", "account:retrieve")));
         }
 
         return user;
@@ -87,8 +86,7 @@ public async Task<Result<User>> GetUserAsync(int userId)
             "An unexpected error occurred.",
             "An unexpected error occurred while getting the user account details.",
             ErrorUri.Locator("https://api.exampleapp.com/errors/2393284590348/details"),
-            "errors.internal.dberror",
-            ("accountId", userId), ("action", "account:retrieve"));
+            new TemplatedMessage("errors.internal.dberror", ("accountId", userId), ("action", "account:retrieve")));
     }
 }
 ```

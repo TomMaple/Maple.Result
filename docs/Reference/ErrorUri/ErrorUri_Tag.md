@@ -49,8 +49,7 @@ var error = Error.NotFound(
                 "Cannot update the account.",
                 "The account with the provided ID has not been found.",
                 ErrorUri.Locator("https://api.exampleapp.com/errors/8783927589734857/details"),
-                "errors.account.notFound",
-                ("accountId", "D12345"), ("action", "account:update"));
+                new TemplatedMessage("errors.account.notFound", ("accountId", "D12345"), ("action", "account:update")));
 ```
 
 ## See Also

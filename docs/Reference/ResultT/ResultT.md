@@ -41,8 +41,7 @@ public Result<User> GetUser(int userId)
                     "User has not been found.",
                     "User with the specified ID does not exist in the system.",
                     ErrorUri.Locator("https://api.exampleapp.com/error/e-1234-5678-9012-345678901234/details"),
-                    "errors-user-notfound",
-                    ("userId", userId)))
+                    new TemplatedMessage("errors-user-notfound", ("userId", userId))))
             : Result<User>.FromValue(user);
     }
     catch (Exception ex)
@@ -67,8 +66,7 @@ public Result<User> GetUser(int userId)
                 "User has not been found.",
                 "User with the specified ID does not exist in the system.",
                 ErrorUri.Locator("https://api.exampleapp.com/error/e-1234-5678-9012-345678901234/details"),
-                "errors-user-notfound",
-                ("userId", userId));
+                new TemplatedMessage("errors-user-notfound", ("userId", userId)));
         }
 
         return user;

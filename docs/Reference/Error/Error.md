@@ -23,8 +23,7 @@ public Result DeleteUser(int userId)
             "User has not been found.",
             "User with the specified ID does not exist in the system.",
             ErrorUri.Locator("https://api.exampleapp.com/error/e-1234-5678-9012-345678901234/details"),
-            "errors-user-notfound",
-            ("userId", userId));
+            new TemplatedMessage("errors-user-notfound", ("userId", userId)));
     }
 
     // Proceed with user deletion
@@ -74,32 +73,21 @@ The debugger shows a short form instead: the category, the title and the number 
 ## Methods
 | Name | Description |
 | ---- | ----------- |
-| [Conflict(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, String, IEnumerable&lt;KeyValuePair&lt;String, Object&gt;&gt;)](Error_Conflict.md#conflicterroruri-string-string-nullableerroruri-string-ienumerablekeyvaluepairstring-object) | Creates a new conflict error with specified parameters. |
-| [Conflict(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, String, ReadOnlySpan&lt;(String, Object)&gt;)](Error_Conflict.md#conflicterroruri-string-string-nullableerroruri-string-readonlyspanstring-object) | Creates a new conflict error with specified parameters. |
-| [Critical(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, String, IEnumerable&lt;KeyValuePair&lt;String, Object&gt;&gt;)](Error_Critical.md#criticalerroruri-string-string-nullableerroruri-string-ienumerablekeyvaluepairstring-object) | Creates a new critical error with specified parameters. |
-| [Critical(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, String, ReadOnlySpan&lt;(String, Object)&gt;)](Error_Critical.md#criticalerroruri-string-string-nullableerroruri-string-readonlyspanstring-object) | Creates a new critical error with specified parameters. |
+| [Conflict(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, TemplatedMessage)](Error_Conflict.md) | Creates a new conflict error with specified parameters. |
+| [Critical(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, TemplatedMessage)](Error_Critical.md) | Creates a new critical error with specified parameters. |
 | [Equals(Error)](Error_Equals.md) | Determines whether the specified error is equal to the current one, comparing the error details and the metadata by content. |
-| [Failure(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, String, IEnumerable&lt;KeyValuePair&lt;String, Object&gt;&gt;)](Error_Failure.md#failureerroruri-string-string-nullableerroruri-string-ienumerablekeyvaluepairstring-object) | Creates a new failure error with specified parameters. |
-| [Failure(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, String, ReadOnlySpan&lt;(String, Object)&gt;)](Error_Failure.md#failureerroruri-string-string-nullableerroruri-string-readonlyspanstring-object) | Creates a new failure error with specified parameters. |
+| [Failure(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, TemplatedMessage)](Error_Failure.md) | Creates a new failure error with specified parameters. |
 | [GetHashCode()](Error_GetHashCode.md) | Returns a hash code consistent with [Equals(Error)](Error_Equals.md), incorporating the error details and the metadata content. |
-| [LimitExceeded(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, String, IEnumerable&lt;KeyValuePair&lt;String, Object&gt;&gt;)](Error_LimitExceeded.md#limitexceedederroruri-string-string-nullableerroruri-string-ienumerablekeyvaluepairstring-object) | Creates a new limit exceeded error with specified parameters. |
-| [LimitExceeded(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, String, ReadOnlySpan&lt;(String, Object)&gt;)](Error_LimitExceeded.md#limitexceedederroruri-string-string-nullableerroruri-string-readonlyspanstring-object) | Creates a new limit exceeded error with specified parameters. |
-| [NotFound(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, String, IEnumerable&lt;KeyValuePair&lt;String, Object&gt;&gt;)](Error_NotFound.md#notfounderroruri-string-string-nullableerroruri-string-ienumerablekeyvaluepairstring-object) | Creates a new not found error with specified parameters. |
-| [NotFound(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, String, ReadOnlySpan&lt;(String, Object)&gt;)](Error_NotFound.md#notfounderroruri-string-string-nullableerroruri-string-readonlyspanstring-object) | Creates a new not found error with specified parameters. |
-| [NotImplemented(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, String, IEnumerable&lt;KeyValuePair&lt;String, Object&gt;&gt;)](Error_NotImplemented.md#notimplementederroruri-string-string-nullableerroruri-string-ienumerablekeyvaluepairstring-object) | Creates a new not implemented error with specified parameters. |
-| [NotImplemented(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, String, ReadOnlySpan&lt;(String, Object)&gt;)](Error_NotImplemented.md#notimplementederroruri-string-string-nullableerroruri-string-readonlyspanstring-object) | Creates a new not implemented error with specified parameters. |
-| [PermissionDenied(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, String, IEnumerable&lt;KeyValuePair&lt;String, Object&gt;&gt;)](Error_PermissionDenied.md#permissiondeniederroruri-string-string-nullableerroruri-string-ienumerablekeyvaluepairstring-object) | Creates a new permission denied error with specified parameters. |
-| [PermissionDenied(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, String, ReadOnlySpan&lt;(String, Object)&gt;)](Error_PermissionDenied.md#permissiondeniederroruri-string-string-nullableerroruri-string-readonlyspanstring-object) | Creates a new permission denied error with specified parameters. |
-| [Timeout(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, String, IEnumerable&lt;KeyValuePair&lt;String, Object&gt;&gt;)](Error_Timeout.md#timeouterroruri-string-string-nullableerroruri-string-ienumerablekeyvaluepairstring-object) | Creates a new timeout error with specified parameters. |
-| [Timeout(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, String, ReadOnlySpan&lt;(String, Object)&gt;)](Error_Timeout.md#timeouterroruri-string-string-nullableerroruri-string-readonlyspanstring-object) | Creates a new timeout error with specified parameters. |
+| [LimitExceeded(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, TemplatedMessage)](Error_LimitExceeded.md) | Creates a new limit exceeded error with specified parameters. |
+| [NotFound(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, TemplatedMessage)](Error_NotFound.md) | Creates a new not found error with specified parameters. |
+| [NotImplemented(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, TemplatedMessage)](Error_NotImplemented.md) | Creates a new not implemented error with specified parameters. |
+| [PermissionDenied(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, TemplatedMessage)](Error_PermissionDenied.md) | Creates a new permission denied error with specified parameters. |
+| [Timeout(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, TemplatedMessage)](Error_Timeout.md) | Creates a new timeout error with specified parameters. |
 | [ToBuilder()](Error_ToBuilder.md) | Returns a new [ErrorBuilder](../ErrorBuilder/ErrorBuilder.md) initialized with the members of the current error. |
 | [TryGetMetadata&lt;T&gt;(String, T)](Error_TryGetMetadata.md) | Gets the metadata value of the specified key if it is of the requested type. |
-| [Unauthenticated(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, String, IEnumerable&lt;KeyValuePair&lt;String, Object&gt;&gt;)](Error_Unauthenticated.md#unauthenticatederroruri-string-string-nullableerroruri-string-ienumerablekeyvaluepairstring-object) | Creates a new unauthenticated error with specified parameters. |
-| [Unauthenticated(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, String, ReadOnlySpan&lt;(String, Object)&gt;)](Error_Unauthenticated.md#unauthenticatederroruri-string-string-nullableerroruri-string-readonlyspanstring-object) | Creates a new unauthenticated error with specified parameters. |
-| [Unavailable(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, String, IEnumerable&lt;KeyValuePair&lt;String, Object&gt;&gt;)](Error_Unavailable.md#unavailableerroruri-string-string-nullableerroruri-string-ienumerablekeyvaluepairstring-object) | Creates a new unavailable error with specified parameters. |
-| [Unavailable(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, String, ReadOnlySpan&lt;(String, Object)&gt;)](Error_Unavailable.md#unavailableerroruri-string-string-nullableerroruri-string-readonlyspanstring-object) | Creates a new unavailable error with specified parameters. |
-| [Validation(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, String, IEnumerable&lt;KeyValuePair&lt;String, Object&gt;&gt;)](Error_Validation.md#validationerroruri-string-string-nullableerroruri-string-ienumerablekeyvaluepairstring-object) | Creates a new validation error with specified parameters. |
-| [Validation(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, String, ReadOnlySpan&lt;(String, Object)&gt;)](Error_Validation.md#validationerroruri-string-string-nullableerroruri-string-readonlyspanstring-object) | Creates a new validation error with specified parameters. |
+| [Unauthenticated(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, TemplatedMessage)](Error_Unauthenticated.md) | Creates a new unauthenticated error with specified parameters. |
+| [Unavailable(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, TemplatedMessage)](Error_Unavailable.md) | Creates a new unavailable error with specified parameters. |
+| [Validation(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, TemplatedMessage)](Error_Validation.md) | Creates a new validation error with specified parameters. |
 | [WithErrorDetail(ErrorDetail)](Error_WithErrorDetail.md#witherrordetailerrordetail) | Returns a copy of the error with the specified error detail appended. |
 | [WithErrorDetail(String, String, String, ReadOnlySpan&lt;(String, Object)&gt;)](Error_WithErrorDetail.md#witherrordetailstring-string-string-readonlyspanstring-object) | Returns a copy of the error with a new error detail appended. |
 | [WithMetadata(IEnumerable&lt;KeyValuePair&lt;String, Object&gt;&gt;)](Error_WithMetadata.md#withmetadataienumerablekeyvaluepairstring-object) | Returns a copy of the error with the specified metadata entries added or replaced. |

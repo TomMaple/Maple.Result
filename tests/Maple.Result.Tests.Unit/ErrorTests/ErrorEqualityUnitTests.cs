@@ -20,7 +20,7 @@ public class ErrorEqualityUnitTests
     public void Equals_FactoryAndBuilderWithTemplateIdOnly_AreEqual()
     {
         // Arrange
-        var fromFactory = Sut.Validation(ErrorUri.None, "Test title", detailTemplateId: "message-id");
+        var fromFactory = Sut.Validation(ErrorUri.None, "Test title", detailTemplated: new TemplatedMessage("message-id"));
         var fromBuilder = ErrorBuilder.Validation(ErrorUri.None, "Test title")
             .WithDetailTemplated("message-id")
             .Build();

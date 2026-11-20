@@ -30,7 +30,7 @@ namespace Maple.Results;
 ///     </para>
 ///     <para>
 ///         The record is immutable. Create it with one of the factory methods
-///         (e.g., <see cref="Validation(ErrorUri, string, string?, ErrorUri?, string?, ReadOnlySpan{ValueTuple{string, object?}})" />) or
+///         (e.g., <see cref="Validation(ErrorUri, string, string?, ErrorUri?, TemplatedMessage?)" />) or
 ///         with an <see cref="ErrorBuilder" />.
 ///         Methods such as <see cref="WithErrorDetail(ErrorDetail)" /> and <see cref="WithMetadata(string, object?)" />
 ///         return a changed copy; to change several members at once, use <see cref="ToBuilder" /> and <see cref="ErrorBuilder.Build" />.
@@ -108,7 +108,8 @@ public sealed record Error
     ///     providing further information at the Developer Experience level is a fundamental objective.
     ///     <para>
     ///         To check the type of an error, compare it with the <see cref="ErrorUri" /> that defines it
-    ///         (e.g., <c>error.TypeUri == OrderErrors.NotFoundType</c>); a pattern compares its text (e.g., <c>error.TypeUri.Value is "tag:example.com,2026:not-found"</c>).
+    ///         (e.g., <c>error.TypeUri == OrderErrors.NotFoundType</c>); a pattern compares its text
+    ///         (e.g., <c>error.TypeUri.Value is "tag:example.com,2026:not-found"</c>).
     ///     </para>
     ///     <para>
     ///         The scheme is not restricted: a value read from another service can be, e.g., <c>javascript:</c> or <c>file:</c>
@@ -538,7 +539,7 @@ public sealed record Error
 
     #region factory methods
 
-    // The two documented Create overloads below hold the documentation shared by the factory methods, which inherit it with <inheritdoc />.
+    // The documented Create method below holds the documentation shared by the factory methods, which inherit it with <inheritdoc />.
 
     /// <summary>
     ///     Creates a new instance of the <see cref="Error" /> object of the specified category.
@@ -551,67 +552,16 @@ public sealed record Error
     ///     whitespace-only.
     /// </param>
     /// <param name="instanceUri">A <i>URI</i> reference that identifies the specific occurrence of the problem.</param>
-    /// <param name="detailTemplateId">
-    ///     A message template identifier to generate a localized detail message (the human-readable explanation specific to this occurrence of the problem).
-    /// </param>
-    /// <param name="detailNamedValues">
-    ///     An optional collection of parameters (names and values) to generate a localized detail message (the human-readable explanation specific to
-    ///     this occurrence of the problem); they require <paramref name="detailTemplateId" />.
+    /// <param name="detailTemplated">
+    ///     The message template identifier and its parameters, to generate a localized detail message (the human-readable explanation
+    ///     specific to this occurrence of the problem), or <see langword="null" /> for none; e.g., <c>new("errors.order.notFound", ("orderId", id))</c>.
     /// </param>
     /// <returns>A new instance of the <see cref="Error" /> object.</returns>
-    /// <exception cref="ArgumentNullException">
-    ///     If the <paramref name="title" /> or a parameter name in <paramref name="detailNamedValues" /> is <see langword="null" />.
-    /// </exception>
+    /// <exception cref="ArgumentNullException">If the <paramref name="title" /> is <see langword="null" />.</exception>
     /// <exception cref="ArgumentException">
-    ///     If the <paramref name="title" /> or the <paramref name="detail" /> is empty or whitespace-only, the <paramref name="detailTemplateId" />
-    ///     is empty, whitespace-only or starts or ends with white space, a parameter name is empty, starts or ends with white space, is repeated,
-    ///     or differs only in case from another parameter name, <paramref name="detailNamedValues" /> are passed without a
-    ///     <paramref name="detailTemplateId" />,
-    ///     or the <paramref name="instanceUri" /> is <c>about:blank</c>.
+    ///     If the <paramref name="title" /> or the <paramref name="detail" /> is empty or whitespace-only, or the <paramref name="instanceUri" />
+    ///     is <c>about:blank</c>.
     /// </exception>
-    private static Error Create(ErrorCategory category, ErrorUri typeUri, string title, string? detail,
-        ErrorUri? instanceUri, string? detailTemplateId, ReadOnlySpan<(string Key, object? Value)> detailNamedValues)
-    {
-        var detailTemplated = TemplatedMessage.CreateOptional(detailTemplateId, detailNamedValues, nameof(detailTemplateId), nameof(detailNamedValues));
-        return Create(category, typeUri, title, detail, instanceUri, detailTemplated);
-    }
-
-    /// <summary>
-    ///     Creates a new instance of the <see cref="Error" /> object of the specified category.
-    /// </summary>
-    /// <param name="category">The category of the error.</param>
-    /// <param name="typeUri">A record containing a <i>URI</i> reference that identifies the problem type.</param>
-    /// <param name="title">A short, human-readable summary of the problem.</param>
-    /// <param name="detail">
-    ///     A human-readable explanation specific to this occurrence of the problem, or <see langword="null" /> for none; not empty or
-    ///     whitespace-only.
-    /// </param>
-    /// <param name="instanceUri">A <i>URI</i> reference that identifies the specific occurrence of the problem.</param>
-    /// <param name="detailTemplateId">
-    ///     A message template identifier to generate a localized detail message (the human-readable explanation specific to this occurrence of the problem).
-    /// </param>
-    /// <param name="detailNamedValues">
-    ///     An optional sequence of parameters (names and values) to generate a localized detail message (the human-readable explanation specific to
-    ///     this occurrence of the problem); they require <paramref name="detailTemplateId" />.
-    /// </param>
-    /// <returns>A new instance of the <see cref="Error" /> object.</returns>
-    /// <exception cref="ArgumentNullException">
-    ///     If the <paramref name="title" /> or a parameter name in <paramref name="detailNamedValues" /> is <see langword="null" />.
-    /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     If the <paramref name="title" /> or the <paramref name="detail" /> is empty or whitespace-only, the <paramref name="detailTemplateId" />
-    ///     is empty, whitespace-only or starts or ends with white space, a parameter name is empty, starts or ends with white space, is repeated,
-    ///     or differs only in case from another parameter name, <paramref name="detailNamedValues" /> are passed without a
-    ///     <paramref name="detailTemplateId" />,
-    ///     or the <paramref name="instanceUri" /> is <c>about:blank</c>.
-    /// </exception>
-    private static Error Create(ErrorCategory category, ErrorUri typeUri, string title, string? detail,
-        ErrorUri? instanceUri, string? detailTemplateId, IEnumerable<KeyValuePair<string, object?>>? detailNamedValues)
-    {
-        var detailTemplated = TemplatedMessage.CreateOptional(detailTemplateId, detailNamedValues, nameof(detailTemplateId), nameof(detailNamedValues));
-        return Create(category, typeUri, title, detail, instanceUri, detailTemplated);
-    }
-
     private static Error Create(ErrorCategory category, ErrorUri typeUri, string title, string? detail,
         ErrorUri? instanceUri, TemplatedMessage? detailTemplated)
     {
@@ -629,28 +579,11 @@ public sealed record Error
     ///     Indicates that the operation failed because of a data or state conflict (such as a unique constraint violation).<br />
     ///     It can be mapped to the 409 HTTP status code (Conflict) response.
     /// </remarks>
-    /// <inheritdoc cref="Create(ErrorCategory, ErrorUri, string, string?, ErrorUri?, string?, ReadOnlySpan{ValueTuple{string, object?}})" />
+    /// <inheritdoc cref="Create(ErrorCategory, ErrorUri, string, string?, ErrorUri?, TemplatedMessage?)" />
     public static Error Conflict(ErrorUri typeUri, string title, string? detail = null,
-        ErrorUri? instanceUri = null, string? detailTemplateId = null,
-        params ReadOnlySpan<(string Key, object? Value)> detailNamedValues)
+        ErrorUri? instanceUri = null, TemplatedMessage? detailTemplated = null)
     {
-        return Create(ErrorCategory.Conflict, typeUri, title, detail, instanceUri, detailTemplateId, detailNamedValues);
-    }
-
-    /// <summary>
-    ///     Creates a new instance of the <see cref="Error" /> object of the <see cref="ErrorCategory.Conflict" /> category.
-    /// </summary>
-    /// <remarks>
-    ///     Indicates that the operation failed because of a data or state conflict (such as a unique constraint violation).<br />
-    ///     It can be mapped to the 409 HTTP status code (Conflict) response.
-    /// </remarks>
-    /// <inheritdoc cref="Create(ErrorCategory, ErrorUri, string, string?, ErrorUri?, string?, IEnumerable{KeyValuePair{string, object?}}?)" />
-    [OverloadResolutionPriority(1)]
-    public static Error Conflict(ErrorUri typeUri, string title, string? detail = null,
-        ErrorUri? instanceUri = null, string? detailTemplateId = null,
-        IEnumerable<KeyValuePair<string, object?>>? detailNamedValues = null)
-    {
-        return Create(ErrorCategory.Conflict, typeUri, title, detail, instanceUri, detailTemplateId, detailNamedValues);
+        return Create(ErrorCategory.Conflict, typeUri, title, detail, instanceUri, detailTemplated);
     }
 
     /// <summary>
@@ -660,28 +593,11 @@ public sealed record Error
     ///     Indicates an unexpected, critical error.<br />
     ///     It can be mapped to the 500 HTTP status code (Internal Server Error) response.
     /// </remarks>
-    /// <inheritdoc cref="Create(ErrorCategory, ErrorUri, string, string?, ErrorUri?, string?, ReadOnlySpan{ValueTuple{string, object?}})" />
+    /// <inheritdoc cref="Create(ErrorCategory, ErrorUri, string, string?, ErrorUri?, TemplatedMessage?)" />
     public static Error Critical(ErrorUri typeUri, string title, string? detail = null,
-        ErrorUri? instanceUri = null, string? detailTemplateId = null,
-        params ReadOnlySpan<(string Key, object? Value)> detailNamedValues)
+        ErrorUri? instanceUri = null, TemplatedMessage? detailTemplated = null)
     {
-        return Create(ErrorCategory.Critical, typeUri, title, detail, instanceUri, detailTemplateId, detailNamedValues);
-    }
-
-    /// <summary>
-    ///     Creates a new instance of the <see cref="Error" /> object of the <see cref="ErrorCategory.Critical" /> category.
-    /// </summary>
-    /// <remarks>
-    ///     Indicates an unexpected, critical error.<br />
-    ///     It can be mapped to the 500 HTTP status code (Internal Server Error) response.
-    /// </remarks>
-    /// <inheritdoc cref="Create(ErrorCategory, ErrorUri, string, string?, ErrorUri?, string?, IEnumerable{KeyValuePair{string, object?}}?)" />
-    [OverloadResolutionPriority(1)]
-    public static Error Critical(ErrorUri typeUri, string title, string? detail = null,
-        ErrorUri? instanceUri = null, string? detailTemplateId = null,
-        IEnumerable<KeyValuePair<string, object?>>? detailNamedValues = null)
-    {
-        return Create(ErrorCategory.Critical, typeUri, title, detail, instanceUri, detailTemplateId, detailNamedValues);
+        return Create(ErrorCategory.Critical, typeUri, title, detail, instanceUri, detailTemplated);
     }
 
     /// <summary>
@@ -691,28 +607,11 @@ public sealed record Error
     ///     Indicates an expected error that is not critical to the operation.<br />
     ///     It can be mapped to the 422 HTTP status code (Unprocessable Content) response.
     /// </remarks>
-    /// <inheritdoc cref="Create(ErrorCategory, ErrorUri, string, string?, ErrorUri?, string?, ReadOnlySpan{ValueTuple{string, object?}})" />
+    /// <inheritdoc cref="Create(ErrorCategory, ErrorUri, string, string?, ErrorUri?, TemplatedMessage?)" />
     public static Error Failure(ErrorUri typeUri, string title, string? detail = null,
-        ErrorUri? instanceUri = null, string? detailTemplateId = null,
-        params ReadOnlySpan<(string Key, object? Value)> detailNamedValues)
+        ErrorUri? instanceUri = null, TemplatedMessage? detailTemplated = null)
     {
-        return Create(ErrorCategory.Failure, typeUri, title, detail, instanceUri, detailTemplateId, detailNamedValues);
-    }
-
-    /// <summary>
-    ///     Creates a new instance of the <see cref="Error" /> object of the <see cref="ErrorCategory.Failure" /> category.
-    /// </summary>
-    /// <remarks>
-    ///     Indicates an expected error that is not critical to the operation.<br />
-    ///     It can be mapped to the 422 HTTP status code (Unprocessable Content) response.
-    /// </remarks>
-    /// <inheritdoc cref="Create(ErrorCategory, ErrorUri, string, string?, ErrorUri?, string?, IEnumerable{KeyValuePair{string, object?}}?)" />
-    [OverloadResolutionPriority(1)]
-    public static Error Failure(ErrorUri typeUri, string title, string? detail = null,
-        ErrorUri? instanceUri = null, string? detailTemplateId = null,
-        IEnumerable<KeyValuePair<string, object?>>? detailNamedValues = null)
-    {
-        return Create(ErrorCategory.Failure, typeUri, title, detail, instanceUri, detailTemplateId, detailNamedValues);
+        return Create(ErrorCategory.Failure, typeUri, title, detail, instanceUri, detailTemplated);
     }
 
     /// <summary>
@@ -723,29 +622,11 @@ public sealed record Error
     ///     The operation may succeed later or once the limit is raised.<br />
     ///     It can be mapped to the 429 HTTP status code (Too Many Requests) response.
     /// </remarks>
-    /// <inheritdoc cref="Create(ErrorCategory, ErrorUri, string, string?, ErrorUri?, string?, ReadOnlySpan{ValueTuple{string, object?}})" />
+    /// <inheritdoc cref="Create(ErrorCategory, ErrorUri, string, string?, ErrorUri?, TemplatedMessage?)" />
     public static Error LimitExceeded(ErrorUri typeUri, string title, string? detail = null,
-        ErrorUri? instanceUri = null, string? detailTemplateId = null,
-        params ReadOnlySpan<(string Key, object? Value)> detailNamedValues)
+        ErrorUri? instanceUri = null, TemplatedMessage? detailTemplated = null)
     {
-        return Create(ErrorCategory.LimitExceeded, typeUri, title, detail, instanceUri, detailTemplateId, detailNamedValues);
-    }
-
-    /// <summary>
-    ///     Creates a new instance of the <see cref="Error" /> object of the <see cref="ErrorCategory.LimitExceeded" /> category.
-    /// </summary>
-    /// <remarks>
-    ///     Indicates that the request is valid and permitted, but a usage limit, quota or rate has been exhausted.
-    ///     The operation may succeed later or once the limit is raised.<br />
-    ///     It can be mapped to the 429 HTTP status code (Too Many Requests) response.
-    /// </remarks>
-    /// <inheritdoc cref="Create(ErrorCategory, ErrorUri, string, string?, ErrorUri?, string?, IEnumerable{KeyValuePair{string, object?}}?)" />
-    [OverloadResolutionPriority(1)]
-    public static Error LimitExceeded(ErrorUri typeUri, string title, string? detail = null,
-        ErrorUri? instanceUri = null, string? detailTemplateId = null,
-        IEnumerable<KeyValuePair<string, object?>>? detailNamedValues = null)
-    {
-        return Create(ErrorCategory.LimitExceeded, typeUri, title, detail, instanceUri, detailTemplateId, detailNamedValues);
+        return Create(ErrorCategory.LimitExceeded, typeUri, title, detail, instanceUri, detailTemplated);
     }
 
     /// <summary>
@@ -755,28 +636,11 @@ public sealed record Error
     ///     Indicates that the requested resource has not been found.<br />
     ///     It can be mapped to the 404 HTTP status code (Not Found) response.
     /// </remarks>
-    /// <inheritdoc cref="Create(ErrorCategory, ErrorUri, string, string?, ErrorUri?, string?, ReadOnlySpan{ValueTuple{string, object?}})" />
+    /// <inheritdoc cref="Create(ErrorCategory, ErrorUri, string, string?, ErrorUri?, TemplatedMessage?)" />
     public static Error NotFound(ErrorUri typeUri, string title, string? detail = null,
-        ErrorUri? instanceUri = null, string? detailTemplateId = null,
-        params ReadOnlySpan<(string Key, object? Value)> detailNamedValues)
+        ErrorUri? instanceUri = null, TemplatedMessage? detailTemplated = null)
     {
-        return Create(ErrorCategory.NotFound, typeUri, title, detail, instanceUri, detailTemplateId, detailNamedValues);
-    }
-
-    /// <summary>
-    ///     Creates a new instance of the <see cref="Error" /> object of the <see cref="ErrorCategory.NotFound" /> category.
-    /// </summary>
-    /// <remarks>
-    ///     Indicates that the requested resource has not been found.<br />
-    ///     It can be mapped to the 404 HTTP status code (Not Found) response.
-    /// </remarks>
-    /// <inheritdoc cref="Create(ErrorCategory, ErrorUri, string, string?, ErrorUri?, string?, IEnumerable{KeyValuePair{string, object?}}?)" />
-    [OverloadResolutionPriority(1)]
-    public static Error NotFound(ErrorUri typeUri, string title, string? detail = null,
-        ErrorUri? instanceUri = null, string? detailTemplateId = null,
-        IEnumerable<KeyValuePair<string, object?>>? detailNamedValues = null)
-    {
-        return Create(ErrorCategory.NotFound, typeUri, title, detail, instanceUri, detailTemplateId, detailNamedValues);
+        return Create(ErrorCategory.NotFound, typeUri, title, detail, instanceUri, detailTemplated);
     }
 
     /// <summary>
@@ -786,28 +650,11 @@ public sealed record Error
     ///     Indicates that the operation, feature or case is not implemented.<br />
     ///     It can be mapped to the 501 HTTP status code (Not Implemented) response.
     /// </remarks>
-    /// <inheritdoc cref="Create(ErrorCategory, ErrorUri, string, string?, ErrorUri?, string?, ReadOnlySpan{ValueTuple{string, object?}})" />
+    /// <inheritdoc cref="Create(ErrorCategory, ErrorUri, string, string?, ErrorUri?, TemplatedMessage?)" />
     public static Error NotImplemented(ErrorUri typeUri, string title, string? detail = null,
-        ErrorUri? instanceUri = null, string? detailTemplateId = null,
-        params ReadOnlySpan<(string Key, object? Value)> detailNamedValues)
+        ErrorUri? instanceUri = null, TemplatedMessage? detailTemplated = null)
     {
-        return Create(ErrorCategory.NotImplemented, typeUri, title, detail, instanceUri, detailTemplateId, detailNamedValues);
-    }
-
-    /// <summary>
-    ///     Creates a new instance of the <see cref="Error" /> object of the <see cref="ErrorCategory.NotImplemented" /> category.
-    /// </summary>
-    /// <remarks>
-    ///     Indicates that the operation, feature or case is not implemented.<br />
-    ///     It can be mapped to the 501 HTTP status code (Not Implemented) response.
-    /// </remarks>
-    /// <inheritdoc cref="Create(ErrorCategory, ErrorUri, string, string?, ErrorUri?, string?, IEnumerable{KeyValuePair{string, object?}}?)" />
-    [OverloadResolutionPriority(1)]
-    public static Error NotImplemented(ErrorUri typeUri, string title, string? detail = null,
-        ErrorUri? instanceUri = null, string? detailTemplateId = null,
-        IEnumerable<KeyValuePair<string, object?>>? detailNamedValues = null)
-    {
-        return Create(ErrorCategory.NotImplemented, typeUri, title, detail, instanceUri, detailTemplateId, detailNamedValues);
+        return Create(ErrorCategory.NotImplemented, typeUri, title, detail, instanceUri, detailTemplated);
     }
 
     /// <summary>
@@ -817,28 +664,11 @@ public sealed record Error
     ///     Indicates that the operation has failed because the identity does not have permission to perform it.<br />
     ///     It can be mapped to the 403 HTTP status code (Forbidden) response.
     /// </remarks>
-    /// <inheritdoc cref="Create(ErrorCategory, ErrorUri, string, string?, ErrorUri?, string?, ReadOnlySpan{ValueTuple{string, object?}})" />
+    /// <inheritdoc cref="Create(ErrorCategory, ErrorUri, string, string?, ErrorUri?, TemplatedMessage?)" />
     public static Error PermissionDenied(ErrorUri typeUri, string title, string? detail = null,
-        ErrorUri? instanceUri = null, string? detailTemplateId = null,
-        params ReadOnlySpan<(string Key, object? Value)> detailNamedValues)
+        ErrorUri? instanceUri = null, TemplatedMessage? detailTemplated = null)
     {
-        return Create(ErrorCategory.PermissionDenied, typeUri, title, detail, instanceUri, detailTemplateId, detailNamedValues);
-    }
-
-    /// <summary>
-    ///     Creates a new instance of the <see cref="Error" /> object of the <see cref="ErrorCategory.PermissionDenied" /> category.
-    /// </summary>
-    /// <remarks>
-    ///     Indicates that the operation has failed because the identity does not have permission to perform it.<br />
-    ///     It can be mapped to the 403 HTTP status code (Forbidden) response.
-    /// </remarks>
-    /// <inheritdoc cref="Create(ErrorCategory, ErrorUri, string, string?, ErrorUri?, string?, IEnumerable{KeyValuePair{string, object?}}?)" />
-    [OverloadResolutionPriority(1)]
-    public static Error PermissionDenied(ErrorUri typeUri, string title, string? detail = null,
-        ErrorUri? instanceUri = null, string? detailTemplateId = null,
-        IEnumerable<KeyValuePair<string, object?>>? detailNamedValues = null)
-    {
-        return Create(ErrorCategory.PermissionDenied, typeUri, title, detail, instanceUri, detailTemplateId, detailNamedValues);
+        return Create(ErrorCategory.PermissionDenied, typeUri, title, detail, instanceUri, detailTemplated);
     }
 
     /// <summary>
@@ -849,29 +679,11 @@ public sealed record Error
     ///     It can be mapped to the 408 HTTP status code (Request Timeout) response when the client did not send the complete request in time,
     ///     or to the 504 HTTP status code (Gateway Timeout) response when an upstream server or a dependency did not respond in time.
     /// </remarks>
-    /// <inheritdoc cref="Create(ErrorCategory, ErrorUri, string, string?, ErrorUri?, string?, ReadOnlySpan{ValueTuple{string, object?}})" />
+    /// <inheritdoc cref="Create(ErrorCategory, ErrorUri, string, string?, ErrorUri?, TemplatedMessage?)" />
     public static Error Timeout(ErrorUri typeUri, string title, string? detail = null,
-        ErrorUri? instanceUri = null, string? detailTemplateId = null,
-        params ReadOnlySpan<(string Key, object? Value)> detailNamedValues)
+        ErrorUri? instanceUri = null, TemplatedMessage? detailTemplated = null)
     {
-        return Create(ErrorCategory.Timeout, typeUri, title, detail, instanceUri, detailTemplateId, detailNamedValues);
-    }
-
-    /// <summary>
-    ///     Creates a new instance of the <see cref="Error" /> object of the <see cref="ErrorCategory.Timeout" /> category.
-    /// </summary>
-    /// <remarks>
-    ///     Indicates that the operation failed because it was not completed within the allotted time.<br />
-    ///     It can be mapped to the 408 HTTP status code (Request Timeout) response when the client did not send the complete request in time,
-    ///     or to the 504 HTTP status code (Gateway Timeout) response when an upstream server or a dependency did not respond in time.
-    /// </remarks>
-    /// <inheritdoc cref="Create(ErrorCategory, ErrorUri, string, string?, ErrorUri?, string?, IEnumerable{KeyValuePair{string, object?}}?)" />
-    [OverloadResolutionPriority(1)]
-    public static Error Timeout(ErrorUri typeUri, string title, string? detail = null,
-        ErrorUri? instanceUri = null, string? detailTemplateId = null,
-        IEnumerable<KeyValuePair<string, object?>>? detailNamedValues = null)
-    {
-        return Create(ErrorCategory.Timeout, typeUri, title, detail, instanceUri, detailTemplateId, detailNamedValues);
+        return Create(ErrorCategory.Timeout, typeUri, title, detail, instanceUri, detailTemplated);
     }
 
     /// <summary>
@@ -881,28 +693,11 @@ public sealed record Error
     ///     Indicates that the operation has failed because the authentication is missing or invalid.<br />
     ///     It can be mapped to the 401 HTTP status code (Unauthorized) response.
     /// </remarks>
-    /// <inheritdoc cref="Create(ErrorCategory, ErrorUri, string, string?, ErrorUri?, string?, ReadOnlySpan{ValueTuple{string, object?}})" />
+    /// <inheritdoc cref="Create(ErrorCategory, ErrorUri, string, string?, ErrorUri?, TemplatedMessage?)" />
     public static Error Unauthenticated(ErrorUri typeUri, string title, string? detail = null,
-        ErrorUri? instanceUri = null, string? detailTemplateId = null,
-        params ReadOnlySpan<(string Key, object? Value)> detailNamedValues)
+        ErrorUri? instanceUri = null, TemplatedMessage? detailTemplated = null)
     {
-        return Create(ErrorCategory.Unauthenticated, typeUri, title, detail, instanceUri, detailTemplateId, detailNamedValues);
-    }
-
-    /// <summary>
-    ///     Creates a new instance of the <see cref="Error" /> object of the <see cref="ErrorCategory.Unauthenticated" /> category.
-    /// </summary>
-    /// <remarks>
-    ///     Indicates that the operation has failed because the authentication is missing or invalid.<br />
-    ///     It can be mapped to the 401 HTTP status code (Unauthorized) response.
-    /// </remarks>
-    /// <inheritdoc cref="Create(ErrorCategory, ErrorUri, string, string?, ErrorUri?, string?, IEnumerable{KeyValuePair{string, object?}}?)" />
-    [OverloadResolutionPriority(1)]
-    public static Error Unauthenticated(ErrorUri typeUri, string title, string? detail = null,
-        ErrorUri? instanceUri = null, string? detailTemplateId = null,
-        IEnumerable<KeyValuePair<string, object?>>? detailNamedValues = null)
-    {
-        return Create(ErrorCategory.Unauthenticated, typeUri, title, detail, instanceUri, detailTemplateId, detailNamedValues);
+        return Create(ErrorCategory.Unauthenticated, typeUri, title, detail, instanceUri, detailTemplated);
     }
 
     /// <summary>
@@ -912,28 +707,11 @@ public sealed record Error
     ///     Indicates that the service is not available and the operation can be retried later.<br />
     ///     It can be mapped to the 503 HTTP status code (Service Unavailable) response.
     /// </remarks>
-    /// <inheritdoc cref="Create(ErrorCategory, ErrorUri, string, string?, ErrorUri?, string?, ReadOnlySpan{ValueTuple{string, object?}})" />
+    /// <inheritdoc cref="Create(ErrorCategory, ErrorUri, string, string?, ErrorUri?, TemplatedMessage?)" />
     public static Error Unavailable(ErrorUri typeUri, string title, string? detail = null,
-        ErrorUri? instanceUri = null, string? detailTemplateId = null,
-        params ReadOnlySpan<(string Key, object? Value)> detailNamedValues)
+        ErrorUri? instanceUri = null, TemplatedMessage? detailTemplated = null)
     {
-        return Create(ErrorCategory.Unavailable, typeUri, title, detail, instanceUri, detailTemplateId, detailNamedValues);
-    }
-
-    /// <summary>
-    ///     Creates a new instance of the <see cref="Error" /> object of the <see cref="ErrorCategory.Unavailable" /> category.
-    /// </summary>
-    /// <remarks>
-    ///     Indicates that the service is not available and the operation can be retried later.<br />
-    ///     It can be mapped to the 503 HTTP status code (Service Unavailable) response.
-    /// </remarks>
-    /// <inheritdoc cref="Create(ErrorCategory, ErrorUri, string, string?, ErrorUri?, string?, IEnumerable{KeyValuePair{string, object?}}?)" />
-    [OverloadResolutionPriority(1)]
-    public static Error Unavailable(ErrorUri typeUri, string title, string? detail = null,
-        ErrorUri? instanceUri = null, string? detailTemplateId = null,
-        IEnumerable<KeyValuePair<string, object?>>? detailNamedValues = null)
-    {
-        return Create(ErrorCategory.Unavailable, typeUri, title, detail, instanceUri, detailTemplateId, detailNamedValues);
+        return Create(ErrorCategory.Unavailable, typeUri, title, detail, instanceUri, detailTemplated);
     }
 
     /// <summary>
@@ -943,28 +721,11 @@ public sealed record Error
     ///     Represents validation errors that prevent the underlying service from completing.<br />
     ///     It can be mapped to the 400 HTTP status code (Bad Request) response.
     /// </remarks>
-    /// <inheritdoc cref="Create(ErrorCategory, ErrorUri, string, string?, ErrorUri?, string?, ReadOnlySpan{ValueTuple{string, object?}})" />
+    /// <inheritdoc cref="Create(ErrorCategory, ErrorUri, string, string?, ErrorUri?, TemplatedMessage?)" />
     public static Error Validation(ErrorUri typeUri, string title, string? detail = null,
-        ErrorUri? instanceUri = null, string? detailTemplateId = null,
-        params ReadOnlySpan<(string Key, object? Value)> detailNamedValues)
+        ErrorUri? instanceUri = null, TemplatedMessage? detailTemplated = null)
     {
-        return Create(ErrorCategory.Validation, typeUri, title, detail, instanceUri, detailTemplateId, detailNamedValues);
-    }
-
-    /// <summary>
-    ///     Creates a new instance of the <see cref="Error" /> object of the <see cref="ErrorCategory.Validation" /> category.
-    /// </summary>
-    /// <remarks>
-    ///     Represents validation errors that prevent the underlying service from completing.<br />
-    ///     It can be mapped to the 400 HTTP status code (Bad Request) response.
-    /// </remarks>
-    /// <inheritdoc cref="Create(ErrorCategory, ErrorUri, string, string?, ErrorUri?, string?, IEnumerable{KeyValuePair{string, object?}}?)" />
-    [OverloadResolutionPriority(1)]
-    public static Error Validation(ErrorUri typeUri, string title, string? detail = null,
-        ErrorUri? instanceUri = null, string? detailTemplateId = null,
-        IEnumerable<KeyValuePair<string, object?>>? detailNamedValues = null)
-    {
-        return Create(ErrorCategory.Validation, typeUri, title, detail, instanceUri, detailTemplateId, detailNamedValues);
+        return Create(ErrorCategory.Validation, typeUri, title, detail, instanceUri, detailTemplated);
     }
 
     #endregion

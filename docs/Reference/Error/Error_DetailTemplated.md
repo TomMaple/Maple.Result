@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L148" target="_blank">Error.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L149" target="_blank">Error.cs</a>
 
 Gets a template to generate a localized, human-readable explanation specific to this occurrence of the problem.
 
@@ -34,8 +34,7 @@ var error = Error.NotFound(
                 "The user has not been found.",
                 "The user with ID ‘12345’ was not found or has been deleted.",
                 // sets the DetailTemplated property
-                detailTemplateId: "error:user:notfound",
-                detailNamedValues: ("userId", "12345"));
+                detailTemplated: new TemplatedMessage("error:user:notfound", ("userId", "12345")));
 ```
 
 ## See Also

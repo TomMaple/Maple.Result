@@ -11,6 +11,8 @@
 using Maple.Results.Tests.Unit.TestingInfrastructure.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using Sut = Maple.Results.Error;
 
 namespace Maple.Results.Tests.Unit.ErrorTests;
@@ -106,162 +108,28 @@ public class ErrorUnitTests
         exception.ShouldBeOfType<ArgumentException>();
     }
 
-    [Theory]
-    [InlineData("")]
-    [InlineData(" ")]
-    public void Validation_BlankDetailTemplateId_ThrowsArgumentException(string detailTemplateId)
-    {
-        // Act
-        var exception = Record.Exception(() => Sut.Validation(ErrorUri.None, "Test title",
-            detailTemplateId: detailTemplateId));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentException>();
-    }
-
     [Fact]
-    public void Validation_NullNamedValue_KeepsNullValue()
-    {
-        // Act
-        var sut = Sut.Validation(ErrorUri.None, "Test title", detailTemplateId: "message-id",
-            detailNamedValues: ("key", null));
-
-        // Assert
-        sut.DetailTemplated.ShouldNotBeNull();
-        sut.DetailTemplated.Params.ShouldNotBeNull();
-        sut.DetailTemplated.Params.ShouldContainKey("key");
-        sut.DetailTemplated.Params["key"].ShouldBeNull();
-    }
-
-    [Fact]
-    public void Validation_TupleArray_BuildsParams()
+    public void Validation_TemplatedMessage_ReturnsErrorWithThatMessage()
     {
         // Arrange
-        (string Key, object? Value)[] namedValues = [("min", 3), ("max", 10)];
+        var detailTemplated = new TemplatedMessage("errors.length", ("min", 3), ("name", null));
 
         // Act
-        var sut = Sut.Validation(ErrorUri.None, "Test title", null, null, "message-id", namedValues);
+        var sut = Sut.Validation(ErrorUri.None, "Test title", detailTemplated: detailTemplated);
 
         // Assert
-        sut.DetailTemplated.ShouldNotBeNull();
-        sut.DetailTemplated.Params.ShouldNotBeNull();
-        sut.DetailTemplated.Params.Count.ShouldBe(2);
-    }
-    [Fact]
-    public void Validation_RepeatedNamedValue_ThrowsArgumentException()
-    {
-        // Act
-        var exception = Record.Exception(() => Sut.Validation(ErrorUri.None, "Test title",
-            detailTemplateId: "message-id", detailNamedValues: [("min", 3), ("min", 4)]));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentException>();
-        var argumentException = exception as ArgumentException;
-        argumentException.ShouldNotBeNull();
-        exception.Message.ShouldContain("‘min’ is repeated");
-        argumentException.ParamName.ShouldBe("detailNamedValues");
+        sut.DetailTemplated.ShouldBeSameAs(detailTemplated);
     }
 
     [Fact]
-    public void Validation_RepeatedNamedValueInSequence_ThrowsArgumentException()
-    {
-        // Arrange
-        var namedValues = new List<KeyValuePair<string, object?>> { new("min", 3), new("min", 4) };
-
-        // Act
-        var exception = Record.Exception(() => Sut.Validation(ErrorUri.None, "Test title",
-            detailTemplateId: "message-id", detailNamedValues: namedValues));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentException>();
-        var argumentException = exception as ArgumentException;
-        argumentException.ShouldNotBeNull();
-        argumentException.ParamName.ShouldBe("detailNamedValues");
-    }
-
-    [Fact]
-    public void Validation_NullName_ThrowsArgumentNullException()
+    public void Validation_NullTemplatedMessage_ReturnsErrorWithoutTemplate()
     {
         // Act
-        var exception = Record.Exception(() => Sut.Validation(ErrorUri.None, "Test title", null, null,
-            "message-id", (null!, 3)));
+        var sut = Sut.Validation(ErrorUri.None, "Test title", "Test description.", detailTemplated: null);
 
         // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentNullException>();
-        var argumentNullException = exception as ArgumentNullException;
-        argumentNullException.ShouldNotBeNull();
-        argumentNullException.ParamName.ShouldBe("detailNamedValues");
-    }
-
-    [Fact]
-    public void Validation_NamedValuesWithoutTemplateId_ThrowsArgumentException()
-    {
-        // Act
-        var exception = Record.Exception(() => Sut.Validation(ErrorUri.None, "Test title", null, null, null,
-            ("min", 3)));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentException>();
-        var argumentException = exception as ArgumentException;
-        argumentException.ShouldNotBeNull();
-        argumentException.ParamName.ShouldBe("detailNamedValues");
-    }
-
-    [Fact]
-    public void Validation_NamedValueSequenceWithoutTemplateId_ThrowsArgumentException()
-    {
-        // Arrange
-        var namedValues = new Dictionary<string, object?> { ["min"] = 3 };
-
-        // Act
-        var exception = Record.Exception(() => Sut.Validation(ErrorUri.None, "Test title",
-            detailNamedValues: namedValues));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentException>();
-        var argumentException = exception as ArgumentException;
-        argumentException.ShouldNotBeNull();
-        argumentException.ParamName.ShouldBe("detailNamedValues");
-    }
-
-    [Fact]
-    public void Validation_EmptyNamedValuesWithoutTemplateId_ReturnsErrorWithoutTemplate()
-    {
-        // Act
-        var sut = Sut.Validation(ErrorUri.None, "Test title", detailNamedValues: []);
-
-        // Assert
+        sut.Detail.ShouldBe("Test description.");
         sut.DetailTemplated.ShouldBeNull();
-    }
-
-    [Fact]
-    public void Validation_TemplateIdAndEmptyNamedValues_ReturnsTemplateWithNullParams()
-    {
-        // Act
-        var sut = Sut.Validation(ErrorUri.None, "Test title", detailTemplateId: "message-id",
-            detailNamedValues: []);
-
-        // Assert
-        sut.DetailTemplated.ShouldNotBeNull();
-        sut.DetailTemplated.Params.ShouldBeNull();
-    }
-
-    [Fact]
-    public void Validation_TemplateIdAndNullNamedValueSequence_ReturnsTemplateWithoutParams()
-    {
-        // Act
-        var sut = Sut.Validation(ErrorUri.None, "Test title", detailTemplateId: "message-id",
-            detailNamedValues: null);
-
-        // Assert
-        sut.DetailTemplated.ShouldNotBeNull();
-        sut.DetailTemplated.Params.ShouldBeNull();
     }
 
     #endregion
@@ -457,7 +325,7 @@ public class ErrorUnitTests
     {
         // Arrange
         var sut = Sut.Conflict(ErrorUri.Tag("tag:test.com,2024:Test"), "Test title", "Test description.",
-                ErrorUri.Locator("http://test.com/instance/1013"), "message-id", ("key", "value"))
+                ErrorUri.Locator("http://test.com/instance/1013"), new TemplatedMessage("message-id", ("key", "value")))
             .WithErrorDetail("#/property", "Detail")
             .WithMetadata("retryAfter", 30);
 
@@ -529,8 +397,7 @@ public class ErrorUnitTests
             + "ErrorDetails = [ ErrorDetail { PropertyPointer = /x, Detail = bad x, DetailTemplated =  } ], "
             + "Metadata = { n =  } }";
 
-        var sut = Sut.Validation(ErrorUri.Locator("https://example.org/e"), "Bad", detailTemplateId: "t",
-                detailNamedValues: ("a", 1))
+        var sut = Sut.Validation(ErrorUri.Locator("https://example.org/e"), "Bad", detailTemplated: new TemplatedMessage("t", ("a", 1)))
             .WithErrorDetail("/x", "bad x")
             .WithMetadata("n", null);
 
@@ -673,6 +540,89 @@ public class ErrorUnitTests
 
     #region factory methods
 
+    #region every category
+
+    public static TheoryData<Func<ErrorUri, string, string?, ErrorUri?, TemplatedMessage?, Sut>, ErrorCategory> FactoryMethods => new()
+    {
+        { Sut.Validation, ErrorCategory.Validation },
+        { Sut.Unauthenticated, ErrorCategory.Unauthenticated },
+        { Sut.PermissionDenied, ErrorCategory.PermissionDenied },
+        { Sut.NotFound, ErrorCategory.NotFound },
+        { Sut.Timeout, ErrorCategory.Timeout },
+        { Sut.Conflict, ErrorCategory.Conflict },
+        { Sut.Failure, ErrorCategory.Failure },
+        { Sut.Critical, ErrorCategory.Critical },
+        { Sut.NotImplemented, ErrorCategory.NotImplemented },
+        { Sut.Unavailable, ErrorCategory.Unavailable },
+        { Sut.LimitExceeded, ErrorCategory.LimitExceeded }
+    };
+
+    [Theory]
+    [MemberData(nameof(FactoryMethods))]
+    public void FactoryMethod_Always_IsTheOnlyFactoryOfItsCategory(Func<ErrorUri, string, string?, ErrorUri?, TemplatedMessage?, Sut> factory,
+        ErrorCategory category)
+    {
+        // Arrange
+        (Type Type, string? Name, bool IsOptional)[] expectedParameters =
+        [
+            (typeof(ErrorUri), "typeUri", false),
+            (typeof(string), "title", false),
+            (typeof(string), "detail", true),
+            (typeof(ErrorUri?), "instanceUri", true),
+            (typeof(TemplatedMessage), "detailTemplated", true)
+        ];
+
+        // Act
+        var factories = typeof(Sut).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(method => method.Name == category.ToString())
+            .ToArray();
+
+        // Assert
+        factories.ShouldHaveSingleItem().ShouldBe(factory.Method);
+        factory.Method.GetParameters()
+            .Select(parameter => (parameter.ParameterType, parameter.Name, parameter.IsOptional))
+            .ShouldBe(expectedParameters);
+    }
+
+    [Theory]
+    [MemberData(nameof(FactoryMethods))]
+    public void FactoryMethod_AllMembers_EqualsTheErrorOfTheBuilder(Func<ErrorUri, string, string?, ErrorUri?, TemplatedMessage?, Sut> factory,
+        ErrorCategory category)
+    {
+        // Arrange
+        var typeUri = ErrorUri.Tag("tag:test.com,2024:Test");
+        var instanceUri = ErrorUri.Locator("http://test.com/instance/1013");
+        var detailTemplated = new TemplatedMessage("errors.length", ("min", 3));
+        var expected = new ErrorBuilder(category, typeUri, "Test title")
+            .WithDetail("Test description.")
+            .WithInstanceUri(instanceUri)
+            .WithDetailTemplated(detailTemplated)
+            .Build();
+
+        // Act
+        var sut = factory(typeUri, "Test title", "Test description.", instanceUri, detailTemplated);
+
+        // Assert
+        sut.ShouldBe(expected);
+        sut.DetailTemplated.ShouldBeSameAs(detailTemplated);
+    }
+
+    [Theory]
+    [MemberData(nameof(FactoryMethods))]
+    public void FactoryMethod_NullTemplatedMessage_ReturnsErrorWithoutTemplate(
+        Func<ErrorUri, string, string?, ErrorUri?, TemplatedMessage?, Sut> factory, ErrorCategory category)
+    {
+        // Act
+        var sut = factory(ErrorUri.None, "Test title", "Test description.", null, null);
+
+        // Assert
+        sut.Category.ShouldBe(category);
+        sut.Detail.ShouldBe("Test description.");
+        sut.DetailTemplated.ShouldBeNull();
+    }
+
+    #endregion
+
     #region Validation
 
     [Fact]
@@ -724,8 +674,7 @@ public class ErrorUnitTests
             "Test title",
             "Test description.",
             ErrorUri.Locator("http://test.com/instance/1013"),
-            "message-id",
-            ("key1", "value1"), ("key2", "value2"));
+            new TemplatedMessage("message-id", ("key1", "value1"), ("key2", "value2")));
 
         // Assert
         sut.ShouldNotBeNull();
@@ -769,12 +718,11 @@ public class ErrorUnitTests
             "Test title",
             "Test description.",
             ErrorUri.Locator("http://test.com/instance/1013"),
-            "message-id",
-            new Dictionary<string, object?>
+            new TemplatedMessage("message-id", new Dictionary<string, object?>
             {
                 ["key1"] = "value1",
                 ["key2"] = "value2"
-            });
+            }));
 
         // Assert
         sut.ShouldNotBeNull();
@@ -848,8 +796,7 @@ public class ErrorUnitTests
             "Test title",
             "Test description.",
             ErrorUri.Locator("http://test.com/instance/1013"),
-            "message-id",
-            ("key1", "value1"), ("key2", "value2"));
+            new TemplatedMessage("message-id", ("key1", "value1"), ("key2", "value2")));
 
         // Assert
         sut.ShouldNotBeNull();
@@ -893,12 +840,11 @@ public class ErrorUnitTests
             "Test title",
             "Test description.",
             ErrorUri.Locator("http://test.com/instance/1013"),
-            "message-id",
-            new Dictionary<string, object?>
+            new TemplatedMessage("message-id", new Dictionary<string, object?>
             {
                 ["key1"] = "value1",
                 ["key2"] = "value2"
-            });
+            }));
 
         // Assert
         sut.ShouldNotBeNull();
@@ -972,8 +918,7 @@ public class ErrorUnitTests
             "Test title",
             "Test description.",
             ErrorUri.Locator("http://test.com/instance/1013"),
-            "message-id",
-            ("key1", "value1"), ("key2", "value2"));
+            new TemplatedMessage("message-id", ("key1", "value1"), ("key2", "value2")));
 
         // Assert
         sut.ShouldNotBeNull();
@@ -1017,12 +962,11 @@ public class ErrorUnitTests
             "Test title",
             "Test description.",
             ErrorUri.Locator("http://test.com/instance/1013"),
-            "message-id",
-            new Dictionary<string, object?>
+            new TemplatedMessage("message-id", new Dictionary<string, object?>
             {
                 ["key1"] = "value1",
                 ["key2"] = "value2"
-            });
+            }));
 
         // Assert
         sut.ShouldNotBeNull();
@@ -1096,8 +1040,7 @@ public class ErrorUnitTests
             "Test title",
             "Test description.",
             ErrorUri.Locator("http://test.com/instance/1013"),
-            "message-id",
-            ("key1", "value1"), ("key2", "value2"));
+            new TemplatedMessage("message-id", ("key1", "value1"), ("key2", "value2")));
 
         // Assert
         sut.ShouldNotBeNull();
@@ -1141,12 +1084,11 @@ public class ErrorUnitTests
             "Test title",
             "Test description.",
             ErrorUri.Locator("http://test.com/instance/1013"),
-            "message-id",
-            new Dictionary<string, object?>
+            new TemplatedMessage("message-id", new Dictionary<string, object?>
             {
                 ["key1"] = "value1",
                 ["key2"] = "value2"
-            });
+            }));
 
         // Assert
         sut.ShouldNotBeNull();
@@ -1220,8 +1162,7 @@ public class ErrorUnitTests
             "Test title",
             "Test description.",
             ErrorUri.Locator("http://test.com/instance/1013"),
-            "message-id",
-            ("key1", "value1"), ("key2", "value2"));
+            new TemplatedMessage("message-id", ("key1", "value1"), ("key2", "value2")));
 
         // Assert
         sut.ShouldNotBeNull();
@@ -1265,12 +1206,11 @@ public class ErrorUnitTests
             "Test title",
             "Test description.",
             ErrorUri.Locator("http://test.com/instance/1013"),
-            "message-id",
-            new Dictionary<string, object?>
+            new TemplatedMessage("message-id", new Dictionary<string, object?>
             {
                 ["key1"] = "value1",
                 ["key2"] = "value2"
-            });
+            }));
 
         // Assert
         sut.ShouldNotBeNull();
@@ -1344,8 +1284,7 @@ public class ErrorUnitTests
             "Test title",
             "Test description.",
             ErrorUri.Locator("http://test.com/instance/1013"),
-            "message-id",
-            ("key1", "value1"), ("key2", "value2"));
+            new TemplatedMessage("message-id", ("key1", "value1"), ("key2", "value2")));
 
         // Assert
         sut.ShouldNotBeNull();
@@ -1389,12 +1328,11 @@ public class ErrorUnitTests
             "Test title",
             "Test description.",
             ErrorUri.Locator("http://test.com/instance/1013"),
-            "message-id",
-            new Dictionary<string, object?>
+            new TemplatedMessage("message-id", new Dictionary<string, object?>
             {
                 ["key1"] = "value1",
                 ["key2"] = "value2"
-            });
+            }));
 
         // Assert
         sut.ShouldNotBeNull();
@@ -1468,8 +1406,7 @@ public class ErrorUnitTests
             "Test title",
             "Test description.",
             ErrorUri.Locator("http://test.com/instance/1013"),
-            "message-id",
-            ("key1", "value1"), ("key2", "value2"));
+            new TemplatedMessage("message-id", ("key1", "value1"), ("key2", "value2")));
 
         // Assert
         sut.ShouldNotBeNull();
@@ -1513,12 +1450,11 @@ public class ErrorUnitTests
             "Test title",
             "Test description.",
             ErrorUri.Locator("http://test.com/instance/1013"),
-            "message-id",
-            new Dictionary<string, object?>
+            new TemplatedMessage("message-id", new Dictionary<string, object?>
             {
                 ["key1"] = "value1",
                 ["key2"] = "value2"
-            });
+            }));
 
         // Assert
         sut.ShouldNotBeNull();
@@ -1592,8 +1528,7 @@ public class ErrorUnitTests
             "Test title",
             "Test description.",
             ErrorUri.Locator("http://test.com/instance/1013"),
-            "message-id",
-            ("key1", "value1"), ("key2", "value2"));
+            new TemplatedMessage("message-id", ("key1", "value1"), ("key2", "value2")));
 
         // Assert
         sut.ShouldNotBeNull();
@@ -1637,12 +1572,11 @@ public class ErrorUnitTests
             "Test title",
             "Test description.",
             ErrorUri.Locator("http://test.com/instance/1013"),
-            "message-id",
-            new Dictionary<string, object?>
+            new TemplatedMessage("message-id", new Dictionary<string, object?>
             {
                 ["key1"] = "value1",
                 ["key2"] = "value2"
-            });
+            }));
 
         // Assert
         sut.ShouldNotBeNull();
@@ -1716,8 +1650,7 @@ public class ErrorUnitTests
             "Test title",
             "Test description.",
             ErrorUri.Locator("http://test.com/instance/1013"),
-            "message-id",
-            ("key1", "value1"), ("key2", "value2"));
+            new TemplatedMessage("message-id", ("key1", "value1"), ("key2", "value2")));
 
         // Assert
         sut.ShouldNotBeNull();
@@ -1761,12 +1694,11 @@ public class ErrorUnitTests
             "Test title",
             "Test description.",
             ErrorUri.Locator("http://test.com/instance/1013"),
-            "message-id",
-            new Dictionary<string, object?>
+            new TemplatedMessage("message-id", new Dictionary<string, object?>
             {
                 ["key1"] = "value1",
                 ["key2"] = "value2"
-            });
+            }));
 
         // Assert
         sut.ShouldNotBeNull();
@@ -1840,8 +1772,7 @@ public class ErrorUnitTests
             "Test title",
             "Test description.",
             ErrorUri.Locator("http://test.com/instance/1013"),
-            "message-id",
-            ("key1", "value1"), ("key2", "value2"));
+            new TemplatedMessage("message-id", ("key1", "value1"), ("key2", "value2")));
 
         // Assert
         sut.ShouldNotBeNull();
@@ -1885,12 +1816,11 @@ public class ErrorUnitTests
             "Test title",
             "Test description.",
             ErrorUri.Locator("http://test.com/instance/1013"),
-            "message-id",
-            new Dictionary<string, object?>
+            new TemplatedMessage("message-id", new Dictionary<string, object?>
             {
                 ["key1"] = "value1",
                 ["key2"] = "value2"
-            });
+            }));
 
         // Assert
         sut.ShouldNotBeNull();
@@ -1964,8 +1894,7 @@ public class ErrorUnitTests
             "Test title",
             "Test description.",
             ErrorUri.Locator("http://test.com/instance/1013"),
-            "message-id",
-            ("key1", "value1"), ("key2", "value2"));
+            new TemplatedMessage("message-id", ("key1", "value1"), ("key2", "value2")));
 
         // Assert
         sut.ShouldNotBeNull();
@@ -2009,12 +1938,11 @@ public class ErrorUnitTests
             "Test title",
             "Test description.",
             ErrorUri.Locator("http://test.com/instance/1013"),
-            "message-id",
-            new Dictionary<string, object?>
+            new TemplatedMessage("message-id", new Dictionary<string, object?>
             {
                 ["key1"] = "value1",
                 ["key2"] = "value2"
-            });
+            }));
 
         // Assert
         sut.ShouldNotBeNull();
@@ -2087,8 +2015,7 @@ public class ErrorUnitTests
             "Test title",
             "Test description.",
             ErrorUri.Locator("http://test.com/instance/1013"),
-            "messageId",
-            ("key1", "value1"), ("key2", "value2"));
+            new TemplatedMessage("messageId", ("key1", "value1"), ("key2", "value2")));
 
         sut = sut.WithErrorDetail("#/property1", "Property 1 test detail", "message-property-id", ("pk1", "pv1"), ("pk2", "pv2"));
 
@@ -2110,8 +2037,7 @@ public class ErrorUnitTests
             "Test title",
             "Test description.",
             ErrorUri.Locator("http://test.com/instance/1013"),
-            "messageId",
-            ("key1", "value1"), ("key2", "value2"));
+            new TemplatedMessage("messageId", ("key1", "value1"), ("key2", "value2")));
 
         sut = sut.WithErrorDetail("#/property1", "Property 1 test detail", "message-property-id", ("pk1", "pv1"), ("pk2", "pv2"));
 
@@ -2163,43 +2089,6 @@ public class ErrorUnitTests
 
         // Assert
         sut.Detail.ShouldBe(" Too short. ");
-    }
-
-    [Theory]
-    [InlineData("")]
-    [InlineData(" ")]
-    [InlineData(" min")]
-    [InlineData("min ")]
-    [InlineData("\tmin")]
-    public void FactoryMethod_EmptyOrPaddedParameterName_ThrowsArgumentException(string name)
-    {
-        // Act
-        var exception = Record.Exception(() => Sut.Validation(ErrorUri.None, "Test title",
-            detailTemplateId: "errors.length", detailNamedValues: [(name, 3)]));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentException>();
-        var argumentException = exception as ArgumentException;
-        argumentException.ShouldNotBeNull();
-        argumentException.ParamName.ShouldBe("detailNamedValues");
-    }
-
-    [Theory]
-    [InlineData(" errors.length")]
-    [InlineData("errors.length ")]
-    [InlineData("\terrors.length")]
-    public void FactoryMethod_PaddedTemplateId_ThrowsArgumentException(string templateId)
-    {
-        // Act
-        var exception = Record.Exception(() => Sut.Validation(ErrorUri.None, "Test title", detailTemplateId: templateId));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<ArgumentException>();
-        var argumentException = exception as ArgumentException;
-        argumentException.ShouldNotBeNull();
-        argumentException.ParamName.ShouldBe("detailTemplateId");
     }
 
     [Theory]

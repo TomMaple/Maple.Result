@@ -1,15 +1,49 @@
-# Error.LimitExceeded Method
+# Error.LimitExceeded(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, TemplatedMessage) Method
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L626" target="_blank">Error.cs</a>
 
 Creates a new instance of the [Error](Error.md) object of the *LimitExceeded* category.
 
-## Overloads
-| Name | Description |
-| ---- | ----------- |
-| [LimitExceeded(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, String, ReadOnlySpan&lt;(String, Object)&gt;)](#limitexceedederroruri-string-string-nullableerroruri-string-readonlyspanstring-object) | Creates a new limit exceeded error with specified parameters. |
-| [LimitExceeded(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, String, IEnumerable&lt;KeyValuePair&lt;String, Object&gt;&gt;)](#limitexceedederroruri-string-string-nullableerroruri-string-ienumerablekeyvaluepairstring-object) | Creates a new limit exceeded error with specified parameters. |
+```csharp
+public static Error LimitExceeded(
+        ErrorUri typeUri,
+        string title,
+        string? detail = null,
+        ErrorUri? instanceUri = null,
+        TemplatedMessage? detailTemplated = null);
+```
+
+### Parameters
+#### `typeUri` [ErrorUri](../ErrorUri/ErrorUri.md)
+A mandatory record containing a *URI* reference that identifies the type of the problem.
+
+#### `title` [String](https://learn.microsoft.com/dotnet/api/system.string)
+A mandatory short, human-readable summary of the problem.
+
+#### `detail` [String](https://learn.microsoft.com/dotnet/api/system.string)
+An optional, human-readable explanation specific to this occurrence of the problem.
+
+#### `instanceUri` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[ErrorUri](../ErrorUri/ErrorUri.md)&gt;
+An optional *URI* reference that identifies the specific occurrence of the problem. It must not be `about:blank` ([ErrorUri.None](../ErrorUri/ErrorUri_None.md) or a default [ErrorUri](../ErrorUri/ErrorUri.md)); pass `null` when there is no instance.
+
+#### `detailTemplated` [TemplatedMessage](../TemplatedMessage/TemplatedMessage.md)
+An optional template identifier with its named values, to generate a custom, localized detail message (e.g., `new("errors.reports.limitexceeded", ("accountId", "D12345"))`), or `null` for none.
+
+### Returns
+[Error](Error.md)
+
+A new instance of the [Error](Error.md) record of the *LimitExceeded* [ErrorCategory](../ErrorCategory.md) initialized with provided parameters.
+
+### Exceptions
+[ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
+
+The `title` is `null`.
+
+[ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception)
+
+The `title` or the `detail` is empty or consists only of white-space characters, or the `instanceUri` is `about:blank`.
 
 ## Remarks
 This error category is used when the request is valid and permitted, but a usage limit, quota or rate has been exhausted. The operation may succeed later or once the limit is raised.
@@ -18,133 +52,19 @@ It applies to business limits (e.g. a plan quota or a maximum number of items pe
 
 It relates to `429` HTTP status code (Too Many Requests), but can also be used in other contexts where a limit was exceeded and needs to be reported.
 
+The template identifier and the named values are validated by the [TemplatedMessage](../TemplatedMessage/TemplatedMessage.md) constructor (see [TemplatedMessage constructors](../TemplatedMessage/TemplatedMessage_constructors.md)), so an invalid one throws before the factory is called.
 
-## LimitExceeded(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, String, ReadOnlySpan&lt;(String, Object)&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L727" target="_blank">Error.cs</a>
-
-Creates a new instance of the [Error](Error.md) object of the *LimitExceeded* category with specified parameters.
-
-```csharp
-public static Error LimitExceeded(
-        ErrorUri typeUri,
-        string title,
-        string? detail = null,
-        ErrorUri? instanceUri = null,
-        string? detailTemplateId = null,
-        params ReadOnlySpan<(string Key, object? Value)> detailNamedValues);
-```
-
-### Parameters
-#### `typeUri` [ErrorUri](../ErrorUri/ErrorUri.md)
-A mandatory record containing a *URI* reference that identifies the type of the problem.
-
-#### `title` [String](https://learn.microsoft.com/dotnet/api/system.string)
-A mandatory short, human-readable summary of the problem.
-
-#### `detail` [String](https://learn.microsoft.com/dotnet/api/system.string)
-An optional, human-readable explanation specific to this occurrence of the problem.
-
-#### `instanceUri` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[ErrorUri](../ErrorUri/ErrorUri.md)&gt;
-An optional *URI* reference that identifies the specific occurrence of the problem. It must not be `about:blank` ([ErrorUri.None](../ErrorUri/ErrorUri_None.md) or a default [ErrorUri](../ErrorUri/ErrorUri.md)); pass `null` when there is no instance.
-
-#### `detailTemplateId` [String](https://learn.microsoft.com/dotnet/api/system.string)
-An optional identifier of the message template to generate custom, localized message.
-
-#### `detailNamedValues` [ReadOnlySpan](https://learn.microsoft.com/dotnet/api/system.readonlyspan-1)&lt;([String](https://learn.microsoft.com/dotnet/api/system.string), [Object](https://learn.microsoft.com/dotnet/api/system.object))&gt;
-Optional named values (inline, an array or a collection expression) to be used when rendering the templated message. Values can be `null`; names must be unique and not `null`. Requires `detailTemplateId`: passing values without it throws an [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception).
-
-### Returns
-[Error](Error.md)
-
-A new instance of the [Error](Error.md) record of the *LimitExceeded* [ErrorCategory](../ErrorCategory.md) initialized with provided parameters.
-
-### Exceptions
-[ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
-
-The `title` or a name in `detailNamedValues` is `null`.
-
-[ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception)
-
-The `title` or the `detail` is empty or consists only of white-space characters, the `detailTemplateId` is empty, consists only of white-space characters or starts or ends with white space, a name in `detailNamedValues` is empty, starts or ends with white space, is repeated, or differs only in case from another name (e.g., `Min` and `min`), `detailNamedValues` are passed without a `detailTemplateId`, or the `instanceUri` is `about:blank`.
-
-### Remarks
 > [!NOTE]
 > To add individual error details, use [WithErrorDetail](Error_WithErrorDetail.md), which returns a copy, or build the error with an [ErrorBuilder](../ErrorBuilder/ErrorBuilder.md) when adding several.
 
-### Examples
+## Examples
 ```csharp
 var error = Error.LimitExceeded(
                 ErrorUri.Tag("tag:exampleapp.com,2026:errors:reports:limit-exceeded"),
                 "Cannot generate the report.",
                 "The monthly limit of 100 reports has been reached.",
                 ErrorUri.Locator("https://api.exampleapp.com/errors/546523452/details"),
-                "errors.reports.limitexceeded",
-                ("accountId", "D12345"), ("limit", 100));
-```
-
-
-## LimitExceeded(ErrorUri, String, String, Nullable&lt;ErrorUri&gt;, String, IEnumerable&lt;KeyValuePair&lt;String, Object&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L744" target="_blank">Error.cs</a>
-
-Creates a new instance of the [Error](Error.md) object of the *LimitExceeded* category with specified parameters.
-
-```csharp
-[OverloadResolutionPriority(1)]
-public static Error LimitExceeded(
-        ErrorUri typeUri,
-        string title,
-        string? detail = null,
-        ErrorUri? instanceUri = null,
-        string? detailTemplateId = null,
-        IEnumerable<KeyValuePair<string, object?>>? detailNamedValues = null);
-```
-
-### Parameters
-#### `typeUri` [ErrorUri](../ErrorUri/ErrorUri.md)
-A mandatory record containing a *URI* reference that identifies the type of the problem.
-
-#### `title` [String](https://learn.microsoft.com/dotnet/api/system.string)
-A mandatory short, human-readable summary of the problem.
-
-#### `detail` [String](https://learn.microsoft.com/dotnet/api/system.string)
-An optional, human-readable explanation specific to this occurrence of the problem.
-
-#### `instanceUri` [Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[ErrorUri](../ErrorUri/ErrorUri.md)&gt;
-An optional *URI* reference that identifies the specific occurrence of the problem. It must not be `about:blank` ([ErrorUri.None](../ErrorUri/ErrorUri_None.md) or a default [ErrorUri](../ErrorUri/ErrorUri.md)); pass `null` when there is no instance.
-
-#### `detailTemplateId` [String](https://learn.microsoft.com/dotnet/api/system.string)
-An optional identifier of the message template to generate custom, localized message.
-
-#### `detailNamedValues` [IEnumerable](https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1)&lt;[KeyValuePair](https://learn.microsoft.com/dotnet/api/system.collections.generic.keyvaluepair-2)&lt;[String](https://learn.microsoft.com/dotnet/api/system.string), [Object](https://learn.microsoft.com/dotnet/api/system.object)&gt;&gt;
-An optional sequence of key-value pairs to be used when rendering the templated message. Values can be `null`; names must be unique and not `null`. Requires `detailTemplateId`: passing values without it throws an [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception).
-
-### Returns
-[Error](Error.md)
-
-A new instance of the [Error](Error.md) record of the *LimitExceeded* [ErrorCategory](../ErrorCategory.md) initialized with provided parameters.
-
-### Exceptions
-[ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception)
-
-The `title` or a name in `detailNamedValues` is `null`.
-
-[ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception)
-
-The `title` or the `detail` is empty or consists only of white-space characters, the `detailTemplateId` is empty, consists only of white-space characters or starts or ends with white space, a name in `detailNamedValues` is empty, starts or ends with white space, is repeated, or differs only in case from another name (e.g., `Min` and `min`), `detailNamedValues` are passed without a `detailTemplateId`, or the `instanceUri` is `about:blank`.
-
-### Remarks
-> [!NOTE]
-> To add individual error details, use [WithErrorDetail](Error_WithErrorDetail.md), which returns a copy, or build the error with an [ErrorBuilder](../ErrorBuilder/ErrorBuilder.md) when adding several.
-
-### Examples
-```csharp
-var error = Error.LimitExceeded(
-                ErrorUri.Tag("tag:exampleapp.com,2026:errors:reports:limit-exceeded"),
-                "Cannot generate the report.",
-                "The monthly limit of 100 reports has been reached.",
-                ErrorUri.Locator("https://api.exampleapp.com/errors/546523452/details"),
-                "errors.reports.limitexceeded",
-                new Dictionary<string, object?> { ["accountId"] = "D12345", ["limit"] = 100 });
+                new TemplatedMessage("errors.reports.limitexceeded", ("accountId", "D12345"), ("limit", 100)));
 ```
 
 ## See Also
@@ -152,3 +72,4 @@ var error = Error.LimitExceeded(
 * [ErrorDetail](../ErrorDetail/ErrorDetail.md)
 * [RFC 9457: Problem Details for HTTP APIs](https://datatracker.ietf.org/doc/html/rfc9457)
 * [Problem Details for HTTP APIs - RFC 7807 is dead, long live RFC 9457](https://blog.frankel.ch/problem-details-http-apis/)
+
