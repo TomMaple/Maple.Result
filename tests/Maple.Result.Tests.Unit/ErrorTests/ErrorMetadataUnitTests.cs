@@ -617,7 +617,9 @@ public class ErrorMetadataUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentException>();
-        ((ArgumentException)exception).ParamName.ShouldBe("key");
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("key");
         sut.Metadata.ShouldBeEmpty();
     }
 
@@ -634,7 +636,9 @@ public class ErrorMetadataUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentException>();
-        ((ArgumentException)exception).ParamName.ShouldBe("metadata");
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("metadata");
     }
 
     [Fact]
@@ -649,7 +653,9 @@ public class ErrorMetadataUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentException>();
-        ((ArgumentException)exception).ParamName.ShouldBe("metadata");
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("metadata");
     }
 
     [Fact]

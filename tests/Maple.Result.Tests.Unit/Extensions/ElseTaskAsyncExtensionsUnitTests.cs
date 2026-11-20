@@ -583,7 +583,6 @@ public class ElseTaskAsyncExtensionsUnitTests
     // See issue #214.
 
     private static readonly Error SyncTestError = Error.Failure(ErrorUri.None, "Synchronous delegate test error");
-    private static readonly Error SyncOtherError = Error.Conflict(ErrorUri.None, "Synchronous delegate other error");
 
     [Fact]
     public async Task ElseAsync_FailedResultOfTTaskWithSyncFunction_ReturnsFunctionResult()
@@ -898,7 +897,8 @@ public class ElseTaskAsyncExtensionsUnitTests
         var result = await sut.ElseAsync(e => Task.FromResult(e.ToBuilder().WithTitle("Replaced").Build()));
 
         // Assert
-        result.Error.ShouldNotBeNull().Title.ShouldBe("Replaced");
+        result.Error.ShouldNotBeNull();
+        result.Error.Title.ShouldBe("Replaced");
     }
 
     [Fact]

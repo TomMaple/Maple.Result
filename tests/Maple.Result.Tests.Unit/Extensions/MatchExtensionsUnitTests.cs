@@ -34,7 +34,10 @@ public class MatchExtensionsUnitTests
         var exception = Record.Exception(() => Sut!.Match(() => 1, _ => 0));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("result");
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("result");
     }
 
     [Fact]
@@ -49,7 +52,10 @@ public class MatchExtensionsUnitTests
         var exception = Record.Exception(() => sut.Match(SuccessFunction!, _ => 0));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("ifSuccessFunction");
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("ifSuccessFunction");
     }
 
     [Fact]
@@ -64,7 +70,10 @@ public class MatchExtensionsUnitTests
         var exception = Record.Exception(() => sut.Match(() => 1, ErrorFunction!));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("ifErrorFunction");
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("ifErrorFunction");
     }
 
     [Fact]
@@ -210,7 +219,10 @@ public class MatchExtensionsUnitTests
         var exception = Record.Exception(() => Sut!.Match(x => x, _ => 0));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("result");
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("result");
     }
 
     [Fact]
@@ -225,7 +237,10 @@ public class MatchExtensionsUnitTests
         var exception = Record.Exception(() => sut.Match(SuccessFunction!, _ => 0));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("ifSuccessFunction");
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("ifSuccessFunction");
     }
 
     [Fact]
@@ -240,7 +255,10 @@ public class MatchExtensionsUnitTests
         var exception = Record.Exception(() => sut.Match(x => x, ErrorFunction!));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("ifErrorFunction");
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("ifErrorFunction");
     }
 
     [Fact]

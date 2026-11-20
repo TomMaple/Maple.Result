@@ -132,7 +132,10 @@ public class ResultTryAsyncUnitTests
         }));
 
         // Assert
-        exception.ShouldBeOfType<InvalidOperationException>().Message.ShouldBe(ExpectedMessage);
+        exception.ShouldBeOfType<InvalidOperationException>();
+        var invalidOperationException = exception as InvalidOperationException;
+        invalidOperationException.ShouldNotBeNull();
+        invalidOperationException.Message.ShouldBe(ExpectedMessage);
         mapperCalls.ShouldBe(0);
     }
 
@@ -161,7 +164,9 @@ public class ResultTryAsyncUnitTests
         }, _ => null));
 
         // Assert
-        exception.ShouldNotBeNull().StackTrace.ShouldNotBeNull().ShouldContain(nameof(ThrowFromNamedMethod));
+        exception.ShouldNotBeNull();
+        exception.StackTrace.ShouldNotBeNull();
+        exception.StackTrace.ShouldContain(nameof(ThrowFromNamedMethod));
     }
 
     // A timeout of HttpClient is a TaskCanceledException with an inner TimeoutException; with OperationCanceledException as the type,
@@ -224,7 +229,10 @@ public class ResultTryAsyncUnitTests
         var exception = Record.Exception(() => { _ = Result.TryAsync((Func<Task>)null!, Map); });
 
         // Assert
-        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("action");
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("action");
     }
 
     [Fact]
@@ -234,7 +242,10 @@ public class ResultTryAsyncUnitTests
         var exception = Record.Exception(() => { _ = Result.TryAsync(() => Task.CompletedTask, null!); });
 
         // Assert
-        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("mapException");
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("mapException");
     }
 
     #endregion
@@ -328,7 +339,10 @@ public class ResultTryAsyncUnitTests
         var exception = await Record.ExceptionAsync(() => Result.TryAsync(() => (Task<int>)null!, Map));
 
         // Assert
-        exception.ShouldBeOfType<InvalidOperationException>().Message.ShouldBe(ExpectedMessage);
+        exception.ShouldBeOfType<InvalidOperationException>();
+        var invalidOperationException = exception as InvalidOperationException;
+        invalidOperationException.ShouldNotBeNull();
+        invalidOperationException.Message.ShouldBe(ExpectedMessage);
     }
 
     [Fact]
@@ -338,7 +352,10 @@ public class ResultTryAsyncUnitTests
         var exception = Record.Exception(() => { _ = Result.TryAsync((Func<Task<int>>)null!, Map); });
 
         // Assert
-        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("function");
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("function");
     }
 
     #endregion
@@ -429,7 +446,10 @@ public class ResultTryAsyncUnitTests
         var exception = Record.Exception(() => { _ = Result.TryAsync((Func<ValueTask>)null!, Map); });
 
         // Assert
-        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("action");
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("action");
     }
 
     [Fact]
@@ -439,7 +459,10 @@ public class ResultTryAsyncUnitTests
         var exception = Record.Exception(() => { _ = Result.TryAsync(() => ValueTask.CompletedTask, null!); });
 
         // Assert
-        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("mapException");
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("mapException");
     }
 
     #endregion
@@ -509,7 +532,10 @@ public class ResultTryAsyncUnitTests
         var exception = Record.Exception(() => { _ = Result.TryAsync((Func<ValueTask<int>>)null!, Map); });
 
         // Assert
-        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("function");
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("function");
     }
 
     #endregion

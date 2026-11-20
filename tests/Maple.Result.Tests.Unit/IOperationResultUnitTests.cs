@@ -82,7 +82,10 @@ public class IOperationResultUnitTests
         var exception = Record.Exception(() => DispatchProxy.Create<IOperationResult, InterfaceProxy>());
 
         // Assert
-        exception.ShouldBeOfType<TypeLoadException>().Message.ShouldContain(ClosingMember);
+        exception.ShouldBeOfType<TypeLoadException>();
+        var typeLoadException = exception as TypeLoadException;
+        typeLoadException.ShouldNotBeNull();
+        typeLoadException.Message.ShouldContain(ClosingMember);
     }
 
     #region helper methods

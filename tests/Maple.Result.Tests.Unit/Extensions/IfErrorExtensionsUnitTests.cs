@@ -286,10 +286,5 @@ public class IfErrorExtensionsUnitTests
         return Error.Failure(ErrorUri.None, "f2082bda-b481-4f4b-974d-1faccec44be4", "Error title 2");
     }
 
-    private static Error GetReplacementError()
-    {
-        return Error.Failure(ErrorUri.None, "a73d2604-e540-4dd3-8db8-3e6a70f89d72", "Replacement error");
-    }
-
     #endregion
 }

@@ -88,7 +88,10 @@ public class ResultTryFlatteningUnitTests
         }));
 
         // Assert
-        exception.ShouldBeOfType<InvalidOperationException>().Message.ShouldBe(ExpectedMessage);
+        exception.ShouldBeOfType<InvalidOperationException>();
+        var invalidOperationException = exception as InvalidOperationException;
+        invalidOperationException.ShouldNotBeNull();
+        invalidOperationException.Message.ShouldBe(ExpectedMessage);
         mapperCalls.ShouldBe(0);
     }
 
@@ -99,7 +102,10 @@ public class ResultTryFlatteningUnitTests
         var exception = Record.Exception(() => Result.Try((Func<Result>)null!, Map));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("function");
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("function");
     }
 
     [Fact]
@@ -109,7 +115,10 @@ public class ResultTryFlatteningUnitTests
         var exception = Record.Exception(() => Result.Try(() => Result.Success(), null!));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("mapException");
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("mapException");
     }
 
     [Fact]
@@ -210,7 +219,10 @@ public class ResultTryFlatteningUnitTests
         var exception = Record.Exception(() => Result.Try((Func<Result<int>>)null!, Map));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("function");
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("function");
     }
 
     // Explicit type arguments keep the nested result on purpose, as IfSuccess<Error>(…) does.
@@ -303,7 +315,10 @@ public class ResultTryFlatteningUnitTests
         var exception = Record.Exception(() => Result.Try(() => (Error)null!, Map));
 
         // Assert
-        exception.ShouldBeOfType<InvalidOperationException>().Message.ShouldBe(ExpectedMessage);
+        exception.ShouldBeOfType<InvalidOperationException>();
+        var invalidOperationException = exception as InvalidOperationException;
+        invalidOperationException.ShouldNotBeNull();
+        invalidOperationException.Message.ShouldBe(ExpectedMessage);
     }
 
     [Fact]
@@ -313,7 +328,10 @@ public class ResultTryFlatteningUnitTests
         var exception = Record.Exception(() => Result.Try((Func<Error>)null!, Map));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("function");
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("function");
     }
 
     [Fact]

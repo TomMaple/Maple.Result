@@ -462,11 +462,6 @@ public class IfSuccessValueTaskAsyncExtensionsUnitTests
 
     #region helper methods
 
-    private static Error GetError()
-    {
-        return Error.Failure(ErrorUri.None, "e06d75de-115c-46ec-a5f6-f6373007ec61", "Error title 1");
-    }
-
     private static Result GetErrorResult()
     {
         return Error.Failure(ErrorUri.None, "636d213a-2dc4-4f63-adaf-bbfb80d888ab", "Error title 3");
@@ -484,7 +479,6 @@ public class IfSuccessValueTaskAsyncExtensionsUnitTests
     // See issue #214.
 
     private static readonly Error SyncTestError = Error.Failure(ErrorUri.None, "Synchronous delegate test error");
-    private static readonly Error SyncOtherError = Error.Conflict(ErrorUri.None, "Synchronous delegate other error");
 
     [Fact]
     public async Task IfSuccessAsync_SuccessfulResultTaskWithSyncAction_CallsActionAndReturnsResult()

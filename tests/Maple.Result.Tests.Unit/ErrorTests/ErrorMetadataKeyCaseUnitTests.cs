@@ -34,7 +34,10 @@ public class ErrorMetadataKeyCaseUnitTests
         var exception = Record.Exception(() => sut.WithMetadata("retryAfter", 60));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentException>().ParamName.ShouldBe("key");
+        exception.ShouldBeOfType<ArgumentException>();
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("key");
     }
 
     [Fact]
@@ -47,7 +50,10 @@ public class ErrorMetadataKeyCaseUnitTests
         var exception = Record.Exception(() => sut.WithMetadata(("Limit", 100), ("limit", 200)));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentException>().ParamName.ShouldBe("metadata");
+        exception.ShouldBeOfType<ArgumentException>();
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("metadata");
     }
 
     [Fact]
@@ -61,7 +67,10 @@ public class ErrorMetadataKeyCaseUnitTests
         var exception = Record.Exception(() => sut.WithMetadata(metadata));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentException>().ParamName.ShouldBe("metadata");
+        exception.ShouldBeOfType<ArgumentException>();
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("metadata");
     }
 
     [Fact]

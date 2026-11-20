@@ -23,7 +23,8 @@ public class ErrorDebuggerDisplayUnitTests
         var attribute = typeof(Sut).GetCustomAttribute<DebuggerDisplayAttribute>();
 
         // Assert
-        attribute.ShouldNotBeNull().Value.ShouldBe("{DebuggerDisplay,nq}");
+        attribute.ShouldNotBeNull();
+        attribute.Value.ShouldBe("{DebuggerDisplay,nq}");
     }
 
     [Fact]

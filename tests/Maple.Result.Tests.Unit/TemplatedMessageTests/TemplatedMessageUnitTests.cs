@@ -39,7 +39,9 @@ public class TemplatedMessageUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentNullException>();
-        ((ArgumentNullException)exception).ParamName.ShouldBe("templateId");
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("templateId");
     }
 
     [Theory]
@@ -54,7 +56,9 @@ public class TemplatedMessageUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentException>();
-        ((ArgumentException)exception).ParamName.ShouldBe("templateId");
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("templateId");
     }
 
     [Fact]
@@ -248,8 +252,10 @@ public class TemplatedMessageUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentException>();
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
         exception.Message.ShouldContain("‘min’ is repeated");
-        ((ArgumentException)exception).ParamName.ShouldBe("parameters");
+        argumentException.ParamName.ShouldBe("parameters");
     }
 
     [Fact]
@@ -264,7 +270,9 @@ public class TemplatedMessageUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentException>();
-        ((ArgumentException)exception).ParamName.ShouldBe("parameters");
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("parameters");
     }
 
     [Fact]
@@ -276,7 +284,9 @@ public class TemplatedMessageUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentNullException>();
-        ((ArgumentNullException)exception).ParamName.ShouldBe("parameters");
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("parameters");
     }
 
     [Fact]
@@ -291,7 +301,9 @@ public class TemplatedMessageUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentNullException>();
-        ((ArgumentNullException)exception).ParamName.ShouldBe("parameters");
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("parameters");
     }
 
     [Fact]
@@ -463,7 +475,9 @@ public class TemplatedMessageUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentException>();
-        ((ArgumentException)exception).ParamName.ShouldBe("parameters");
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("parameters");
     }
 
     [Theory]
@@ -483,7 +497,9 @@ public class TemplatedMessageUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentException>();
-        ((ArgumentException)exception).ParamName.ShouldBe("parameters");
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("parameters");
     }
 
     [Fact]
@@ -520,7 +536,9 @@ public class TemplatedMessageUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentException>();
-        ((ArgumentException)exception).ParamName.ShouldBe("templateId");
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("templateId");
     }
 
     [Theory]
@@ -538,7 +556,9 @@ public class TemplatedMessageUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentException>();
-        ((ArgumentException)exception).ParamName.ShouldBe("templateId");
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("templateId");
     }
 
     [Fact]

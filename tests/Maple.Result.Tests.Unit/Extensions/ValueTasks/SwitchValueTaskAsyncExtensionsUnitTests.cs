@@ -34,7 +34,10 @@ public class SwitchValueTaskAsyncExtensionsUnitTests
         var exception = Record.Exception(() => { _ = sut.SwitchAsync(() => { }, ErrorAction!); });
 
         // Assert
-        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("ifErrorAction");
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("ifErrorAction");
     }
 
     [Fact]
@@ -130,7 +133,10 @@ public class SwitchValueTaskAsyncExtensionsUnitTests
         var exception = Record.Exception(() => { _ = sut.SwitchAsync(SuccessAction!, _ => { }); });
 
         // Assert
-        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("ifSuccessAction");
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("ifSuccessAction");
     }
 
     [Fact]

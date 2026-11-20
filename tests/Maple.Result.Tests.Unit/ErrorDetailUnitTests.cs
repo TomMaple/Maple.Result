@@ -54,7 +54,9 @@ public class ErrorDetailUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentNullException>();
-        ((ArgumentNullException)exception).ParamName.ShouldBe("Detail");
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("Detail");
     }
 
     [Fact]
@@ -81,7 +83,9 @@ public class ErrorDetailUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentException>();
-        ((ArgumentException)exception).ParamName.ShouldBe("PropertyPointer");
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("PropertyPointer");
     }
 
     [Fact]
@@ -156,7 +160,9 @@ public class ErrorDetailUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentException>();
-        ((ArgumentException)exception).ParamName.ShouldBe("Detail");
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("Detail");
     }
 
     [Fact]
@@ -350,7 +356,10 @@ public class ErrorDetailUnitTests
         var exception = Record.Exception(() => ErrorDetail.Pointer("items", '1'));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentException>().Message.ShouldBe(ExpectedMessage);
+        exception.ShouldBeOfType<ArgumentException>();
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.Message.ShouldBe(ExpectedMessage);
     }
 
     [Fact]

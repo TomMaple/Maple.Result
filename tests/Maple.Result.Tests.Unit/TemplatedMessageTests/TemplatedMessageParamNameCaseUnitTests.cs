@@ -32,7 +32,10 @@ public class TemplatedMessageParamNameCaseUnitTests
         var exception = Record.Exception(() => new TemplatedMessage("errors.length", ("Min", 3), ("min", 5)));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentException>().ParamName.ShouldBe("parameters");
+        exception.ShouldBeOfType<ArgumentException>();
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("parameters");
     }
 
     [Fact]
@@ -42,7 +45,8 @@ public class TemplatedMessageParamNameCaseUnitTests
         var exception = Record.Exception(() => new TemplatedMessage("errors.length", ("Min", 3), ("min", 5)));
 
         // Assert
-        exception.ShouldNotBeNull().Message.ShouldBe($"{ExpectedMessage} (Parameter 'parameters')");
+        exception.ShouldNotBeNull();
+        exception.Message.ShouldBe($"{ExpectedMessage} (Parameter 'parameters')");
     }
 
     [Fact]
@@ -52,7 +56,8 @@ public class TemplatedMessageParamNameCaseUnitTests
         var exception = Record.Exception(() => new TemplatedMessage("errors.length", ("Min", 3), ("max", 9), ("min", 5)));
 
         // Assert
-        exception.ShouldNotBeNull().Message.ShouldBe($"{ExpectedMessage} (Parameter 'parameters')");
+        exception.ShouldNotBeNull();
+        exception.Message.ShouldBe($"{ExpectedMessage} (Parameter 'parameters')");
     }
 
     [Fact]
@@ -65,7 +70,10 @@ public class TemplatedMessageParamNameCaseUnitTests
         var exception = Record.Exception(() => new TemplatedMessage("errors.length", parameters));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentException>().ParamName.ShouldBe("parameters");
+        exception.ShouldBeOfType<ArgumentException>();
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("parameters");
     }
 
     [Fact]
@@ -78,7 +86,8 @@ public class TemplatedMessageParamNameCaseUnitTests
         var exception = Record.Exception(() => new TemplatedMessage("errors.length", parameters));
 
         // Assert
-        exception.ShouldNotBeNull().Message.ShouldBe($"{ExpectedMessage} (Parameter 'parameters')");
+        exception.ShouldNotBeNull();
+        exception.Message.ShouldBe($"{ExpectedMessage} (Parameter 'parameters')");
     }
 
     [Fact]
@@ -91,7 +100,10 @@ public class TemplatedMessageParamNameCaseUnitTests
         var exception = Record.Exception(() => new TemplatedMessage("errors.length", parameters));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentException>().ParamName.ShouldBe("parameters");
+        exception.ShouldBeOfType<ArgumentException>();
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("parameters");
     }
 
     [Fact]
@@ -101,7 +113,8 @@ public class TemplatedMessageParamNameCaseUnitTests
         var exception = Record.Exception(() => new TemplatedMessage("errors.length", ("min", 3), ("min", 5)));
 
         // Assert
-        exception.ShouldNotBeNull().Message.ShouldBe("The parameter ‘min’ is repeated. (Parameter 'parameters')");
+        exception.ShouldNotBeNull();
+        exception.Message.ShouldBe("The parameter ‘min’ is repeated. (Parameter 'parameters')");
     }
 
     [Fact]
@@ -114,7 +127,8 @@ public class TemplatedMessageParamNameCaseUnitTests
         var exception = Record.Exception(() => new TemplatedMessage("errors.length", parameters));
 
         // Assert
-        exception.ShouldNotBeNull().Message.ShouldBe("The parameter ‘min’ is repeated. (Parameter 'parameters')");
+        exception.ShouldNotBeNull();
+        exception.Message.ShouldBe("The parameter ‘min’ is repeated. (Parameter 'parameters')");
     }
 
     [Fact]
@@ -124,7 +138,8 @@ public class TemplatedMessageParamNameCaseUnitTests
         var result = new TemplatedMessage("errors.length", ("Min", 3), ("Max", 20), ("minLength", 1));
 
         // Assert
-        result.Params.ShouldNotBeNull().Count.ShouldBe(3);
+        result.Params.ShouldNotBeNull();
+        result.Params.Count.ShouldBe(3);
     }
 
     [Fact]
@@ -175,7 +190,8 @@ public class TemplatedMessageParamNameCaseUnitTests
 
         // Assert
         stopwatch.Elapsed.ShouldBeLessThan(maximum);
-        result.Params.ShouldNotBeNull().Count.ShouldBe(40_000);
+        result.Params.ShouldNotBeNull();
+        result.Params.Count.ShouldBe(40_000);
     }
 
     [Fact]
@@ -193,7 +209,8 @@ public class TemplatedMessageParamNameCaseUnitTests
 
         // Assert
         stopwatch.Elapsed.ShouldBeLessThan(maximum);
-        result.Params.ShouldNotBeNull().Count.ShouldBe(40_000);
+        result.Params.ShouldNotBeNull();
+        result.Params.Count.ShouldBe(40_000);
     }
 
     #endregion
@@ -208,7 +225,10 @@ public class TemplatedMessageParamNameCaseUnitTests
             detailNamedValues: [("Min", 3), ("min", 5)]));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentException>().Message.ShouldBe($"{ExpectedMessage} (Parameter 'detailNamedValues')");
+        exception.ShouldBeOfType<ArgumentException>();
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.Message.ShouldBe($"{ExpectedMessage} (Parameter 'detailNamedValues')");
     }
 
     [Fact]
@@ -222,7 +242,10 @@ public class TemplatedMessageParamNameCaseUnitTests
             detailNamedValues: namedValues));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentException>().ParamName.ShouldBe("detailNamedValues");
+        exception.ShouldBeOfType<ArgumentException>();
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("detailNamedValues");
     }
 
     [Fact]
@@ -235,7 +258,10 @@ public class TemplatedMessageParamNameCaseUnitTests
         var exception = Record.Exception(() => sut.WithErrorDetail("/name", "Too short.", "errors.length", ("Min", 3), ("min", 5)));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentException>().ParamName.ShouldBe("detailNamedValues");
+        exception.ShouldBeOfType<ArgumentException>();
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("detailNamedValues");
     }
 
     [Fact]
@@ -248,7 +274,10 @@ public class TemplatedMessageParamNameCaseUnitTests
         var exception = Record.Exception(() => sut.WithDetailTemplated("errors.length", ("Min", 3), ("min", 5)));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentException>().ParamName.ShouldBe("namedValues");
+        exception.ShouldBeOfType<ArgumentException>();
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("namedValues");
     }
 
     [Fact]
@@ -261,7 +290,10 @@ public class TemplatedMessageParamNameCaseUnitTests
         var exception = Record.Exception(() => sut.AddErrorDetail("/name", "Too short.", "errors.length", ("Min", 3), ("min", 5)));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentException>().ParamName.ShouldBe("detailNamedValues");
+        exception.ShouldBeOfType<ArgumentException>();
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("detailNamedValues");
     }
 
     #endregion

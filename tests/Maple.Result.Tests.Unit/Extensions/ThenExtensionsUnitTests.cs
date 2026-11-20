@@ -854,7 +854,10 @@ public class ThenExtensionsUnitTests
         var exception = Record.Exception(() => sut.Then(() => (Error)null!));
 
         // Assert
-        exception.ShouldBeOfType<InvalidOperationException>().Message.ShouldBe("The function ‘ifSuccessFunction’ returned null.");
+        exception.ShouldBeOfType<InvalidOperationException>();
+        var invalidOperationException = exception as InvalidOperationException;
+        invalidOperationException.ShouldNotBeNull();
+        invalidOperationException.Message.ShouldBe("The function ‘ifSuccessFunction’ returned null.");
     }
 
     [Fact]
@@ -921,7 +924,10 @@ public class ThenExtensionsUnitTests
         var exception = Record.Exception(() => sut.Then(_ => (Error)null!));
 
         // Assert
-        exception.ShouldBeOfType<InvalidOperationException>().Message.ShouldBe("The function ‘ifSuccessFunction’ returned null.");
+        exception.ShouldBeOfType<InvalidOperationException>();
+        var invalidOperationException = exception as InvalidOperationException;
+        invalidOperationException.ShouldNotBeNull();
+        invalidOperationException.Message.ShouldBe("The function ‘ifSuccessFunction’ returned null.");
     }
 
     [Fact]

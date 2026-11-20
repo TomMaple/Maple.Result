@@ -117,7 +117,10 @@ public class ErrorBuilderMetadataKeyCaseManyKeysUnitTests
         var exception = Record.Exception(() => sut.WithMetadata("KEY50", 0));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentException>().Message.ShouldBe(ExpectedMessage);
+        exception.ShouldBeOfType<ArgumentException>();
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.Message.ShouldBe(ExpectedMessage);
     }
 
     [Fact]
@@ -130,7 +133,10 @@ public class ErrorBuilderMetadataKeyCaseManyKeysUnitTests
         var exception = Record.Exception(() => sut.WithMetadata(("other", 1), ("KEY50", 0)));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentException>().ParamName.ShouldBe("metadata");
+        exception.ShouldBeOfType<ArgumentException>();
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("metadata");
     }
 
     [Fact]
@@ -144,7 +150,10 @@ public class ErrorBuilderMetadataKeyCaseManyKeysUnitTests
         var exception = Record.Exception(() => sut.WithMetadata(metadata));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentException>().ParamName.ShouldBe("metadata");
+        exception.ShouldBeOfType<ArgumentException>();
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("metadata");
     }
 
     [Fact]
@@ -194,7 +203,10 @@ public class ErrorBuilderMetadataKeyCaseManyKeysUnitTests
         var exception = Record.Exception(() => sut.WithMetadata(metadata));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentException>().Message.ShouldBe(ExpectedMessage);
+        exception.ShouldBeOfType<ArgumentException>();
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.Message.ShouldBe(ExpectedMessage);
     }
 
     [Fact]
@@ -212,7 +224,10 @@ public class ErrorBuilderMetadataKeyCaseManyKeysUnitTests
         var exception = Record.Exception(() => sut.WithMetadata(metadata));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentException>().Message.ShouldBe(ExpectedMessage);
+        exception.ShouldBeOfType<ArgumentException>();
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.Message.ShouldBe(ExpectedMessage);
     }
 
     [Fact]
@@ -258,7 +273,10 @@ public class ErrorBuilderMetadataKeyCaseManyKeysUnitTests
         var exception = Record.Exception(() => sut.WithMetadata("KEY50", 0));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentException>().ParamName.ShouldBe("key");
+        exception.ShouldBeOfType<ArgumentException>();
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("key");
     }
 
     [Fact]
@@ -290,7 +308,10 @@ public class ErrorBuilderMetadataKeyCaseManyKeysUnitTests
         var exception = Record.Exception(() => sut.WithMetadata("ADDED", 0));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentException>().ParamName.ShouldBe("key");
+        exception.ShouldBeOfType<ArgumentException>();
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("key");
     }
 
     [Fact]
@@ -304,7 +325,10 @@ public class ErrorBuilderMetadataKeyCaseManyKeysUnitTests
         var exception = Record.Exception(() => sut.WithMetadata("ADDED", 0));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentException>().ParamName.ShouldBe("key");
+        exception.ShouldBeOfType<ArgumentException>();
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("key");
     }
 
     #endregion
@@ -321,7 +345,10 @@ public class ErrorBuilderMetadataKeyCaseManyKeysUnitTests
         var exception = Record.Exception(() => sut.WithMetadata("KEY50", 0));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentException>().ParamName.ShouldBe("key");
+        exception.ShouldBeOfType<ArgumentException>();
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("key");
     }
 
     [Fact]
@@ -335,7 +362,10 @@ public class ErrorBuilderMetadataKeyCaseManyKeysUnitTests
         var exception = Record.Exception(() => sut.WithMetadata("KEY50", 0));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentException>().ParamName.ShouldBe("key");
+        exception.ShouldBeOfType<ArgumentException>();
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("key");
     }
 
     [Fact]
@@ -350,7 +380,10 @@ public class ErrorBuilderMetadataKeyCaseManyKeysUnitTests
         var exception = Record.Exception(() => sut.WithMetadata("ADDED", 0));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentException>().ParamName.ShouldBe("key");
+        exception.ShouldBeOfType<ArgumentException>();
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("key");
     }
 
     [Fact]
@@ -363,7 +396,10 @@ public class ErrorBuilderMetadataKeyCaseManyKeysUnitTests
         var exception = Record.Exception(() => sut.WithMetadata("KEY50", 0));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentException>().ParamName.ShouldBe("key");
+        exception.ShouldBeOfType<ArgumentException>();
+        var argumentException = exception as ArgumentException;
+        argumentException.ShouldNotBeNull();
+        argumentException.ParamName.ShouldBe("key");
     }
 
     #endregion

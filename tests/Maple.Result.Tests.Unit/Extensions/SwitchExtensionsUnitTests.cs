@@ -32,7 +32,10 @@ public class SwitchExtensionsUnitTests
         var exception = Record.Exception(() => Sut!.Switch(() => { }, _ => { }));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("result");
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("result");
     }
 
     [Fact]
@@ -47,7 +50,10 @@ public class SwitchExtensionsUnitTests
         var exception = Record.Exception(() => sut.Switch(SuccessAction!, _ => { }));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("ifSuccessAction");
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("ifSuccessAction");
     }
 
     [Fact]
@@ -62,7 +68,10 @@ public class SwitchExtensionsUnitTests
         var exception = Record.Exception(() => sut.Switch(() => { }, ErrorAction!));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("ifErrorAction");
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("ifErrorAction");
     }
 
     [Fact]
@@ -125,7 +134,10 @@ public class SwitchExtensionsUnitTests
         var exception = Record.Exception(() => Sut!.Switch(_ => { }, _ => { }));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("result");
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("result");
     }
 
     [Fact]
@@ -140,7 +152,10 @@ public class SwitchExtensionsUnitTests
         var exception = Record.Exception(() => sut.Switch(SuccessAction!, _ => { }));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("ifSuccessAction");
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("ifSuccessAction");
     }
 
     [Fact]
@@ -155,7 +170,10 @@ public class SwitchExtensionsUnitTests
         var exception = Record.Exception(() => sut.Switch(_ => { }, ErrorAction!));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentNullException>().ParamName.ShouldBe("ifErrorAction");
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("ifErrorAction");
     }
 
     [Fact]
