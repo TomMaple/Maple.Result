@@ -13,7 +13,7 @@ using System.Text.RegularExpressions;
 
 namespace Maple.Results.Validators;
 
-internal static partial class UriOtherValidator
+internal static class UriOtherValidator
 {
     private const string AboutBlankMessage =
         "The URI ‘about:blank’ has its own property. Use ErrorUri.None, or ErrorUri.Parse when the kind is not known.";
@@ -28,13 +28,12 @@ internal static partial class UriOtherValidator
     // passed, so white space and characters that would need escaping are rejected. The pattern ends with \z, not $, which
     // would also match before a trailing newline.
     // NonBacktracking: the value can come from another service (ErrorUri.Parse and TryParse), and this engine runs in linear time
-    // whatever the pattern (#189). The source generator does not generate code for this option; it creates the Regex instead.
-    [GeneratedRegex(
+    // whatever the pattern (#189). [GeneratedRegex] cannot be used with NonBacktracking (SYSLIB1044); revisit in .NET 12.
+    private static readonly Regex AbsoluteUriPattern = new(
         @"^[A-Za-z][A-Za-z0-9+\-.]*:" +
         @"(?:[A-Za-z0-9\-._~:/?\[\]@!$&'()*+,;=]|%[0-9A-Fa-f]{2})*" +
         @"(?:#(?:[A-Za-z0-9\-._~:/?\[\]@!$&'()*+,;=]|%[0-9A-Fa-f]{2})*)?\z",
-        RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
-    private static partial Regex AbsoluteUriPattern();
+        RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
 
     /// <summary>
     ///     Whether the value is an absolute <i>URI</i> (<i>RFC 3986</i>) that is neither <c>about:blank</c> (in any case) nor of a scheme
@@ -42,12 +41,12 @@ internal static partial class UriOtherValidator
     /// </summary>
     internal static bool IsValid(string uri)
     {
-        return AbsoluteUriPattern().IsMatch(uri) && !IsAboutBlank(uri) && SupportingFactory(uri) is null;
+        return AbsoluteUriPattern.IsMatch(uri) && !IsAboutBlank(uri) && SupportingFactory(uri) is null;
     }
 
     internal static void Validate(string uri)
     {
-        if (!AbsoluteUriPattern().IsMatch(uri))
+        if (!AbsoluteUriPattern.IsMatch(uri))
             throw new UriFormatException(Message);
 
         if (IsAboutBlank(uri))

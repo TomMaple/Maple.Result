@@ -13,7 +13,7 @@ using System.Text.RegularExpressions;
 
 namespace Maple.Results.Validators;
 
-internal static partial class UriUrnValidator
+internal static class UriUrnValidator
 {
     private const string Message = "The URN is not valid. Check https://datatracker.ietf.org/doc/html/rfc8141#section-2 for details.";
 
@@ -35,8 +35,8 @@ internal static partial class UriUrnValidator
     // the r-component cannot contain "?=". It is written without a lookahead, which NonBacktracking does not support: a run of
     // "?" is followed by a character that is neither "?" nor "=", or ends the r-component.
     // NonBacktracking: the value can come from another service (ErrorUri.Parse and TryParse), and this engine runs in linear time
-    // whatever the pattern (#189). The source generator does not generate code for this option; it creates the Regex instead.
-    [GeneratedRegex(
+    // whatever the pattern (#189). [GeneratedRegex] cannot be used with NonBacktracking (SYSLIB1044); revisit in .NET 12.
+    private static readonly Regex UrnPattern = new(
         "^(?i:urn):" +
         // NID
         "[A-Za-z0-9][A-Za-z0-9-]{0,30}[A-Za-z0-9]:" +
@@ -44,17 +44,16 @@ internal static partial class UriUrnValidator
         PChar + "(?:" + PChar + "|/)*" +
         // rq-components and f-component
         @"(?:\?\+" + PChar + "(?:" + PCharWithoutEquals + "|/|=|" + @"\?+(?:" + PCharWithoutEquals + @"|/))*\?*)?" +
-        @"(?:\?=" + PChar + "(?:" + PChar + @"|[/?])*)?" +
+        @"(?:\?=" + PChar + "(?:" + PChar + "|[/?])*)?" +
         "(?:#(?:" + PChar + @"|[/?])*)?\z",
-        RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
-    private static partial Regex UrnPattern();
+        RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
 
     /// <summary>
     ///     Whether the value matches the <i>RFC 8141</i> grammar.
     /// </summary>
     internal static bool IsValid(string urn)
     {
-        return UrnPattern().IsMatch(urn);
+        return UrnPattern.IsMatch(urn);
     }
 
     internal static void Validate(string urn)

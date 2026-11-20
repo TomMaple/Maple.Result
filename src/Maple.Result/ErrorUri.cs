@@ -62,8 +62,6 @@ public readonly record struct ErrorUri : IParsable<ErrorUri>
     private const string UnknownKindMessage =
         "The error URI is not valid. Expected ‘about:blank’, a relative reference starting with ‘/’, or an absolute URI.";
 
-    private readonly string? _value;
-
     #region constructors
 
     /// <summary>
@@ -75,7 +73,7 @@ public readonly record struct ErrorUri : IParsable<ErrorUri>
     /// </remarks>
     internal ErrorUri(string value)
     {
-        _value = value;
+        Value = value;
     }
 
     #endregion
@@ -88,14 +86,14 @@ public readonly record struct ErrorUri : IParsable<ErrorUri>
     ///     the value that <i>RFC 9457</i> defines for an unspecified type.
     ///     This keeps the mandatory <see cref="Error.TypeUri" /> from ever being <see langword="null" />.
     /// </remarks>
-    public string Value => _value ?? NoneValue;
+    public string Value => field ?? NoneValue;
 
     /// <summary>
     ///     Gets the no-value <see cref="ErrorUri" />: <c>about:blank</c>.
     /// </summary>
     /// <remarks>
     ///     It equals <see langword="default" />(<see cref="ErrorUri" />) and <c>ErrorUri.Parse("about:blank")</c>.
-    ///     <i>RFC 9457</i> defines <c>about:blank</c> as the type of a problem that has no additional semantics beyond the HTTP status code.
+    ///     <i>RFC 9457</i> defines <c>about:blank</c> as the type of problem that has no additional semantics beyond the HTTP status code.
     /// </remarks>
     public static ErrorUri None { get; } = new(NoneValue);
 
@@ -375,7 +373,7 @@ public readonly record struct ErrorUri : IParsable<ErrorUri>
     #region helper methods
 
     /// <summary>
-    ///     Detects the kind of an error <i>URI</i> from its value, without validating it.
+    ///     Detects the kind of error <i>URI</i> from its value, without validating it.
     /// </summary>
     private static Kind DetectKind(string value)
     {

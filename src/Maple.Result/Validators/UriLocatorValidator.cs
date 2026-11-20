@@ -13,7 +13,7 @@ using System.Text.RegularExpressions;
 
 namespace Maple.Results.Validators;
 
-internal static partial class UriLocatorValidator
+internal static class UriLocatorValidator
 {
     private const string Message = "The URI locator is not valid. Check https://datatracker.ietf.org/doc/html/rfc3986#section-3.1 for details.";
 
@@ -21,12 +21,11 @@ internal static partial class UriLocatorValidator
     // but ErrorUri stores the string as passed. So the raw string must already be a valid URI: only the RFC 3986 characters
     // (unreserved, reserved and "%" as pct-encoded = "%" HEXDIG HEXDIG), and at most one "#", which starts the fragment.
     // NonBacktracking: the value can come from another service (ErrorUri.Parse and TryParse), and this engine runs in linear time
-    // whatever the pattern (#189). The source generator does not generate code for this option; it creates the Regex instead.
-    [GeneratedRegex(
+    // whatever the pattern (#189). [GeneratedRegex] cannot be used with NonBacktracking (SYSLIB1044); revisit in .NET 12.
+    private static readonly Regex RawUriPattern = new(
         @"^(?:[A-Za-z0-9\-._~:/?\[\]@!$&'()*+,;=]|%[0-9A-Fa-f]{2})+" +
         @"(?:#(?:[A-Za-z0-9\-._~:/?\[\]@!$&'()*+,;=]|%[0-9A-Fa-f]{2})*)?\z",
-        RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
-    private static partial Regex RawUriPattern();
+        RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
 
     /// <summary>
     ///     Whether the value is a valid absolute <c>http</c> or <c>https</c> <i>URI</i>, stored as passed.
@@ -35,7 +34,7 @@ internal static partial class UriLocatorValidator
     {
         return Uri.TryCreate(uriLocator, UriKind.Absolute, out var uri)
                && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps)
-               && RawUriPattern().IsMatch(uriLocator);
+               && RawUriPattern.IsMatch(uriLocator);
     }
 
     internal static void Validate(string uriLocator)
