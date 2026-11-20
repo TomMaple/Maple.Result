@@ -71,6 +71,8 @@ A member is written only when it has a value: `null` values and an empty `errors
 
 `type`, `title`, `status`, `detail` and `instance` are the standard members of RFC 9457 (section 3.1). `errors` and `detailTemplated` are extension members defined by this format (RFC 9457, section 3.2). The `status` member is advisory: the HTTP response carries the same status code.
 
+`type` and `instance` are written as the text of `TypeUri` and `InstanceUri`, the `Value` of their `ErrorUri`; [Reading problem details](#reading-problem-details) describes the way back.
+
 There is **no `category` member**: the category is carried by `status`. A metadata entry may still use the key `category`.
 
 ## Error details (`errors`)

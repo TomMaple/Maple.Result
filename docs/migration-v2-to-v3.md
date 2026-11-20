@@ -25,6 +25,7 @@ Version 3.0 makes `Result`, `Result<T>` and `Error` **immutable** and **always v
   * [`IOperationResult` is closed](#ioperationresult-is-closed)
   * [`IsSuccess` is a property; new `IsError`](#issuccess-is-a-property-new-iserror)
   * [`ErrorUri.None()` is a property](#errorurinone-is-a-property)
+  * [`Error.TypeUri` and `Error.InstanceUri` are an `ErrorUri`](#errortypeuri-and-errorinstanceuri-are-an-erroruri)
   * [`Result<T>.Value` throws on a failed result](#resulttvalue-throws-on-a-failed-result)
   * [The analyzer reports the calls that compile but changed](#the-analyzer-reports-the-calls-that-compile-but-changed)
   * [Transforming `IfSuccess` and `IfError` renamed to `Then` and `Else`](#transforming-ifsuccess-and-iferror-renamed-to-then-and-else)
@@ -55,7 +56,7 @@ Version 3.0 makes `Result`, `Result<T>` and `Error` **immutable** and **always v
 14. Upgrade the `Maple.Result.Extensions.*` packages together with `Maple.Result` (see [Extension packages](#extension-packages)).
 15. Replace `result.IsSuccess()` with `result.IsSuccess`, and `!result.IsSuccess()` with `result.IsError` (see [`IsSuccess` is a property; new `IsError`](#issuccess-is-a-property-new-iserror)).
 16. Make sure `Result<T>.Value` is read only on a successful result, or use `TryGetValue(out var value)`; and do not write a failed `Result<T>` with the default serializers (see [`Result<T>.Value` throws on a failed result](#resulttvalue-throws-on-a-failed-result)).
-17. Replace `ErrorUri.None()` with `ErrorUri.None` (see [`ErrorUri.None()` is a property](#errorurinone-is-a-property)).
+17. Replace `ErrorUri.None()` with `ErrorUri.None` (see [`ErrorUri.None()` is a property](#errorurinone-is-a-property)), read the text of `error.TypeUri` and `error.InstanceUri` with `.Value`, and compare the type of an error with the `ErrorUri` that defines it (see [`Error.TypeUri` and `Error.InstanceUri` are an `ErrorUri`](#errortypeuri-and-errorinstanceuri-are-an-erroruri)).
 18. Replace your own implementations and mocks of `IResult` with `Result` and `Result<T>` (see [`IOperationResult` is closed](#ioperationresult-is-closed)).
 19. Fix every error and warning of the analyzer (MR0001 to MR0006), and do not switch the analyzers off: it reports the 2.x calls that still compile but changed their meaning (see [The analyzer reports the calls that compile but changed](#the-analyzer-reports-the-calls-that-compile-but-changed)).
 
@@ -210,32 +211,28 @@ Dedicated converter packages are coming soon: [Maple.Result.Serialization.System
 public sealed record ErrorDto(ErrorCategory Category, string TypeUri, string Title, string? Detail, string? InstanceUri);
 
 public static ErrorDto ToDto(Error error) =>
-    new(error.Category, error.TypeUri, error.Title, error.Detail, error.InstanceUri);
+    new(error.Category, error.TypeUri.Value, error.Title, error.Detail, error.InstanceUri?.Value);
 
 public static Error FromDto(ErrorDto dto) =>
-    new ErrorBuilder(dto.Category, ToErrorUri(dto.TypeUri), dto.Title)
+    new ErrorBuilder(dto.Category, ErrorUri.Parse(dto.TypeUri), dto.Title)
         .WithDetail(dto.Detail)
-        .WithInstanceUri(dto.InstanceUri is null ? null : ToErrorUri(dto.InstanceUri))
+        .WithInstanceUri(dto.InstanceUri is null ? null : ErrorUri.Parse(dto.InstanceUri))
         .Build();
-
-private static ErrorUri ToErrorUri(string value) =>
-    value == "about:blank" ? ErrorUri.None
-    : value.StartsWith("tag:", StringComparison.Ordinal) ? ErrorUri.Tag(value)
-    : value.StartsWith("urn:", StringComparison.OrdinalIgnoreCase) ? ErrorUri.Urn(value)
-    : value.StartsWith('/') ? ErrorUri.Relative(value)
-    : ErrorUri.Locator(value);
 ```
+
+`ErrorUri.Parse` validates the text as the factory method of its kind does, and throws a `UriFormatException` for an invalid one; `ErrorUri.TryParse` returns `false` instead.
 
 > [!NOTE]
 > `Maple.Json.ObjectAsPrimitiveConverter`, which the 2.x documentation suggested for reading metadata values, is no longer relevant to `Maple.Result`.
 
 ### Changed JSON output
-The JSON written by the default serializers changed in three ways, and a failed `Result<T>` can no longer be written without a converter:
+The JSON written by the default serializers changed as follows, and a failed `Result<T>` can no longer be written without a converter:
 
 | | 2.x | 3.0 |
 | --- | --- | --- |
 | Failed `Result<T>` | `{"Error":{…}}` | throws (`Value` throws on a failed result) |
 | `Error` | no `Metadata` member | always has `"Metadata":{…}` (`{}` when empty) |
+| `TypeUri` and `InstanceUri` of an `Error` | a string, e.g., `"TypeUri":"tag:example.com,2026:errors:not-found"` | an object, e.g., `"TypeUri":{"Value":"tag:example.com,2026:errors:not-found"}`; `"InstanceUri":null` when there is none |
 | `Result` and `Result<T>` | no `IsSuccess` member | always has `"IsSuccess":…,"IsError":…`, e.g., `{"Value":128,"Error":null,"IsSuccess":true,"IsError":false}` |
 
 Writing a failed `Result<T>` needs a dedicated converter, or a DTO of your own; see [`Result<T>.Value` throws on a failed result](#resulttvalue-throws-on-a-failed-result). Update any snapshot tests or contract tests that compare the JSON.
@@ -369,6 +366,27 @@ var error = Error.NotFound(ErrorUri.None(), "The account has not been found.");
 // after
 var error = Error.NotFound(ErrorUri.None, "The account has not been found.");
 ```
+
+### `Error.TypeUri` and `Error.InstanceUri` are an `ErrorUri`
+`Error.TypeUri` is now an `ErrorUri` and `Error.InstanceUri` an `ErrorUri?` (both were a `string`), the type that every factory method and the `ErrorBuilder` take. An error keeps the `ErrorUri` it was created with, so its type can be compared with the `ErrorUri` that defines it. The text is the `Value` of the `ErrorUri`; `ToString()` returns it too, so string interpolation and the `ToString()` of the error write the same text as before. Equality is unchanged: two `ErrorUri` values are equal when their texts are equal (ordinal).
+
+Code that reads the properties as a `string` no longer compiles (CS0029, or CS0019 for a comparison with a `string`), and a constant pattern on the type (`error is { TypeUri: "…" }`) is CS0029 too:
+
+```csharp
+// before
+string type = error.TypeUri;
+string? instance = error.InstanceUri;
+if (error.TypeUri == "tag:example.com,2026:errors:not-found") { … }
+if (error is { TypeUri: "tag:example.com,2026:errors:not-found" }) { … }
+
+// after
+string type = error.TypeUri.Value;
+string? instance = error.InstanceUri?.Value;
+if (error.TypeUri == OrderErrors.NotFoundType) { … }        // OrderErrors.NotFoundType is an ErrorUri
+if (error.TypeUri.Value is "tag:example.com,2026:errors:not-found") { … }
+```
+
+The default JSON serializers write each of them as an object with a `Value` member (see [Changed JSON output](#changed-json-output)).
 
 ### `IsSuccess` is a property; new `IsError`
 `IsSuccess()` is now a property, `IsSuccess`, on `Result`, `Result<T>` and `IOperationResult`, and the new `IsError` property is its opposite. Calls with parentheses no longer compile (CS1955: *Non-invocable member cannot be used like a method*); drop the parentheses.
@@ -634,6 +652,8 @@ The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an
 | `new ErrorUri(s)` | `ErrorUri.Tag(s)` / `ErrorUri.Locator(s)` / `ErrorUri.Urn(s)` / `ErrorUri.Relative(s)` / `ErrorUri.None` |
 | `instanceUri: ErrorUri.None()` / `WithInstanceUri(ErrorUri.None())` | `instanceUri: null` / `WithInstanceUri(null)` |
 | `ErrorUri.None()` | `ErrorUri.None` |
+| `error.TypeUri` / `error.InstanceUri` read as a `string` | `error.TypeUri.Value` / `error.InstanceUri?.Value` |
+| `error.TypeUri == "…"`, `error is { TypeUri: "…" }` | `error.TypeUri == SomeType` (an `ErrorUri`), or `error.TypeUri.Value is "…"` |
 | `result.IfSuccess(x => …)` (a function returning a value, a result or an error) | `result.Then(x => …)` |
 | `await result.IfSuccessAsync(x => …)` (a function returning a value, a result or an error in a task) | `await result.ThenAsync(x => …)` |
 | `result.IfError(e => …)` (a function returning the replacement result) | `result.Else(e => …)` |

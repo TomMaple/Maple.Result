@@ -19,7 +19,7 @@ A *URI* value that can be a *URI Locator*, *URI Tag*, or the `about:blank` value
 This is a mandatory property. It is never `null`.
 
 > [!NOTE]
-> A default [ErrorUri](ErrorUri.md) instance—`default(ErrorUri)`, an uninitialized field, or an element of a newly allocated array—has no underlying value. In that case this property returns `about:blank`, the value that *RFC 9457* defines for an unspecified problem type. This keeps the mandatory [TypeUri](../Error/Error_TypeUri.md) of an [Error](../Error/Error.md) from ever being `null`.
+> A default [ErrorUri](ErrorUri.md) instance—`default(ErrorUri)`, an uninitialized field, or an element of a newly allocated array—has no underlying value. In that case this property returns `about:blank`, the value that *RFC 9457* defines for an unspecified problem type. This keeps the text of the mandatory [TypeUri](../Error/Error_TypeUri.md) of an [Error](../Error/Error.md) from ever being `null`.
 >
 > A default instance is therefore equal to [None](ErrorUri_None.md); see [Equals(ErrorUri)](ErrorUri_Equals.md).
 

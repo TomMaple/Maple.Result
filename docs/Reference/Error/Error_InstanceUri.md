@@ -2,21 +2,21 @@
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L174" target="_blank">Error.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L179" target="_blank">Error.cs</a>
 
 Gets a *URI* that identifies the specific occurrence of the problem.
 
 ```csharp
-public string? InstanceUri { get; }
+public ErrorUri? InstanceUri { get; }
 ```
 
 ### Property Value
-[String](https://learn.microsoft.com/dotnet/api/system.string)
+[Nullable](https://learn.microsoft.com/dotnet/api/system.nullable-1)&lt;[ErrorUri](../ErrorUri/ErrorUri.md)&gt;
 
-A text value of a *URI* that identifies the specific occurrence of the problem.
+The *URI* that identifies the specific occurrence of the problem, or `null` when there is none; its text is the [Value](../ErrorUri/ErrorUri_Value.md).
 
 ## Remarks
-This is an optional property that contains a text value of a *URI* that identifies the specific occurrence of the problem.
+This is an optional property: the [ErrorUri](../ErrorUri/ErrorUri.md) that the error was created with, which identifies the specific occurrence of the problem. Read its text with `error.InstanceUri?.Value`.
 
 > [!NOTE]
 > [Error](Error.md) is immutable, so this property is set when the error is created: by the factory methods (e.g., [Validation](Error_Validation.md)) or an [ErrorBuilder](../ErrorBuilder/ErrorBuilder.md). To change it, use [ToBuilder()](Error_ToBuilder.md).

@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L455" target="_blank">Error.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L460" target="_blank">Error.cs</a>
 
 Returns a hash code that is consistent with [Equals(Error)](Error_Equals.md), incorporating the content of the [ErrorDetails](Error_ErrorDetails.md) collection and of the [Metadata](Error_Metadata.md) dictionary.
 

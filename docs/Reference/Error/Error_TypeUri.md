@@ -2,27 +2,29 @@
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L115" target="_blank">Error.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/main/src/Maple.Result/Error.cs#L119" target="_blank">Error.cs</a>
 
 Gets a *URI* that identifies the type of the problem.
 
 ```csharp
-public string TypeUri { get; }
+public ErrorUri TypeUri { get; }
 ```
 
 ### Property Value
-[String](https://learn.microsoft.com/dotnet/api/system.string)
+[ErrorUri](../ErrorUri/ErrorUri.md)
 
-A text value of a *URI* that identifies the type of the problem.
+The *URI* that identifies the type of the problem; its text is the [Value](../ErrorUri/ErrorUri_Value.md).
 
 ## Remarks
-This is a mandatory property that contains a text value of a *URI* that identifies the type of the problem.
+This is a mandatory property: the [ErrorUri](../ErrorUri/ErrorUri.md) that the error was created with, which identifies the type of the problem.
 
 > [!NOTE]
 > [Error](Error.md) is immutable, so this property is set when the error is created: by the factory methods (e.g., [Validation](Error_Validation.md)) or an [ErrorBuilder](../ErrorBuilder/ErrorBuilder.md). To change it, use [ToBuilder()](Error_ToBuilder.md).
 
 > [!NOTE]
-> When set through a factory method, this property is never `null` and never empty. A default [ErrorUri](../ErrorUri/ErrorUri.md) yields `about:blank` (see [Value](../ErrorUri/ErrorUri_Value.md)), and an [ErrorUri](../ErrorUri/ErrorUri.md) carrying an empty or whitespace-only value is rejected with an [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception).
+> Its [Value](../ErrorUri/ErrorUri_Value.md) is never `null` and never empty. A default [ErrorUri](../ErrorUri/ErrorUri.md) yields `about:blank`, and an [ErrorUri](../ErrorUri/ErrorUri.md) carrying an empty or whitespace-only value is rejected with an [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception).
+
+To check the type of an error, compare it with the [ErrorUri](../ErrorUri/ErrorUri.md) that defines it: two [ErrorUri](../ErrorUri/ErrorUri.md) values are equal when their texts are equal (ordinal; see [Equals(ErrorUri)](../ErrorUri/ErrorUri_Equals.md)). A pattern compares the text: `error.TypeUri.Value is "…"`.
 
 The value of this property should be:
 * `about:blank`,
