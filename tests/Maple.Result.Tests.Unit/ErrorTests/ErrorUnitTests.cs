@@ -318,6 +318,58 @@ public class ErrorUnitTests
 
     #endregion
 
+    #region WithoutErrorDetails
+
+    [Fact]
+    public void WithoutErrorDetails_SomeDetails_ReturnsCopyWithoutDetailsAndLeavesOriginalUntouched()
+    {
+        // Arrange
+        var original = Sut.Validation(ErrorUri.None, "Test title")
+            .WithErrorDetail("#/first", "First detail")
+            .WithErrorDetail("#/second", "Second detail");
+
+        // Act
+        var result = original.WithoutErrorDetails();
+
+        // Assert
+        result.ErrorDetails.ShouldBeEmpty();
+        original.ErrorDetails.Count.ShouldBe(2);
+    }
+
+    [Fact]
+    public void WithoutErrorDetails_SomeDetails_KeepsTheOtherMembers()
+    {
+        // Arrange
+        var typeUri = ErrorUri.Tag("tag:test.com,2024:Test");
+        var instanceUri = ErrorUri.Locator("http://test.com/instance/1013");
+        var detailTemplated = new TemplatedMessage("message-id", ("key", "value"));
+        var expected = Sut.Validation(typeUri, "Test title", "Test description.", instanceUri, detailTemplated)
+            .WithMetadata("traceId", "abc");
+        var original = expected.WithErrorDetail("#/property", "Detail");
+
+        // Act
+        var result = original.WithoutErrorDetails();
+
+        // Assert
+        result.ShouldBe(expected);
+    }
+
+    [Fact]
+    public void WithoutErrorDetails_NoDetails_ReturnsEqualCopy()
+    {
+        // Arrange
+        var original = Sut.Validation(ErrorUri.None, "Test title");
+
+        // Act
+        var result = original.WithoutErrorDetails();
+
+        // Assert
+        result.ShouldBe(original);
+        result.ErrorDetails.ShouldBeEmpty();
+    }
+
+    #endregion
+
     #region ToBuilder
 
     [Fact]
