@@ -146,7 +146,7 @@ public sealed record ErrorDetail(string? PropertyPointer, string Detail, Templat
         return ((IFormattable)index).ToString(null, CultureInfo.InvariantCulture);
     }
 
-    private static string ValidateDetail(string detail, string parameterName)
+    internal static string ValidateDetail(string detail, string parameterName)
     {
         ArgumentNullException.ThrowIfNull(detail, parameterName);
 

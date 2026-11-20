@@ -385,15 +385,18 @@ public sealed class ErrorBuilder
     ///     If the <paramref name="detail" /> or a parameter name in <paramref name="detailNamedValues" /> is <see langword="null" />.
     /// </exception>
     /// <exception cref="ArgumentException">
-    ///     If the <paramref name="propertyPointer" /> is not a JSON Pointer (e.g., <c>Email</c> or <c>Items[0].Name</c>; the parameter name
-    ///     of the exception is <c>PropertyPointer</c>), the <paramref name="detail" /> is empty or whitespace-only (the parameter name of the
-    ///     exception is <c>Detail</c>), the <paramref name="detailTemplateId" /> is empty, whitespace-only or starts or ends with white space, a
-    ///     parameter name is empty, starts or ends with white space, is repeated, or differs only in case from another parameter name,
-    ///     or <paramref name="detailNamedValues" /> are passed without a <paramref name="detailTemplateId" />.
+    ///     If the <paramref name="propertyPointer" /> is not a JSON Pointer (e.g., <c>Email</c> or <c>Items[0].Name</c>), the
+    ///     <paramref name="detail" /> is empty or whitespace-only, the <paramref name="detailTemplateId" /> is empty, whitespace-only or starts
+    ///     or ends with white space, a parameter name is empty, starts or ends with white space, is repeated, or differs only in case from
+    ///     another parameter name, or <paramref name="detailNamedValues" /> are passed without a <paramref name="detailTemplateId" />.
     /// </exception>
     public ErrorBuilder AddErrorDetail(string? propertyPointer, string detail, string? detailTemplateId = null,
         params ReadOnlySpan<(string Key, object? Value)> detailNamedValues)
     {
+        // The constructor of ErrorDetail validates them too, but it names its own parameters (PropertyPointer, Detail) in the exception.
+        JsonPointerValidator.Validate(propertyPointer, nameof(propertyPointer));
+        ErrorDetail.ValidateDetail(detail, nameof(detail));
+
         var detailTemplated = TemplatedMessage.CreateOptional(detailTemplateId, detailNamedValues, nameof(detailTemplateId), nameof(detailNamedValues));
         var errorDetail = new ErrorDetail(propertyPointer, detail, detailTemplated);
 
@@ -509,13 +512,14 @@ public sealed class ErrorBuilder
     /// <summary>
     ///     Removes the entry of the specified key from the <see cref="Error.Metadata" />.
     /// </summary>
-    /// <param name="key">The key of the metadata entry to remove; an absent key is not an error.</param>
+    /// <param name="key">
+    ///     The key of the metadata entry to remove; an absent key is not an error, and neither is a key that cannot be stored (e.g., an empty one).
+    /// </param>
     /// <returns>The current <see cref="ErrorBuilder" /> instance.</returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="key" /> is <see langword="null" />.</exception>
-    /// <exception cref="ArgumentException">If the <paramref name="key" /> is empty or whitespace-only.</exception>
     public ErrorBuilder WithoutMetadata(string key)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(key);
+        ArgumentNullException.ThrowIfNull(key);
 
         IReadOnlyDictionary<string, object?> current = _pendingMetadata ?? (IReadOnlyDictionary<string, object?>)_builtMetadata;
         if (current.ContainsKey(key))

@@ -513,6 +513,9 @@ public class ErrorBuilderUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("detail");
         sut.Build().ErrorDetails.ShouldBeEmpty();
     }
 
@@ -530,7 +533,7 @@ public class ErrorBuilderUnitTests
         exception.ShouldBeOfType<ArgumentException>();
         var argumentException = exception as ArgumentException;
         argumentException.ShouldNotBeNull();
-        argumentException.ParamName.ShouldBe("PropertyPointer");
+        argumentException.ParamName.ShouldBe("propertyPointer");
         sut.Build().ErrorDetails.ShouldBeEmpty();
     }
 
@@ -742,21 +745,39 @@ public class ErrorBuilderUnitTests
         result.Metadata.ShouldContainKey("remaining");
     }
 
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData(" ")]
-    public void WithoutMetadata_NullOrBlankKey_ThrowsArgumentException(string? key)
+    [Fact]
+    public void WithoutMetadata_NullKey_ThrowsArgumentNullException()
     {
         // Arrange
         var sut = Sut.LimitExceeded(ErrorUri.None, "Test title");
 
         // Act
-        var exception = Record.Exception(() => sut.WithoutMetadata(key!));
+        var exception = Record.Exception(() => sut.WithoutMetadata(null!));
 
         // Assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeAssignableTo<ArgumentException>();
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("key");
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
+    [InlineData(" limit ")]
+    [InlineData("LIMIT")]
+    [InlineData("type")]
+    public void WithoutMetadata_KeyThatCannotBeStored_RemovesNothing(string key)
+    {
+        // Arrange
+        var sut = Sut.LimitExceeded(ErrorUri.None, "Test title").WithMetadata("limit", 100);
+
+        // Act
+        var result = sut.WithoutMetadata(key).Build();
+
+        // Assert
+        result.Metadata.Count.ShouldBe(1);
+        result.Metadata.ShouldContainKey("limit");
     }
 
     [Fact]
@@ -1025,7 +1046,7 @@ public class ErrorBuilderUnitTests
         exception.ShouldBeOfType<ArgumentException>();
         var argumentException = exception as ArgumentException;
         argumentException.ShouldNotBeNull();
-        argumentException.ParamName.ShouldBe("Detail");
+        argumentException.ParamName.ShouldBe("detail");
         sut.Build().ErrorDetails.ShouldBeEmpty();
     }
 

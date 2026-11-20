@@ -345,17 +345,39 @@ public class ErrorMetadataUnitTests
         sut.Metadata.Count.ShouldBe(1);
     }
 
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData(" ")]
-    public void WithoutMetadata_InvalidKey_ThrowsArgumentException(string? key)
+    [Fact]
+    public void WithoutMetadata_NullKey_ThrowsArgumentNullException()
     {
         // Arrange
         var sut = CreateError();
 
-        // Act & Assert
-        Should.Throw<ArgumentException>(() => sut.WithoutMetadata(key!));
+        // Act
+        var exception = Record.Exception(() => sut.WithoutMetadata(null!));
+
+        // Assert
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("key");
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
+    [InlineData(" limit ")]
+    [InlineData("LIMIT")]
+    [InlineData("type")]
+    public void WithoutMetadata_KeyThatCannotBeStored_ReturnsEqualCopy(string key)
+    {
+        // Arrange
+        var original = CreateError().WithMetadata("limit", 100);
+
+        // Act
+        var sut = original.WithoutMetadata(key);
+
+        // Assert
+        sut.ShouldBe(original);
+        sut.Metadata.Count.ShouldBe(1);
     }
 
     [Fact]
@@ -552,16 +574,19 @@ public class ErrorMetadataUnitTests
     }
 
     [Fact]
-    public void TryGetMetadata_NullKey_ReturnsFalse()
+    public void TryGetMetadata_NullKey_ThrowsArgumentNullException()
     {
         // Arrange
         var sut = CreateError().WithMetadata("limit", 100);
 
         // Act
-        var found = sut.TryGetMetadata<int>(null!, out _);
+        var exception = Record.Exception(() => sut.TryGetMetadata<int>(null!, out _));
 
         // Assert
-        found.ShouldBeFalse();
+        exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("key");
     }
 
     [Fact]

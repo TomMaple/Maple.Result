@@ -410,6 +410,9 @@ public class ErrorUnitTests
         // Assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ArgumentNullException>();
+        var argumentNullException = exception as ArgumentNullException;
+        argumentNullException.ShouldNotBeNull();
+        argumentNullException.ParamName.ShouldBe("detail");
     }
 
     [Fact]
@@ -426,7 +429,7 @@ public class ErrorUnitTests
         exception.ShouldBeOfType<ArgumentException>();
         var argumentException = exception as ArgumentException;
         argumentException.ShouldNotBeNull();
-        argumentException.ParamName.ShouldBe("PropertyPointer");
+        argumentException.ParamName.ShouldBe("propertyPointer");
         sut.ErrorDetails.ShouldBeEmpty();
     }
 
@@ -2104,7 +2107,7 @@ public class ErrorUnitTests
         exception.ShouldBeOfType<ArgumentException>();
         var argumentException = exception as ArgumentException;
         argumentException.ShouldNotBeNull();
-        argumentException.ParamName.ShouldBe("Detail");
+        argumentException.ParamName.ShouldBe("detail");
         sut.ErrorDetails.ShouldBeEmpty();
     }
 
