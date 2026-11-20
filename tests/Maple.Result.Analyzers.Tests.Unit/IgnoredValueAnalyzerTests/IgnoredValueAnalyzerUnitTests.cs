@@ -30,6 +30,7 @@ public class IgnoredValueAnalyzerUnitTests
         static ValueTask<int> NormalizeVt(int x) => new(x);
         static ValueTask<bool> FlushVt() => new(true);
         static int Fallback(Error e) => 0;
+        static Result<int>? maybe = ok;
         """;
 
     [Theory]
@@ -63,6 +64,9 @@ public class IgnoredValueAnalyzerUnitTests
         "IfError runs this function as a side effect and keeps the original result; in version 2 it transformed the result. "
         + "Use Else to continue with the returned value.")]
     [InlineData("return ok.IfSuccess(x => Normalize(x)).IsSuccess ? 1 : 0;", "Normalize(x)",
+        "IfSuccess runs this function as a side effect and keeps the original result; in version 2 it transformed the result. "
+        + "Use Then to continue with the returned value.")]
+    [InlineData("var s = ok.IfSuccess(x => Normalize(x))?.IsSuccess;", "Normalize(x)",
         "IfSuccess runs this function as a side effect and keeps the original result; in version 2 it transformed the result. "
         + "Use Then to continue with the returned value.")]
     public void Analyze_FunctionReturningTheValueTypeInAUsedCall_WarnsAndNamesTheTransformingMethod(string statements, string markedText, string message)
@@ -100,6 +104,12 @@ public class IgnoredValueAnalyzerUnitTests
     [InlineData("ok.IfSuccess(x => Normalize(x));")]
     [InlineData("await ok.IfSuccessAsync(x => NormalizeAsync(x));")]
     [InlineData("await ok.IfSuccessAsync(x => NormalizeVt(x));")]
+    [InlineData("maybe?.IfSuccess(x => Normalize(x));")]
+    [InlineData("await okTask.IfSuccessAsync(x => Normalize(x)).ConfigureAwait(false);")]
+    [InlineData("await ok.IfSuccessAsync(x => NormalizeAsync(x)).ConfigureAwait(false);")]
+    [InlineData("_ = ok.IfSuccess(x => Normalize(x));")]
+    [InlineData("_ = await ok.IfSuccessAsync(x => NormalizeAsync(x));")]
+    [InlineData("_ = ok.IfError(e => Fallback(e));")]
     [InlineData("var r = ok.IfSuccessAsync(x => FlushVt());")]
     [InlineData("var r = ok.IfSuccessAsync(async x => { await Task.Yield(); return true; });")]
     [InlineData("var r = ok.IfSuccess(x => builder.Append(x));")]

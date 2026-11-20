@@ -28,6 +28,7 @@ public class DiscardedResultAnalyzerUnitTests
         static Task<Result> SaveResultAsync() => Task.FromResult(Result.Success());
         static ValueTask<Result<int>> LoadValueTask() => new(Result.FromValue(1));
         static void Log(Error e) { }
+        static IOperationResult Check() => Result.Success();
         """;
 
     [Theory]
@@ -44,6 +45,10 @@ public class DiscardedResultAnalyzerUnitTests
     [InlineData("ok.Else(e => 0);", "ok.Else(e => 0)")]
     [InlineData("await okTask.ThenAsync(x => x + 1);", "await okTask.ThenAsync(x => x + 1)")]
     [InlineData("new List<int> { 1 }.ForEach(x => Load());", "Load()")]
+    [InlineData("await SaveResultAsync().ConfigureAwait(false);", "await SaveResultAsync().ConfigureAwait(false)")]
+    [InlineData("await LoadValueTask().ConfigureAwait(false);", "await LoadValueTask().ConfigureAwait(false)")]
+    [InlineData("var t = SaveResultAsync(); await t;", "await t")]
+    [InlineData("Check();", "Check()")]
     [InlineData("ok.IfSuccess(x => { Load(); });", "Load()")]
     [InlineData("var r = ok.Then(x => { Load(); return x; });", "Load()")]
     [InlineData("ok.IfError(e => { Save(); });", "Save()")]
@@ -80,6 +85,11 @@ public class DiscardedResultAnalyzerUnitTests
     [InlineData("ok.Switch(x => Console.WriteLine(x), e => Log(e));")]
     [InlineData("_ = ok.IfSuccess(x => Load());")]
     [InlineData("ok.IfSuccess(x => Save());")]
+    [InlineData("await okTask.IfErrorAsync(e => Log(e)).ConfigureAwait(false);")]
+    [InlineData("_ = await SaveResultAsync().ConfigureAwait(false);")]
+    [InlineData("await SaveAsync().ConfigureAwait(false);")]
+    [InlineData("var t = SaveResultAsync(); _ = await t;")]
+    [InlineData("_ = Check();")]
     [InlineData("ok.IfSuccess(x => { _ = Save(); });")]
     public void Analyze_ResultThatIsUsedDiscardedOrHandled_ReportsNothing(string statements)
     {
@@ -96,6 +106,13 @@ public class DiscardedResultAnalyzerUnitTests
     [InlineData(
         "await LoadValueTask();",
         "The Result<int> returned by LoadValueTask is not used, so a failure is lost. Check it, return it, or discard it with ‘_ =’.")]
+    [InlineData(
+        "SaveResultAsync();",
+        "The Task<Result> returned by SaveResultAsync is not awaited, so a failure is lost. Await it and check the result, or discard the result with ‘_ = await’.")]
+    [InlineData(
+        "var t = SaveResultAsync(); await t;",
+        "The Result returned by t is not used, so a failure is lost. Check it, return it, or discard it with ‘_ =’.")]
+    [InlineData("Check();", "The IOperationResult returned by Check is not used, so a failure is lost. Check it, return it, or discard it with ‘_ =’.")]
     public void Analyze_ResultThatIsNotUsed_NamesTheResultAndTheMethod(string statements, string message)
     {
         // Act
@@ -104,5 +121,26 @@ public class DiscardedResultAnalyzerUnitTests
         // Assert
         var diagnostic = result.Diagnostics.ShouldHaveSingleItem();
         diagnostic.GetMessage().ShouldBe(message);
+    }
+
+    [Theory]
+    [InlineData("Save();", "Discard")]
+    [InlineData("await SaveResultAsync();", "Discard")]
+    [InlineData("SaveResultAsync();", null)]
+    [InlineData("await Task.Yield(); SaveResultAsync();", "AwaitAndDiscard")]
+    [InlineData("Func<Task> f = async () => { await Task.Yield(); SaveResultAsync(); };", "AwaitAndDiscard")]
+    [InlineData("await Task.Yield(); Action a = () => SaveResultAsync();", null)]
+    [InlineData("async Task LocalAsync() { await Task.Yield(); SaveResultAsync(); } await LocalAsync();", "AwaitAndDiscard")]
+    [InlineData("void Local() { SaveResultAsync(); } Local();", null)]
+    public void Analyze_ResultOrTaskThatIsNotUsed_NamesTheFixThatFitsTheFunction(string statements, string? fix)
+    {
+        // Act
+        var result = AnalyzerRunner.Run<DiscardedResultAnalyzer>(statements, Members);
+
+        // Assert
+        result.CompilerErrorIds.ShouldBeEmpty(result.CompilerErrors);
+        var diagnostic = result.Diagnostics.ShouldHaveSingleItem();
+        var hasFix = diagnostic.Properties.TryGetValue(Rules.DiscardFixProperty, out var value);
+        (hasFix ? value : null).ShouldBe(fix);
     }
 }

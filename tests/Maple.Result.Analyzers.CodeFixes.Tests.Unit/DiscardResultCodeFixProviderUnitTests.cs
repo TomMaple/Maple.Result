@@ -23,7 +23,6 @@ public class DiscardResultCodeFixProviderUnitTests
     [InlineData("{|MR0006:GetResult()|};", "_ = GetResult();")]
     [InlineData("{|MR0006:GetResultOfInt()|};", "_ = GetResultOfInt();")]
     [InlineData("{|MR0006:await GetResultAsync()|};", "_ = await GetResultAsync();")]
-    [InlineData("{|MR0006:GetResultAsync()|};", "_ = GetResultAsync();")]
     [InlineData("{|MR0006:ok.Then(x => x + 1)|};", "_ = ok.Then(x => x + 1);")]
     [InlineData("new List<int> { 1 }.ForEach(x => {|MR0006:GetResult()|});", "new List<int> { 1 }.ForEach(x => _ = GetResult());")]
     public async Task RegisterCodeFixes_ResultThatIsNotUsed_DiscardsIt(string statements, string fixedStatements)
@@ -46,5 +45,26 @@ public class DiscardResultCodeFixProviderUnitTests
     {
         // Act & Assert
         await CodeFixVerifier<DiscardedResultAnalyzer, DiscardResultCodeFixProvider>.VerifyAsync(statements, fixedStatements);
+    }
+
+    [Theory]
+    [InlineData("await Task.Yield(); {|MR0006:GetResultAsync()|};", "await Task.Yield(); _ = await GetResultAsync();")]
+    [InlineData("await Task.Yield(); {|MR0006:okTask.ThenAsync(x => x + 1)|};", "await Task.Yield(); _ = await okTask.ThenAsync(x => x + 1);")]
+    [InlineData(
+        "Func<Task> f = async () => { await Task.Yield(); {|MR0006:GetResultOfIntAsync()|}; };",
+        "Func<Task> f = async () => { await Task.Yield(); _ = await GetResultOfIntAsync(); };")]
+    public async Task RegisterCodeFixes_TaskThatIsNotAwaitedInAnAsyncFunction_AwaitsItAndDiscardsTheResult(string statements, string fixedStatements)
+    {
+        // Act & Assert
+        await CodeFixVerifier<DiscardedResultAnalyzer, DiscardResultCodeFixProvider>.VerifyAsync(statements, fixedStatements);
+    }
+
+    [Theory]
+    [InlineData("{|MR0006:GetResultAsync()|};")]
+    [InlineData("await Task.Yield(); Action a = () => {|MR0006:GetResultAsync()|};")]
+    public async Task RegisterCodeFixes_TaskThatCannotBeAwaited_OffersNoFix(string statements)
+    {
+        // Act & Assert
+        await CodeFixVerifier<DiscardedResultAnalyzer, DiscardResultCodeFixProvider>.VerifyAsync(statements, statements);
     }
 }

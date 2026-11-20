@@ -31,11 +31,11 @@ public class IgnoredValueAnalyzerValueFunctionUnitTests
         """;
 
     [Theory]
-    [InlineData("_ = Ok().IfSuccess(x => Count++);")]
-    [InlineData("_ = Ok().IfSuccess(x => ++Count);")]
-    [InlineData("_ = Failed().IfError(e => Count++);")]
-    [InlineData("_ = Task.FromResult(Ok()).IfSuccessAsync(x => Count++);")]
-    [InlineData("_ = new ValueTask<Result<int>>(Failed()).IfErrorAsync(e => Count++);")]
+    [InlineData("var r = Ok().IfSuccess(x => Count++);")]
+    [InlineData("var r = Ok().IfSuccess(x => ++Count);")]
+    [InlineData("var r = Failed().IfError(e => Count++);")]
+    [InlineData("var r = Task.FromResult(Ok()).IfSuccessAsync(x => Count++);")]
+    [InlineData("var r = new ValueTask<Result<int>>(Failed()).IfErrorAsync(e => Count++);")]
     public void Analyze_FunctionReturningValue_ReportsTheRule(string statements)
     {
         // Act
