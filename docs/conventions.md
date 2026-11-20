@@ -178,17 +178,16 @@ are marked breaking. Preview the notes locally with `git cliff --unreleased --st
 	  what the code happens to do.
 
 ## Analyzer rules
-1. Identifiers: the prefix `MR` and four digits, with a range of 1,000 for each package, so that the rules of the
-   companion packages form one family with those of the core and never collide:
+1. Identifiers: the prefix `MR` and four digits, with a range of 1,000 for each package or group of packages, so that
+   the rules of the companion packages form one family with those of the core and never collide:
 
 	| Range | Package |
 	| ----- | ------- |
 	| `MR0001`–`MR0999` | `Maple.Result` (this repository) |
-	| `MR1000`–`MR1999` | the mapping to HTTP responses: `Maple.Result.Extensions.AspNetCore`, `Extensions.MinimalApi`, `Extensions.Functions.Worker` and `Extensions.Functions.Worker.AspNetCore` |
+	| `MR1000`–`MR1999` | the JSON converters: `Maple.Result.Serialization.SystemTextJson` and `Serialization.NewtonsoftJson` |
 	| `MR2000`–`MR2999` | `Maple.Result.Extensions.HttpClient` |
-	| `MR3000`–`MR3999` | `Maple.Result.Extensions.Resilience` |
-	| `MR4000`–`MR4999` | the JSON converters: `Maple.Result.Serialization.SystemTextJson` and `Serialization.NewtonsoftJson` |
-	| `MR5000`–`MR9999` | reserved for packages to come |
+	| `MR3000`–`MR3999` | the mapping to HTTP responses: `Maple.Result.Extensions.AspNetCore`, `Extensions.MinimalApi`, `Extensions.Functions.Worker` and `Extensions.Functions.Worker.AspNetCore` |
+	| `MR4000`–`MR9999` | reserved for packages to come (e.g., `Maple.Result.Extensions.Resilience`), a range of 1,000 each, given when a package gets its first rule |
 
 1. A new rule takes the next free number of its range. The number says nothing about the severity, which a user can
    change (and a later version may too), nor about the kind of check; the severity and the category are in the
