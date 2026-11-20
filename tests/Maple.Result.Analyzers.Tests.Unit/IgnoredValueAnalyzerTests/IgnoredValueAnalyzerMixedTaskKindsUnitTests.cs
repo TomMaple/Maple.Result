@@ -45,16 +45,16 @@ public class IgnoredValueAnalyzerMixedTaskKindsUnitTests
         """;
 
     [Theory]
-    [InlineData("_ = ok.IfSuccessAsync(x => DoubleAsync(x));")]
-    [InlineData("_ = ok.IfErrorAsync(e => RecoverAsync(e));")]
-    [InlineData("_ = GetTask().IfSuccessAsync(x => DoubleValueAsync(x));")]
-    [InlineData("_ = GetValueTask().IfSuccessAsync(x => DoubleAsync(x));")]
-    [InlineData("_ = GetTask().IfErrorAsync(e => RecoverValueAsync(e));")]
-    [InlineData("_ = GetValueTask().IfErrorAsync(e => RecoverAsync(e));")]
-    [InlineData("_ = ok.IfSuccessAsync(x => DoubleValueAsync(x));")]
-    [InlineData("_ = ok.IfErrorAsync(e => RecoverValueAsync(e));")]
-    [InlineData("_ = GetValueTask().IfSuccessAsync(x => DoubleValueAsync(x));")]
-    [InlineData("_ = GetValueTask().IfErrorAsync(e => RecoverValueAsync(e));")]
+    [InlineData("var r = ok.IfSuccessAsync(x => DoubleAsync(x));")]
+    [InlineData("var r = ok.IfErrorAsync(e => RecoverAsync(e));")]
+    [InlineData("var r = GetTask().IfSuccessAsync(x => DoubleValueAsync(x));")]
+    [InlineData("var r = GetValueTask().IfSuccessAsync(x => DoubleAsync(x));")]
+    [InlineData("var r = GetTask().IfErrorAsync(e => RecoverValueAsync(e));")]
+    [InlineData("var r = GetValueTask().IfErrorAsync(e => RecoverAsync(e));")]
+    [InlineData("var r = ok.IfSuccessAsync(x => DoubleValueAsync(x));")]
+    [InlineData("var r = ok.IfErrorAsync(e => RecoverValueAsync(e));")]
+    [InlineData("var r = GetValueTask().IfSuccessAsync(x => DoubleValueAsync(x));")]
+    [InlineData("var r = GetValueTask().IfErrorAsync(e => RecoverValueAsync(e));")]
     public void Analyze_CallMixingTaskKinds_ReportsTheRule(string statements)
     {
         // Act

@@ -47,10 +47,10 @@ public class IgnoredValueAnalyzerThenElseUnitTests
         """;
 
     [Theory]
-    [InlineData("_ = Failed().IfError(e => Interlocked.Increment(ref Failures));")]
-    [InlineData("_ = FailedBool().IfError(e => Titles.Add(e.Title));")]
-    [InlineData("_ = Ok().IfSuccessAsync(x => SaveChangesAsync());")]
-    [InlineData("_ = Ok().IfSuccessAsync(async x => await GetIntAsync());")]
+    [InlineData("var r = Failed().IfError(e => Interlocked.Increment(ref Failures));")]
+    [InlineData("var r = FailedBool().IfError(e => Titles.Add(e.Title));")]
+    [InlineData("var r = Ok().IfSuccessAsync(x => SaveChangesAsync());")]
+    [InlineData("var r = Ok().IfSuccessAsync(async x => await GetIntAsync());")]
     public void Analyze_ThenOrElseCall_ReportsTheRule(string statements)
     {
         // Act

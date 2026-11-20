@@ -21,7 +21,9 @@ using System.Threading.Tasks;
 namespace Maple.Results.Analyzers.CodeFixes;
 
 /// <summary>
-///     Fixes MR0006 by discarding the result explicitly: <c>Save();</c> becomes <c>_ = Save();</c>.
+///     Fixes MR0006 by discarding the result explicitly: <c>Save();</c> becomes <c>_ = Save();</c>. A task of a result that is not awaited is
+///     awaited first, in an <see langword="async" /> function: <c>SaveAsync();</c> becomes <c>_ = await SaveAsync();</c>; elsewhere no fix is
+///     offered, as a discarded task would hide the failure and the task.
 /// </summary>
 /// <remarks>
 ///     The fix only states that the result is ignored on purpose. Checking the result, or returning it, is the better fix where a failure
@@ -33,7 +35,9 @@ public sealed class DiscardResultCodeFixProvider : CodeFixProvider
 {
     #region consts
 
-    private const string Title = "Discard the result";
+    private const string AwaitAndDiscardTitle = "Await the task and discard the result";
+
+    private const string DiscardTitle = "Discard the result";
 
     #endregion
 
@@ -54,20 +58,25 @@ public sealed class DiscardResultCodeFixProvider : CodeFixProvider
         {
             var expression = root!.FindNode(diagnostic.Location.SourceSpan, getInnermostNodeForTie: true) as ExpressionSyntax;
 
-            if (expression is null)
+            if (expression is null || !diagnostic.Properties.TryGetValue(Rules.DiscardFixProperty, out var fix))
                 continue;
 
+            var awaits = fix == Rules.AwaitAndDiscardFix;
+            var title = awaits
+                ? AwaitAndDiscardTitle
+                : DiscardTitle;
+
             var action = CodeAction.Create(
-                Title,
-                cancellationToken => DiscardAsync(context.Document, expression, cancellationToken),
-                equivalenceKey: Title);
+                title,
+                cancellationToken => DiscardAsync(context.Document, expression, awaits, cancellationToken),
+                equivalenceKey: title);
             context.RegisterCodeFix(action, diagnostic);
         }
     }
 
     #region helper methods
 
-    private static async Task<Document> DiscardAsync(Document document, ExpressionSyntax expression, CancellationToken cancellationToken)
+    private static async Task<Document> DiscardAsync(Document document, ExpressionSyntax expression, bool awaits, CancellationToken cancellationToken)
     {
         var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 
@@ -77,7 +86,11 @@ public sealed class DiscardResultCodeFixProvider : CodeFixProvider
         var underscore = SyntaxFactory.Identifier(expression.GetLeadingTrivia(), "_", space);
         var discard = SyntaxFactory.IdentifierName(underscore);
         var equals = SyntaxFactory.Token(SyntaxFactory.TriviaList(), SyntaxKind.EqualsToken, space);
-        var value = expression.WithoutLeadingTrivia();
+        var awaitKeyword = SyntaxFactory.Token(SyntaxFactory.TriviaList(), SyntaxKind.AwaitKeyword, space);
+        var value = awaits
+            ? SyntaxFactory.AwaitExpression(awaitKeyword, expression.WithoutLeadingTrivia())
+            : expression.WithoutLeadingTrivia();
+
         var assignment = SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, discard, equals, value);
         var newRoot = root!.ReplaceNode(expression, assignment);
 

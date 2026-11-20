@@ -9,7 +9,6 @@
  */
 
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
 using System.Collections.Immutable;
@@ -96,9 +95,7 @@ public sealed class UnawaitedTaskAnalyzer : ResultAnalyzer
             return null;
 
         var resultType = ReceiverArgument(invocation)?.Value.Type;
-        var isUsed = IsResultUsed(invocation.Syntax)
-                     && invocation.Syntax.Parent is not AssignmentExpressionSyntax { Left: IdentifierNameSyntax { Identifier.ValueText: "_" } };
-        var isTheValue = isUsed && SymbolEqualityComparer.Default.Equals(awaited, types.ResultValue(resultType));
+        var isTheValue = IsResultUsed(invocation) && SymbolEqualityComparer.Default.Equals(awaited, types.ResultValue(resultType));
 
         return invocation.TargetMethod.Name switch
         {

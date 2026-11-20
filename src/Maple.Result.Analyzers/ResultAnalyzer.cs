@@ -76,16 +76,43 @@ public abstract class ResultAnalyzer : DiagnosticAnalyzer
         => CalledName(invocation) is GenericNameSyntax;
 
     /// <summary>
-    ///     Whether the value of the <paramref name="call" /> is used: a call that is a statement of its own (also awaited) does not use it.
+    ///     Whether the <paramref name="invocation" /> is <c>ConfigureAwait</c> of a task, whose awaiter gives the value of the task.
     /// </summary>
-    private protected static bool IsResultUsed(SyntaxNode call)
+    private protected static bool IsConfigureAwait(IInvocationOperation invocation)
+        => invocation.TargetMethod is { Name: "ConfigureAwait", ContainingNamespace: { Name: "Tasks", ContainingNamespace.Name: "Threading" } };
+
+    /// <summary>
+    ///     Whether the value of the <paramref name="call" /> is used. It is not when the call is a statement of its own, also awaited, configured
+    ///     with <c>ConfigureAwait</c> or after a null-conditional access (<c>result?.IfSuccess(…);</c>), and when it is discarded (<c>_ = …</c>).
+    /// </summary>
+    private protected static bool IsResultUsed(IOperation call)
     {
-        var node = call;
+        // The tree has one node per operation, so a node is found in the role of its parent by reference.
+        var operation = call;
 
-        while (node.Parent is ParenthesizedExpressionSyntax or AwaitExpressionSyntax)
-            node = node.Parent;
+        while (true)
+        {
+            var parent = operation.Parent;
 
-        return node.Parent is not ExpressionStatementSyntax;
+            switch (parent)
+            {
+                case IExpressionStatementOperation:
+                    return false;
+
+                case ISimpleAssignmentOperation { Target: IDiscardOperation } discard when ReferenceEquals(discard.Value, operation):
+                    return false;
+
+                case IAwaitOperation:
+                case IConditionalAccessOperation access when ReferenceEquals(access.WhenNotNull, operation):
+                case IInvocationOperation configured when ReferenceEquals(configured.Instance, operation) && IsConfigureAwait(configured):
+                    operation = parent;
+
+                    continue;
+
+                default:
+                    return true;
+            }
+        }
     }
 
     /// <summary>
