@@ -2,7 +2,7 @@
 """Checks the reference pages in docs/Reference against the sources, and the relative links of README.md and docs/.
 
 Usage:
-  check_reference_docs.py [REPOSITORY_ROOT]
+  check_reference_docs.py [--release VERSION] [REPOSITORY_ROOT]
 
 Prints one line per problem (`path:line: message`) and exits with 1 when there is any. The rules are those of
 docs/conventions.md, "Documentation":
@@ -11,6 +11,14 @@ docs/conventions.md, "Documentation":
   without `partial`.
 - Every other `Source:` link opens the line of the declaration that the page documents, and is labelled with the
   file name.
+- A source link opens `main` or the tag of a release (docs/conventions.md, "Releasing"):
+  - a link to `main` is checked against the working tree;
+  - a link to a tag that exists is checked against the file at that tag (`git show`), and the declaration that it
+    opens has to be in the working tree unchanged: a member that changed since the release links to `main`;
+  - a link to a tag that does not exist yet is the release being prepared: it is checked against the working tree,
+    and every such link names the same tag.
+  With `--release VERSION` (the guard of the Draft release workflow), every source link has to name the tag of that
+  version, `vVERSION`.
 - The signature block under a link is that declaration, without `async` and `partial`. It shows the attributes of
   the code (e.g., `[OverloadResolutionPriority]`), except those that the .NET API reference leaves out: the ones of
   the nullable analysis (e.g., `[MemberNotNullWhen]`, `[NotNullWhen]`) and the ones for the debugger.
@@ -29,8 +37,10 @@ Python 3 without packages, as the other scripts of this folder.
 import html
 import os
 import re
+import subprocess
 import sys
 
+RELEASE_TAG = re.compile(r"^v\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$")
 SOURCE_LINK = re.compile(
     r'<a href="https://github\.com/TomMaple/Maple\.Result/blob/([^/"]+)/([^"#]+)(?:#L(\d+))?"[^>]*>([^<]*)</a>')
 MARKDOWN_LINK = re.compile(r"(?<!!)\[((?:[^\[\]]|\[[^\]]*\])*)\]\(([^)\s]+)\)")
@@ -328,25 +338,90 @@ def read_source_declaration(lines, number):
 # ---------------------------------------------------------------------------------------------------------------------
 
 class Checker:
-    def __init__(self, root):
+    def __init__(self, root, release=None):
         self.root = root
+        self.release = release
         self.problems = []
         self.sources = {}
+        self.declarations = {}
         self.documented = set()
         self.owner_generics = []
+        self.prepared = {}
+        self.tags = self.release_tags()
 
     def problem(self, path, line, message):
         self.problems.append(f"{path}:{line}: {message}")
 
-    def source(self, path):
-        if path not in self.sources:
-            full = os.path.join(self.root, path)
-            if not os.path.isfile(full):
-                self.sources[path] = None
+    def release_tags(self):
+        """The release tags of the repository (`vX.Y.Z`); none when it is not a git repository."""
+        try:
+            result = subprocess.run(["git", "-C", self.root, "tag", "--list", "v*"], capture_output=True, text=True,
+                                    check=True)
+        except (OSError, subprocess.CalledProcessError):
+            return set()
+        return {tag for tag in result.stdout.split() if RELEASE_TAG.match(tag)}
+
+    def source(self, path, ref="main"):
+        """The lines of a file in the working tree, or at a release tag; None when the file does not exist there."""
+        key = (ref, path)
+        if key not in self.sources:
+            if ref in self.tags:
+                result = subprocess.run(["git", "-C", self.root, "show", f"{ref}:{path}"], capture_output=True)
+                text = result.stdout.decode("utf-8-sig") if result.returncode == 0 else None
             else:
-                with open(full, encoding="utf-8-sig") as file:
-                    self.sources[path] = file.read().split("\n")
-        return self.sources[path]
+                full = os.path.join(self.root, path)
+                text = None
+                if os.path.isfile(full):
+                    with open(full, encoding="utf-8-sig") as file:
+                        text = file.read()
+            self.sources[key] = None if text is None else text.replace("\r\n", "\n").split("\n")
+        return self.sources[key]
+
+    def declaration_lines(self, path, ref="main"):
+        """The lines of the public declarations of a file, by declaration (its attributes included), in their order:
+        a file can declare the same member twice (e.g., `Error` of `Result` and of `Result<T>`)."""
+        key = (ref, path)
+        if key not in self.declarations:
+            lines = self.source(path, ref) or []
+            declarations = {}
+            for index, line in enumerate(lines):
+                if line.strip().startswith("public "):
+                    declarations.setdefault(squeeze(read_source_declaration(lines, index + 1)), []).append(index + 1)
+            self.declarations[key] = declarations
+        return self.declarations[key]
+
+    def current_line(self, path, ref, number):
+        """The line of the working tree where the declaration at line `number` of the file at `ref` is now, unchanged
+        (its attributes included): the same occurrence of the same declaration. None when it changed or was removed."""
+        released = self.source(path, ref)
+        if released is None or number > len(released):
+            return None
+        declaration = squeeze(read_source_declaration(released, number))
+        released_lines = self.declaration_lines(path, ref).get(declaration, [])
+        current_lines = self.declaration_lines(path).get(declaration, [])
+        if number not in released_lines:
+            return None
+        occurrence = released_lines.index(number)
+        return current_lines[occurrence] if occurrence < len(current_lines) else None
+
+    def check_ref(self, path, line, ref):
+        """A source link opens `main` or the tag of a release; with --release, the tag of that release."""
+        if self.release and ref != self.release:
+            self.problem(path, line, f"the source link opens '{ref}', not the tag of the release '{self.release}'")
+        elif ref == "main" or ref in self.tags:
+            return
+        elif RELEASE_TAG.match(ref):
+            # A tag that does not exist yet: the release being prepared, which has to be the same in every link.
+            self.prepared.setdefault(ref, (path, line))
+        else:
+            self.problem(path, line, f"the source link opens '{ref}', not 'main' or the tag of a release (vX.Y.Z)")
+
+    def check_prepared(self):
+        """Every link to a tag that does not exist yet names the same one: the release being prepared."""
+        if len(self.prepared) > 1:
+            for ref, (path, line) in sorted(self.prepared.items()):
+                self.problem(path, line, f"the source links name several releases that do not exist yet "
+                                         f"({', '.join(sorted(self.prepared))}); this one names '{ref}'")
 
     # -- A reference page ---------------------------------------------------------------------------------------------
 
@@ -368,14 +443,15 @@ class Checker:
         declaration_checked = False
         links = [(index, match) for index, line in enumerate(lines) for match in SOURCE_LINK.finditer(line)]
         for position, (index, match) in enumerate(links):
-            branch, source_path, line_number, label = match.groups()
+            ref, source_path, line_number, label = match.groups()
             on_source_line = lines[index].startswith("Source:")
-            source = self.source(source_path)
+            self.check_ref(path, index + 1, ref)
+            released = ref in self.tags
+            source = self.source(source_path, ref)
 
-            if branch != "main":
-                self.problem(path, index + 1, f"the source link opens the branch '{branch}', not 'main'")
             if source is None:
-                self.problem(path, index + 1, f"the source link opens a file that does not exist: {source_path}")
+                where = f" at {ref}" if released else ""
+                self.problem(path, index + 1, f"the source link opens a file that does not exist{where}: {source_path}")
                 continue
             if on_source_line and label.strip() != os.path.basename(source_path):
                 self.problem(path, index + 1, f"the source link is labelled '{label}', not with the file name "
@@ -393,10 +469,18 @@ class Checker:
             if not line_number:
                 self.problem(path, index + 1, "the source link of a member has no line")
                 continue
-            self.documented.add((source_path, int(line_number)))
             if int(line_number) > len(source):
                 self.problem(path, index + 1, f"the source link opens line {line_number}, after the end of the file")
                 continue
+
+            # The page documents the member at this line of the working tree: for a link to a release, the line where
+            # the same declaration is now. A declaration that changed since the release is linked to main.
+            current = self.current_line(source_path, ref, int(line_number)) if released else int(line_number)
+            if current is None:
+                self.problem(path, index + 1, f"the declaration at {os.path.basename(source_path)}#L{line_number} of "
+                                              f"{ref} is not in the code any more, or changed: link the member to main")
+            else:
+                self.documented.add((source_path, current))
 
             if not on_source_line:
                 # A link inside a table or a sentence, labelled with the member: the line has to declare it.
@@ -718,17 +802,29 @@ def markdown_files(root, folder):
                 yield os.path.relpath(os.path.join(directory, name), root).replace("\\", "/")
 
 
+def release_tag(version):
+    """The tag of a release version (`3.0.0` or `v3.0.0` gives `v3.0.0`); None when it is not a version."""
+    tag = version if version.startswith("v") else f"v{version}"
+    return tag if RELEASE_TAG.match(tag) else None
+
+
 def main(arguments):
+    release = None
+    if arguments[:1] == ["--release"]:
+        if len(arguments) < 2 or release_tag(arguments[1]) is None:
+            sys.exit(__doc__)
+        release, arguments = release_tag(arguments[1]), arguments[2:]
     if len(arguments) > 1 or (arguments and arguments[0].startswith("-")):
         sys.exit(__doc__)
     root = arguments[0] if arguments else os.getcwd()
     if not os.path.isdir(os.path.join(root, "docs", "Reference")):
         sys.exit(f"No docs/Reference folder in '{root}'.")
 
-    checker = Checker(root)
+    checker = Checker(root, release)
     pages = sorted(markdown_files(root, os.path.join("docs", "Reference")))
     for page in pages:
         checker.check_page(page)
+    checker.check_prepared()
     checker.check_undocumented(os.path.join("src", "Maple.Result"))
     linked = ["README.md"] + sorted(markdown_files(root, "docs"))
     for path in linked:
