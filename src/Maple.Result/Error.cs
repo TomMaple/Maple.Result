@@ -82,11 +82,18 @@ public sealed record Error
     ///     The <i>URI</i> reference that identifies the problem type; its text is <see cref="ErrorUri.Value" />.
     /// </summary>
     /// <remarks>
-    ///     <para>This is a mandatory property according to the RFC 9457 specification.</para>
+    ///     <para>
+    ///         Every error of this library has a type: each factory method takes one. <i>RFC 9457</i> (section 3.1.1) does not require the
+    ///         <c>type</c> member; a missing one is read as <c>about:blank</c>.
+    ///     </para>
     ///     The value of this attribute can be:
     ///     <list type="bullet">
     ///         <item>
-    ///             <term>about:blank</term><description>when the type is not specified,</description>
+    ///             <term>about:blank</term>
+    ///             <description>
+    ///                 (<see cref="ErrorUri.None" />) when the type is not specified; the title should then be the phrase of the HTTP status
+    ///                 code (<see cref="HttpErrorTitles" />, <i>RFC 9457</i>, section 4.2.1),
+    ///             </description>
     ///         </item>
     ///         <item>
     ///             <term>URI Locator</term>
