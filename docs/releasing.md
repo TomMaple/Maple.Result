@@ -29,8 +29,16 @@ Pushes to `main` never publish. The CI workflow only builds, tests and uploads a
    `v*` tags), attests the build provenance of the `.nupkg`, pushes it to NuGet (trusted publishing) and attaches the
    `.nupkg`/`.snupkg` to the release.
 1. **Verify** the attestation of the package attached to the release (the file on nuget.org carries an extra
-   repository signature, so its digest differs):
-   `gh attestation verify Maple.Result.X.Y.Z.nupkg --repo TomMaple/Maple.Result`.
+   repository signature, so its digest differs). The command hashes a local file, so download the package first;
+   without it, it fails with `Loading digest for … failed`:
+
+	```
+	gh release download vX.Y.Z --repo TomMaple/Maple.Result --pattern '*.nupkg'
+	gh attestation verify Maple.Result.X.Y.Z.nupkg --repo TomMaple/Maple.Result
+	```
+
+	It prints the result only in a terminal; in a script, check its exit code (0 when the attestation is valid) or pass
+	`--format json`.
 
 If *Publish* fails, fix the cause and use **Re-run failed jobs**: it reuses the package of the first build, and the
 `publish` job skips whatever is already on NuGet or attached to the release. *Re-run all jobs* builds a new package,
