@@ -95,7 +95,7 @@ over it.
 
 	  The exceptions are a `this(…)` or `base(…)` constructor initializer and a field initializer, which no statement can
 	  precede. Tests may pass calls and other expressions as arguments where it keeps them readable.
-	* Exceptions name the caller’s parameter (e.g., `detailNamedValues` rather than the parameter of an internal helper).
+	* Exceptions name the caller’s parameter (e.g., `detailParameters` rather than the parameter of an internal helper).
 	* Invalid input is rejected with an exception; it is never silently normalized (e.g., trimmed or escaped) or dropped.
 1. XML documentation
 	* Every public member is documented (`GenerateDocumentationFile` is on).

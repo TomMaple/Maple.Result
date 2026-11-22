@@ -92,7 +92,7 @@ The builder is not thread-safe. Use one builder per thread, or synchronize acces
 | [Validation(ErrorUri, String)](ErrorBuilder_Validation.md) | Returns a new builder of the *Validation* category. |
 | [WithCategory(ErrorCategory)](ErrorBuilder_WithCategory.md) | Sets the category. |
 | [WithDetail(String)](ErrorBuilder_WithDetail.md) | Sets the human-readable explanation of the problem occurrence. |
-| [WithDetailTemplated(String, ReadOnlySpan&lt;(String, Object)&gt;)](ErrorBuilder_WithDetailTemplated.md#withdetailtemplatedstring-readonlyspanstring-object) | Sets the templated explanation from a template identifier and named values. |
+| [WithDetailTemplated(String, ReadOnlySpan&lt;(String, Object)&gt;)](ErrorBuilder_WithDetailTemplated.md#withdetailtemplatedstring-readonlyspanstring-object) | Sets the templated explanation from a template identifier and parameters. |
 | [WithDetailTemplated(TemplatedMessage)](ErrorBuilder_WithDetailTemplated.md#withdetailtemplatedtemplatedmessage) | Sets the templated explanation of the problem occurrence. |
 | [WithInstanceUri(Nullable&lt;ErrorUri&gt;)](ErrorBuilder_WithInstanceUri.md) | Sets the *URI* that identifies the problem occurrence. |
 | [WithMetadata(IEnumerable&lt;KeyValuePair&lt;String, Object&gt;&gt;)](ErrorBuilder_WithMetadata.md#withmetadataienumerablekeyvaluepairstring-object) | Adds or replaces metadata entries. |

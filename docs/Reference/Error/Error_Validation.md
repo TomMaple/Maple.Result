@@ -29,7 +29,7 @@ An optional, human-readable explanation specific to this occurrence of the probl
 An optional *URI* reference that identifies the specific occurrence of the problem. It must not be `about:blank` ([ErrorUri.None](../ErrorUri/ErrorUri_None.md) or a default [ErrorUri](../ErrorUri/ErrorUri.md)); pass `null` when there is no instance.
 
 #### `detailTemplated` [TemplatedMessage](../TemplatedMessage/TemplatedMessage.md)
-An optional template identifier with its named values, to generate a custom, localized detail message (e.g., `new("errors.user.create.invalid_data", ("entity", "user"))`), or `null` for none.
+An optional template identifier with its parameters, to generate a custom, localized detail message (e.g., `new("errors.user.create.invalid_data", ("entity", "user"))`), or `null` for none.
 
 ### Returns
 [Error](Error.md)
@@ -50,7 +50,7 @@ This error category represents validation errors that prevent the underlying ser
 
 It relates to `400` HTTP status code (Bad Request), but can also be used in other contexts where validation errors need to be reported.
 
-The template identifier and the named values are validated by the [TemplatedMessage](../TemplatedMessage/TemplatedMessage.md) constructor (see [TemplatedMessage constructors](../TemplatedMessage/TemplatedMessage_constructors.md)), so an invalid one throws before the factory is called.
+The template identifier and the parameters are validated by the [TemplatedMessage](../TemplatedMessage/TemplatedMessage.md) constructor (see [TemplatedMessage constructors](../TemplatedMessage/TemplatedMessage_constructors.md)), so an invalid one throws before the factory is called.
 
 > [!NOTE]
 > To add individual error details, use [WithErrorDetail](Error_WithErrorDetail.md), which returns a copy, or build the error with an [ErrorBuilder](../ErrorBuilder/ErrorBuilder.md) when adding several.

@@ -30,7 +30,7 @@ var error = Error.NotFound(
 This is a mandatory property. It is never `null` or empty, and it does not start or end with white space: the [constructor](TemplatedMessage_constructors.md) rejects such a value and does not trim it (`" errors.length"` throws). White space inside is allowed.
 
 > [!NOTE]
-> An instance is created with a constructor and passed to the factory methods of the [Error](../Error/Error.md) record (the `detailTemplated` parameter, e.g., [NotFound](../Error/Error_NotFound.md)), or created from a template identifier and named values by [Error.WithErrorDetail](../Error/Error_WithErrorDetail.md) and by the [ErrorBuilder](../ErrorBuilder/ErrorBuilder.md) methods [WithDetailTemplated](../ErrorBuilder/ErrorBuilder_WithDetailTemplated.md) and [AddErrorDetail](../ErrorBuilder/ErrorBuilder_AddErrorDetail.md).
+> An instance is created with a constructor and passed to the factory methods of the [Error](../Error/Error.md) record (the `detailTemplated` parameter, e.g., [NotFound](../Error/Error_NotFound.md)), or created from a template identifier and parameters by [Error.WithErrorDetail](../Error/Error_WithErrorDetail.md) and by the [ErrorBuilder](../ErrorBuilder/ErrorBuilder.md) methods [WithDetailTemplated](../ErrorBuilder/ErrorBuilder_WithDetailTemplated.md) and [AddErrorDetail](../ErrorBuilder/ErrorBuilder_AddErrorDetail.md).
 
 ## See Also
 * [Error](../Error/Error.md)

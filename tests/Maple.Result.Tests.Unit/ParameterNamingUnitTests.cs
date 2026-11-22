@@ -9,6 +9,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -37,6 +38,42 @@ public class ParameterNamingUnitTests
 
         // Assert
         misnamed.ShouldBeEmpty();
+    }
+
+    // The values of a message template have one name in the whole API, after TemplatedMessage.Parameters: parameters next to templateId,
+    // and detailParameters next to detailTemplateId.
+    [Fact]
+    public void PublicMethods_ValuesOfMessageTemplate_AreNamedParameters()
+    {
+        // Act
+        var misnamed = typeof(Result).Assembly.GetExportedTypes()
+            .SelectMany(t => t.GetMembers(BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance | BindingFlags.DeclaredOnly))
+            .OfType<MethodBase>()
+            .Select(m => (Method: m, Parameters: m.GetParameters()))
+            .SelectMany(x => x.Parameters
+                .Where(p => p.Name!.EndsWith("emplateId", StringComparison.Ordinal))
+                .Select(p => (x.Method, TemplateId: p, Values: x.Parameters.FirstOrDefault(v => IsTemplateValues(v.ParameterType)))))
+            .Where(x => x.Values is not null && x.Values.Name != ExpectedValuesName(x.TemplateId.Name!))
+            .Select(x => $"{x.Method.DeclaringType!.Name}.{x.Method.Name}({x.TemplateId.Name}, {x.Values!.Name})")
+            .Distinct()
+            .ToList();
+
+        // Assert
+        misnamed.ShouldBeEmpty();
+    }
+
+    private static string ExpectedValuesName(string templateIdName)
+    {
+        var prefix = templateIdName[..^"TemplateId".Length];
+
+        return prefix.Length == 0
+            ? "parameters"
+            : $"{prefix}Parameters";
+    }
+
+    private static bool IsTemplateValues(Type type)
+    {
+        return type == typeof(ReadOnlySpan<(string, object?)>) || type == typeof(IEnumerable<KeyValuePair<string, object?>>);
     }
 
     private static bool IsFunction(Type type)

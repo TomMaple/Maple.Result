@@ -57,7 +57,7 @@ public class ResultEqualityUnitTests
     }
 
     [Fact]
-    public void Equals_FailedResultsWithErrorsHavingDifferentTemplatedDetailParams_AreNotEqual()
+    public void Equals_FailedResultsWithErrorsHavingDifferentTemplatedDetailParameters_AreNotEqual()
     {
         // Arrange
         var first = Result.FromError(
@@ -154,7 +154,7 @@ public class ResultEqualityUnitTests
     }
 
     [Fact]
-    public void Equals_FailedGenericResultsWithErrorsHavingDifferentTemplatedDetailParams_AreNotEqual()
+    public void Equals_FailedGenericResultsWithErrorsHavingDifferentTemplatedDetailParameters_AreNotEqual()
     {
         // Arrange
         var first = Result<int>.FromError(
