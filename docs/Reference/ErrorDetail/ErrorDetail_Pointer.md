@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/ErrorDetail.cs#L95" target="_blank">ErrorDetail.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/ErrorDetail.cs#L95" target="_blank">ErrorDetail.cs</a>
 
 Builds a *JSON Pointer* ([RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901)) in the string form from names and array indexes, escaping the names.
 

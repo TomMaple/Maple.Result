@@ -41,7 +41,7 @@ A function that returns a `ValueTask<TValue>` has overloads of its own, because 
 > A [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask) can only be awaited once. Because of this, the overloads accepting `this ValueTask<TResult> resultTask` consume the passed operation as part of evaluating its result, and they do not perform a `null` check on it (a `ValueTask<TResult>` is a non-nullable value type).
 
 ## IfErrorAsync&lt;TResult&gt;(TResult, Func&lt;Error, Task&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/IfErrorAsyncExtensions.Task.cs#L67" target="_blank">IfErrorAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/IfErrorAsyncExtensions.Task.cs#L67" target="_blank">IfErrorAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous action, only if the instance of `TResult` represents a failed operation (i.e., contains an [Error](../Error/Error.md)), as an asynchronous operation.
 
@@ -91,7 +91,7 @@ await createUserResult.IfErrorAsync(async error =>
 
 
 ## IfErrorAsync&lt;TResult&gt;(Task&lt;TResult&gt;, Func&lt;Error, Task&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/IfErrorAsyncExtensions.Task.cs#L131" target="_blank">IfErrorAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/IfErrorAsyncExtensions.Task.cs#L131" target="_blank">IfErrorAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, if the provided asynchronous operation returns a failed`TResult` instance (i.e., contains an [Error](../Error/Error.md)), and returns its result as an asynchronous operation.
 
@@ -146,7 +146,7 @@ var createUserResult = await _userService.CreateUserAsync(userData)
 
 
 ## IfErrorAsync&lt;TResult&gt;(Task&lt;TResult&gt;, Action&lt;Error&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/IfErrorAsyncExtensions.Task.cs#L184" target="_blank">IfErrorAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/IfErrorAsyncExtensions.Task.cs#L184" target="_blank">IfErrorAsyncExtensions.Task.cs</a>
 
 Runs the synchronous action if the result that the `resultTask` returns is failed, and returns the result unchanged.
 
@@ -192,7 +192,7 @@ var userResult = await _userService.GetUserAsync(id)
 ```
 
 ## IfErrorAsync&lt;TResult&gt;(Task&lt;TResult&gt;, Func&lt;Error, ValueTask&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/IfErrorAsyncExtensions.Task.cs#L248" target="_blank">IfErrorAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/IfErrorAsyncExtensions.Task.cs#L248" target="_blank">IfErrorAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, if the provided asynchronous operation returns a failed`TResult` instance (i.e., contains an [Error](../Error/Error.md)), and returns its result as an asynchronous operation.
 
@@ -237,7 +237,7 @@ The function returns a `ValueTask`, the other kind of task: it is awaited, and a
 The `IfErrorAsync` method executes the provided asynchronous operation represented by `resultTask` to evaluate its result. This enables chaining multiple asynchronous operations that return `Task<TResult>`.
 
 ## IfErrorAsync&lt;TResult, TValue&gt;(Task&lt;TResult&gt;, Func&lt;Error, ValueTask&lt;TValue&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/IfErrorAsyncExtensions.Task.cs#L317" target="_blank">IfErrorAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/IfErrorAsyncExtensions.Task.cs#L317" target="_blank">IfErrorAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function as a side effect, if the provided asynchronous operation returns a failed `TResult` instance (i.e., contains an [Error](../Error/Error.md)): the task that the function returns is awaited, and its value is ignored.
 
@@ -283,7 +283,7 @@ The asynchronous operation represented by `resultTask` returns `null`.
 A `ValueTask<TValue>` does not convert to a `ValueTask`, so this overload takes it: the task is awaited, and its value is ignored, so a failure is not turned into a success. To replace the failed result, use [ElseAsync](ElseAsyncExtensions_ElseAsync.md). A `Task` is returned, as for the other functions on a `Task` of a result.
 
 ## IfErrorAsync&lt;TResult&gt;(TResult, Func&lt;Error, ValueTask&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/IfErrorAsyncExtensions.ValueTask.cs#L27" target="_blank">IfErrorAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/IfErrorAsyncExtensions.ValueTask.cs#L27" target="_blank">IfErrorAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous action, only if the instance of `TResult` represents a failed operation (i.e., contains an [Error](../Error/Error.md)), as an asynchronous operation.
 
@@ -329,7 +329,7 @@ await createUserResult.IfErrorAsync(async error =>
 
 
 ## IfErrorAsync&lt;TResult&gt;(ValueTask&lt;TResult&gt;, Func&lt;Error, ValueTask&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/IfErrorAsyncExtensions.ValueTask.cs#L84" target="_blank">IfErrorAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/IfErrorAsyncExtensions.ValueTask.cs#L84" target="_blank">IfErrorAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, if the provided asynchronous operation returns a failed`TResult` instance (i.e., contains an [Error](../Error/Error.md)), and returns its result as an asynchronous operation.
 
@@ -383,7 +383,7 @@ var createUserResult = await _userService.CreateUserAsync(userData)
 
 
 ## IfErrorAsync&lt;TResult&gt;(ValueTask&lt;TResult&gt;, Action&lt;Error&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/IfErrorAsyncExtensions.ValueTask.cs#L131" target="_blank">IfErrorAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/IfErrorAsyncExtensions.ValueTask.cs#L131" target="_blank">IfErrorAsyncExtensions.ValueTask.cs</a>
 
 Runs the synchronous action if the result that the `resultTask` returns is failed, and returns the result unchanged.
 
@@ -429,7 +429,7 @@ var userResult = await _userService.GetUserAsync(id)
 ```
 
 ## IfErrorAsync&lt;TResult&gt;(ValueTask&lt;TResult&gt;, Func&lt;Error, Task&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/IfErrorAsyncExtensions.ValueTask.cs#L194" target="_blank">IfErrorAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/IfErrorAsyncExtensions.ValueTask.cs#L194" target="_blank">IfErrorAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, if the provided asynchronous operation returns a failed`TResult` instance (i.e., contains an [Error](../Error/Error.md)), and returns its result as an asynchronous operation.
 
@@ -475,7 +475,7 @@ The function returns a `Task`, the other kind of task: it is awaited, and a `Val
 The `IfErrorAsync` method awaits the provided asynchronous operation represented by `resultTask` to evaluate its result. This enables chaining multiple asynchronous operations that return `ValueTask<TResult>`.
 
 ## IfErrorAsync&lt;TResult, TValue&gt;(TResult, Func&lt;Error, ValueTask&lt;TValue&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/IfErrorAsyncExtensions.ValueTask.cs#L256" target="_blank">IfErrorAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/IfErrorAsyncExtensions.ValueTask.cs#L256" target="_blank">IfErrorAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function as a side effect, only if the instance of `TResult` represents a failed operation (i.e., contains an [Error](../Error/Error.md)): the task that the function returns is awaited, and its value is ignored.
 
@@ -526,7 +526,7 @@ await createUserResult.IfErrorAsync(error => _failureCounter.IncrementAsync(erro
 ```
 
 ## IfErrorAsync&lt;TResult, TValue&gt;(ValueTask&lt;TResult&gt;, Func&lt;Error, ValueTask&lt;TValue&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/IfErrorAsyncExtensions.ValueTask.cs#L311" target="_blank">IfErrorAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/IfErrorAsyncExtensions.ValueTask.cs#L311" target="_blank">IfErrorAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function as a side effect, if the provided asynchronous operation returns a failed `TResult` instance (i.e., contains an [Error](../Error/Error.md)): the task that the function returns is awaited, and its value is ignored.
 

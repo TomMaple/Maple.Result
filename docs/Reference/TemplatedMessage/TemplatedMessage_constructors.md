@@ -19,7 +19,7 @@ Both constructors copy the parameters into one read-only dictionary with an ordi
 
 
 ## TemplatedMessage(String, IEnumerable&lt;KeyValuePair&lt;String, Object&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/TemplatedMessage.cs#L54" target="_blank">TemplatedMessage.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/TemplatedMessage.cs#L54" target="_blank">TemplatedMessage.cs</a>
 
 Initializes a new instance of the [TemplatedMessage](TemplatedMessage.md) record with the parameters given as key-value pairs (e.g., a dictionary).
 
@@ -56,7 +56,7 @@ var message = new TemplatedMessage(
 
 
 ## TemplatedMessage(String, ReadOnlySpan&lt;(String, Object)&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/TemplatedMessage.cs#L75" target="_blank">TemplatedMessage.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/TemplatedMessage.cs#L75" target="_blank">TemplatedMessage.cs</a>
 
 Initializes a new instance of the [TemplatedMessage](TemplatedMessage.md) record with the parameters given as name-value tuples.
 

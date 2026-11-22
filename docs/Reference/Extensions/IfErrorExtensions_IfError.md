@@ -22,7 +22,7 @@ An expression that cannot be a statement (e.g., `e => 0`) does not compile (CS02
 
 
 ## IfError&lt;TResult&gt;(TResult, Action&lt;Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/IfErrorExtensions.cs#L45" target="_blank">IfErrorExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/IfErrorExtensions.cs#L45" target="_blank">IfErrorExtensions.cs</a>
 
 Executes the provided action only if the instance of `TResult` represents a failed operation (i.e., contains an [Error](../Error/Error.md)).
 

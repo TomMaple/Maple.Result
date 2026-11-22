@@ -89,7 +89,7 @@ A returned `Result` or `Result<T>` is flattened, and a returned [Error](../Error
 > A [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask) can only be awaited once. Because of this, the overloads accepting `this ValueTask<TResult> resultTask` consume the passed operation as part of evaluating its result, and they do not perform a `null` check on it (a `ValueTask<TResult>` is a non-nullable value type).
 
 ## ThenAsync(Result, Func&lt;Task&lt;Result&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L67" target="_blank">ThenAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L67" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the instance of [Result](../Result/Result.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), as an asynchronous operation.
 
@@ -134,7 +134,7 @@ var userAddedResult = await createUserResult.ThenAsync(async () =>
 
 
 ## ThenAsync(Result, Func&lt;Task&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L121" target="_blank">ThenAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L121" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function only if the [Result](../Result/Result.md) represents a successful operation, and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) returned by the function.
 
@@ -177,7 +177,7 @@ var result = await _userService.DeleteUser(userId)
 
 
 ## ThenAsync&lt;T&gt;(Result, Func&lt;Task&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L172" target="_blank">ThenAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L172" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the instance of [Result](../Result/Result.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), as an asynchronous operation.
 
@@ -226,7 +226,7 @@ var companyResult = await createUserResult.ThenAsync(async () =>
 
 
 ## ThenAsync&lt;T&gt;(Result, Func&lt;Task&lt;Result&lt;T&gt;&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L223" target="_blank">ThenAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L223" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the instance of [Result](../Result/Result.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), as an asynchronous operation.
 
@@ -275,7 +275,7 @@ var companyResult = await createUserResult.ThenAsync(async () =>
 
 
 ## ThenAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, Task&lt;Result&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L279" target="_blank">ThenAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L279" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), as an asynchronous operation.
 
@@ -324,7 +324,7 @@ var userAddedResult = await createUserResult.ThenAsync(async (user) =>
 
 
 ## ThenAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, Task&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L336" target="_blank">ThenAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L336" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function only if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) returned by the function.
 
@@ -372,7 +372,7 @@ var result = await _userService.GetUser(userId)
 
 
 ## ThenAsync&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, Task&lt;TNext&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L392" target="_blank">ThenAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L392" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), as an asynchronous operation.
 
@@ -424,7 +424,7 @@ var companyResult = await createUserResult.ThenAsync(async (user) =>
 
 
 ## ThenAsync&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, Task&lt;Result&lt;TNext&gt;&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L451" target="_blank">ThenAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L451" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), as an asynchronous operation.
 
@@ -476,7 +476,7 @@ var companyResult = await createUserResult.ThenAsync(async (user) =>
 
 
 ## ThenAsync(Task&lt;Result&gt;, Func&lt;Task&lt;Result&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L512" target="_blank">ThenAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L512" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result](../Result/Result.md).
 
@@ -523,7 +523,7 @@ var createUserResult = await _userService.CreateUserAsync(userData)
 
 
 ## ThenAsync(Task&lt;Result&gt;, Func&lt;Task&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L571" target="_blank">ThenAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L571" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function only if the asynchronous operation `resultTask` represents a successful [Result](../Result/Result.md), and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) returned by the function.
 
@@ -567,7 +567,7 @@ var result = await _userService.DeleteUserAsync(userId)
 
 
 ## ThenAsync&lt;T&gt;(Task&lt;Result&gt;, Func&lt;Task&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L634" target="_blank">ThenAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L634" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result](../Result/Result.md).
 
@@ -618,7 +618,7 @@ var createUserResult = await _userService.CreateUserAsync(userData)
 
 
 ## ThenAsync&lt;T&gt;(Task&lt;Result&gt;, Func&lt;Task&lt;Result&lt;T&gt;&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L695" target="_blank">ThenAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L695" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result](../Result/Result.md).
 
@@ -671,7 +671,7 @@ var createUserResult = await _userService.CreateUserAsync(userData)
 
 
 ## ThenAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;Result&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L763" target="_blank">ThenAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L763" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result&lt;T&gt;](../ResultT/ResultT.md).
 
@@ -722,7 +722,7 @@ var createUserResult = await _userService.CreateUserAsync(userData)
 
 
 ## ThenAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L827" target="_blank">ThenAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L827" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function only if the asynchronous operation `resultTask` represents a successful [Result&lt;T&gt;](../ResultT/ResultT.md), and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) returned by the function.
 
@@ -770,7 +770,7 @@ var result = await _userService.GetUserAsync(userId)
 
 
 ## ThenAsync&lt;T, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;TNext&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L897" target="_blank">ThenAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L897" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result&lt;T&gt;](../ResultT/ResultT.md).
 
@@ -824,7 +824,7 @@ var createUserResult = await _userService.CreateUserAsync(userData)
 
 
 ## ThenAsync&lt;T, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;Result&lt;TNext&gt;&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L967" target="_blank">ThenAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L967" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result&lt;T&gt;](../ResultT/ResultT.md).
 
@@ -878,7 +878,7 @@ var createUserResult = await _userService.CreateUserAsync(userData)
 
 
 ## ThenAsync&lt;T&gt;(Task&lt;Result&gt;, Func&lt;T&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1018" target="_blank">ThenAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1018" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Runs the synchronous function if the result that the `resultTask` returns is successful, and returns a result with its value.
 
@@ -924,7 +924,7 @@ var result = await _service.DeleteAsync(id)
 
 
 ## ThenAsync(Task&lt;Result&gt;, Func&lt;Result&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1056" target="_blank">ThenAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1056" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Runs the synchronous function if the result that the `resultTask` returns is successful, and returns the result that it returns.
 
@@ -966,7 +966,7 @@ var result = await _service.DeleteAsync(id)
 
 
 ## ThenAsync&lt;T&gt;(Task&lt;Result&gt;, Func&lt;Result&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1095" target="_blank">ThenAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1095" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Runs the synchronous function if the result that the `resultTask` returns is successful, and returns the result that it returns.
 
@@ -1012,7 +1012,7 @@ var result = await _service.DeleteAsync(id)
 
 
 ## ThenAsync(Task&lt;Result&gt;, Func&lt;Error&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1134" target="_blank">ThenAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1134" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Runs the synchronous function if the result that the `resultTask` returns is successful, and returns a failed result with the error that it returns.
 
@@ -1054,7 +1054,7 @@ var result = await _service.DeleteAsync(id)
 
 
 ## ThenAsync&lt;T, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, TNext&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1176" target="_blank">ThenAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1176" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Runs the synchronous function on the value if the result that the `resultTask` returns is successful, and returns a result with the value that it returns.
 
@@ -1103,7 +1103,7 @@ var nameResult = await _userService.GetUserAsync(id)
 
 
 ## ThenAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1218" target="_blank">ThenAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1218" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Runs the synchronous function on the value if the result that the `resultTask` returns is successful, and returns the result that it returns.
 
@@ -1149,7 +1149,7 @@ var result = await _userService.GetUserAsync(id)
 
 
 ## ThenAsync&lt;T, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&lt;TNext&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1261" target="_blank">ThenAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1261" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Runs the synchronous function on the value if the result that the `resultTask` returns is successful, and returns the result that it returns.
 
@@ -1198,7 +1198,7 @@ var addressResult = await _userService.GetUserAsync(id)
 
 
 ## ThenAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, Error&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1301" target="_blank">ThenAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1301" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Runs the synchronous function on the value if the result that the `resultTask` returns is successful, and returns a failed result with the error that it returns.
 
@@ -1243,7 +1243,7 @@ var result = await _userService.GetUserAsync(id)
 ```
 
 ## ThenAsync(Task&lt;Result&gt;, Func&lt;ValueTask&lt;Result&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1362" target="_blank">ThenAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1362" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result](../Result/Result.md).
 
@@ -1281,7 +1281,7 @@ The function returns a `ValueTask`, the other kind of task: it is awaited, and a
 The `ThenAsync` method executes the provided asynchronous operation represented by `resultTask` to evaluate its result. This enables chaining multiple asynchronous operations that return `Task<TResult>`.
 
 ## ThenAsync(Task&lt;Result&gt;, Func&lt;ValueTask&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1424" target="_blank">ThenAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1424" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function only if the asynchronous operation `resultTask` represents a successful [Result](../Result/Result.md), and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) returned by the function.
 
@@ -1319,7 +1319,7 @@ The function returns a `ValueTask`, the other kind of task: it is awaited, and a
 Without this overload, an asynchronous function returning an [Error](../Error/Error.md) would return a **successful** `Result<Error>`. To get that on purpose, specify the type arguments: `ThenAsync<Error>(…)`.
 
 ## ThenAsync&lt;T&gt;(Task&lt;Result&gt;, Func&lt;ValueTask&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1489" target="_blank">ThenAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1489" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result](../Result/Result.md).
 
@@ -1361,7 +1361,7 @@ The function returns a `ValueTask`, the other kind of task: it is awaited, and a
 The `ThenAsync` method executes the provided asynchronous operation represented by `resultTask` to evaluate its result. This enables chaining multiple asynchronous operations that return `Task<TResult>`.
 
 ## ThenAsync&lt;T&gt;(Task&lt;Result&gt;, Func&lt;ValueTask&lt;Result&lt;T&gt;&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1553" target="_blank">ThenAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1553" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result](../Result/Result.md).
 
@@ -1405,7 +1405,7 @@ The function returns a `ValueTask`, the other kind of task: it is awaited, and a
 The `ThenAsync` method executes the provided asynchronous operation represented by `resultTask` to evaluate its result. This enables chaining multiple asynchronous operations that return `Task<TResult>`.
 
 ## ThenAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1621" target="_blank">ThenAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1621" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result&lt;T&gt;](../ResultT/ResultT.md).
 
@@ -1447,7 +1447,7 @@ The function returns a `ValueTask`, the other kind of task: it is awaited, and a
 The `ThenAsync` method executes the provided asynchronous operation represented by `resultTask` to evaluate its result. This enables chaining multiple asynchronous operations that return `Task<TResult>`.
 
 ## ThenAsync&lt;T&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1688" target="_blank">ThenAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1688" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function only if the asynchronous operation `resultTask` represents a successful [Result&lt;T&gt;](../ResultT/ResultT.md), and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) returned by the function.
 
@@ -1489,7 +1489,7 @@ The function returns a `ValueTask`, the other kind of task: it is awaited, and a
 Without this overload, an asynchronous function returning an [Error](../Error/Error.md) would return a **successful** `Result<Error>`. To get that on purpose, specify the type arguments: `ThenAsync<T, Error>(…)`.
 
 ## ThenAsync&lt;T, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;TNext&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1761" target="_blank">ThenAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1761" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result&lt;T&gt;](../ResultT/ResultT.md).
 
@@ -1534,7 +1534,7 @@ The function returns a `ValueTask`, the other kind of task: it is awaited, and a
 The `ThenAsync` method executes the provided asynchronous operation represented by `resultTask` to evaluate its result. This enables chaining multiple asynchronous operations that return `Task<TResult>`.
 
 ## ThenAsync&lt;T, TNext&gt;(Task&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&lt;TNext&gt;&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1834" target="_blank">ThenAsyncExtensions.Task.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.Task.cs#L1834" target="_blank">ThenAsyncExtensions.Task.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result&lt;T&gt;](../ResultT/ResultT.md).
 
@@ -1579,7 +1579,7 @@ The function returns a `ValueTask`, the other kind of task: it is awaited, and a
 The `ThenAsync` method executes the provided asynchronous operation represented by `resultTask` to evaluate its result. This enables chaining multiple asynchronous operations that return `Task<TResult>`.
 
 ## ThenAsync(Result, Func&lt;ValueTask&lt;Result&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L51" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L51" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the instance of [Result](../Result/Result.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), as an asynchronous operation.
 
@@ -1623,7 +1623,7 @@ var userAddedResult = await createUserResult.ThenAsync(async () =>
 
 
 ## ThenAsync(Result, Func&lt;ValueTask&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L104" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L104" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function only if the [Result](../Result/Result.md) represents a successful operation, and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) returned by the function.
 
@@ -1665,7 +1665,7 @@ var result = await _userService.DeleteUser(userId)
 
 
 ## ThenAsync&lt;T&gt;(Result, Func&lt;ValueTask&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L136" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L136" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the instance of [Result](../Result/Result.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), as an asynchronous operation.
 
@@ -1710,7 +1710,7 @@ var companyResult = await createUserResult.ThenAsync(async () =>
 
 
 ## ThenAsync&lt;T&gt;(Result, Func&lt;ValueTask&lt;Result&lt;T&gt;&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L161" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L161" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the instance of [Result](../Result/Result.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), as an asynchronous operation.
 
@@ -1758,7 +1758,7 @@ var companyResult = await createUserResult.ThenAsync(async () =>
 
 
 ## ThenAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L217" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L217" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), as an asynchronous operation.
 
@@ -1806,7 +1806,7 @@ var userAddedResult = await createUserResult.ThenAsync(async (user) =>
 
 
 ## ThenAsync&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L274" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L274" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function only if the [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) returned by the function.
 
@@ -1853,7 +1853,7 @@ var result = await _userService.GetUser(userId)
 
 
 ## ThenAsync&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;TNext&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L302" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L302" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), as an asynchronous operation.
 
@@ -1901,7 +1901,7 @@ var companyResult = await createUserResult.ThenAsync(async (user) =>
 
 
 ## ThenAsync&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, ValueTask&lt;Result&lt;TNext&gt;&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L355" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L355" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)), as an asynchronous operation.
 
@@ -1952,7 +1952,7 @@ var companyResult = await createUserResult.ThenAsync(async (user) =>
 
 
 ## ThenAsync(ValueTask&lt;Result&gt;, Func&lt;ValueTask&lt;Result&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L413" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L413" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result](../Result/Result.md).
 
@@ -1998,7 +1998,7 @@ var createUserResult = await _userService.CreateUserAsync(userData)
 
 
 ## ThenAsync(ValueTask&lt;Result&gt;, Func&lt;ValueTask&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L469" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L469" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function only if the asynchronous operation `resultTask` represents a successful [Result](../Result/Result.md), and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) returned by the function.
 
@@ -2041,7 +2041,7 @@ var result = await _userService.DeleteUserAsync(userId)
 
 
 ## ThenAsync&lt;T&gt;(ValueTask&lt;Result&gt;, Func&lt;ValueTask&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L528" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L528" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result](../Result/Result.md).
 
@@ -2091,7 +2091,7 @@ var createUserResult = await _userService.CreateUserAsync(userData)
 
 
 ## ThenAsync&lt;T&gt;(ValueTask&lt;Result&gt;, Func&lt;ValueTask&lt;Result&lt;T&gt;&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L584" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L584" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result](../Result/Result.md).
 
@@ -2143,7 +2143,7 @@ var createUserResult = await _userService.CreateUserAsync(userData)
 
 
 ## ThenAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L649" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L649" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result&lt;T&gt;](../ResultT/ResultT.md).
 
@@ -2193,7 +2193,7 @@ var createUserResult = await _userService.CreateUserAsync(userData)
 
 
 ## ThenAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L709" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L709" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function only if the asynchronous operation `resultTask` represents a successful [Result&lt;T&gt;](../ResultT/ResultT.md), and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) returned by the function.
 
@@ -2240,7 +2240,7 @@ var result = await _userService.GetUserAsync(userId)
 
 
 ## ThenAsync&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;TNext&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L775" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L775" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result&lt;T&gt;](../ResultT/ResultT.md).
 
@@ -2293,7 +2293,7 @@ var createUserResult = await _userService.CreateUserAsync(userData)
 
 
 ## ThenAsync&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, ValueTask&lt;Result&lt;TNext&gt;&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L836" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L836" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result&lt;T&gt;](../ResultT/ResultT.md).
 
@@ -2346,7 +2346,7 @@ var createUserResult = await _userService.CreateUserAsync(userData)
 
 
 ## ThenAsync&lt;T&gt;(ValueTask&lt;Result&gt;, Func&lt;T&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L887" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L887" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Runs the synchronous function if the result that the `resultTask` returns is successful, and returns a result with its value.
 
@@ -2392,7 +2392,7 @@ var result = await _service.DeleteAsync(id)
 
 
 ## ThenAsync(ValueTask&lt;Result&gt;, Func&lt;Result&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L922" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L922" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Runs the synchronous function if the result that the `resultTask` returns is successful, and returns the result that it returns.
 
@@ -2434,7 +2434,7 @@ var result = await _service.DeleteAsync(id)
 
 
 ## ThenAsync&lt;T&gt;(ValueTask&lt;Result&gt;, Func&lt;Result&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L958" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L958" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Runs the synchronous function if the result that the `resultTask` returns is successful, and returns the result that it returns.
 
@@ -2480,7 +2480,7 @@ var result = await _service.DeleteAsync(id)
 
 
 ## ThenAsync(ValueTask&lt;Result&gt;, Func&lt;Error&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L994" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L994" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Runs the synchronous function if the result that the `resultTask` returns is successful, and returns a failed result with the error that it returns.
 
@@ -2522,7 +2522,7 @@ var result = await _service.DeleteAsync(id)
 
 
 ## ThenAsync&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, TNext&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L1033" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L1033" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Runs the synchronous function on the value if the result that the `resultTask` returns is successful, and returns a result with the value that it returns.
 
@@ -2571,7 +2571,7 @@ var nameResult = await _userService.GetUserAsync(id)
 
 
 ## ThenAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L1072" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L1072" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Runs the synchronous function on the value if the result that the `resultTask` returns is successful, and returns the result that it returns.
 
@@ -2617,7 +2617,7 @@ var result = await _userService.GetUserAsync(id)
 
 
 ## ThenAsync&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Result&lt;TNext&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L1112" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L1112" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Runs the synchronous function on the value if the result that the `resultTask` returns is successful, and returns the result that it returns.
 
@@ -2666,7 +2666,7 @@ var addressResult = await _userService.GetUserAsync(id)
 
 
 ## ThenAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Error&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L1149" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L1149" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Runs the synchronous function on the value if the result that the `resultTask` returns is successful, and returns a failed result with the error that it returns.
 
@@ -2711,7 +2711,7 @@ var result = await _userService.GetUserAsync(id)
 ```
 
 ## ThenAsync(ValueTask&lt;Result&gt;, Func&lt;Task&lt;Result&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L1208" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L1208" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result](../Result/Result.md).
 
@@ -2750,7 +2750,7 @@ The function returns a `Task`, the other kind of task: it is awaited, and a `Val
 The `ThenAsync` method executes the provided asynchronous operation represented by `resultTask` to evaluate its result. This enables chaining multiple asynchronous operations that return `ValueTask<TResult>`.
 
 ## ThenAsync(ValueTask&lt;Result&gt;, Func&lt;Task&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L1268" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L1268" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function only if the asynchronous operation `resultTask` represents a successful [Result](../Result/Result.md), and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) returned by the function.
 
@@ -2789,7 +2789,7 @@ The function returns a `Task`, the other kind of task: it is awaited, and a `Val
 Without this overload, an asynchronous function returning an [Error](../Error/Error.md) would return a **successful** `Result<Error>`. To get that on purpose, specify the type arguments: `ThenAsync<Error>(…)`.
 
 ## ThenAsync&lt;T&gt;(ValueTask&lt;Result&gt;, Func&lt;Task&lt;T&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L1332" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L1332" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result](../Result/Result.md).
 
@@ -2832,7 +2832,7 @@ The function returns a `Task`, the other kind of task: it is awaited, and a `Val
 The `ThenAsync` method executes the provided asynchronous operation represented by `resultTask` to evaluate its result. This enables chaining multiple asynchronous operations that return `ValueTask<TResult>`.
 
 ## ThenAsync&lt;T&gt;(ValueTask&lt;Result&gt;, Func&lt;Task&lt;Result&lt;T&gt;&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L1394" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L1394" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result](../Result/Result.md).
 
@@ -2877,7 +2877,7 @@ The function returns a `Task`, the other kind of task: it is awaited, and a `Val
 The `ThenAsync` method executes the provided asynchronous operation represented by `resultTask` to evaluate its result. This enables chaining multiple asynchronous operations that return `ValueTask<TResult>`.
 
 ## ThenAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;Result&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L1460" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L1460" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result&lt;T&gt;](../ResultT/ResultT.md).
 
@@ -2920,7 +2920,7 @@ The function returns a `Task`, the other kind of task: it is awaited, and a `Val
 The `ThenAsync` method executes the provided asynchronous operation represented by `resultTask` to evaluate its result. This enables chaining multiple asynchronous operations that return `ValueTask<TResult>`.
 
 ## ThenAsync&lt;T&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;Error&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L1525" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L1525" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function only if the asynchronous operation `resultTask` represents a successful [Result&lt;T&gt;](../ResultT/ResultT.md), and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) returned by the function.
 
@@ -2963,7 +2963,7 @@ The function returns a `Task`, the other kind of task: it is awaited, and a `Val
 Without this overload, an asynchronous function returning an [Error](../Error/Error.md) would return a **successful** `Result<Error>`. To get that on purpose, specify the type arguments: `ThenAsync<T, Error>(…)`.
 
 ## ThenAsync&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;TNext&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L1597" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L1597" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result&lt;T&gt;](../ResultT/ResultT.md).
 
@@ -3009,7 +3009,7 @@ The function returns a `Task`, the other kind of task: it is awaited, and a `Val
 The `ThenAsync` method executes the provided asynchronous operation represented by `resultTask` to evaluate its result. This enables chaining multiple asynchronous operations that return `ValueTask<TResult>`.
 
 ## ThenAsync&lt;T, TNext&gt;(ValueTask&lt;Result&lt;T&gt;&gt;, Func&lt;T, Task&lt;Result&lt;TNext&gt;&gt;&gt;, Nullable&lt;Boolean&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L1668" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenAsyncExtensions.ValueTask.cs#L1668" target="_blank">ThenAsyncExtensions.ValueTask.cs</a>
 
 Executes the provided asynchronous function, only if the provided asynchronous operation `resultTask` represents a successful instance of [Result&lt;T&gt;](../ResultT/ResultT.md).
 

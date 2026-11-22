@@ -17,7 +17,7 @@ A successful result is returned unchanged, and the function is not called. An ac
 
 
 ## Else&lt;TResult&gt;(TResult, Func&lt;Error, TResult&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ElseExtensions.cs#L47" target="_blank">ElseExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ElseExtensions.cs#L47" target="_blank">ElseExtensions.cs</a>
 
 Executes the provided function only if the instance of `TResult` represents a failed operation (i.e., contains an [Error](../Error/Error.md)).
 
