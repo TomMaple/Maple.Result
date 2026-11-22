@@ -413,10 +413,10 @@ IOperationResult result = Result.Success();
 
 ```csharp
 // before
-var error = Error.NotFound(ErrorUri.None(), "The account has not been found.");
+var error = Error.NotFound(ErrorUri.None(), "Not Found");
 
 // after
-var error = Error.NotFound(ErrorUri.None, "The account has not been found.");
+var error = Error.NotFound(ErrorUri.None, "Not Found");
 ```
 
 ### `Error.TypeUri` and `Error.InstanceUri` are an `ErrorUri`
@@ -453,7 +453,7 @@ if (result.IsError)
     return result.Error;
 ```
 
-Both properties keep the nullable annotations: `Error` is not `null` after `IsError` is `true` or `IsSuccess` is `false`. As properties, they can be used in property patterns, e.g., `result is { IsSuccess: true, Value: var value }`.
+Both properties keep the nullable annotations: `Error` is not `null` after `IsError` is `true` or `IsSuccess` is `false`. To read the value of a successful result, use `result.TryGetValue(out var value)`.
 
 The default serializers write public properties, so the JSON written without a converter now contains both of them (see [Changed JSON output](#changed-json-output)).
 
@@ -675,7 +675,8 @@ The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an
 * **`WithMetadata` with tuples** — `error.WithMetadata(("limit", 100), ("remaining", 0))` on `Error` and `ErrorBuilder` adds several entries in one call.
 * **`Error.WithErrorDetail()`** and **`Error.ToBuilder()`** — see above.
 * **`ErrorCategory.LimitExceeded`** — see above.
-* **`ProblemDetailsMembers`** — the member names of the problem details object (`type`, `title`, `status`, …), shared by the packages that write and read problem details. See [Problem Details Format](problem-details.md).
+* **`HttpErrorTitles` and `HttpErrorUris`** (namespace `Maple.Results.Http`) — the phrase of the default status code of each category (e.g., `HttpErrorTitles.NotFound` is “Not Found”), the title that *RFC 9457* asks for with `about:blank`, and a type *URI* that links to the section of that status code (e.g., `Error.NotFound(HttpErrorUris.NotFound, HttpErrorTitles.NotFound)`). See [HttpErrorTitles](Reference/Http/HttpErrorTitles.md) and [HttpErrorUris](Reference/Http/HttpErrorUris.md).
+* **`ProblemDetailsMembers`** (namespace `Maple.Results.Http`) — the member names of the problem details object (`type`, `title`, `status`, …), shared by the packages that write and read problem details. See [Problem Details Format](problem-details.md).
 * **`Result.Try()` and `Result.TryAsync()`** — run code that can throw and turn the exception into a failed result, with the error that a required mapper creates (e.g., `Result.Try(() => repository.Load(id), ex => …)`); an `OperationCanceledException` is rethrown, a function that returns a `Result`, a `Result<T>` or an `Error` is flattened, and a mapper that returns `null` declines the exception (it is rethrown). See [Try](Reference/Result/Result_Try.md) and [TryAsync](Reference/Result/Result_TryAsync.md).
 * **`TryGetValue` and `TryGetError`** — `if (!GetUser(id).TryGetValue(out var user, out var error)) return error;` reads the value of a `Result<T>` without an exception and gives the early return in one statement; `TryGetError(out var error)` on `Result`, `Result<T>` and `IOperationResult` does the same for the error. See [TryGetValue](Reference/ResultT/ResultT_TryGetValue.md) and [TryGetError](Reference/Result/Result_TryGetError.md).
 * **`ErrorUri.Other()`** — an absolute *URI* whose scheme has no factory method of its own (e.g., `mailto:`), for type and instance URIs read from other services; `Parse` and `TryParse` fall back to it. An `about` *URI* other than `about:blank` (e.g., `about:invalid`) is kept by it too. See [Other](Reference/ErrorUri/ErrorUri_Other.md).

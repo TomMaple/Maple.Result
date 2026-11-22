@@ -34,8 +34,11 @@ var error = Error.LimitExceeded(
 ```
 
 ```csharp
-// Use ErrorUri.None when the problem type is not specified (it resolves to about:blank).
-var error = Error.Failure(ErrorUri.None, "The operation could not be completed.");
+using Maple.Results.Http;
+
+// Use ErrorUri.None when the problem has no semantics beyond the HTTP status code (it resolves to about:blank);
+// the title is then the phrase of the status code.
+var error = Error.Failure(ErrorUri.None, HttpErrorTitles.Failure);
 ```
 
 ## Properties

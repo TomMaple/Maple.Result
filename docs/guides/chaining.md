@@ -117,7 +117,7 @@ Result<Customer> customer = await Result.TryAsync(
 // Only a FormatException is mapped; other exceptions propagate.
 Result<int> number = Result.Try<int, FormatException>(
     () => int.Parse(text),
-    _ => Error.Validation(ErrorUri.None, "The value is not a number."));
+    _ => Error.Validation(ErrorUri.Tag("tag:exampleapp.com,2026:errors:number:invalid"), "The value is not a number."));
 ```
 
 To map only one exception type, pass both type arguments (as above) or type the parameter of the mapper (`(FormatException e) => …`). Do not pass the exception type alone: C# infers all type arguments or none, so `Result.Try<FormatException>(() => int.Parse(text), …)` discards the number and returns a non-generic `Result`.

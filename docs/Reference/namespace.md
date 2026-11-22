@@ -15,7 +15,6 @@ Provides records and interfaces with the types to use as a returned value of an 
 | Name | Description |
 | ---- | ----------- |
 | [ErrorBuilder](ErrorBuilder/ErrorBuilder.md) | A mutable builder of an immutable [Error](Error/Error.md), for assembling an error step by step. |
-| [ProblemDetailsMembers](ProblemDetailsMembers.md) | The member names of the problem details object (RFC 9457) that represents an [Error](Error/Error.md). |
 | [ResultConfiguration](ResultConfiguration/ResultConfiguration.md) | Global settings of the library, e.g., the default context of the asynchronous extension methods. |
 
 ## Interfaces
@@ -30,3 +29,4 @@ Provides records and interfaces with the types to use as a returned value of an 
 
 ## See Also
 * [Maple.Results.Extensions namespace](Extensions/namespace.md)
+* [Maple.Results.Http namespace](Http/namespace.md)
