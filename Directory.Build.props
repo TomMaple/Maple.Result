@@ -13,6 +13,17 @@
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
   </PropertyGroup>
 
+  <!-- The version of the Roslyn packages that the test projects compile their snippets and fixed code with (#330): 5.0.0,
+       the oldest compiler that has to load the analyzers (#304), which keep it as their own version. The CI job of the newer
+       SDK sets the version of the compiler of that SDK (and restores without the lock files, which pin 5.0.0). The version
+       is written into each test assembly, where a test checks that it is the one that is loaded. -->
+  <PropertyGroup>
+    <TestRoslynVersion Condition="'$(TestRoslynVersion)' == ''">5.0.0</TestRoslynVersion>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(IsTestProject)' == 'true'">
+    <AssemblyMetadata Include="TestRoslynVersion" Value="$(TestRoslynVersion)" />
+  </ItemGroup>
+
   <!-- CI fails on any warning and on a lock file that does not match the project files; local builds only report
        warnings. -->
   <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">

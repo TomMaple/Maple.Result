@@ -1,7 +1,7 @@
 # Builds, tests and packs the library on pushes to main and on pull requests. Nothing is published from here:
 # releases go through the "Draft release" and "Publish" workflows (see docs/releasing.md).
-# The job id "build" is a required status check: keep the name, and never add a "paths" filter. On pull requests
-# that change no code (e.g. only docs/), "build" is skipped, which counts as passed. The job "reference" checks the
+# The job ids "build" and "newer-sdk" are required status checks: keep the names, and never add a "paths" filter. On pull
+# requests that change no code (e.g. only docs/), both are skipped, which counts as passed. The job "reference" checks the
 # reference pages against the sources; it always runs, because a change of the documentation alone can break them.
 # For more information, see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
@@ -179,3 +179,72 @@ jobs:
           ${{ env.ARTIFACTS_PATH }}/*.snupkg
         retention-days: 7
         if-no-files-found: error
+
+  # Builds and tests with the .NET SDK after the one of "build" (#330). Consumers may compile the package with a newer
+  # compiler, and this library depends on what the compiler binds a call to (extension methods, overload resolution
+  # priorities, the analyzer). The binding, analyzer and code-fix tests compile their snippets with the Roslyn packages of
+  # that SDK (TestRoslynVersion, Directory.Build.props); a test of each project checks that this version is the one
+  # loaded. The tests still target net10.0, so the .NET 10 runtime is installed too.
+  # When the SDK moves on (e.g., to .NET 12), keep the job id (a required check) and update both versions below.
+  newer-sdk:
+    needs: changes
+    if: ${{ !cancelled() && needs.changes.outputs.code != 'false' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    env:
+      DOTNET_VERSION: 11.0.x
+      # The version of Microsoft.CodeAnalysis.CSharp that matches the compiler of that SDK (11.0.100: 5.12.0).
+      TEST_ROSLYN_VERSION: 5.12.0
+    steps:
+    - name: Checkout
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
+
+    # The last version is the SDK that builds (there is no global.json); the .NET 10 runtime runs the tests.
+    - name: Setup .NET 10 and the newer SDK
+      uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
+      with:
+        dotnet-version: |
+          10.0.x
+          ${{ env.DOTNET_VERSION }}
+
+    # Fails when another SDK builds. A compiler of another version than TEST_ROSLYN_VERSION (e.g., of a new feature band)
+    # is only a warning, so that it does not block the pull requests until the version is raised.
+    - name: Check the SDK and its compiler
+      run: |
+        SDK=$(dotnet --version)
+        echo "SDK: ${SDK}"
+        if [ "${SDK%%.*}" != "${DOTNET_VERSION%%.*}" ]; then
+          echo "::error::The SDK ${SDK} builds, not ${DOTNET_VERSION}."
+          exit 1
+        fi
+        SDK_PATH=$(dotnet --list-sdks | grep "^${SDK} " | sed -E 's/.*\[(.*)\]$/\1/')
+        COMPILER=$(dotnet exec "${SDK_PATH}/${SDK}/Roslyn/bincore/csc.dll" -version)
+        echo "Compiler: ${COMPILER}"
+        COMPILER_MINOR=$(echo "$COMPILER" | cut -d. -f1,2)
+        if [ "$COMPILER_MINOR" != "$(echo "$TEST_ROSLYN_VERSION" | cut -d. -f1,2)" ]; then
+          echo "::warning::The compiler of the SDK ${SDK} is ${COMPILER}; the tests compile with Roslyn ${TEST_ROSLYN_VERSION}. Update TEST_ROSLYN_VERSION in ci.yml."
+        fi
+
+    # Not in locked mode: the lock files pin the Roslyn packages of the default version.
+    - name: Restore dependencies
+      run: dotnet restore -p:RestoreLockedMode=false "-p:TestRoslynVersion=${TEST_ROSLYN_VERSION}"
+
+    # Directory.Build.props turns warnings into errors on GitHub Actions, also those of the newer compiler.
+    - name: Build
+      run: dotnet build --no-restore --configuration Release "-p:TestRoslynVersion=${TEST_ROSLYN_VERSION}"
+
+    - name: Test
+      run: dotnet test --no-build --configuration Release --results-directory "$RESULTS_PATH" --report-xunit-trx
+
+    - name: Upload test results
+      if: ${{ failure() }}
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+      with:
+        name: test-results-newer-sdk
+        path: ${{ env.RESULTS_PATH }}
+        retention-days: 7
+        if-no-files-found: warn
