@@ -176,7 +176,7 @@ A successful result with the value of the `function`; otherwise, a failed one wi
 ```csharp
 Result<int> number = Result.Try<int, FormatException>(
     () => int.Parse(text),
-    _ => Error.Validation(ErrorUri.None, "The value is not a number."));
+    _ => Error.Validation(ErrorUri.Tag("tag:exampleapp.com,2026:errors:number:invalid"), "The value is not a number."));
 ```
 
 ## Try(Func&lt;Result&gt;, Func&lt;Exception, Error&gt;)

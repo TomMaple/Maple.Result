@@ -86,7 +86,7 @@ The analyzer reports what compiles. A delegate that fits no overload is rejected
 * not in an `.editorconfig` file (`dotnet_diagnostic.MR0001.severity`, or a line for the category or for all rules),
 * not with `#pragma warning disable`.
 
-A call that is meant as it is written says so in the code, and is then not reported: explicit type arguments or `Result.FromValue` keep a task as a value (MR0001), and so does a type argument written as the type of the value (`Result<Task<int>> r = GetAsync();`, MR0003); a discard keeps a task that is not awaited (e.g., `e => _ = LogAsync(e)` or `e => { _ = LogAsync(e); }`, MR0002). The page of each rule has its way. Two things still silence the errors:
+A call that is meant as it is written says so in the code, and is then not reported: explicit type arguments or `Result.FromValue` keep a task as a value (MR0001), and so does a type argument written as the type of the value (`Result<Task<int>> r = GetAsync();`, MR0003); a discard keeps a task that is not awaited (e.g., `e => _ = LogAsync(e)` or `e => { _ = LogAsync(e); }`, MR0002). The page of each rule has its way. Three things still silence the errors:
 
 * `[SuppressMessage]` on the member or on the assembly;
 * switching the analyzers off as a whole: the MSBuild property `RunAnalyzers` set to `false` (or `RunAnalyzersDuringBuild`, for builds only), which switches off every analyzer of the project;

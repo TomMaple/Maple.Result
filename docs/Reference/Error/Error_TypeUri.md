@@ -16,7 +16,7 @@ public ErrorUri TypeUri { get; }
 The *URI* that identifies the type of the problem; its text is the [Value](../ErrorUri/ErrorUri_Value.md).
 
 ## Remarks
-This is a mandatory property: the [ErrorUri](../ErrorUri/ErrorUri.md) that the error was created with, which identifies the type of the problem.
+The [ErrorUri](../ErrorUri/ErrorUri.md) that the error was created with, which identifies the type of the problem. Every error of this library has one: each factory method takes it. *RFC 9457* (section 3.1.1) does not require the `type` member, and reads a missing one as `about:blank`.
 
 > [!NOTE]
 > [Error](Error.md) is immutable, so this property is set when the error is created: by the factory methods (e.g., [Validation](Error_Validation.md)) or an [ErrorBuilder](../ErrorBuilder/ErrorBuilder.md). To change it, use [ToBuilder()](Error_ToBuilder.md).
@@ -27,7 +27,7 @@ This is a mandatory property: the [ErrorUri](../ErrorUri/ErrorUri.md) that the e
 To check the type of an error, compare it with the [ErrorUri](../ErrorUri/ErrorUri.md) that defines it: two [ErrorUri](../ErrorUri/ErrorUri.md) values are equal when their texts are equal (ordinal; see [Equals(ErrorUri)](../ErrorUri/ErrorUri_Equals.md)). A pattern compares the text: `error.TypeUri.Value is "…"`.
 
 The value of this property should be:
-* `about:blank`,
+* `about:blank` ([ErrorUri.None](../ErrorUri/ErrorUri_None.md)), with the phrase of the HTTP status code as the title (*RFC 9457*, section 4.2.1; see [HttpErrorTitles](../Http/HttpErrorTitles.md)),
 * a *URI Locator*, or
 * a *URI Tag*.
 

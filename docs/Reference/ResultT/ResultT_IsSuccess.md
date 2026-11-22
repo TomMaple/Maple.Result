@@ -16,7 +16,7 @@ public bool IsSuccess { get; }
 `true` if the operation was successful; otherwise, `false`.
 
 ## Remarks
-When it is `true`, [Value](ResultT_Value.md) can be read (it throws on a failed result). The property is annotated with `[MemberNotNullWhen(false, nameof(Error))]`, so the compiler treats [Error](ResultT_Error.md) as non-null when it is `false`. It can also be used in property patterns (e.g., `result is { IsSuccess: true, Value: var value }`; the pattern reads `Value` only after `IsSuccess` matched).
+When it is `true`, [Value](ResultT_Value.md) can be read (it throws on a failed result). The property is annotated with `[MemberNotNullWhen(false, nameof(Error))]`, so the compiler treats [Error](ResultT_Error.md) as non-null when it is `false`. To read the value of a successful result without an exception, use [TryGetValue](ResultT_TryGetValue.md) (e.g., `if (result.TryGetValue(out var value))`).
 
 A result is successful exactly when its [Error](ResultT_Error.md) is `null`. It is the opposite of [IsError](ResultT_IsError.md).
 

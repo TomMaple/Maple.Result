@@ -74,18 +74,20 @@ See more: [ErrorCategory](../Reference/ErrorCategory.md)
 | `Detail` | `string` | The human-readable explanation specific to this occurrence of the problem. | No | Special character `/` is not allowed in the email address. |
 | `DetailTemplated` | `TemplatedMessage` | A structure to generate a localized detail message. | No | `{ "templateId": "errors.signup.email.specialcharacters", "params": { "invalidCharacter": "/" }}` |
 | `InstanceUri` | `ErrorUri?` | A *URI* that identifies the specific occurrence of the problem. | No | `https://api.exampleapp.com/errors/8783927589734857/details` |
-| `ErrorDetails` | `IReadOnlyList<ErrorDetail>` | The collection of additional error details. | No | `[{ "propertyPointer": "/email", "detail": "Invalid format", "detailTemplated": { "templateId": "errors.signup.email.invalidFormat" }}]` |
+| `ErrorDetails` | `IReadOnlyList<ErrorDetail>` | The collection of additional error details. | No | `[{ "pointer": "/email", "detail": "Invalid format", "detailTemplated": { "templateId": "errors.signup.email.invalidFormat" }}]` |
 | `Metadata` | `IReadOnlyDictionary<string, object?>` | Additional, machine-readable members of the problem (RFC 9457 *extension members*). | No | `{ "limit": 100, "resetAt": "2026-12-01T00:00:00Z" }` |
 
 See more: [Error](../Reference/Error/Error.md)
 
 ## Type URI
-It is a mandatory URI that identifies the type of the problem. It can be:
-* `about:blank` (`ErrorUri.None`) — the type is not specified,
+It is the URI that identifies the type of the problem. Every error of this library has one: each factory method takes it. RFC 9457 (section 3.1.1) does not require the `type` member, and reads a missing one as `about:blank`. It can be:
+* `about:blank` (`ErrorUri.None`) — the problem has no semantics beyond the HTTP status code; the title should then be the phrase of the status code (RFC 9457, section 4.2.1), e.g., `Error.NotFound(ErrorUri.None, HttpErrorTitles.NotFound)`,
 * *URI Locator* (`ErrorUri.Locator(…)`) — dereferencing it SHOULD provide human-readable documentation for the problem type (use an absolute rather than a relative value) (e.g., `https://exampleapp.com/docs/errors/signup/validation/email-required`),
 * *URI Tag* (`ErrorUri.Tag(…)`) — it is not dereferenceable and uniquely represents the type of the problem (e.g., `tag:exampleapp.com,2026:errors.user.signup.validation.emailRequired`),
 * *URN* (`ErrorUri.Urn(…)`) — a persistent, non-dereferenceable name of the type of the problem (e.g., `urn:exampleapp:errors:signup:email-required`),
 * relative reference (`ErrorUri.Relative(…)`) — a full path resolved against the base URI of the response (e.g., `/errors/signup/email-required`); RFC 9457 recommends absolute URIs when possible.
+
+An error with a title of its own (e.g., “The order has not been found.”) gets a type of its own. `HttpErrorTitles` (in the `Maple.Results.Http` namespace, so that using it is a choice) has the phrase of the [default status code](../problem-details.md#category-and-status) of each category, and `HttpErrorUris` a *URI Locator* of the section of that status code in RFC 9110 (RFC 6585 for 429), for a type that has no semantics of its own but can be dereferenced: `Error.NotFound(HttpErrorUris.NotFound, HttpErrorTitles.NotFound)`.
 
 When the kind is not known in advance (e.g., a type URI read from another service), `ErrorUri.Parse(…)` and `ErrorUri.TryParse(…)` detect it from the value and apply the same validation. A URI with any other scheme (e.g., `mailto:`, which RFC 9457 allows) becomes `ErrorUri.Other(…)`.
 

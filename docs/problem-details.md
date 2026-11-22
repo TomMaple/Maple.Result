@@ -2,7 +2,7 @@
 
 How an `Error` is written as a problem details object ([RFC 9457](https://datatracker.ietf.org/doc/html/rfc9457)) and read back. The packages that write problem details (`Maple.Result.Extensions.AspNetCore`, `MinimalApi`, `Functions.Worker`) and the ones that read them (`Maple.Result.Extensions.HttpClient`) follow this format, so an error written by one service is read the same way by another.
 
-The member names are available as constants in [ProblemDetailsMembers](Reference/ProblemDetailsMembers.md).
+The member names are available as constants in [ProblemDetailsMembers](Reference/Http/ProblemDetailsMembers.md), in the `Maple.Results.Http` namespace.
 
 ## Contents
 * [Example](#example)
@@ -148,6 +148,8 @@ Members added by the host are not reserved either: e.g., ASP.NET Core adds `trac
 | `NotImplemented`   | 501                        | 501                     |
 | `Unavailable`      | 503                        | 502, 503                |
 
+[HttpErrorTitles](Reference/Http/HttpErrorTitles.md) (namespace `Maple.Results.Http`) has the phrase of the status code that each category writes by default, the title of an error whose type is `about:blank` (RFC 9457, section 4.2.1), and [HttpErrorUris](Reference/Http/HttpErrorUris.md) a type that links to the section of that status code.
+
 A status code that a category does not write is read by its meaning: `410` (Gone) is a resource that is not there, `412` (Precondition Failed) and `423` (Locked) are conflicts with the state of the resource, and `413`, `414` and `431` reject the size of the request (input-size checks are `Validation`, not `LimitExceeded`). A server error is never read as `Failure`, which is an expected error and is written as `422`: a gateway that passes on an upstream `502` answers `503`, and any other `5xx` answers `500`.
 
 `LimitExceeded` (429) is new in 3.0; the 2.x packages map 429 to `Failure`. The reading of `410`, `412`, `413`, `414`, `423`, `431`, `502` and the other `5xx` codes is new in 3.0 too; the 2.x packages read all of them as `Failure`. See [ErrorCategory](Reference/ErrorCategory.md) for when to use each category.
@@ -163,7 +165,7 @@ Problem details written by other services do not always follow this format. The 
 * **Other members**: every member that is not a reserved member becomes a metadata entry with its key as written (e.g., `traceId`).
 
 ## See Also
-* [ProblemDetailsMembers](Reference/ProblemDetailsMembers.md)
+* [ProblemDetailsMembers](Reference/Http/ProblemDetailsMembers.md)
 * [Error](Reference/Error/Error.md)
 * [ErrorCategory](Reference/ErrorCategory.md)
 * [RFC 9457: Problem Details for HTTP APIs](https://datatracker.ietf.org/doc/html/rfc9457)

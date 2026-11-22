@@ -43,7 +43,7 @@ ErrorDetail.Pointer("a/b", "c~d");         // /a~1b/c~0d
 ErrorDetail.Pointer("rows", row.Index);    // /rows/3, e.g., with a uint index
 ErrorDetail.Pointer();                     // (empty): the whole input
 
-var error = Error.Validation(ErrorUri.None, "Invalid data.")
+var error = Error.Validation(ErrorUri.Tag("tag:exampleapp.com,2026:errors:items:invalid"), "Invalid data.")
     .WithErrorDetail(ErrorDetail.Pointer("items", 1, fieldName), "The value is required.");
 ```
 

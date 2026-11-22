@@ -42,7 +42,7 @@ IUser user = GetUser();
 // Result<IUser> bad = user;               // CS0029: the value is declared as an interface
 Result<IUser> good = Result.FromValue(user);
 
-Result<int> failed = Error.NotFound(ErrorUri.None, "Missing");
+Result<int> failed = Error.NotFound(ErrorUri.Tag("tag:exampleapp.com,2026:errors:item:not-found"), "Missing");
 // Result<object> wrong = failed;          // compiles: a successful result whose value is the failed result
 Result<object> converted = failed.Then(x => (object)x);   // a failed Result<object> with the same error
 ```

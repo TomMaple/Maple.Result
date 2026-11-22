@@ -8,9 +8,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+using Maple.Results.Http;
 using System;
 
-namespace Maple.Results.Tests.Unit;
+namespace Maple.Results.Tests.Unit.Http;
 
 public class ProblemDetailsMembersUnitTests
 {

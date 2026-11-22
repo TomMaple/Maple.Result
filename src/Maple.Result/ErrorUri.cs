@@ -94,6 +94,11 @@ public readonly record struct ErrorUri : IParsable<ErrorUri>
     /// <remarks>
     ///     It equals <see langword="default" />(<see cref="ErrorUri" />) and <c>ErrorUri.Parse("about:blank")</c>.
     ///     <i>RFC 9457</i> defines <c>about:blank</c> as the type of problem that has no additional semantics beyond the HTTP status code.
+    ///     <para>
+    ///         With <c>about:blank</c>, the title should be the phrase of the HTTP status code (<i>RFC 9457</i>, section 4.2.1), e.g.,
+    ///         <c>Error.NotFound(ErrorUri.None, HttpErrorTitles.NotFound)</c> for “Not Found” (see <see cref="Http.HttpErrorTitles" />, in
+    ///         <c>Maple.Results.Http</c>). An error with a title of its own (e.g., “The account has not been found.”) gets a type of its own.
+    ///     </para>
     /// </remarks>
     public static ErrorUri None { get; } = new(NoneValue);
 

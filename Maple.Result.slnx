@@ -50,7 +50,6 @@
   <Folder Name="/docs/Reference/">
     <File Path="docs/Reference/ErrorCategory.md" />
     <File Path="docs/Reference/namespace.md" />
-    <File Path="docs/Reference/ProblemDetailsMembers.md" />
   </Folder>
   <Folder Name="/docs/Reference/Error/">
     <File Path="docs/Reference/Error/Error.md" />
@@ -167,6 +166,12 @@
     <File Path="docs/Reference/Extensions/ThenExtensions_Then.md" />
     <File Path="docs/Reference/Extensions/ThenAsyncExtensions.md" />
     <File Path="docs/Reference/Extensions/ThenAsyncExtensions_ThenAsync.md" />
+  </Folder>
+  <Folder Name="/docs/Reference/Http/">
+    <File Path="docs/Reference/Http/HttpErrorTitles.md" />
+    <File Path="docs/Reference/Http/HttpErrorUris.md" />
+    <File Path="docs/Reference/Http/namespace.md" />
+    <File Path="docs/Reference/Http/ProblemDetailsMembers.md" />
   </Folder>
   <Folder Name="/docs/Reference/IOperationResult/">
     <File Path="docs/Reference/IOperationResult/IOperationResult.md" />
