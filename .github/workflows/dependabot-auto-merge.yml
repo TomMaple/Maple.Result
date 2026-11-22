@@ -1,6 +1,7 @@
 # Enables auto-merge (squash) for Dependabot pull requests with NuGet minor and patch updates; GitHub merges them
 # once the required checks pass. NuGet majors and every GitHub Actions update wait for a manual review.
-# All NuGet references are test dependencies; revisit this if the library ever gets runtime dependencies.
+# The library has no runtime dependencies: the NuGet references are those of the tests and of the build, and the compiler
+# packages of the analyzers, whose updates dependabot.yml ignores (#331). Revisit this if the library gets runtime dependencies.
 # Needs "Allow auto-merge" and the main ruleset with required checks (without them the merge happens immediately).
 # A merge made with GITHUB_TOKEN does not trigger push workflows on main; they catch up on the next merge.
 
