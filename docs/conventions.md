@@ -32,9 +32,19 @@ over it.
 	* `dotnet format --verify-no-changes`,
 	* `python .github/scripts/check_reference_docs.py`: the reference pages agree with the code (see *Documentation*).
 
-	The required checks are `build`, `pr-title`, `Analyze (csharp)` and `Analyze (actions)`. On a pull request without
-	code changes (e.g., only `docs/`), `build` and `Analyze (csharp)` are skipped, which counts as passed. The job
-	`reference` checks the reference pages on every pull request, also on one that changes only the documentation.
+	The required checks are `build`, `newer-sdk`, `pr-title`, `Analyze (csharp)` and `Analyze (actions)`. On a pull
+	request without code changes (e.g., only `docs/`), `build`, `newer-sdk` and `Analyze (csharp)` are skipped, which
+	counts as passed. The job `reference` checks the reference pages on every pull request, also on one that changes
+	only the documentation.
+
+	`newer-sdk` builds and tests with the .NET SDK after the one of `build` (now .NET 11), because consumers may compile
+	the package with a newer compiler than ours. The test projects compile their snippets (the binding, analyzer and
+	code-fix tests) with the Roslyn packages of the version `TestRoslynVersion` (`Directory.Build.props`): 5.0.0 by
+	default, the oldest compiler that has to load the analyzers, and the compiler of that SDK in `newer-sdk`
+	(`TEST_ROSLYN_VERSION` in `ci.yml`). To run them locally with it, install that SDK and run
+	`dotnet test -c Release -p:TestRoslynVersion=5.12.0`, then revert the lock files that it updates. The job
+	warns when the compiler of the SDK has another version than `TEST_ROSLYN_VERSION`: raise it with the next feature band
+	or major version of the SDK.
 1. Pull requests:
 	* The title follows the commit message rules: a squash merge turns the title into the subject of the commit on
 	  `main` and the description into its body, so the release notes and the version bump come from them.
