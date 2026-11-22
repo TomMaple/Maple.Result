@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/TemplatedMessage.cs#L160" target="_blank">TemplatedMessage.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/TemplatedMessage.cs#L160" target="_blank">TemplatedMessage.cs</a>
 
 Returns a hash code that is consistent with [Equals(TemplatedMessage)](TemplatedMessage_Equals.md), incorporating the content of the [Parameters](TemplatedMessage_Parameters.md) collection.
 

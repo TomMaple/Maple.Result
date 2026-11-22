@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/ErrorUri.cs#L184" target="_blank">ErrorUri.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/ErrorUri.cs#L189" target="_blank">ErrorUri.cs</a>
 
 Creates a new instance of the [ErrorUri](ErrorUri.md) record representing a relative *URI* reference with the full path (*RFC 3986*, section 4.2).
 

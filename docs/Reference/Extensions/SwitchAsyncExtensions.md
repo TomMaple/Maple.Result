@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Results.Extensions](namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/SwitchAsyncExtensions.Task.cs" target="_blank">SwitchAsyncExtensions.Task.cs</a>, <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/SwitchAsyncExtensions.ValueTask.cs" target="_blank">SwitchAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/SwitchAsyncExtensions.Task.cs" target="_blank">SwitchAsyncExtensions.Task.cs</a>, <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/SwitchAsyncExtensions.ValueTask.cs" target="_blank">SwitchAsyncExtensions.ValueTask.cs</a>
 
 Provides extension methods that await a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) or a [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1) of a [Result](../Result/Result.md) or a [Result&lt;T&gt;](../ResultT/ResultT.md) and run one of two actions depending on whether the result is successful.
 

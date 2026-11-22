@@ -24,7 +24,7 @@ A returned `Result` or `Result<T>` is flattened, and a returned [Error](../Error
 
 
 ## Then(Result, Func&lt;Result&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenExtensions.cs#L50" target="_blank">ThenExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenExtensions.cs#L50" target="_blank">ThenExtensions.cs</a>
 
 Executes the provided function only if the instance of [Result](../Result/Result.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)).
 
@@ -62,7 +62,7 @@ var userAddedResult = createUserResult.Then(() =>
 
 
 ## Then(Result, Func&lt;Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenExtensions.cs#L91" target="_blank">ThenExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenExtensions.cs#L91" target="_blank">ThenExtensions.cs</a>
 
 Executes the provided function only if the instance of [Result](../Result/Result.md) represents a successful operation, and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) returned by the function.
 
@@ -99,7 +99,7 @@ var result = _userService.DeleteUser(userId)
 
 
 ## Then&lt;T&gt;(Result, Func&lt;T&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenExtensions.cs#L128" target="_blank">ThenExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenExtensions.cs#L128" target="_blank">ThenExtensions.cs</a>
 
 Executes the provided function only if the instance of [Result](../Result/Result.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)).
 
@@ -138,7 +138,7 @@ var companyResult = createUserResult.Then(() =>
 
 
 ## Then&lt;T&gt;(Result, Func&lt;Result&lt;T&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenExtensions.cs#L161" target="_blank">ThenExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenExtensions.cs#L161" target="_blank">ThenExtensions.cs</a>
 
 Executes the provided function only if the instance of [Result](../Result/Result.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)).
 
@@ -180,7 +180,7 @@ var companyResult = createUserResult.Then(() =>
 
 
 ## Then&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, Result&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenExtensions.cs#L200" target="_blank">ThenExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenExtensions.cs#L200" target="_blank">ThenExtensions.cs</a>
 
 Executes the provided function only if the instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)).
 
@@ -222,7 +222,7 @@ var userAddedResult = createUserResult.Then(user =>
 
 
 ## Then&lt;T&gt;(Result&lt;T&gt;, Func&lt;T, Error&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenExtensions.cs#L242" target="_blank">ThenExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenExtensions.cs#L242" target="_blank">ThenExtensions.cs</a>
 
 Executes the provided function only if the instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation, and returns a failed [Result](../Result/Result.md) with the [Error](../Error/Error.md) returned by the function.
 
@@ -263,7 +263,7 @@ var result = _userService.GetUser(userId)
 
 
 ## Then&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, TNext&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenExtensions.cs#L285" target="_blank">ThenExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenExtensions.cs#L285" target="_blank">ThenExtensions.cs</a>
 
 Executes the provided function only if the instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)).
 
@@ -305,7 +305,7 @@ var companyResult = createUserResult.Then(user =>
 
 
 ## Then&lt;T, TNext&gt;(Result&lt;T&gt;, Func&lt;T, Result&lt;TNext&gt;&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Extensions/ThenExtensions.cs#L324" target="_blank">ThenExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/ThenExtensions.cs#L324" target="_blank">ThenExtensions.cs</a>
 
 Executes the provided function only if the instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)).
 

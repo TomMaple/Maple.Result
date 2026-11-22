@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/ErrorUri.cs#L98" target="_blank">ErrorUri.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/ErrorUri.cs#L103" target="_blank">ErrorUri.cs</a>
 
 Gets the no-value [ErrorUri](ErrorUri.md): `about:blank`.
 

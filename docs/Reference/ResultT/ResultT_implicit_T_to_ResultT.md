@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.1/src/Maple.Result/Result.cs#L407" target="_blank">Result.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Result.cs#L407" target="_blank">Result.cs</a>
 
 Defines an implicit conversion of a given value of the type `T` to a successful [Result&lt;T&gt;](ResultT.md) (with a value), with the provided value.
 
