@@ -41,6 +41,8 @@ public class NamespaceUnitTests
 
     // The HTTP definitions are opt-in: a separate namespace, so that using them is an explicit choice.
     [Theory]
+    [InlineData(typeof(HttpErrorTitles))]
+    [InlineData(typeof(HttpErrorUris))]
     [InlineData(typeof(ProblemDetailsMembers))]
     public void Namespace_HttpType_IsMapleResultsHttp(Type type)
     {
