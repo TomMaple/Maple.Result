@@ -8,7 +8,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-namespace Maple.Results;
+namespace Maple.Results.Http;
 
 /// <summary>
 ///     The member names of the problem details object (<i>RFC 9457</i>) that represents an <see cref="Error" />.

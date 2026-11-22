@@ -9,6 +9,7 @@
  */
 
 using Maple.Results.Extensions;
+using Maple.Results.Http;
 using System;
 using System.Linq;
 
@@ -29,7 +30,6 @@ public class NamespaceUnitTests
     [InlineData(typeof(ErrorUri))]
     [InlineData(typeof(TemplatedMessage))]
     [InlineData(typeof(ResultConfiguration))]
-    [InlineData(typeof(ProblemDetailsMembers))]
     public void Namespace_PublicType_IsMapleResults(Type type)
     {
         // Act
@@ -37,6 +37,18 @@ public class NamespaceUnitTests
 
         // Assert
         result.ShouldBe("Maple.Results");
+    }
+
+    // The HTTP definitions are opt-in: a separate namespace, so that using them is an explicit choice.
+    [Theory]
+    [InlineData(typeof(ProblemDetailsMembers))]
+    public void Namespace_HttpType_IsMapleResultsHttp(Type type)
+    {
+        // Act
+        var result = type.Namespace;
+
+        // Assert
+        result.ShouldBe("Maple.Results.Http");
     }
 
     [Fact]

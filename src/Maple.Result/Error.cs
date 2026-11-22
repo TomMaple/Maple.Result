@@ -9,6 +9,7 @@
  */
 
 using Maple.Results.Helpers;
+using Maple.Results.Http;
 using Maple.Results.Validators;
 using System;
 using System.Collections.Generic;

@@ -8,6 +8,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+using Maple.Results.Http;
 using System;
 using System.Collections.Frozen;
 
