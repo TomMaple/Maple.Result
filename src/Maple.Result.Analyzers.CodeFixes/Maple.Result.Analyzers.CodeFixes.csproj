@@ -18,7 +18,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- The same version as the compiler API of the analyzers. -->
+    <!-- The same version as the compiler API of the analyzers. Dependabot ignores it, and CompilerReferenceUnitTests fails when it
+         is raised (#331). -->
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.0.0" PrivateAssets="all" />
   </ItemGroup>
 
