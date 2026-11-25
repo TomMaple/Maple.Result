@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Results.Extensions](namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/MatchExtensions.cs" target="_blank">MatchExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.3/src/Maple.Result/Extensions/MatchExtensions.cs" target="_blank">MatchExtensions.cs</a>
 
 Provides extension methods for the [Result](../Result/Result.md) and [Result&lt;T&gt;](../ResultT/ResultT.md) records that fold a result into one value: a function for the success and a function for the error, which return the same type.
 

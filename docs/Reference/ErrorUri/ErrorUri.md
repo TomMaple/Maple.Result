@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/ErrorUri.cs" target="_blank">ErrorUri.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.3/src/Maple.Result/ErrorUri.cs" target="_blank">ErrorUri.cs</a>
 
 Provides a validated *URI* for the purpose of the *Error* record properties like [InstanceUri](../Error/Error_InstanceUri.md) and [TypeUri](../Error/Error_TypeUri.md).
 

@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Results.Extensions](namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs" target="_blank">LinqAsyncExtensions.Task.cs</a>, <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.3/src/Maple.Result/Extensions/LinqAsyncExtensions.Task.cs" target="_blank">LinqAsyncExtensions.Task.cs</a>, <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.3/src/Maple.Result/Extensions/LinqAsyncExtensions.ValueTask.cs" target="_blank">LinqAsyncExtensions.ValueTask.cs</a>
 
 Provides extension methods for the [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task)&lt;[Result&lt;T&gt;](../ResultT/ResultT.md)&gt; and the [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask)&lt;[Result&lt;T&gt;](../ResultT/ResultT.md)&gt; to allow use it with asynchronous methods using LINQ query syntax.
 
