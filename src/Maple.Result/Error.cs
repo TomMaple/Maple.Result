@@ -209,14 +209,15 @@ public sealed record Error
     ///         parsing <see cref="Detail" /> (e.g., a retry delay). The library does not define any well-known keys.
     ///     </para>
     ///     <para>
-    ///         Keys are compared ordinally (case-sensitive). A key is not empty and does not start or end with white space (white space inside is
-    ///         allowed); this is a rule of this library. Keys should start with a letter, consist of letters, digits and <c>_</c>,
+    ///         Keys are compared ignoring case, in lookups too (e.g., <c>Metadata["retryafter"]</c> finds <c>retryAfter</c>), and the stored
+    ///         spelling of a key is the one that is enumerated and serialized. A key is not empty and does not start or end with white space
+    ///         (white space inside is allowed); this is a rule of this library. Keys should start with a letter, consist of letters, digits and <c>_</c>,
     ///         and be at least 3 characters long (<i>RFC 9457</i>, section 4); this is a recommendation and is not enforced.
     ///         Keys must not match the top-level members of the problem details format (<see cref="ProblemDetailsMembers" />, case-insensitively):
     ///         <c>type</c>, <c>title</c>, <c>status</c>, <c>detail</c>, <c>instance</c>, <c>errors</c> and <c>detailTemplated</c>;
-    ///         <see cref="WithMetadata(string, object?)" /> and <see cref="ErrorBuilder.WithMetadata(string, object?)" /> reject them,
-    ///         and they reject a key that differs only in case from an existing key (e.g., <c>retryAfter</c> next to <c>RetryAfter</c>):
-    ///         both would be the same member of a problem details object.
+    ///         <see cref="WithMetadata(string, object?)" /> and <see cref="ErrorBuilder.WithMetadata(string, object?)" /> reject them.
+    ///         A key that differs only in case from an existing key (e.g., <c>retryAfter</c> next to <c>RetryAfter</c>) would be the same member of
+    ///         a problem details object, so it replaces the entry, with the spelling of the last call; define each key once, e.g., as a constant.
     ///     </para>
     ///     <para>
     ///         Values may be <see langword="null" />. Use <see cref="TryGetMetadata{T}" /> to read a value as a specific type.
@@ -339,8 +340,8 @@ public sealed record Error
     /// </returns>
     /// <remarks>
     ///     <para>
-    ///         The match is strict: no conversion is performed (e.g., a stored <see cref="int" /> is not read as a <see cref="long" />),
-    ///         and a <see langword="null" /> value is never a match.
+    ///         The key is compared ignoring case. The match of the value is strict: no conversion is performed (e.g., a stored
+    ///         <see cref="int" /> is not read as a <see cref="long" />), and a <see langword="null" /> value is never a match.
     ///     </para>
     /// </remarks>
     /// <exception cref="ArgumentNullException">If the <paramref name="key" /> is <see langword="null" />.</exception>
@@ -365,10 +366,13 @@ public sealed record Error
     /// <param name="key">The key of the metadata entry.</param>
     /// <param name="value">The value of the metadata entry; it may be <see langword="null" />.</param>
     /// <returns>A new instance of the <see cref="Error" /> object; the current instance is not modified.</returns>
+    /// <remarks>
+    ///     Keys are compared ignoring case: a key that differs only in case from an existing key (e.g., <c>retryAfter</c> next to
+    ///     <c>RetryAfter</c>) replaces the entry, and the spelling of the <paramref name="key" /> is stored.
+    /// </remarks>
     /// <exception cref="ArgumentException">
-    ///     If the <paramref name="key" /> is empty, whitespace-only, starts or ends with white space, matches (case-insensitively) a standard problem
-    ///     details member: <c>type</c>, <c>title</c>, <c>status</c>, <c>detail</c>, <c>instance</c>, <c>errors</c> or <c>detailTemplated</c>, or
-    ///     differs only in case from an existing key (the same key replaces the value).
+    ///     If the <paramref name="key" /> is empty, whitespace-only, starts or ends with white space, or matches (case-insensitively) a standard
+    ///     problem details member: <c>type</c>, <c>title</c>, <c>status</c>, <c>detail</c>, <c>instance</c>, <c>errors</c> or <c>detailTemplated</c>.
     /// </exception>
     /// <exception cref="ArgumentNullException">If the <paramref name="key" /> is <see langword="null" />.</exception>
     public Error WithMetadata(string key, object? value)
@@ -384,10 +388,13 @@ public sealed record Error
     /// </summary>
     /// <param name="metadata">The metadata entries to add or replace; values may be <see langword="null" />.</param>
     /// <returns>A new instance of the <see cref="Error" /> object; the current instance is not modified.</returns>
+    /// <remarks>
+    ///     Keys are compared ignoring case: a key that differs only in case from an existing key or from an earlier key of the
+    ///     same call replaces the entry, and its spelling is stored.
+    /// </remarks>
     /// <exception cref="ArgumentException">
     ///     If any key is empty, whitespace-only, starts or ends with white space, or matches (case-insensitively) a standard problem details member:
-    ///     <c>type</c>, <c>title</c>, <c>status</c>, <c>detail</c>, <c>instance</c>, <c>errors</c> or <c>detailTemplated</c>; or if a key differs
-    ///     only in case from an existing key or from another key of the same call (the same key replaces the value).
+    ///     <c>type</c>, <c>title</c>, <c>status</c>, <c>detail</c>, <c>instance</c>, <c>errors</c> or <c>detailTemplated</c>.
     /// </exception>
     /// <exception cref="ArgumentNullException">
     ///     If the <paramref name="metadata" /> or any key is <see langword="null" />.
@@ -409,10 +416,13 @@ public sealed record Error
     ///     A key repeated in the same call takes the last value.
     /// </param>
     /// <returns>A new instance of the <see cref="Error" /> object; the current instance is not modified.</returns>
+    /// <remarks>
+    ///     Keys are compared ignoring case: a key that differs only in case from an existing key or from an earlier key of the
+    ///     same call replaces the entry, and its spelling is stored.
+    /// </remarks>
     /// <exception cref="ArgumentException">
     ///     If any key is empty, whitespace-only, starts or ends with white space, or matches (case-insensitively) a standard problem details member:
-    ///     <c>type</c>, <c>title</c>, <c>status</c>, <c>detail</c>, <c>instance</c>, <c>errors</c> or <c>detailTemplated</c>; or if a key differs
-    ///     only in case from an existing key or from another key of the same call (the same key replaces the value).
+    ///     <c>type</c>, <c>title</c>, <c>status</c>, <c>detail</c>, <c>instance</c>, <c>errors</c> or <c>detailTemplated</c>.
     /// </exception>
     /// <exception cref="ArgumentNullException">If any key is <see langword="null" />.</exception>
     public Error WithMetadata(params ReadOnlySpan<(string Key, object? Value)> metadata)
@@ -439,7 +449,8 @@ public sealed record Error
     ///     Returns a copy of the current error without the metadata entry of the specified key.
     /// </summary>
     /// <param name="key">
-    ///     The key of the metadata entry to remove; an absent key is not an error, and neither is a key that cannot be stored (e.g., an empty one).
+    ///     The key of the metadata entry to remove, compared ignoring case; an absent key is not an error, and neither is a key that cannot be
+    ///     stored (e.g., an empty one).
     /// </param>
     /// <returns>
     ///     A new instance of the <see cref="Error" /> object (equal to the current one if the key is absent); the current instance is not modified.
@@ -464,6 +475,10 @@ public sealed record Error
     /// <returns>
     ///     <see langword="true" /> if the specified <see cref="Error" /> is equal to the current one; otherwise, <see langword="false" />.
     /// </returns>
+    /// <remarks>
+    ///     The keys of the <see cref="Metadata" /> are compared with their spelling, though lookups ignore case: <c>traceId</c> and <c>TraceId</c>
+    ///     are serialized differently.
+    /// </remarks>
     public bool Equals(Error? other)
     {
         return other is not null

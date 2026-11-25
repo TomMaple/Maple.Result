@@ -15,8 +15,8 @@ using System.Collections.ObjectModel;
 namespace Maple.Results.Helpers;
 
 /// <summary>
-///     An immutable dictionary of string-keyed values, with keys compared by <see cref="KeyComparer" />: a read-only wrapper of a private copy that no other code
-///     holds, so the content never changes and an instance can be shared.
+///     An immutable dictionary of string-keyed values, with keys compared by <see cref="KeyComparer" />: a read-only wrapper of a private copy
+///     that no other code holds, so the content never changes and an instance can be shared.
 /// </summary>
 /// <remarks>
 ///     Used for <see cref="TemplatedMessage.Parameters" /> and <see cref="Error.Metadata" />. The copy is exposed internally as <see cref="Items" />,
@@ -29,9 +29,17 @@ internal sealed class ImmutableStringDictionary : ReadOnlyDictionary<string, obj
     ///     an <see cref="ErrorBuilder" />, the parameters of a <see cref="TemplatedMessage" /> being validated), is created with it.
     /// </summary>
     /// <remarks>
-    ///     The parameters of a message can be the metadata of an error, shared without a copy, so both use the same comparer.
+    ///     <para>
+    ///         Keys are compared ignoring case (#349): keys that differ only in case would be the same member of a problem details object, as
+    ///         clients often read JSON case-insensitively and naming policies change the case. A dictionary never holds two such keys, and the
+    ///         stored spelling of a key is the one that is enumerated and serialized.
+    ///     </para>
+    ///     <para>
+    ///         The parameters of a message can be the metadata of an error, shared without a copy, so both use the same comparer. Equality
+    ///         stays strict about the spelling (<see cref="DictionaryHelper.Equal" />).
+    ///     </para>
     /// </remarks>
-    internal static readonly StringComparer KeyComparer = StringComparer.Ordinal;
+    internal static readonly StringComparer KeyComparer = StringComparer.OrdinalIgnoreCase;
 
     /// <summary>
     ///     Wraps the <paramref name="copy" />, which must use the <see cref="KeyComparer" /> and must not be referenced by any other code.

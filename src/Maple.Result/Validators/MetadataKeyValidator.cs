@@ -26,8 +26,8 @@ namespace Maple.Results.Validators;
 ///     <para>
 ///         The comparison ignores case: clients often deserialize JSON case-insensitively,
 ///         and naming policies can change the case of a key during serialization.
-///         For the same reason, two keys of one error must not differ only in case (<see cref="KeyDiffersOnlyInCase" /> and
-///         <see cref="ValidateCase(string, string, string)" />).
+///         For the same reason, keys that differ only in case are one key of the metadata
+///         (<see cref="Helpers.ImmutableStringDictionary.KeyComparer" />): a key in another case replaces the entry (#349).
 ///     </para>
 ///     <para>
 ///         A key does not start or end with white space (<see cref="NameValidator" />): <c>" type"</c> would get past the reserved-name check
@@ -88,40 +88,6 @@ internal static class MetadataKeyValidator
             throw new ArgumentException(
                 $"The metadata key ‘{key}’ is reserved. Keys must not match (case-insensitively) the standard " +
                 "problem details members: ‘type’, ‘title’, ‘status’, ‘detail’, ‘instance’, ‘errors’, ‘detailTemplated’.",
-                paramName);
-        }
-    }
-
-    /// <summary>
-    ///     Creates the exception for a key that differs only in case from a key of the existing metadata.
-    /// </summary>
-    /// <remarks>
-    ///     The caller finds the <paramref name="existingKey" />; the existing metadata never holds two keys that differ only in case,
-    ///     so there is at most one.
-    /// </remarks>
-    internal static ArgumentException KeyDiffersOnlyInCase(string key, string existingKey, string paramName)
-    {
-        return new ArgumentException(
-            $"The metadata key ‘{key}’ differs only in case from the existing key ‘{existingKey}’. " +
-            "Keys that differ only in case would be the same member of a problem details object; " +
-            $"use ‘{existingKey}’ to replace the value, or remove it first.",
-            paramName);
-    }
-
-    /// <summary>
-    ///     Throws if two keys of the same call differ only in case; the same key repeated is allowed (the last value wins).
-    /// </summary>
-    /// <exception cref="ArgumentException">If the <paramref name="earlierKey" /> and the <paramref name="key" /> differ only in case.</exception>
-    internal static void ValidateCase(string earlierKey, string key, string paramName)
-    {
-        var differOnlyInCase = string.Equals(earlierKey, key, StringComparison.OrdinalIgnoreCase)
-                               && !string.Equals(earlierKey, key, StringComparison.Ordinal);
-
-        if (differOnlyInCase)
-        {
-            throw new ArgumentException(
-                $"The metadata keys ‘{earlierKey}’ and ‘{key}’ differ only in case. " +
-                "Keys that differ only in case would be the same member of a problem details object.",
                 paramName);
         }
     }
