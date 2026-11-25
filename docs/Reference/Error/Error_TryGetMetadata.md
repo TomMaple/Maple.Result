@@ -32,6 +32,8 @@ When this method returns, contains the value if the entry exists and is a `T`; o
 The `key` is `null`.
 
 ## Remarks
+The key is compared ignoring case, as all metadata keys (see [Metadata](Error_Metadata.md#keys)): `TryGetMetadata<int>("retryafter", out var seconds)` finds the entry `retryAfter`.
+
 It returns `false` when the key is absent, when the value is `null`, or when the value is not a `T`. A key that could not be stored (e.g., an empty one) is absent too; only a `null` key throws.
 
 The match is **strict**: it is the C# `value is T` test, and no conversion is performed.

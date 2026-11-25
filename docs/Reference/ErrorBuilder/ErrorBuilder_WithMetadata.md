@@ -13,9 +13,9 @@ Adds or replaces entries of the [Metadata](../Error/Error_Metadata.md) of the er
 | [WithMetadata(ReadOnlySpan&lt;(String, Object)&gt;)](#withmetadatareadonlyspanstring-object) | Adds or replaces metadata entries given as key-value tuples. |
 
 ## Remarks
-Keys are compared ordinally (case-sensitive); a repeated key replaces the value, and a key that differs only in case from an existing key is rejected. All keys are checked before any entry is applied, so the builder is unchanged when a call throws. Values can be `null`. See [Metadata](../Error/Error_Metadata.md#keys) for the rules for keys.
+Keys are compared ignoring case: a repeated key replaces the value, and a key that differs only in case from an existing key (or from an earlier key of the same call) replaces the entry, with the spelling of the call. All keys are checked before any entry is applied, so the builder is unchanged when a call throws. Values can be `null`. See [Metadata](../Error/Error_Metadata.md#keys) for the rules for keys.
 
-A key that already exists is never an error: its value is replaced. When the builder comes from an error created elsewhere ([Error.ToBuilder](../Error/Error_ToBuilder.md)), its keys may differ in case from the ones to add; see [Adding metadata to an error created elsewhere](../Error/Error_Metadata.md#adding-metadata-to-an-error-created-elsewhere).
+A key that already exists is never an error: its value is replaced. When the builder comes from an error created elsewhere ([Error.ToBuilder](../Error/Error_ToBuilder.md)), its keys may differ in case from the ones to add, and the spelling of the last call is the one that is stored; see [Adding metadata to an error created elsewhere](../Error/Error_Metadata.md#adding-metadata-to-an-error-created-elsewhere).
 
 
 ## WithMetadata(String, Object)
@@ -46,7 +46,7 @@ The `key` is `null`.
 
 [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception)
 
-The `key` is empty, consists only of white-space characters, starts or ends with white space, is [reserved](../Error/Error_Metadata.md#keys), or differs only in case from an existing key.
+The `key` is empty, consists only of white-space characters, starts or ends with white space, or is [reserved](../Error/Error_Metadata.md#keys).
 
 ### Examples
 ```csharp
@@ -85,7 +85,7 @@ The `metadata` sequence or any of its keys is `null`.
 
 [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception)
 
-Any key is empty, consists only of white-space characters, starts or ends with white space, is [reserved](../Error/Error_Metadata.md#keys), or differs only in case from an existing key or from another key of the same call.
+Any key is empty, consists only of white-space characters, starts or ends with white space, or is [reserved](../Error/Error_Metadata.md#keys).
 
 ### Remarks
 All keys are validated before any entry is applied, so the builder is unchanged when this method throws. The sequence is enumerated once. `null` and an empty collection expression (`[]`) bind to this overload.
@@ -124,7 +124,7 @@ Any key is `null`.
 
 [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception)
 
-Any key is empty, consists only of white-space characters, starts or ends with white space, is [reserved](../Error/Error_Metadata.md#keys), or differs only in case from an existing key or from another key of the same call.
+Any key is empty, consists only of white-space characters, starts or ends with white space, or is [reserved](../Error/Error_Metadata.md#keys).
 
 ### Remarks
 All keys are validated before any entry is applied, so the builder is unchanged when this method throws.

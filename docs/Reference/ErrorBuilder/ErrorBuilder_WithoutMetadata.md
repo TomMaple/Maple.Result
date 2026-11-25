@@ -47,7 +47,7 @@ public ErrorBuilder WithoutMetadata(string key);
 
 ### Parameters
 #### `key` [String](https://learn.microsoft.com/dotnet/api/system.string)
-A mandatory key of the metadata entry to remove. An absent key is not an error, and neither is a key that cannot be stored (e.g., an empty one or `type`): only a `null` key throws.
+A mandatory key of the metadata entry to remove, compared ignoring case (`traceid` removes the entry `traceId`). An absent key is not an error, and neither is a key that cannot be stored (e.g., an empty one or `type`): only a `null` key throws.
 
 ### Returns
 [ErrorBuilder](ErrorBuilder.md)

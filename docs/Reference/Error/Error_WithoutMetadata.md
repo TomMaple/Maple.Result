@@ -60,7 +60,7 @@ A new instance of the [Error](Error.md) record without the entry. If the key is 
 The `key` is `null`.
 
 ### Remarks
-Keys are compared ordinally (case-sensitive). An absent key is not an error, and neither is a key that cannot be stored (e.g., an empty one or `type`): only a `null` key throws.
+Keys are compared ignoring case: `WithoutMetadata("traceid")` removes the entry `traceId`. An absent key is not an error, and neither is a key that cannot be stored (e.g., an empty one or `type`): only a `null` key throws.
 
 ### Examples
 ```csharp

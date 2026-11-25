@@ -15,9 +15,9 @@ Returns a copy of the [Error](Error.md) with the specified [Metadata](Error_Meta
 ## Remarks
 These methods **do not modify** the current instance; they return a new [Error](Error.md) with a new, read-only [Metadata](Error_Metadata.md) dictionary. To change several entries without copying the error for each one, use an [ErrorBuilder](../ErrorBuilder/ErrorBuilder.md) (see [ErrorBuilder.WithMetadata](../ErrorBuilder/ErrorBuilder_WithMetadata.md)).
 
-Keys are compared ordinally (case-sensitive), and a key that differs only in case from an existing key is rejected; values can be `null`. See [Metadata](Error_Metadata.md#keys) for the rules for keys.
+Keys are compared ignoring case: a key that differs only in case from an existing key (or from an earlier key of the same call) replaces the entry, and its spelling is stored. Values can be `null`. See [Metadata](Error_Metadata.md#keys) for the rules for keys.
 
-A key that already exists is never an error: its value is replaced, so code that handles an error created elsewhere can set an entry without checking first. A key in a different case is an error; see [Adding metadata to an error created elsewhere](Error_Metadata.md#adding-metadata-to-an-error-created-elsewhere).
+A key that already exists is never an error: its value is replaced, so code that handles an error created elsewhere can set an entry without checking first. A key in a different case replaces the entry too; see [Adding metadata to an error created elsewhere](Error_Metadata.md#adding-metadata-to-an-error-created-elsewhere).
 
 
 ## WithMetadata(String, Object)
@@ -48,7 +48,7 @@ The `key` is `null`.
 
 [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception)
 
-The `key` is empty, consists only of white-space characters, starts or ends with white space, is [reserved](Error_Metadata.md#keys), or differs only in case from an existing key.
+The `key` is empty, consists only of white-space characters, starts or ends with white space, or is [reserved](Error_Metadata.md#keys).
 
 ### Examples
 ```csharp
@@ -86,7 +86,7 @@ The `metadata` sequence or any of its keys is `null`.
 
 [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception)
 
-Any key is empty, consists only of white-space characters, starts or ends with white space, is [reserved](Error_Metadata.md#keys), or differs only in case from an existing key or from another key of the same call.
+Any key is empty, consists only of white-space characters, starts or ends with white space, or is [reserved](Error_Metadata.md#keys).
 
 ### Examples
 ```csharp
@@ -125,7 +125,7 @@ Any key is `null`.
 
 [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception)
 
-Any key is empty, consists only of white-space characters, starts or ends with white space, is [reserved](Error_Metadata.md#keys), or differs only in case from an existing key or from another key of the same call.
+Any key is empty, consists only of white-space characters, starts or ends with white space, or is [reserved](Error_Metadata.md#keys).
 
 ### Examples
 ```csharp

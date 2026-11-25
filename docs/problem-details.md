@@ -119,14 +119,14 @@ A `TemplatedMessage` (of the error or of an error detail) is an object:
 
 `params` has one member per parameter. `Parameters` is `null` when there are no parameters, so an empty `params` object is never written.
 
-Two parameter names of one message never differ only in case (e.g., `Min` and `min`), as two metadata keys of one error: they would be the same placeholder for a template engine that ignores case, and the same member of `params` once a naming policy changes the case of the keys (e.g., `DictionaryKeyPolicy` of *System.Text.Json*). `TemplatedMessage` throws an `ArgumentException` for them. Like the other rules of the names, this is a rule of this library, not of an RFC: JSON allows any string as a member name (RFC 8259, section 4).
+Two parameter names of one message never differ only in case (e.g., `Min` and `min`), as two metadata keys of one error: they would be the same placeholder for a template engine that ignores case, and the same member of `params` once a naming policy changes the case of the keys (e.g., `DictionaryKeyPolicy` of *System.Text.Json*). `TemplatedMessage` throws an `ArgumentException` for them, and the lookups in `Parameters` ignore the case (`Parameters["MIN"]` finds `min`). Like the other rules of the names, this is a rule of this library, not of an RFC: JSON allows any string as a member name (RFC 8259, section 4).
 
 ## Metadata (extension members)
 Each `Metadata` entry is a top-level extension member: the key is the member name and the value is written as JSON.
 
-The top-level members of the format are **reserved**: `type`, `title`, `status`, `detail`, `instance`, `errors` and `detailTemplated` cannot be used as metadata keys, in any case (e.g., `Title` or `ERRORS`), because the entry would collide with the member once the metadata is flattened into the object, and clients often read JSON case-insensitively. `Error.WithMetadata()` and `ErrorBuilder.WithMetadata()` throw an `ArgumentException` for them. For the same reason, an error cannot hold two keys that differ only in case (e.g., `RetryAfter` and `retryAfter`). The names inside an `errors` item or a `detailTemplated` object (`pointer`, `templateId`, `params`) are not reserved.
+The top-level members of the format are **reserved**: `type`, `title`, `status`, `detail`, `instance`, `errors` and `detailTemplated` cannot be used as metadata keys, in any case (e.g., `Title` or `ERRORS`), because the entry would collide with the member once the metadata is flattened into the object, and clients often read JSON case-insensitively. `Error.WithMetadata()` and `ErrorBuilder.WithMetadata()` throw an `ArgumentException` for them. For the same reason, keys that differ only in case (e.g., `RetryAfter` and `retryAfter`) are one key: an error never holds both, and a key in another case replaces the entry, with the spelling of the last call, which is the one written. The names inside an `errors` item or a `detailTemplated` object (`pointer`, `templateId`, `params`) are not reserved.
 
-A metadata key is not empty and does not start or end with white space (e.g., `" type"`, which would be written next to `type`); white space inside a key is allowed. Like the reserved names and the keys that differ only in case, this is a rule of this library: JSON allows any string as a member name (RFC 8259, section 4), and the naming recommendations of RFC 9457 (section 4) are not mandatory.
+A metadata key is not empty and does not start or end with white space (e.g., `" type"`, which would be written next to `type`); white space inside a key is allowed. Like the reserved names and the comparison of the keys ignoring case, this is a rule of this library: JSON allows any string as a member name (RFC 8259, section 4), and the naming recommendations of RFC 9457 (section 4) are not mandatory.
 
 Members added by the host are not reserved either: e.g., ASP.NET Core adds `traceId`. When a metadata entry has the same key, the package that writes the response decides which value wins and documents it.
 
@@ -162,7 +162,7 @@ Problem details written by other services do not always follow this format. The 
 * **`instance`**: read like `type`; a missing `instance` stays `null`.
 * **`title`**: a missing or blank `title` is replaced by the phrase of the HTTP status code (e.g., "Not Found", RFC 9457, section 3.1.3).
 * **`pointer`** of an `errors` item: RFC 6901 (section 7) asks an application to state what it does with an invalid pointer. An invalid `pointer` is dropped and the `detail` of the item is kept, because the core rejects it; a reader may convert the keys of a known other syntax into a pointer (e.g., `Items[0].Name` of ASP.NET Core into `/Items/0/Name`). The case of the names is kept by default; a reader may let you change it (e.g., with a naming policy, so camel case gives `/items/0/name`).
-* **Other members**: every member that is not a reserved member becomes a metadata entry with its key as written (e.g., `traceId`).
+* **Other members**: every member that is not a reserved member becomes a metadata entry with its key as written (e.g., `traceId`). When two members differ only in case (e.g., `traceId` and `TraceId`), the last one in the document is kept, with its spelling.
 
 ## See Also
 * [ProblemDetailsMembers](Reference/Http/ProblemDetailsMembers.md)

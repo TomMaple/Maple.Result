@@ -277,7 +277,10 @@ The parameters of templated messages are now `object?` instead of `object`:
 
 Existing calls still compile. With nullable reference types enabled, passing a `Dictionary<string, object>` produces warning CS8620; declare it as `Dictionary<string, object?>` instead. Code that reads `Parameters[...]` may get nullable warnings (CS8602) and should handle `null` values.
 
-`TemplatedMessage` now copies the parameters into its own read-only dictionary with an ordinal (case-sensitive) comparer, so changing the source dictionary later no longer changes the message.
+`TemplatedMessage` now copies the parameters into its own read-only dictionary, whose comparer ignores case (`Parameters["MIN"]` finds `min`, whatever the comparer of the source), so changing the source dictionary later no longer changes the message.
+
+> [!NOTE]
+> Code written against 3.0.0-rc.2: metadata keys and template parameter names are compared ignoring case ([#349](https://github.com/TomMaple/Maple.Result/issues/349)). `WithMetadata` no longer throws for a key that differs only in case from an existing key or from another key of the same call: it replaces the entry, with the spelling of the call. `WithoutMetadata(key)`, `TryGetMetadata<T>()` and the lookups in `Error.Metadata` and `TemplatedMessage.Parameters` ignore the case. `TemplatedMessage` still throws for two names that differ only in case, and `Equals` still compares the spelling of the keys.
 
 `Parameters` is `null` whenever a message has no parameters: an empty dictionary, an empty collection (`[]`) or no parameters at all. In 2.x an empty dictionary was kept, so a message with an empty dictionary did not equal the same message without parameters; now they are equal. Code that told an empty dictionary apart from `null` only needs the `null` check.
 
@@ -671,7 +674,7 @@ The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an
 ## New features
 * **An analyzer in the package** — six rules (MR0001 to MR0006) report the calls that compile but lose a task or a failure, e.g., `result.Then(x => SaveAsync(x))`, whose task nobody awaits, or `await SaveAsync(order);`, which drops a failed `Result`; most of them have a code fix. The analyzer comes with the `Maple.Result` package. See [Analyzer](Analyzers/README.md) and [The analyzer reports the calls that compile but changed](#the-analyzer-reports-the-calls-that-compile-but-changed).
 * **`ErrorBuilder`** — a mutable builder of an immutable `Error`. Create it with `new ErrorBuilder(category, typeUri, title)`, a static method per category (e.g., `ErrorBuilder.Validation(...)`) or `error.ToBuilder()`; set the members with `With…` / `AddErrorDetail` methods; call `Build()`. Every argument is validated when it is passed, so `Build()` never throws. See [ErrorBuilder](Reference/ErrorBuilder/ErrorBuilder.md).
-* **`Error.Metadata`** — machine-readable, response-level values (RFC 9457 *extension members*), with `WithMetadata()`, `WithoutMetadata()` (one key or all) and `TryGetMetadata<T>()`. `TryGetMetadata<T>()` is strict: it returns `true` only when the stored value is a `T` (a stored `int` is not read as `long`), and never for a `null` value. See [Metadata](Reference/Error/Error_Metadata.md).
+* **`Error.Metadata`** — machine-readable, response-level values (RFC 9457 *extension members*), with `WithMetadata()`, `WithoutMetadata()` (one key or all) and `TryGetMetadata<T>()`. Keys are compared ignoring case: a key in another case (e.g., `retryAfter` next to `RetryAfter`) replaces the entry, with the spelling of the call. `TryGetMetadata<T>()` is strict: it returns `true` only when the stored value is a `T` (a stored `int` is not read as `long`), and never for a `null` value. See [Metadata](Reference/Error/Error_Metadata.md).
 * **`WithMetadata` with tuples** — `error.WithMetadata(("limit", 100), ("remaining", 0))` on `Error` and `ErrorBuilder` adds several entries in one call.
 * **`Error.WithErrorDetail()`** and **`Error.ToBuilder()`** — see above.
 * **`ErrorCategory.LimitExceeded`** — see above.
@@ -762,3 +765,4 @@ The current (2.x-based) version of `Maple.Result.Extensions.HttpClient` calls an
 * [Issue #227: `Match` with a success function and an error action](https://github.com/TomMaple/Maple.Result/issues/227)
 * [Issue #235: Reject template parameter names that differ only in case](https://github.com/TomMaple/Maple.Result/issues/235)
 * [Issue #255: `Match` as a fold of two functions, and `Switch` and `SwitchAsync` for two actions](https://github.com/TomMaple/Maple.Result/issues/255)
+* [Issue #349: Compare metadata keys and template parameter names ignoring case](https://github.com/TomMaple/Maple.Result/issues/349)

@@ -176,7 +176,7 @@ if (error.TryGetMetadata<int>("limit", out var limit))
 ```
 
 * `WithMetadata()` and `WithoutMetadata()` return a **copy**; the original error is not modified. Several entries can be added in one call: `WithMetadata(("limit", 100), ("remaining", 0))`.
-* Keys must not match the standard members `type`, `title`, `status`, `detail`, `instance`, `errors` and `detailTemplated` (case-insensitive), and two keys of one error must not differ only in case (e.g., `RetryAfter` and `retryAfter`); `WithMetadata()` throws an `ArgumentException` for them. Each entry becomes a top-level member of the problem details object; see the [problem details format](../problem-details.md#metadata-extension-members).
+* Keys must not match the standard members `type`, `title`, `status`, `detail`, `instance`, `errors` and `detailTemplated` (case-insensitive); `WithMetadata()` throws an `ArgumentException` for them. Keys are compared ignoring case: a key that differs only in case from an existing key (e.g., `retryAfter` next to `RetryAfter`) replaces the entry, with the spelling of the call, and lookups (`TryGetMetadata<T>()`, `Metadata["retryafter"]`) find a key in any case. Each entry becomes a top-level member of the problem details object; see the [problem details format](../problem-details.md#metadata-extension-members).
 * Keys should start with a letter, use letters, digits and `_`, and be at least 3 characters long (RFC 9457 recommendation, not enforced).
 * Values can be `null`. `TryGetMetadata<T>()` is strict: it returns `true` only when the stored value is a `T` (a stored `int` is not read as `long`), and never for a `null` value.
 
