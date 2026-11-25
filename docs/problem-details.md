@@ -157,11 +157,11 @@ A status code that a category does not write is read by its meaning: `410` (Gone
 ## Reading problem details
 Problem details written by other services do not always follow this format. The reader builds the `Error` with `ErrorBuilder`, so the validation of the core applies, and adapts the values as follows:
 
-* **`status`**: mapped to the category by the [status mapping](#category-and-status) (the default one or a customized one). A missing `status` is taken from the HTTP response.
+* **`status`**: not read. The category is mapped from the status code of the HTTP response by the [status mapping](#category-and-status) (the default one or a customized one). The `status` member is advisory (RFC 9457, section 3.1.2), and it can differ from the code of the response, e.g., when a gateway passes on the body of an upstream service with another code.
 * **`type`**: read with `ErrorUri.Parse()`; a missing `type` is `about:blank` (RFC 9457, section 3.1.1), and `about:blank` in any case (e.g., `about:BLANK`) is read as `ErrorUri.None`. A relative reference (e.g., `out-of-credit`) is resolved against the URI of the request (RFC 3986, section 5). Other schemes (e.g., `mailto:`) are kept as `ErrorUri.Other()`, including `javascript:`, `file:` and an `about` URI other than `about:blank` (e.g., `about:invalid`): the value of another service is untrusted, so a consumer that shows a `type` or an `instance` as a link has to check the scheme first (e.g., allow only `http` and `https`).
 * **`instance`**: read like `type`; a missing `instance` stays `null`.
 * **`title`**: a missing or blank `title` is replaced by the phrase of the HTTP status code (e.g., "Not Found", RFC 9457, section 3.1.3).
-* **`pointer`** of an `errors` item: RFC 6901 (section 7) asks an application to state what it does with an invalid pointer. An invalid `pointer` is dropped and the `detail` of the item is kept, because the core rejects it; a reader may convert the keys of a known other syntax into a pointer (e.g., `Items[0].Name` of ASP.NET Core into `/items/0/name`).
+* **`pointer`** of an `errors` item: RFC 6901 (section 7) asks an application to state what it does with an invalid pointer. An invalid `pointer` is dropped and the `detail` of the item is kept, because the core rejects it; a reader may convert the keys of a known other syntax into a pointer (e.g., `Items[0].Name` of ASP.NET Core into `/Items/0/Name`). The case of the names is kept by default; a reader may let you change it (e.g., with a naming policy, so camel case gives `/items/0/name`).
 * **Other members**: every member that is not a reserved member becomes a metadata entry with its key as written (e.g., `traceId`).
 
 ## See Also
