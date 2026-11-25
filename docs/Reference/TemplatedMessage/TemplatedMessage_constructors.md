@@ -12,7 +12,7 @@ Initializes a new instance of the [TemplatedMessage](TemplatedMessage.md) record
 | [TemplatedMessage(String, ReadOnlySpan&lt;(String, Object)&gt;)](#templatedmessagestring-readonlyspanstring-object) | Initializes a new instance with the parameters given as name-value tuples. |
 
 ## Remarks
-Both constructors copy the parameters into one read-only dictionary with an ordinal (case-sensitive) comparer, so later changes to the source are not reflected. The [Parameters](TemplatedMessage_Parameters.md) of another message are shared instead of copied, since they cannot change. Parameter values can be `null`; parameter names must be unique and not `null`.
+Both constructors copy the parameters into one read-only dictionary whose comparer ignores case (whatever the comparer of the source), so later changes to the source are not reflected. The [Parameters](TemplatedMessage_Parameters.md) of another message are shared instead of copied, since they cannot change. Parameter values can be `null`; parameter names must be unique and not `null`.
 
 > [!NOTE]
 > An instance is created with a constructor and passed to the factory methods of the [Error](../Error/Error.md) record (the `detailTemplated` parameter, e.g., [NotFound](../Error/Error_NotFound.md)), or created from a template identifier and parameters by [Error.WithErrorDetail](../Error/Error_WithErrorDetail.md) and by the [ErrorBuilder](../ErrorBuilder/ErrorBuilder.md) methods [WithDetailTemplated](../ErrorBuilder/ErrorBuilder_WithDetailTemplated.md) and [AddErrorDetail](../ErrorBuilder/ErrorBuilder_AddErrorDetail.md).

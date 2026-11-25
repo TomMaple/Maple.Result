@@ -850,7 +850,6 @@ public class ErrorBuilderUnitTests
     [InlineData("")]
     [InlineData(" ")]
     [InlineData(" limit ")]
-    [InlineData("LIMIT")]
     [InlineData("type")]
     public void WithoutMetadata_KeyThatCannotBeStored_RemovesNothing(string key)
     {

@@ -94,8 +94,8 @@ public sealed record TemplatedMessage
     ///     The optional collection of parameters (names and values) that might be required to generate a message from the specific template.
     /// </summary>
     /// <remarks>
-    ///     A read-only dictionary built from the parameters passed to the constructor, with keys compared ordinally (case-sensitive);
-    ///     <see langword="null" /> when there are no parameters, so it is never empty. Values may be <see langword="null" />.
+    ///     A read-only dictionary built from the parameters passed to the constructor, with keys compared ignoring case (in lookups, whatever the
+    ///     comparer of the source); <see langword="null" /> when there are no parameters, so it is never empty. Values may be <see langword="null" />.
     ///     Two names never differ only in case (e.g., <c>Min</c> and <c>min</c>): they would be the same placeholder for a template engine that
     ///     ignores case, and the same member of <c>params</c> once a naming policy changes the case of the keys.
     /// </remarks>
@@ -216,11 +216,10 @@ public sealed record TemplatedMessage
             return new Validated(templateId, null);
 
         Dictionary<string, object?>? dictionary = null;
-        Dictionary<string, string>? caseIndex = null;
         foreach (var (key, value) in parameters)
         {
-            dictionary ??= new Dictionary<string, object?>(count, StringComparer.Ordinal);
-            Add(dictionary, ref caseIndex, key, value, parametersParameterName);
+            dictionary ??= new Dictionary<string, object?>(count, ImmutableStringDictionary.KeyComparer);
+            Add(dictionary, key, value, parametersParameterName);
         }
 
         var copy = dictionary is null
@@ -238,10 +237,9 @@ public sealed record TemplatedMessage
         if (parameters.IsEmpty)
             return new Validated(templateId, null);
 
-        var dictionary = new Dictionary<string, object?>(parameters.Length, StringComparer.Ordinal);
-        Dictionary<string, string>? caseIndex = null;
+        var dictionary = new Dictionary<string, object?>(parameters.Length, ImmutableStringDictionary.KeyComparer);
         foreach (var (key, value) in parameters)
-            Add(dictionary, ref caseIndex, key, value, parametersParameterName);
+            Add(dictionary, key, value, parametersParameterName);
 
         var copy = new ImmutableStringDictionary(dictionary);
 
@@ -264,11 +262,11 @@ public sealed record TemplatedMessage
     ///     Adds a validated parameter to the dictionary that is being built.
     /// </summary>
     /// <remarks>
-    ///     A name that differs only in case from an earlier name is found with the <paramref name="caseIndex" /> (see
-    ///     <see cref="NameValidator.FindNameDifferingOnlyInCase" />), so the names of a message are checked in linear time.
+    ///     The dictionary compares the names ignoring case (#349), so a name that differs only in case from an earlier name is found with one
+    ///     lookup, and the names of a message are checked in linear time. The stored spelling tells a repeated name from a name that differs
+    ///     only in case: a message is created in one call and no parameter is replaced, so both are rejected.
     /// </remarks>
-    private static void Add(Dictionary<string, object?> dictionary, ref Dictionary<string, string>? caseIndex, string key, object? value,
-        string parameterName)
+    private static void Add(Dictionary<string, object?> dictionary, string key, object? value, string parameterName)
     {
         if (key is null)
             throw new ArgumentNullException(parameterName, "A parameter name must not be null.");
@@ -280,12 +278,12 @@ public sealed record TemplatedMessage
                 parameterName);
         }
 
-        if (dictionary.ContainsKey(key))
-            throw new ArgumentException($"The parameter ‘{key}’ is repeated.", parameterName);
-
-        var earlierKey = NameValidator.FindNameDifferingOnlyInCase(key, dictionary, ref caseIndex);
-        if (earlierKey is not null)
+        var lookup = dictionary.GetAlternateLookup<ReadOnlySpan<char>>();
+        if (lookup.TryGetValue(key, out var earlierKey, out _))
         {
+            if (string.Equals(earlierKey, key, StringComparison.Ordinal))
+                throw new ArgumentException($"The parameter ‘{key}’ is repeated.", parameterName);
+
             throw new ArgumentException(
                 $"The parameter names ‘{earlierKey}’ and ‘{key}’ differ only in case. " +
                 "Names that differ only in case would be the same placeholder and the same member of ‘params’; use one spelling.",
@@ -293,7 +291,6 @@ public sealed record TemplatedMessage
         }
 
         dictionary.Add(key, value);
-        caseIndex?.Add(key, key);
     }
 
     private static ArgumentException ParametersWithoutTemplateId(string templateIdParameterName, string parametersParameterName)

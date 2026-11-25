@@ -53,11 +53,6 @@ public sealed class ErrorBuilder
     private ImmutableStringDictionary _builtMetadata;
     private Dictionary<string, object?>? _pendingMetadata;
 
-    // The keys of the current metadata, compared case-insensitively, with their stored spelling: a key that differs only in case is found with a
-    // lookup instead of a scan of the other keys (#234). Created once the metadata has NameValidator.CaseIndexThreshold keys, so an error with a
-    // few entries allocates nothing more, and kept in step with every change of the keys until WithoutMetadata() clears them.
-    private Dictionary<string, string>? _metadataKeyIndex;
-
     #region constructors
 
     /// <summary>
@@ -423,19 +418,21 @@ public sealed class ErrorBuilder
     /// <param name="key">The key of the metadata entry.</param>
     /// <param name="value">The value of the metadata entry; it may be <see langword="null" />.</param>
     /// <returns>The current <see cref="ErrorBuilder" /> instance.</returns>
+    /// <remarks>
+    ///     Keys are compared ignoring case: a key that differs only in case from an existing key (e.g., <c>retryAfter</c> next to
+    ///     <c>RetryAfter</c>) replaces the entry, and the spelling of the <paramref name="key" /> is stored.
+    /// </remarks>
     /// <exception cref="ArgumentNullException">If the <paramref name="key" /> is <see langword="null" />.</exception>
     /// <exception cref="ArgumentException">
-    ///     If the <paramref name="key" /> is empty, whitespace-only, starts or ends with white space, matches (case-insensitively) a standard problem
-    ///     details member: <c>type</c>, <c>title</c>, <c>status</c>, <c>detail</c>, <c>instance</c>, <c>errors</c> or <c>detailTemplated</c>, or
-    ///     differs only in case from an existing key (the same key replaces the value).
+    ///     If the <paramref name="key" /> is empty, whitespace-only, starts or ends with white space, or matches (case-insensitively) a standard
+    ///     problem details member: <c>type</c>, <c>title</c>, <c>status</c>, <c>detail</c>, <c>instance</c>, <c>errors</c> or <c>detailTemplated</c>.
     /// </exception>
     public ErrorBuilder WithMetadata(string key, object? value)
     {
         MetadataKeyValidator.Validate(key, nameof(key));
-        ValidateCase(key, nameof(key));
 
-        GetPendingMetadata()[key] = value;
-        _metadataKeyIndex?.TryAdd(key, key);
+        var pending = GetPendingMetadata();
+        SetMetadata(pending, key, value);
 
         return this;
     }
@@ -447,14 +444,15 @@ public sealed class ErrorBuilder
     /// <returns>The current <see cref="ErrorBuilder" /> instance.</returns>
     /// <remarks>
     ///     All keys are validated before any entry is applied, so the builder is unchanged when this method throws.
+    ///     Keys are compared ignoring case: a key that differs only in case from an existing key or from an earlier key of the
+    ///     same call replaces the entry, and its spelling is stored.
     /// </remarks>
     /// <exception cref="ArgumentNullException">
     ///     If the <paramref name="metadata" /> or any key is <see langword="null" />.
     /// </exception>
     /// <exception cref="ArgumentException">
     ///     If any key is empty, whitespace-only, starts or ends with white space, or matches (case-insensitively) a standard problem details member:
-    ///     <c>type</c>, <c>title</c>, <c>status</c>, <c>detail</c>, <c>instance</c>, <c>errors</c> or <c>detailTemplated</c>; or if a key differs
-    ///     only in case from an existing key or from another key of the same call (the same key replaces the value).
+    ///     <c>type</c>, <c>title</c>, <c>status</c>, <c>detail</c>, <c>instance</c>, <c>errors</c> or <c>detailTemplated</c>.
     /// </exception>
     [OverloadResolutionPriority(1)]
     public ErrorBuilder WithMetadata(IEnumerable<KeyValuePair<string, object?>> metadata)
@@ -465,18 +463,12 @@ public sealed class ErrorBuilder
         foreach (var pair in entries)
             MetadataKeyValidator.Validate(pair.Key, nameof(metadata));
 
-        ReadOnlySpan<KeyValuePair<string, object?>> entriesSpan = entries;
-        ValidateCase(entriesSpan, static pair => pair.Key, nameof(metadata));
-
         if (entries.Length == 0)
             return this;
 
         var pending = GetPendingMetadata();
         foreach (var pair in entries)
-        {
-            pending[pair.Key] = pair.Value;
-            _metadataKeyIndex?.TryAdd(pair.Key, pair.Key);
-        }
+            SetMetadata(pending, pair.Key, pair.Value);
 
         return this;
     }
@@ -491,30 +483,25 @@ public sealed class ErrorBuilder
     /// <returns>The current <see cref="ErrorBuilder" /> instance.</returns>
     /// <remarks>
     ///     All keys are validated before any entry is applied, so the builder is unchanged when this method throws.
-    ///     A key repeated in the same call takes the last value.
+    ///     A key repeated in the same call takes the last value. Keys are compared ignoring case:
+    ///     a key that differs only in case from an existing key or from an earlier key of the same call replaces the entry, and its spelling is stored.
     /// </remarks>
     /// <exception cref="ArgumentNullException">If any key is <see langword="null" />.</exception>
     /// <exception cref="ArgumentException">
     ///     If any key is empty, whitespace-only, starts or ends with white space, or matches (case-insensitively) a standard problem details member:
-    ///     <c>type</c>, <c>title</c>, <c>status</c>, <c>detail</c>, <c>instance</c>, <c>errors</c> or <c>detailTemplated</c>; or if a key differs
-    ///     only in case from an existing key or from another key of the same call (the same key replaces the value).
+    ///     <c>type</c>, <c>title</c>, <c>status</c>, <c>detail</c>, <c>instance</c>, <c>errors</c> or <c>detailTemplated</c>.
     /// </exception>
     public ErrorBuilder WithMetadata(params ReadOnlySpan<(string Key, object? Value)> metadata)
     {
         foreach (var (key, _) in metadata)
             MetadataKeyValidator.Validate(key, nameof(metadata));
 
-        ValidateCase(metadata, static entry => entry.Key, nameof(metadata));
-
         if (metadata.IsEmpty)
             return this;
 
         var pending = GetPendingMetadata();
         foreach (var (key, value) in metadata)
-        {
-            pending[key] = value;
-            _metadataKeyIndex?.TryAdd(key, key);
-        }
+            SetMetadata(pending, key, value);
 
         return this;
     }
@@ -523,7 +510,8 @@ public sealed class ErrorBuilder
     ///     Removes the entry of the specified key from the <see cref="Error.Metadata" />.
     /// </summary>
     /// <param name="key">
-    ///     The key of the metadata entry to remove; an absent key is not an error, and neither is a key that cannot be stored (e.g., an empty one).
+    ///     The key of the metadata entry to remove, compared ignoring case; an absent key is not an error, and neither is a key that cannot be
+    ///     stored (e.g., an empty one).
     /// </param>
     /// <returns>The current <see cref="ErrorBuilder" /> instance.</returns>
     /// <exception cref="ArgumentNullException">If the <paramref name="key" /> is <see langword="null" />.</exception>
@@ -533,12 +521,7 @@ public sealed class ErrorBuilder
 
         IReadOnlyDictionary<string, object?> current = _pendingMetadata ?? (IReadOnlyDictionary<string, object?>)_builtMetadata;
         if (current.ContainsKey(key))
-        {
             GetPendingMetadata().Remove(key);
-
-            // The key is stored with this exact spelling, and no other key differs from it only in case.
-            _metadataKeyIndex?.Remove(key);
-        }
 
         return this;
     }
@@ -551,7 +534,6 @@ public sealed class ErrorBuilder
     {
         _builtMetadata = Error.EmptyMetadata;
         _pendingMetadata = null;
-        _metadataKeyIndex = null;
 
         return this;
     }
@@ -592,11 +574,6 @@ public sealed class ErrorBuilder
 
     #region helper methods
 
-    /// <summary>
-    ///     The current metadata entries: the pending dictionary if there is one, otherwise the entries of the built one (no copy).
-    /// </summary>
-    private Dictionary<string, object?> CurrentMetadata => _pendingMetadata ?? _builtMetadata.Items;
-
     private List<ErrorDetail> GetPendingErrorDetails()
     {
         if (_pendingErrorDetails is null)
@@ -611,56 +588,19 @@ public sealed class ErrorBuilder
 
     private Dictionary<string, object?> GetPendingMetadata()
     {
-        return _pendingMetadata ??= new Dictionary<string, object?>(_builtMetadata, StringComparer.Ordinal);
+        return _pendingMetadata ??= new Dictionary<string, object?>(_builtMetadata, ImmutableStringDictionary.KeyComparer);
     }
 
     /// <summary>
-    ///     Throws if the key differs only in case from a key of the current metadata; the same key is allowed (it replaces the value).
-    /// </summary>
-    private void ValidateCase(string key, string paramName)
-    {
-        var current = CurrentMetadata;
-        if (current.ContainsKey(key))
-            return;
-
-        var existingKey = NameValidator.FindNameDifferingOnlyInCase(key, current, ref _metadataKeyIndex);
-        if (existingKey is not null)
-            throw MetadataKeyValidator.KeyDiffersOnlyInCase(key, existingKey, paramName);
-    }
-
-    /// <summary>
-    ///     Throws if a key of the entries differs only in case from a key of the current metadata or from an earlier key of the entries;
-    ///     the same key is allowed (the last value wins).
+    ///     Stores the entry with the spelling of the <paramref name="key" />, replacing an entry whose key differs only in case (#349).
     /// </summary>
     /// <remarks>
-    ///     The keys of the entries are compared with a case-insensitive index from <see cref="NameValidator.CaseIndexThreshold" /> entries on,
-    ///     and with each other below it.
+    ///     The indexer of <see cref="Dictionary{TKey, TValue}" /> would keep the spelling of the stored key, so the entry is removed first.
     /// </remarks>
-    private void ValidateCase<TEntry>(ReadOnlySpan<TEntry> entries, Func<TEntry, string> keyOf, string paramName)
+    private static void SetMetadata(Dictionary<string, object?> metadata, string key, object? value)
     {
-        var earlierKeys = entries.Length >= NameValidator.CaseIndexThreshold
-            ? new Dictionary<string, string>(entries.Length, StringComparer.OrdinalIgnoreCase)
-            : null;
-
-        for (var i = 0; i < entries.Length; i++)
-        {
-            var key = keyOf(entries[i]);
-            ValidateCase(key, paramName);
-
-            if (earlierKeys is null)
-            {
-                for (var j = 0; j < i; j++)
-                {
-                    var earlierKey = keyOf(entries[j]);
-                    MetadataKeyValidator.ValidateCase(earlierKey, key, paramName);
-                }
-            }
-            else if (!earlierKeys.TryAdd(key, key))
-            {
-                var earlierKey = earlierKeys[key];
-                MetadataKeyValidator.ValidateCase(earlierKey, key, paramName);
-            }
-        }
+        metadata.Remove(key);
+        metadata.Add(key, value);
     }
 
     private static void ValidateCategory(ErrorCategory category)

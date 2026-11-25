@@ -8,14 +8,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace Maple.Results.Helpers;
 
 /// <summary>
-///     An immutable dictionary of string-keyed values, with keys compared ordinally: a read-only wrapper of a private copy that no other code
-///     holds, so the content never changes and an instance can be shared.
+///     An immutable dictionary of string-keyed values, with keys compared by <see cref="KeyComparer" />: a read-only wrapper of a private copy
+///     that no other code holds, so the content never changes and an instance can be shared.
 /// </summary>
 /// <remarks>
 ///     Used for <see cref="TemplatedMessage.Parameters" /> and <see cref="Error.Metadata" />. The copy is exposed internally as <see cref="Items" />,
@@ -24,7 +25,24 @@ namespace Maple.Results.Helpers;
 internal sealed class ImmutableStringDictionary : ReadOnlyDictionary<string, object?>
 {
     /// <summary>
-    ///     Wraps the <paramref name="copy" />, which must use the ordinal comparer and must not be referenced by any other code.
+    ///     The comparer of the keys: every dictionary wrapped by this class, and every dictionary that is later wrapped (the pending metadata of
+    ///     an <see cref="ErrorBuilder" />, the parameters of a <see cref="TemplatedMessage" /> being validated), is created with it.
+    /// </summary>
+    /// <remarks>
+    ///     <para>
+    ///         Keys are compared ignoring case (#349): keys that differ only in case would be the same member of a problem details object, as
+    ///         clients often read JSON case-insensitively and naming policies change the case. A dictionary never holds two such keys, and the
+    ///         stored spelling of a key is the one that is enumerated and serialized.
+    ///     </para>
+    ///     <para>
+    ///         The parameters of a message can be the metadata of an error, shared without a copy, so both use the same comparer. Equality
+    ///         stays strict about the spelling (<see cref="DictionaryHelper.Equal" />).
+    ///     </para>
+    /// </remarks>
+    internal static readonly StringComparer KeyComparer = StringComparer.OrdinalIgnoreCase;
+
+    /// <summary>
+    ///     Wraps the <paramref name="copy" />, which must use the <see cref="KeyComparer" /> and must not be referenced by any other code.
     /// </summary>
     internal ImmutableStringDictionary(Dictionary<string, object?> copy)
         : base(copy)

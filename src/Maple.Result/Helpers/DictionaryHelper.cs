@@ -52,6 +52,10 @@ internal static class DictionaryHelper
     /// <summary>
     ///     Determines whether two dictionaries contain the same keys with equal values, regardless of order.
     /// </summary>
+    /// <remarks>
+    ///     The keys are compared with their spelling (ordinally), though the dictionaries look them up ignoring case: <c>traceId</c> and
+    ///     <c>TraceId</c> are serialized differently, and <see cref="GetHashCode" /> hashes the spelling (#349).
+    /// </remarks>
     internal static bool Equal(ImmutableStringDictionary? left, ImmutableStringDictionary? right)
     {
         if (ReferenceEquals(left, right))
@@ -60,9 +64,11 @@ internal static class DictionaryHelper
         if (left is null || right is null || left.Count != right.Count)
             return false;
 
+        var rightLookup = right.Items.GetAlternateLookup<ReadOnlySpan<char>>();
         foreach (var pair in left.Items)
         {
-            if (!right.Items.TryGetValue(pair.Key, out var value) || !Equals(pair.Value, value))
+            var isFound = rightLookup.TryGetValue(pair.Key, out var rightKey, out var value);
+            if (!isFound || !string.Equals(pair.Key, rightKey, StringComparison.Ordinal) || !Equals(pair.Value, value))
                 return false;
         }
 

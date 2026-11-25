@@ -46,9 +46,9 @@ public class ErrorMetadataUnitTests
         sut.Metadata["limit"].ShouldBe(100);
     }
 
-    // Lookups are ordinal; keys that differ only in case cannot coexist (ErrorMetadataKeyCaseUnitTests).
+    // Lookups ignore the case, as keys that differ only in case are one entry (ErrorMetadataKeyCaseUnitTests, #349).
     [Fact]
-    public void Metadata_KeyInDifferentCase_IsNotFound()
+    public void Metadata_KeyInDifferentCase_IsFound()
     {
         // Arrange
         var sut = CreateError().WithMetadata("limit", 100);
@@ -57,7 +57,7 @@ public class ErrorMetadataUnitTests
         var result = sut.Metadata.ContainsKey("Limit");
 
         // Assert
-        result.ShouldBeFalse();
+        result.ShouldBeTrue();
     }
 
     [Fact]
@@ -365,7 +365,6 @@ public class ErrorMetadataUnitTests
     [InlineData("")]
     [InlineData(" ")]
     [InlineData(" limit ")]
-    [InlineData("LIMIT")]
     [InlineData("type")]
     public void WithoutMetadata_KeyThatCannotBeStored_ReturnsEqualCopy(string key)
     {

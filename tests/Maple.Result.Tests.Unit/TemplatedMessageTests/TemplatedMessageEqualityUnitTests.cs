@@ -96,6 +96,19 @@ public class TemplatedMessageEqualityUnitTests
         (first == second).ShouldBeFalse();
     }
 
+    // Lookups ignore the case, but the spelling is serialized and shown by ToString, so it counts for equality (#349).
+    [Fact]
+    public void Equals_MessagesWithParamNamesDifferingOnlyInCase_AreNotEqual()
+    {
+        // Arrange
+        var first = new Sut("template.id", ("userName", "johnny"));
+        var second = new Sut("template.id", ("UserName", "johnny"));
+
+        // Act & Assert
+        first.Equals(second).ShouldBeFalse();
+        (first == second).ShouldBeFalse();
+    }
+
     [Fact]
     public void Equals_MessagesWithDifferentParamCount_AreNotEqual()
     {

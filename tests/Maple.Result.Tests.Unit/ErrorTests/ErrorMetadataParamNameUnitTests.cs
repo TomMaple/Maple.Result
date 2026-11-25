@@ -14,7 +14,7 @@ using System.Collections.Generic;
 namespace Maple.Results.Tests.Unit.ErrorTests;
 
 // The batch overloads of Error.WithMetadata report the same parameter name as those of ErrorBuilder: "metadata" for every invalid
-// key, as for two keys that differ only in case; the single-key overload reports "key" (#250).
+// key; the single-key overload reports "key" (#250).
 public class ErrorMetadataParamNameUnitTests
 {
     private static Error CreateSut()
