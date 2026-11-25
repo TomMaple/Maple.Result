@@ -14,7 +14,7 @@ using System.Collections.Generic;
 namespace Maple.Results.Tests.Unit.ErrorBuilderTests;
 
 // An ArgumentException carries the name of a parameter of the called method (#203): the batch overloads of WithMetadata report
-// "metadata" for every invalid key, as they do for two keys that differ only in case; the single-key overload reports "key" (#250).
+// "metadata" for every invalid key; the single-key overload reports "key" (#250).
 public class ErrorBuilderMetadataParamNameUnitTests
 {
     private static ErrorBuilder CreateSut()

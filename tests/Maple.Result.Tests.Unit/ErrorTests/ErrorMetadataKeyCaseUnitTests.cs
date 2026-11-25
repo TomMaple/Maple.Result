@@ -8,14 +8,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using Sut = Maple.Results.Error;
 
 namespace Maple.Results.Tests.Unit.ErrorTests;
 
 // Error.WithMetadata goes through ErrorBuilder; these tests check the public behaviour of Error (ErrorBuilderMetadataKeyCaseUnitTests
-// covers each case in detail).
+// covers each case in detail). Keys are compared ignoring case; a key in another case replaces the entry and its spelling (#349).
 public class ErrorMetadataKeyCaseUnitTests
 {
     private static Sut CreateSut()
@@ -25,52 +25,60 @@ public class ErrorMetadataKeyCaseUnitTests
     }
 
     [Fact]
-    public void WithMetadata_KeyDifferingOnlyInCaseFromExistingKey_ThrowsArgumentException()
+    public void WithMetadata_KeyDifferingOnlyInCaseFromExistingKey_ReplacesTheEntryAndItsSpelling()
     {
         // Arrange
         var sut = CreateSut();
 
         // Act
-        var exception = Record.Exception(() => sut.WithMetadata("retryAfter", 60));
+        var result = sut.WithMetadata("retryAfter", 60);
 
         // Assert
-        exception.ShouldBeOfType<ArgumentException>();
-        var argumentException = exception as ArgumentException;
-        argumentException.ShouldNotBeNull();
-        argumentException.ParamName.ShouldBe("key");
+        result.Metadata.Keys.ShouldBe(["retryAfter"]);
+        result.Metadata["retryAfter"].ShouldBe(60);
     }
 
     [Fact]
-    public void WithMetadataTuples_KeysDifferingOnlyInCaseInOneCall_ThrowsArgumentException()
+    public void WithMetadata_KeyDifferingOnlyInCaseFromExistingKey_KeepsTheSourceError()
+    {
+        // Arrange
+        var sut = CreateSut();
+
+        // Act
+        _ = sut.WithMetadata("retryAfter", 60);
+
+        // Assert
+        sut.Metadata.Keys.ShouldBe(["RetryAfter"]);
+        sut.Metadata["RetryAfter"].ShouldBe(30);
+    }
+
+    [Fact]
+    public void WithMetadataTuples_KeysDifferingOnlyInCaseInOneCall_KeepsTheLastEntry()
     {
         // Arrange
         var sut = Sut.NotFound(ErrorUri.None, "Missing");
 
         // Act
-        var exception = Record.Exception(() => sut.WithMetadata(("Limit", 100), ("limit", 200)));
+        var result = sut.WithMetadata(("Limit", 100), ("limit", 200));
 
         // Assert
-        exception.ShouldBeOfType<ArgumentException>();
-        var argumentException = exception as ArgumentException;
-        argumentException.ShouldNotBeNull();
-        argumentException.ParamName.ShouldBe("metadata");
+        result.Metadata.Keys.ShouldBe(["limit"]);
+        result.Metadata["limit"].ShouldBe(200);
     }
 
     [Fact]
-    public void WithMetadataEnumerable_KeyDifferingOnlyInCaseFromExistingKey_ThrowsArgumentException()
+    public void WithMetadataEnumerable_KeyDifferingOnlyInCaseFromExistingKey_ReplacesTheEntryAndItsSpelling()
     {
         // Arrange
         var metadata = new Dictionary<string, object?> { ["retryAfter"] = 60 };
         var sut = CreateSut();
 
         // Act
-        var exception = Record.Exception(() => sut.WithMetadata(metadata));
+        var result = sut.WithMetadata(metadata);
 
         // Assert
-        exception.ShouldBeOfType<ArgumentException>();
-        var argumentException = exception as ArgumentException;
-        argumentException.ShouldNotBeNull();
-        argumentException.ParamName.ShouldBe("metadata");
+        result.Metadata.Keys.ShouldBe(["retryAfter"]);
+        result.Metadata["retryAfter"].ShouldBe(60);
     }
 
     [Fact]
@@ -87,22 +95,75 @@ public class ErrorMetadataKeyCaseUnitTests
         result.Metadata["RetryAfter"].ShouldBe(60);
     }
 
-    // Lookups stay ordinal: with no keys that differ only in case, an exact key is unambiguous.
     [Fact]
-    public void TryGetMetadata_KeyInDifferentCase_ReturnsFalse()
+    public void TryGetMetadata_KeyInDifferentCase_ReturnsTrueAndTheValue()
     {
         // Arrange
         var sut = CreateSut();
 
         // Act
-        var result = sut.TryGetMetadata<int>("retryAfter", out _);
+        var result = sut.TryGetMetadata<int>("retryAfter", out var value);
 
         // Assert
-        result.ShouldBeFalse();
+        result.ShouldBeTrue();
+        value.ShouldBe(30);
     }
 
     [Fact]
-    public void WithoutMetadata_KeyInDifferentCase_KeepsTheEntry()
+    public void MetadataIndexer_KeyInDifferentCase_ReturnsTheValue()
+    {
+        // Arrange
+        var sut = CreateSut();
+
+        // Act
+        var result = sut.Metadata["RETRYAFTER"];
+
+        // Assert
+        result.ShouldBe(30);
+    }
+
+    [Fact]
+    public void MetadataContainsKey_KeyInDifferentCase_ReturnsTrue()
+    {
+        // Arrange
+        var sut = CreateSut();
+
+        // Act
+        var result = sut.Metadata.ContainsKey("retryafter");
+
+        // Assert
+        result.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void MetadataTryGetValue_KeyInDifferentCase_ReturnsTrueAndTheValue()
+    {
+        // Arrange
+        var sut = CreateSut();
+
+        // Act
+        var result = sut.Metadata.TryGetValue("retryAfter", out var value);
+
+        // Assert
+        result.ShouldBeTrue();
+        value.ShouldBe(30);
+    }
+
+    [Fact]
+    public void MetadataKeysContains_KeyInDifferentCase_ReturnsTrue()
+    {
+        // Arrange
+        var sut = CreateSut();
+
+        // Act
+        var result = sut.Metadata.Keys.Contains("retryAfter");
+
+        // Assert
+        result.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void WithoutMetadata_KeyInDifferentCase_RemovesTheEntry()
     {
         // Arrange
         var sut = CreateSut();
@@ -111,6 +172,6 @@ public class ErrorMetadataKeyCaseUnitTests
         var result = sut.WithoutMetadata("retryAfter");
 
         // Assert
-        result.Metadata.ShouldContainKey("RetryAfter");
+        result.Metadata.ShouldBeEmpty();
     }
 }

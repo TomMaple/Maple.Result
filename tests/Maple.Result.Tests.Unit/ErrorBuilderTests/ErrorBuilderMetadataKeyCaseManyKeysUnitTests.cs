@@ -15,8 +15,8 @@ using System.Linq;
 
 namespace Maple.Results.Tests.Unit.ErrorBuilderTests;
 
-// The rule of ErrorBuilderMetadataKeyCaseUnitTests with many keys (#234): the extension members of a response from another service
-// become metadata, so the number of keys is not trusted, and the check of a key that differs only in case must not scan the other keys.
+// The rule of ErrorBuilderMetadataKeyCaseUnitTests with many keys (#234, #349): the extension members of a response from another service
+// become metadata, so the number of keys is not trusted, and finding the entry of a key in another case must not scan the other keys.
 public class ErrorBuilderMetadataKeyCaseManyKeysUnitTests
 {
     private const int ManyKeys = 100;
@@ -104,56 +104,18 @@ public class ErrorBuilderMetadataKeyCaseManyKeysUnitTests
     #region a key that differs only in case from one of many keys
 
     [Fact]
-    public void WithMetadata_KeyDifferingOnlyInCaseFromOneOfManyKeys_ThrowsArgumentException()
-    {
-        // Arrange
-        const string ExpectedMessage = "The metadata key ‘KEY50’ differs only in case from the existing key ‘key50’. "
-            + "Keys that differ only in case would be the same member of a problem details object; use ‘key50’ to replace "
-            + "the value, or remove it first. (Parameter 'key')";
-
-        var sut = CreateSut();
-
-        // Act
-        var exception = Record.Exception(() => sut.WithMetadata("KEY50", 0));
-
-        // Assert
-        exception.ShouldBeOfType<ArgumentException>();
-        var argumentException = exception as ArgumentException;
-        argumentException.ShouldNotBeNull();
-        argumentException.Message.ShouldBe(ExpectedMessage);
-    }
-
-    [Fact]
-    public void WithMetadataTuples_KeyDifferingOnlyInCaseFromOneOfManyKeys_ThrowsArgumentException()
+    public void WithMetadata_KeyDifferingOnlyInCaseFromOneOfManyKeys_ReplacesTheEntryAndItsSpelling()
     {
         // Arrange
         var sut = CreateSut();
 
         // Act
-        var exception = Record.Exception(() => sut.WithMetadata(("other", 1), ("KEY50", 0)));
+        var result = sut.WithMetadata("KEY50", -1).Build().Metadata;
 
         // Assert
-        exception.ShouldBeOfType<ArgumentException>();
-        var argumentException = exception as ArgumentException;
-        argumentException.ShouldNotBeNull();
-        argumentException.ParamName.ShouldBe("metadata");
-    }
-
-    [Fact]
-    public void WithMetadataEnumerable_KeyDifferingOnlyInCaseFromOneOfManyKeys_ThrowsArgumentException()
-    {
-        // Arrange
-        var metadata = new List<KeyValuePair<string, object?>> { new("other", 1), new("KEY50", 0) };
-        var sut = CreateSut();
-
-        // Act
-        var exception = Record.Exception(() => sut.WithMetadata(metadata));
-
-        // Assert
-        exception.ShouldBeOfType<ArgumentException>();
-        var argumentException = exception as ArgumentException;
-        argumentException.ShouldNotBeNull();
-        argumentException.ParamName.ShouldBe("metadata");
+        result.Count.ShouldBe(ManyKeys);
+        result.Keys.Single(IsKey50).ShouldBe("KEY50");
+        result["KEY50"].ShouldBe(-1);
     }
 
     [Fact]
@@ -171,18 +133,17 @@ public class ErrorBuilderMetadataKeyCaseManyKeysUnitTests
     }
 
     [Fact]
-    public void WithMetadata_KeyDifferingOnlyInCaseFromOneOfManyKeys_LeavesTheBuilderUnchanged()
+    public void WithoutMetadata_KeyDifferingOnlyInCaseFromOneOfManyKeys_RemovesTheEntry()
     {
         // Arrange
         var sut = CreateSut();
 
         // Act
-        _ = Record.Exception(() => sut.WithMetadata("KEY50", 0));
+        var result = sut.WithoutMetadata("KEY50").Build().Metadata;
 
         // Assert
-        var result = sut.Build().Metadata;
-        result.Count.ShouldBe(ManyKeys);
-        result.ContainsKey("KEY50").ShouldBeFalse();
+        result.Count.ShouldBe(ManyKeys - 1);
+        result.Keys.Any(IsKey50).ShouldBeFalse();
     }
 
     #endregion
@@ -190,51 +151,13 @@ public class ErrorBuilderMetadataKeyCaseManyKeysUnitTests
     #region keys that differ only in case among many keys of one call
 
     [Fact]
-    public void WithMetadataTuples_KeysDifferingOnlyInCaseAmongManyKeysOfOneCall_ThrowsArgumentException()
+    public void WithMetadataTuples_KeysDifferingOnlyInCaseAmongManyKeysOfOneCall_KeepsTheLastEntry()
     {
         // Arrange
-        const string ExpectedMessage = "The metadata keys ‘key50’ and ‘KEY50’ differ only in case. "
-            + "Keys that differ only in case would be the same member of a problem details object. (Parameter 'metadata')";
+        var metadata = CreateTuples(ManyKeys)
+            .Append(("KEY50", -1))
+            .ToArray();
 
-        var metadata = CreateTuples(ManyKeys).Append(("KEY50", 0)).ToArray();
-        var sut = ErrorBuilder.NotFound(ErrorUri.None, "Missing");
-
-        // Act
-        var exception = Record.Exception(() => sut.WithMetadata(metadata));
-
-        // Assert
-        exception.ShouldBeOfType<ArgumentException>();
-        var argumentException = exception as ArgumentException;
-        argumentException.ShouldNotBeNull();
-        argumentException.Message.ShouldBe(ExpectedMessage);
-    }
-
-    [Fact]
-    public void WithMetadataEnumerable_KeysDifferingOnlyInCaseAmongManyKeysOfOneCall_ThrowsArgumentException()
-    {
-        // Arrange
-        const string ExpectedMessage = "The metadata keys ‘key50’ and ‘KEY50’ differ only in case. "
-            + "Keys that differ only in case would be the same member of a problem details object. (Parameter 'metadata')";
-
-        var metadata = CreatePairs(ManyKeys);
-        metadata.Add(new KeyValuePair<string, object?>("KEY50", 0));
-        var sut = ErrorBuilder.NotFound(ErrorUri.None, "Missing");
-
-        // Act
-        var exception = Record.Exception(() => sut.WithMetadata(metadata));
-
-        // Assert
-        exception.ShouldBeOfType<ArgumentException>();
-        var argumentException = exception as ArgumentException;
-        argumentException.ShouldNotBeNull();
-        argumentException.Message.ShouldBe(ExpectedMessage);
-    }
-
-    [Fact]
-    public void WithMetadataTuples_SameKeyRepeatedAmongManyKeysOfOneCall_TakesTheLastValue()
-    {
-        // Arrange
-        var metadata = CreateTuples(ManyKeys).Append(("key50", -1)).ToArray();
         var sut = ErrorBuilder.NotFound(ErrorUri.None, "Missing");
 
         // Act
@@ -242,93 +165,26 @@ public class ErrorBuilderMetadataKeyCaseManyKeysUnitTests
 
         // Assert
         result.Count.ShouldBe(ManyKeys);
-        result["key50"].ShouldBe(-1);
+        result.Keys.Single(IsKey50).ShouldBe("KEY50");
+        result["KEY50"].ShouldBe(-1);
     }
 
-    #endregion
-
-    #region removed keys
-
     [Fact]
-    public void WithMetadata_KeyDifferingOnlyInCaseFromRemovedKey_AddsTheEntry()
+    public void WithMetadataEnumerable_KeysDifferingOnlyInCaseAmongManyKeysOfOneCall_KeepsTheLastEntry()
     {
         // Arrange
-        var sut = CreateSut().WithoutMetadata("key50");
+        var metadata = CreatePairs(ManyKeys);
+        metadata.Add(new KeyValuePair<string, object?>("KEY50", -1));
+
+        var sut = ErrorBuilder.NotFound(ErrorUri.None, "Missing");
 
         // Act
-        var result = sut.WithMetadata("KEY50", 0).Build().Metadata;
+        var result = sut.WithMetadata(metadata).Build().Metadata;
 
         // Assert
         result.Count.ShouldBe(ManyKeys);
-        result["KEY50"].ShouldBe(0);
-    }
-
-    [Fact]
-    public void WithMetadata_KeyDifferingOnlyInCaseAfterRemovingItInThatCase_ThrowsArgumentException()
-    {
-        // Arrange: the removal is ordinal, so "KEY50" removes nothing and "key50" stays.
-        var sut = CreateSut().WithoutMetadata("KEY50");
-
-        // Act
-        var exception = Record.Exception(() => sut.WithMetadata("KEY50", 0));
-
-        // Assert
-        exception.ShouldBeOfType<ArgumentException>();
-        var argumentException = exception as ArgumentException;
-        argumentException.ShouldNotBeNull();
-        argumentException.ParamName.ShouldBe("key");
-    }
-
-    [Fact]
-    public void WithMetadata_KeyDifferingOnlyInCaseAfterRemovingAllKeys_AddsTheEntry()
-    {
-        // Arrange
-        var sut = CreateSut().WithoutMetadata();
-
-        // Act
-        var result = sut.WithMetadata("KEY50", 0).Build().Metadata;
-
-        // Assert
-        result.Count.ShouldBe(1);
-        result["KEY50"].ShouldBe(0);
-    }
-
-    #endregion
-
-    #region keys added in one call to many keys
-
-    [Fact]
-    public void WithMetadata_KeyDifferingOnlyInCaseFromKeyAddedAsTuple_ThrowsArgumentException()
-    {
-        // Arrange
-        var sut = CreateSut();
-        sut.WithMetadata(("added", 1), ("other", 2));
-
-        // Act
-        var exception = Record.Exception(() => sut.WithMetadata("ADDED", 0));
-
-        // Assert
-        exception.ShouldBeOfType<ArgumentException>();
-        var argumentException = exception as ArgumentException;
-        argumentException.ShouldNotBeNull();
-        argumentException.ParamName.ShouldBe("key");
-    }
-
-    [Fact]
-    public void WithMetadata_KeyDifferingOnlyInCaseFromKeyAddedAsPair_ThrowsArgumentException()
-    {
-        // Arrange
-        var sut = CreateSut();
-        sut.WithMetadata([new KeyValuePair<string, object?>("added", 1), new KeyValuePair<string, object?>("other", 2)]);
-
-        // Act
-        var exception = Record.Exception(() => sut.WithMetadata("ADDED", 0));
-
-        // Assert
-        exception.ShouldBeOfType<ArgumentException>();
-        var argumentException = exception as ArgumentException;
-        argumentException.ShouldNotBeNull();
-        argumentException.ParamName.ShouldBe("key");
+        result.Keys.Single(IsKey50).ShouldBe("KEY50");
+        result["KEY50"].ShouldBe(-1);
     }
 
     #endregion
@@ -336,71 +192,55 @@ public class ErrorBuilderMetadataKeyCaseManyKeysUnitTests
     #region built errors
 
     [Fact]
-    public void WithMetadata_KeyDifferingOnlyInCaseFromOneOfManyKeysOfTheSourceError_ThrowsArgumentException()
+    public void WithMetadata_KeyDifferingOnlyInCaseFromOneOfManyKeysOfTheSourceError_ReplacesTheEntryAndItsSpelling()
     {
         // Arrange
         var sut = CreateSut().Build().ToBuilder();
 
         // Act
-        var exception = Record.Exception(() => sut.WithMetadata("KEY50", 0));
+        var result = sut.WithMetadata("KEY50", -1).Build().Metadata;
 
         // Assert
-        exception.ShouldBeOfType<ArgumentException>();
-        var argumentException = exception as ArgumentException;
-        argumentException.ShouldNotBeNull();
-        argumentException.ParamName.ShouldBe("key");
+        result.Count.ShouldBe(ManyKeys);
+        result.Keys.Single(IsKey50).ShouldBe("KEY50");
+        result["KEY50"].ShouldBe(-1);
     }
 
     [Fact]
-    public void WithMetadata_KeyDifferingOnlyInCaseAfterBuild_ThrowsArgumentException()
+    public void WithMetadata_KeyDifferingOnlyInCaseAfterBuild_KeepsTheBuiltError()
     {
         // Arrange
         var sut = CreateSut();
-        _ = sut.Build();
+        var result = sut.Build().Metadata;
 
         // Act
-        var exception = Record.Exception(() => sut.WithMetadata("KEY50", 0));
+        _ = sut.WithMetadata("KEY50", -1);
 
         // Assert
-        exception.ShouldBeOfType<ArgumentException>();
-        var argumentException = exception as ArgumentException;
-        argumentException.ShouldNotBeNull();
-        argumentException.ParamName.ShouldBe("key");
+        result.Count.ShouldBe(ManyKeys);
+        result.Keys.Single(IsKey50).ShouldBe("key50");
+        result["key50"].ShouldBe(50);
     }
 
     [Fact]
-    public void WithMetadata_KeyDifferingOnlyInCaseFromKeyAddedAfterBuild_ThrowsArgumentException()
-    {
-        // Arrange
-        var sut = CreateSut();
-        _ = sut.Build();
-        sut.WithMetadata("added", 1);
-
-        // Act
-        var exception = Record.Exception(() => sut.WithMetadata("ADDED", 0));
-
-        // Assert
-        exception.ShouldBeOfType<ArgumentException>();
-        var argumentException = exception as ArgumentException;
-        argumentException.ShouldNotBeNull();
-        argumentException.ParamName.ShouldBe("key");
-    }
-
-    [Fact]
-    public void ErrorWithMetadata_KeyDifferingOnlyInCaseFromOneOfManyKeys_ThrowsArgumentException()
+    public void ErrorWithMetadata_KeyDifferingOnlyInCaseFromOneOfManyKeys_ReplacesTheEntryAndItsSpelling()
     {
         // Arrange
         var sut = CreateSut().Build();
 
         // Act
-        var exception = Record.Exception(() => sut.WithMetadata("KEY50", 0));
+        var result = sut.WithMetadata("KEY50", -1).Metadata;
 
         // Assert
-        exception.ShouldBeOfType<ArgumentException>();
-        var argumentException = exception as ArgumentException;
-        argumentException.ShouldNotBeNull();
-        argumentException.ParamName.ShouldBe("key");
+        result.Count.ShouldBe(ManyKeys);
+        result.Keys.Single(IsKey50).ShouldBe("KEY50");
+        result["KEY50"].ShouldBe(-1);
     }
 
     #endregion
+
+    private static bool IsKey50(string key)
+    {
+        return string.Equals(key, "key50", StringComparison.OrdinalIgnoreCase);
+    }
 }

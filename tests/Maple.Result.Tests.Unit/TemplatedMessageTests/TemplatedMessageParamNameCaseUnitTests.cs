@@ -17,7 +17,8 @@ namespace Maple.Results.Tests.Unit.TemplatedMessageTests;
 
 // Two parameter names that differ only in case (#235) are a typo: one of the values would be ignored, and a naming policy that changes the
 // case of the keys would write both as the same member of "params". The rule of the metadata keys (#160) applies; the same name repeated
-// keeps its own message.
+// keeps its own message. Unlike the metadata, a message is created in one call, so the names are still rejected, while lookups ignore the
+// case (#349).
 public class TemplatedMessageParamNameCaseUnitTests
 {
     private const string ExpectedMessage = "The parameter names ‘Min’ and ‘min’ differ only in case. "
@@ -143,7 +144,7 @@ public class TemplatedMessageParamNameCaseUnitTests
     }
 
     [Fact]
-    public void Parameters_Lookup_StaysOrdinal()
+    public void Parameters_LookupInMessageFromTuples_IgnoresTheCase()
     {
         // Arrange
         var sut = new TemplatedMessage("errors.length", ("Min", 3));
@@ -153,7 +154,22 @@ public class TemplatedMessageParamNameCaseUnitTests
 
         // Assert
         result.ContainsKey("Min").ShouldBeTrue();
-        result.ContainsKey("min").ShouldBeFalse();
+        result.ContainsKey("min").ShouldBeTrue();
+    }
+
+    [Fact]
+    public void Parameters_LookupInMessageFromPairs_IgnoresTheCase()
+    {
+        // Arrange
+        var parameters = new List<KeyValuePair<string, object?>> { new("Min", 3) };
+        var sut = new TemplatedMessage("errors.length", parameters);
+
+        // Act
+        var result = sut.Parameters.ShouldNotBeNull();
+
+        // Assert
+        result.ContainsKey("Min").ShouldBeTrue();
+        result.ContainsKey("min").ShouldBeTrue();
     }
 
     [Fact]

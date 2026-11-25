@@ -117,10 +117,10 @@ public class TemplatedMessageUnitTests
     }
 
     [Fact]
-    public void Parameters_Keys_AreCaseSensitive()
+    public void Parameters_KeysOfCaseSensitiveSource_IgnoreTheCase()
     {
         // Arrange
-        var source = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase) { ["min"] = 3 };
+        var source = new Dictionary<string, object?>(StringComparer.Ordinal) { ["min"] = 3 };
 
         // Act
         var sut = new TemplatedMessage("message-id", source);
@@ -128,7 +128,22 @@ public class TemplatedMessageUnitTests
         // Assert
         sut.Parameters.ShouldNotBeNull();
         sut.Parameters.ContainsKey("min").ShouldBeTrue();
-        sut.Parameters.ContainsKey("MIN").ShouldBeFalse();
+        sut.Parameters.ContainsKey("MIN").ShouldBeTrue();
+    }
+
+    [Fact]
+    public void Parameters_MetadataOfAnError_IsSharedAndIgnoresTheCase()
+    {
+        // Arrange
+        var error = Error.Validation(ErrorUri.None, "Invalid").WithMetadata("min", 3);
+
+        // Act
+        var sut = new TemplatedMessage("message-id", error.Metadata);
+
+        // Assert
+        sut.Parameters.ShouldNotBeNull();
+        sut.Parameters.ShouldBeSameAs(error.Metadata);
+        sut.Parameters.ContainsKey("MIN").ShouldBeTrue();
     }
 
     #endregion

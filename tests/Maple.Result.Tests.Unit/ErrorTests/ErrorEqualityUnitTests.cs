@@ -257,6 +257,19 @@ public class ErrorEqualityUnitTests
         (first == second).ShouldBeFalse();
     }
 
+    // Lookups ignore the case, but the spelling is serialized and shown by ToString, so it counts for equality (#349).
+    [Fact]
+    public void Equals_ErrorsWithMetadataKeysDifferingOnlyInCase_AreNotEqual()
+    {
+        // Arrange
+        var first = CreateError().WithMetadata("traceId", 1);
+        var second = CreateError().WithMetadata("TraceId", 1);
+
+        // Act & Assert
+        first.Equals(second).ShouldBeFalse();
+        (first == second).ShouldBeFalse();
+    }
+
     [Fact]
     public void Equals_ErrorWithAndWithoutMetadata_AreNotEqual()
     {

@@ -8,13 +8,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using System;
 using System.Collections.Generic;
 
 namespace Maple.Results.Tests.Unit.ErrorBuilderTests;
 
-// Keys that differ only in case would be the same member of a problem details object (clients often read JSON
-// case-insensitively, and naming policies change the case), so the builder rejects them; the same key replaces the value.
+// Keys that differ only in case are the same member of a problem details object (clients often read JSON case-insensitively, and naming
+// policies change the case), so they are one entry: a key in another case replaces the entry, and the spelling of the call is stored (#349).
 public class ErrorBuilderMetadataKeyCaseUnitTests
 {
     private static ErrorBuilder CreateSut()
@@ -26,52 +25,17 @@ public class ErrorBuilderMetadataKeyCaseUnitTests
     #region WithMetadata(string, object?)
 
     [Fact]
-    public void WithMetadata_KeyDifferingOnlyInCaseFromExistingKey_ThrowsArgumentException()
+    public void WithMetadata_KeyDifferingOnlyInCaseFromExistingKey_ReplacesTheEntryAndItsSpelling()
     {
         // Arrange
         var sut = CreateSut();
 
         // Act
-        var exception = Record.Exception(() => sut.WithMetadata("retryAfter", 60));
+        var result = sut.WithMetadata("retryAfter", 60).Build().Metadata;
 
         // Assert
-        exception.ShouldBeOfType<ArgumentException>();
-        var argumentException = exception as ArgumentException;
-        argumentException.ShouldNotBeNull();
-        argumentException.ParamName.ShouldBe("key");
-    }
-
-    [Fact]
-    public void WithMetadata_KeyDifferingOnlyInCaseFromExistingKey_MessageNamesBothKeys()
-    {
-        // Arrange
-        const string ExpectedMessage = "The metadata key ‘retryAfter’ differs only in case from the existing key ‘RetryAfter’. "
-            + "Keys that differ only in case would be the same member of a problem details object; use ‘RetryAfter’ to replace "
-            + "the value, or remove it first. (Parameter 'key')";
-
-        var sut = CreateSut();
-
-        // Act
-        var exception = Record.Exception(() => sut.WithMetadata("retryAfter", 60));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.Message.ShouldBe(ExpectedMessage);
-    }
-
-    [Fact]
-    public void WithMetadata_KeyDifferingOnlyInCaseFromExistingKey_LeavesTheBuilderUnchanged()
-    {
-        // Arrange
-        var sut = CreateSut();
-
-        // Act
-        _ = Record.Exception(() => sut.WithMetadata("retryAfter", 60));
-
-        // Assert
-        var result = sut.Build().Metadata;
-        result.Count.ShouldBe(1);
-        result["RetryAfter"].ShouldBe(30);
+        result.Keys.ShouldBe(["retryAfter"]);
+        result["retryAfter"].ShouldBe(60);
     }
 
     [Fact]
@@ -103,19 +67,32 @@ public class ErrorBuilderMetadataKeyCaseUnitTests
     }
 
     [Fact]
-    public void WithMetadata_KeyDifferingOnlyInCaseFromKeyOfTheSourceError_ThrowsArgumentException()
+    public void WithMetadata_KeyDifferingOnlyInCaseFromKeyOfTheSourceError_ReplacesTheEntryAndItsSpelling()
     {
         // Arrange
         var sut = CreateSut().Build().ToBuilder();
 
         // Act
-        var exception = Record.Exception(() => sut.WithMetadata("RETRYAFTER", 60));
+        var result = sut.WithMetadata("RETRYAFTER", 60).Build().Metadata;
 
         // Assert
-        exception.ShouldBeOfType<ArgumentException>();
-        var argumentException = exception as ArgumentException;
-        argumentException.ShouldNotBeNull();
-        argumentException.ParamName.ShouldBe("key");
+        result.Keys.ShouldBe(["RETRYAFTER"]);
+        result["RETRYAFTER"].ShouldBe(60);
+    }
+
+    [Fact]
+    public void WithMetadata_KeyDifferingOnlyInCase_KeepsAnErrorBuiltBefore()
+    {
+        // Arrange
+        var sut = CreateSut();
+        var builtBefore = sut.Build();
+
+        // Act
+        _ = sut.WithMetadata("retryAfter", 60);
+
+        // Assert
+        builtBefore.Metadata.Keys.ShouldBe(["RetryAfter"]);
+        builtBefore.Metadata["RetryAfter"].ShouldBe(30);
     }
 
     #endregion
@@ -123,67 +100,31 @@ public class ErrorBuilderMetadataKeyCaseUnitTests
     #region WithMetadata(params ReadOnlySpan<(string, object?)>)
 
     [Fact]
-    public void WithMetadataTuples_KeyDifferingOnlyInCaseFromExistingKey_ThrowsArgumentException()
+    public void WithMetadataTuples_KeyDifferingOnlyInCaseFromExistingKey_ReplacesTheEntryAndItsSpelling()
     {
         // Arrange
         var sut = CreateSut();
 
         // Act
-        var exception = Record.Exception(() => sut.WithMetadata(("limit", 100), ("retryAfter", 60)));
+        var result = sut.WithMetadata(("limit", 100), ("retryAfter", 60)).Build().Metadata;
 
         // Assert
-        exception.ShouldBeOfType<ArgumentException>();
-        var argumentException = exception as ArgumentException;
-        argumentException.ShouldNotBeNull();
-        argumentException.ParamName.ShouldBe("metadata");
+        result.Keys.ShouldBe(["limit", "retryAfter"], ignoreOrder: true);
+        result["retryAfter"].ShouldBe(60);
     }
 
     [Fact]
-    public void WithMetadataTuples_KeysDifferingOnlyInCaseInOneCall_ThrowsArgumentException()
+    public void WithMetadataTuples_KeysDifferingOnlyInCaseInOneCall_KeepsTheLastEntry()
     {
         // Arrange
         var sut = ErrorBuilder.NotFound(ErrorUri.None, "Missing");
 
         // Act
-        var exception = Record.Exception(() => sut.WithMetadata(("Limit", 100), ("remaining", 0), ("limit", 200)));
+        var result = sut.WithMetadata(("Limit", 100), ("remaining", 0), ("limit", 200)).Build().Metadata;
 
         // Assert
-        exception.ShouldBeOfType<ArgumentException>();
-        var argumentException = exception as ArgumentException;
-        argumentException.ShouldNotBeNull();
-        argumentException.ParamName.ShouldBe("metadata");
-    }
-
-    [Fact]
-    public void WithMetadataTuples_KeysDifferingOnlyInCaseInOneCall_MessageNamesBothKeys()
-    {
-        // Arrange
-        const string ExpectedMessage = "The metadata keys ‘Limit’ and ‘limit’ differ only in case. "
-            + "Keys that differ only in case would be the same member of a problem details object. (Parameter 'metadata')";
-
-        var sut = ErrorBuilder.NotFound(ErrorUri.None, "Missing");
-
-        // Act
-        var exception = Record.Exception(() => sut.WithMetadata(("Limit", 100), ("remaining", 0), ("limit", 200)));
-
-        // Assert
-        exception.ShouldNotBeNull();
-        exception.Message.ShouldBe(ExpectedMessage);
-    }
-
-    [Fact]
-    public void WithMetadataTuples_KeyDifferingOnlyInCase_LeavesTheBuilderUnchanged()
-    {
-        // Arrange
-        var sut = CreateSut();
-
-        // Act
-        _ = Record.Exception(() => sut.WithMetadata(("limit", 100), ("retryAfter", 60)));
-
-        // Assert
-        var result = sut.Build().Metadata;
-        result.Count.ShouldBe(1);
-        result["RetryAfter"].ShouldBe(30);
+        result.Keys.ShouldBe(["limit", "remaining"], ignoreOrder: true);
+        result["limit"].ShouldBe(200);
     }
 
     [Fact]
@@ -205,24 +146,22 @@ public class ErrorBuilderMetadataKeyCaseUnitTests
     #region WithMetadata(IEnumerable<KeyValuePair<string, object?>>)
 
     [Fact]
-    public void WithMetadataEnumerable_KeyDifferingOnlyInCaseFromExistingKey_ThrowsArgumentException()
+    public void WithMetadataEnumerable_KeyDifferingOnlyInCaseFromExistingKey_ReplacesTheEntryAndItsSpelling()
     {
         // Arrange
         var metadata = new Dictionary<string, object?> { ["limit"] = 100, ["retryAfter"] = 60 };
         var sut = CreateSut();
 
         // Act
-        var exception = Record.Exception(() => sut.WithMetadata(metadata));
+        var result = sut.WithMetadata(metadata).Build().Metadata;
 
         // Assert
-        exception.ShouldBeOfType<ArgumentException>();
-        var argumentException = exception as ArgumentException;
-        argumentException.ShouldNotBeNull();
-        argumentException.ParamName.ShouldBe("metadata");
+        result.Keys.ShouldBe(["limit", "retryAfter"], ignoreOrder: true);
+        result["retryAfter"].ShouldBe(60);
     }
 
     [Fact]
-    public void WithMetadataEnumerable_KeysDifferingOnlyInCaseInOneCall_ThrowsArgumentException()
+    public void WithMetadataEnumerable_KeysDifferingOnlyInCaseInOneCall_KeepsTheLastEntry()
     {
         // Arrange
         var metadata = new List<KeyValuePair<string, object?>>
@@ -234,29 +173,11 @@ public class ErrorBuilderMetadataKeyCaseUnitTests
         var sut = ErrorBuilder.NotFound(ErrorUri.None, "Missing");
 
         // Act
-        var exception = Record.Exception(() => sut.WithMetadata(metadata));
+        var result = sut.WithMetadata(metadata).Build().Metadata;
 
         // Assert
-        exception.ShouldBeOfType<ArgumentException>();
-        var argumentException = exception as ArgumentException;
-        argumentException.ShouldNotBeNull();
-        argumentException.ParamName.ShouldBe("metadata");
-    }
-
-    [Fact]
-    public void WithMetadataEnumerable_KeyDifferingOnlyInCase_LeavesTheBuilderUnchanged()
-    {
-        // Arrange
-        var metadata = new Dictionary<string, object?> { ["limit"] = 100, ["retryAfter"] = 60 };
-        var sut = CreateSut();
-
-        // Act
-        _ = Record.Exception(() => sut.WithMetadata(metadata));
-
-        // Assert
-        var result = sut.Build().Metadata;
-        result.Count.ShouldBe(1);
-        result["RetryAfter"].ShouldBe(30);
+        result.Keys.ShouldBe(["limit"]);
+        result["limit"].ShouldBe(200);
     }
 
     [Fact]
@@ -277,6 +198,36 @@ public class ErrorBuilderMetadataKeyCaseUnitTests
         // Assert
         result.Count.ShouldBe(1);
         result["RetryAfter"].ShouldBe(90);
+    }
+
+    #endregion
+
+    #region WithoutMetadata(string)
+
+    [Fact]
+    public void WithoutMetadata_KeyInDifferentCase_RemovesTheEntry()
+    {
+        // Arrange
+        var sut = CreateSut();
+
+        // Act
+        var result = sut.WithoutMetadata("retryAfter").Build().Metadata;
+
+        // Assert
+        result.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void WithoutMetadata_KeyInDifferentCaseOfTheSourceError_RemovesTheEntry()
+    {
+        // Arrange
+        var sut = CreateSut().Build().ToBuilder();
+
+        // Act
+        var result = sut.WithoutMetadata("RETRYAFTER").Build().Metadata;
+
+        // Assert
+        result.ShouldBeEmpty();
     }
 
     #endregion
