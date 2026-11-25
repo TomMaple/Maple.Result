@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/ErrorBuilder.cs#L129" target="_blank">ErrorBuilder.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.3/src/Maple.Result/ErrorBuilder.cs#L124" target="_blank">ErrorBuilder.cs</a>
 
 Returns a new [ErrorBuilder](ErrorBuilder.md) of the *PermissionDenied* [ErrorCategory](../ErrorCategory.md).
 

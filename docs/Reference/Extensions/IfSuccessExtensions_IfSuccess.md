@@ -23,7 +23,7 @@ An expression that cannot be a statement (e.g., `x => x + 1`) does not compile (
 
 
 ## IfSuccess(Result, Action)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/IfSuccessExtensions.cs#L46" target="_blank">IfSuccessExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.3/src/Maple.Result/Extensions/IfSuccessExtensions.cs#L46" target="_blank">IfSuccessExtensions.cs</a>
 
 Executes the provided action, only if the instance of [Result](../Result/Result.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)).
 
@@ -58,7 +58,7 @@ createUserResult.IfSuccess(() =>
 
 
 ## IfSuccess&lt;T&gt;(Result&lt;T&gt;, Action&lt;T&gt;)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Extensions/IfSuccessExtensions.cs#L79" target="_blank">IfSuccessExtensions.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.3/src/Maple.Result/Extensions/IfSuccessExtensions.cs#L79" target="_blank">IfSuccessExtensions.cs</a>
 
 Executes the provided action, only if the instance of [Result&lt;T&gt;](../ResultT/ResultT.md) represents a successful operation (i.e., does not contain an [Error](../Error/Error.md)).
 

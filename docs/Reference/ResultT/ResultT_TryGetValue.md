@@ -16,7 +16,7 @@ Unlike [Value](ResultT_Value.md), these methods never throw. Their nullable anno
 
 
 ## TryGetValue(T)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Result.cs#L343" target="_blank">Result.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.3/src/Maple.Result/Result.cs#L343" target="_blank">Result.cs</a>
 
 Gets the value of a successful result.
 
@@ -44,7 +44,7 @@ var name = settings.TryGetValue(out var configured)
 
 
 ## TryGetValue(T, Error)
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/Result.cs#L363" target="_blank">Result.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.3/src/Maple.Result/Result.cs#L363" target="_blank">Result.cs</a>
 
 Gets the value of a successful result, or the error of a failed one.
 

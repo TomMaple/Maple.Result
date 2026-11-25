@@ -2,7 +2,7 @@
 ## Definition
 Namespace: [Maple.Results](../namespace.md)<br>
 Assembly: Maple.Result.dll<br>
-Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.2/src/Maple.Result/TemplatedMessage.cs#L147" target="_blank">TemplatedMessage.cs</a>
+Source: <a href="https://github.com/TomMaple/Maple.Result/blob/v3.0.0-rc.3/src/Maple.Result/TemplatedMessage.cs#L147" target="_blank">TemplatedMessage.cs</a>
 
 Determines whether the specified [TemplatedMessage](TemplatedMessage.md) is equal to the current one, comparing the [Parameters](TemplatedMessage_Parameters.md) collection by its content rather than by reference.
 
