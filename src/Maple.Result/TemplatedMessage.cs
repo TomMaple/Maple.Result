@@ -219,7 +219,7 @@ public sealed record TemplatedMessage
         Dictionary<string, string>? caseIndex = null;
         foreach (var (key, value) in parameters)
         {
-            dictionary ??= new Dictionary<string, object?>(count, StringComparer.Ordinal);
+            dictionary ??= new Dictionary<string, object?>(count, ImmutableStringDictionary.KeyComparer);
             Add(dictionary, ref caseIndex, key, value, parametersParameterName);
         }
 
@@ -238,7 +238,7 @@ public sealed record TemplatedMessage
         if (parameters.IsEmpty)
             return new Validated(templateId, null);
 
-        var dictionary = new Dictionary<string, object?>(parameters.Length, StringComparer.Ordinal);
+        var dictionary = new Dictionary<string, object?>(parameters.Length, ImmutableStringDictionary.KeyComparer);
         Dictionary<string, string>? caseIndex = null;
         foreach (var (key, value) in parameters)
             Add(dictionary, ref caseIndex, key, value, parametersParameterName);

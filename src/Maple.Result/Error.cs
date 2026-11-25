@@ -44,7 +44,7 @@ public sealed record Error
 
     internal static readonly ReadOnlyCollection<ErrorDetail> EmptyErrorDetails = new([]);
 
-    internal static readonly ImmutableStringDictionary EmptyMetadata = new(new Dictionary<string, object?>(StringComparer.Ordinal));
+    internal static readonly ImmutableStringDictionary EmptyMetadata = new(new Dictionary<string, object?>(ImmutableStringDictionary.KeyComparer));
 
     #endregion
 

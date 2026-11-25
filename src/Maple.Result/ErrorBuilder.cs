@@ -611,7 +611,7 @@ public sealed class ErrorBuilder
 
     private Dictionary<string, object?> GetPendingMetadata()
     {
-        return _pendingMetadata ??= new Dictionary<string, object?>(_builtMetadata, StringComparer.Ordinal);
+        return _pendingMetadata ??= new Dictionary<string, object?>(_builtMetadata, ImmutableStringDictionary.KeyComparer);
     }
 
     /// <summary>
